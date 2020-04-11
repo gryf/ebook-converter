@@ -7,7 +7,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre.customize.conversion import OutputFormatPlugin, OptionRecommendation
+from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
 
 
 class RBOutput(OutputFormatPlugin):
@@ -23,7 +23,7 @@ class RBOutput(OutputFormatPlugin):
             help=_('Add Table of Contents to beginning of the book.'))}
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
-        from calibre.ebooks.rb.writer import RBWriter
+        from ebook_converter.ebooks.rb.writer import RBWriter
 
         close = False
         if not hasattr(output_path, 'write'):

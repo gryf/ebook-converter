@@ -18,7 +18,7 @@ from struct import calcsize, unpack, pack
 from collections import namedtuple, OrderedDict
 from tempfile import SpooledTemporaryFile
 
-from polyglot.builtins import itervalues, getcwd
+from ebook_converter.polyglot.builtins import itervalues, getcwd
 
 HEADER_SIG = 0x04034b50
 HEADER_BYTE_SIG = pack(b'<L', HEADER_SIG)
@@ -49,7 +49,7 @@ else:
 
 def decode_arcname(name):
     if isinstance(name, bytes):
-        from calibre.ebooks.chardet import detect
+        from ebook_converter.ebooks.chardet import detect
         try:
             name = name.decode('utf-8')
         except:
@@ -301,7 +301,7 @@ class LocalZipFile(object):
 
     def safe_replace(self, name, datastream, extra_replacements={},
         add_missing=False):
-        from calibre.utils.zipfile import ZipFile, ZipInfo
+        from ebook_converter.utils.zipfile import ZipFile, ZipInfo
         replacements = {name:datastream}
         replacements.update(extra_replacements)
         names = frozenset(list(replacements.keys()))

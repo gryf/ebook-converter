@@ -13,27 +13,27 @@ from functools import partial
 from itertools import chain
 from math import ceil, floor
 
-from calibre import (
+from ebook_converter import (
     __appname__, entity_to_unicode, fit_image, force_unicode, preferred_encoding
 )
-from calibre.constants import filesystem_encoding
-from calibre.devices.interface import DevicePlugin as Device
-from calibre.ebooks import ConversionError
-from calibre.ebooks.BeautifulSoup import (
+from ebook_converter.constants import filesystem_encoding
+from ebook_converter.devices.interface import DevicePlugin as Device
+from ebook_converter.ebooks import ConversionError
+from ebook_converter.ebooks.BeautifulSoup import (
     BeautifulSoup, Comment, Declaration, NavigableString, ProcessingInstruction, Tag
 )
-from calibre.ebooks.chardet import xml_to_unicode
-from calibre.ebooks.lrf import Book
-from calibre.ebooks.lrf.html.color_map import lrs_color
-from calibre.ebooks.lrf.html.table import Table
-from calibre.ebooks.lrf.pylrs.pylrs import (
+from ebook_converter.ebooks.chardet import xml_to_unicode
+from ebook_converter.ebooks.lrf import Book
+from ebook_converter.ebooks.lrf.html.color_map import lrs_color
+from ebook_converter.ebooks.lrf.html.table import Table
+from ebook_converter.ebooks.lrf.pylrs.pylrs import (
     CR, BlockSpace, BookSetting, Canvas, CharButton, DropCaps, EmpLine, Image,
     ImageBlock, ImageStream, Italic, JumpButton, LrsError, Paragraph, Plot,
     RuledLine, Span, Sub, Sup, TextBlock
 )
-from calibre.ptempfile import PersistentTemporaryFile
-from polyglot.builtins import getcwd, itervalues, string_or_bytes, unicode_type
-from polyglot.urllib import unquote, urlparse
+from ebook_converter.ptempfile import PersistentTemporaryFile
+from ebook_converter.polyglot.builtins import getcwd, itervalues, string_or_bytes, unicode_type
+from ebook_converter.polyglot.urllib import unquote, urlparse
 
 """
 Code to convert HTML ebooks into LRF ebooks.
@@ -1911,7 +1911,7 @@ def try_opf(path, options, logger):
         return
 
     dirpath = os.path.dirname(os.path.abspath(opf))
-    from calibre.ebooks.metadata.opf2 import OPF as OPF2
+    from ebook_converter.ebooks.metadata.opf2 import OPF as OPF2
     with open(opf, 'rb') as f:
         opf = OPF2(f, dirpath)
     try:

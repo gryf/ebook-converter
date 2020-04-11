@@ -8,12 +8,13 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 import io
 from struct import pack
 
-from calibre.constants import plugins
-from polyglot.builtins import range
-cPalmdoc = plugins['cPalmdoc'][0]
-if not cPalmdoc:
-    raise RuntimeError(('Failed to load required cPalmdoc module: '
-            '%s')%plugins['cPalmdoc'][1])
+from ebook_converter.constants import plugins
+from ebook_converter.ebooks.compression import cPalmdoc
+from ebook_converter.polyglot.builtins import range
+#cPalmdoc = plugins['cPalmdoc'][0]
+#if not cPalmdoc:
+#    raise RuntimeError(('Failed to load required cPalmdoc module: '
+#            '%s')%plugins['cPalmdoc'][1])
 
 
 def decompress_doc(data):

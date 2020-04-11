@@ -9,9 +9,9 @@ import glob
 import os
 import shutil
 
-from calibre.customize.conversion import InputFormatPlugin
-from calibre.ptempfile import TemporaryDirectory
-from polyglot.builtins import getcwd
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.polyglot.builtins import getcwd
 
 
 class PMLInput(InputFormatPlugin):
@@ -24,7 +24,7 @@ class PMLInput(InputFormatPlugin):
     commit_name = 'pml_input'
 
     def process_pml(self, pml_path, html_path, close_all=False):
-        from calibre.ebooks.pml.pmlconverter import PML_HTMLizer
+        from ebook_converter.ebooks.pml.pmlconverter import PML_HTMLizer
 
         pclose = False
         hclose = False
@@ -89,9 +89,9 @@ class PMLInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from calibre.ebooks.metadata.toc import TOC
-        from calibre.ebooks.metadata.opf2 import OPFCreator
-        from calibre.utils.zipfile import ZipFile
+        from ebook_converter.ebooks.metadata.toc import TOC
+        from ebook_converter.ebooks.metadata.opf2 import OPFCreator
+        from ebook_converter.utils.zipfile import ZipFile
 
         self.options = options
         self.log = log
@@ -128,7 +128,7 @@ class PMLInput(InputFormatPlugin):
         for item in pages+images:
             manifest_items.append((item, None))
 
-        from calibre.ebooks.metadata.meta import get_metadata
+        from ebook_converter.ebooks.metadata.meta import get_metadata
         log.debug('Reading metadata from input file...')
         mi = get_metadata(stream, 'pml')
         if 'images/cover.png' in images:
@@ -145,7 +145,7 @@ class PMLInput(InputFormatPlugin):
         return os.path.join(getcwd(), 'metadata.opf')
 
     def postprocess_book(self, oeb, opts, log):
-        from calibre.ebooks.oeb.base import XHTML, barename
+        from ebook_converter.ebooks.oeb.base import XHTML, barename
         for item in oeb.spine:
             if hasattr(item.data, 'xpath'):
                 for heading in item.data.iterdescendants(*map(XHTML, 'h1 h2 h3 h4 h5 h6'.split())):

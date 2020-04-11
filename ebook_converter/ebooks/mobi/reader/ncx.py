@@ -6,11 +6,11 @@ __license__   = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-from calibre import replace_entities
-from calibre.ebooks.metadata.toc import TOC
-from calibre.ebooks.mobi.reader.headers import NULL_INDEX
-from calibre.ebooks.mobi.reader.index import read_index
-from polyglot.builtins import iteritems, getcwd
+from ebook_converter import replace_entities
+from ebook_converter.ebooks.metadata.toc import TOC
+from ebook_converter.ebooks.mobi.reader.headers import NULL_INDEX
+from ebook_converter.ebooks.mobi.reader.index import read_index
+from ebook_converter.polyglot.builtins import iteritems, getcwd
 
 tag_fieldname_map = {
         1:  ['pos',0],

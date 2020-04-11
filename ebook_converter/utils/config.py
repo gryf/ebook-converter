@@ -12,16 +12,16 @@ import optparse
 import os
 from copy import deepcopy
 
-from calibre.constants import (
+from ebook_converter.constants import (
     CONFIG_DIR_MODE, __appname__, __author__, config_dir, get_version, iswindows
 )
-from calibre.utils.config_base import (
+from ebook_converter.utils.config_base import (
     Config, ConfigInterface, ConfigProxy, Option, OptionSet, OptionValues,
     StringConfig, json_dumps, json_loads, make_config_dir, plugin_dir, prefs,
     tweaks, from_json, to_json
 )
-from calibre.utils.lock import ExclusiveFile
-from polyglot.builtins import string_or_bytes, native_string_type
+from ebook_converter.utils.lock import ExclusiveFile
+from ebook_converter.polyglot.builtins import string_or_bytes, native_string_type
 
 
 # optparse uses gettext.gettext instead of _ from builtins, so we
@@ -41,7 +41,7 @@ def check_config_write_access():
 class CustomHelpFormatter(optparse.IndentedHelpFormatter):
 
     def format_usage(self, usage):
-        from calibre.utils.terminal import colored
+        from ebook_converter.utils.terminal import colored
         parts = usage.split(' ')
         if parts:
             parts[0] = colored(parts[0], fg='yellow', bold=True)
@@ -49,13 +49,13 @@ class CustomHelpFormatter(optparse.IndentedHelpFormatter):
         return colored(_('Usage'), fg='blue', bold=True) + ': ' + usage
 
     def format_heading(self, heading):
-        from calibre.utils.terminal import colored
+        from ebook_converter.utils.terminal import colored
         return "%*s%s:\n" % (self.current_indent, '',
                                  colored(heading, fg='blue', bold=True))
 
     def format_option(self, option):
         import textwrap
-        from calibre.utils.terminal import colored
+        from ebook_converter.utils.terminal import colored
 
         result = []
         opts = self.option_strings[option]
@@ -93,7 +93,7 @@ class OptionParser(optparse.OptionParser):
                  conflict_handler='resolve',
                  **kwds):
         import textwrap
-        from calibre.utils.terminal import colored
+        from ebook_converter.utils.terminal import colored
 
         usage = textwrap.dedent(usage)
         if epilog is None:
@@ -114,17 +114,17 @@ class OptionParser(optparse.OptionParser):
             _("show program's version number and exit")
 
     def print_usage(self, file=None):
-        from calibre.utils.terminal import ANSIStream
+        from ebook_converter.utils.terminal import ANSIStream
         s = ANSIStream(file)
         optparse.OptionParser.print_usage(self, file=s)
 
     def print_help(self, file=None):
-        from calibre.utils.terminal import ANSIStream
+        from ebook_converter.utils.terminal import ANSIStream
         s = ANSIStream(file)
         optparse.OptionParser.print_help(self, file=s)
 
     def print_version(self, file=None):
-        from calibre.utils.terminal import ANSIStream
+        from ebook_converter.utils.terminal import ANSIStream
         s = ANSIStream(file)
         optparse.OptionParser.print_version(self, file=s)
 
@@ -221,8 +221,8 @@ class DynamicConfig(dict):
         self.refresh()
 
     def read_old_serialized_representation(self):
-        from calibre.utils.shared_file import share_open
-        from calibre.utils.serialize import pickle_loads
+        from ebook_converter.utils.shared_file import share_open
+        from ebook_converter.utils.serialize import pickle_loads
         path = self.file_path.rpartition('.')[0]
         try:
             with share_open(path, 'rb') as f:
@@ -334,11 +334,11 @@ class XMLConfig(dict):
             pass
 
     def raw_to_object(self, raw):
-        from polyglot.plistlib import loads
+        from ebook_converter.polyglot.plistlib import loads
         return loads(raw)
 
     def to_raw(self):
-        from polyglot.plistlib import dumps
+        from ebook_converter.polyglot.plistlib import dumps
         return dumps(self)
 
     def decouple(self, prefix):
@@ -363,7 +363,7 @@ class XMLConfig(dict):
         self.update(d)
 
     def __getitem__(self, key):
-        from polyglot.plistlib import Data
+        from ebook_converter.polyglot.plistlib import Data
         try:
             ans = dict.__getitem__(self, key)
             if isinstance(ans, Data):
@@ -373,7 +373,7 @@ class XMLConfig(dict):
             return self.defaults.get(key, None)
 
     def get(self, key, default=None):
-        from polyglot.plistlib import Data
+        from ebook_converter.polyglot.plistlib import Data
         try:
             ans = dict.__getitem__(self, key)
             if isinstance(ans, Data):
@@ -383,7 +383,7 @@ class XMLConfig(dict):
             return self.defaults.get(key, default)
 
     def __setitem__(self, key, val):
-        from polyglot.plistlib import Data
+        from ebook_converter.polyglot.plistlib import Data
         if isinstance(val, bytes):
             val = Data(val)
         dict.__setitem__(self, key, val)

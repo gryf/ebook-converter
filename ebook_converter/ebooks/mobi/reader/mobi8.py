@@ -13,18 +13,18 @@ from uuid import uuid4
 
 from lxml import etree
 
-from calibre.ebooks.mobi.reader.headers import NULL_INDEX
-from calibre.ebooks.mobi.reader.index import read_index
-from calibre.ebooks.mobi.reader.ncx import read_ncx, build_toc
-from calibre.ebooks.mobi.reader.markup import expand_mobi8_markup
-from calibre.ebooks.mobi.reader.containers import Container, find_imgtype
-from calibre.ebooks.metadata.opf2 import Guide, OPFCreator
-from calibre.ebooks.metadata.toc import TOC
-from calibre.ebooks.mobi.utils import read_font_record
-from calibre.ebooks.oeb.parse_utils import parse_html
-from calibre.ebooks.oeb.base import XPath, XHTML, xml2text
-from polyglot.builtins import range, zip, unicode_type, getcwd, as_unicode
-from polyglot.urllib import urldefrag
+from ebook_converter.ebooks.mobi.reader.headers import NULL_INDEX
+from ebook_converter.ebooks.mobi.reader.index import read_index
+from ebook_converter.ebooks.mobi.reader.ncx import read_ncx, build_toc
+from ebook_converter.ebooks.mobi.reader.markup import expand_mobi8_markup
+from ebook_converter.ebooks.mobi.reader.containers import Container, find_imgtype
+from ebook_converter.ebooks.metadata.opf2 import Guide, OPFCreator
+from ebook_converter.ebooks.metadata.toc import TOC
+from ebook_converter.ebooks.mobi.utils import read_font_record
+from ebook_converter.ebooks.oeb.parse_utils import parse_html
+from ebook_converter.ebooks.oeb.base import XPath, XHTML, xml2text
+from ebook_converter.polyglot.builtins import range, zip, unicode_type, getcwd, as_unicode
+from ebook_converter.polyglot.urllib import urldefrag
 
 Part = namedtuple('Part',
     'num type filename start end aid')
@@ -411,7 +411,7 @@ class Mobi8Reader(object):
         return build_toc(index_entries)
 
     def extract_resources(self, sections):
-        from calibre.ebooks.mobi.writer2.resources import PLACEHOLDER_GIF
+        from ebook_converter.ebooks.mobi.writer2.resources import PLACEHOLDER_GIF
         resource_map = []
         container = None
         for x in ('fonts', 'images'):

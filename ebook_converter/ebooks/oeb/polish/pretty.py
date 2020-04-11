@@ -6,16 +6,16 @@ __license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import textwrap
-from polyglot.builtins import iteritems, map
+from ebook_converter.polyglot.builtins import iteritems, map
 
 # from lxml.etree import Element
 
-from calibre import force_unicode
-from calibre.ebooks.oeb.base import (
+from ebook_converter import force_unicode
+from ebook_converter.ebooks.oeb.base import (
     serialize, OEB_DOCS, barename, OEB_STYLES, XPNSMAP, XHTML, SVG)
-from calibre.ebooks.oeb.polish.container import OPF_NAMESPACES
-from calibre.ebooks.oeb.polish.utils import guess_type
-from calibre.utils.icu import sort_key
+from ebook_converter.ebooks.oeb.polish.container import OPF_NAMESPACES
+from ebook_converter.ebooks.oeb.polish.utils import guess_type
+from ebook_converter.utils.icu import sort_key
 
 
 def isspace(x):

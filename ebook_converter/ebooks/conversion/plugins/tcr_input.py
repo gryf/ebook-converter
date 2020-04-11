@@ -7,7 +7,7 @@ __docformat__ = 'restructuredtext en'
 
 from io import BytesIO
 
-from calibre.customize.conversion import InputFormatPlugin
+from ebook_converter.customize.conversion import InputFormatPlugin
 
 
 class TCRInput(InputFormatPlugin):
@@ -19,7 +19,7 @@ class TCRInput(InputFormatPlugin):
     commit_name = 'tcr_input'
 
     def convert(self, stream, options, file_ext, log, accelerators):
-        from calibre.ebooks.compression.tcr import decompress
+        from ebook_converter.ebooks.compression.tcr import decompress
 
         log.info('Decompressing text...')
         raw_txt = decompress(stream)
@@ -27,7 +27,7 @@ class TCRInput(InputFormatPlugin):
         log.info('Converting text to OEB...')
         stream = BytesIO(raw_txt)
 
-        from calibre.customize.ui import plugin_for_input_format
+        from ebook_converter.customize.ui import plugin_for_input_format
 
         txt_plugin = plugin_for_input_format('txt')
         for opt in txt_plugin.options:

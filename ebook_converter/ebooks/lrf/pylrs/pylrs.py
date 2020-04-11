@@ -47,14 +47,14 @@ from .pylrf import (LrfWriter, LrfObject, LrfTag, LrfToc,
         STREAM_COMPRESSED, LrfTagStream, LrfStreamBase, IMAGE_TYPE_ENCODING,
         BINDING_DIRECTION_ENCODING, LINE_TYPE_ENCODING, LrfFileStream,
         STREAM_FORCE_COMPRESSED)
-from calibre.utils.date import isoformat
+from ebook_converter.utils.date import isoformat
 
 DEFAULT_SOURCE_ENCODING = "cp1252"      # default is us-windows character set
 DEFAULT_GENREADING      = "fs"          # default is yes to both lrf and lrs
 
-from calibre import __appname__, __version__
-from calibre import entity_to_unicode
-from polyglot.builtins import string_or_bytes, unicode_type, iteritems, native_string_type
+from ebook_converter import __appname__, __version__
+from ebook_converter import entity_to_unicode
+from ebook_converter.polyglot.builtins import string_or_bytes, unicode_type, iteritems, native_string_type
 
 
 class LrsError(Exception):

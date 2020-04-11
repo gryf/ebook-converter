@@ -8,7 +8,7 @@ __docformat__ = 'restructuredtext en'
 Convert an ODT file into a Open Ebook
 '''
 
-from calibre.customize.conversion import InputFormatPlugin
+from ebook_converter.customize.conversion import InputFormatPlugin
 
 
 class ODTInput(InputFormatPlugin):
@@ -21,5 +21,5 @@ class ODTInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from calibre.ebooks.odt.input import Extract
+        from ebook_converter.ebooks.odt.input import Extract
         return Extract()(stream, '.', log)

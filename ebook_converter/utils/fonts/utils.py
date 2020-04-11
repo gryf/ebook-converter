@@ -10,7 +10,7 @@ import struct
 from io import BytesIO
 from collections import defaultdict
 
-from polyglot.builtins import iteritems, itervalues, unicode_type, range, as_bytes
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, range, as_bytes
 
 
 class UnsupportedFont(ValueError):
@@ -441,7 +441,7 @@ def get_font_for_text(text, candidate_font_data=None):
     if candidate_font_data is not None:
         ok = supports_text(candidate_font_data, text)
     if not ok:
-        from calibre.utils.fonts.scanner import font_scanner
+        from ebook_converter.utils.fonts.scanner import font_scanner
         family, faces = font_scanner.find_font_for_text(text)
         if faces:
             with lopen(faces[0]['path'], 'rb') as f:
@@ -450,7 +450,7 @@ def get_font_for_text(text, candidate_font_data=None):
 
 
 def test_glyph_ids():
-    from calibre.utils.fonts.free_type import FreeType
+    from ebook_converter.utils.fonts.free_type import FreeType
     data = P('fonts/liberation/LiberationSerif-Regular.ttf', data=True)
     ft = FreeType()
     font = ft.load_font(data)
@@ -470,7 +470,7 @@ def test_supports_text():
 
 
 def test_find_font():
-    from calibre.utils.fonts.scanner import font_scanner
+    from ebook_converter.utils.fonts.scanner import font_scanner
     abcd = '诶比西迪'
     family = font_scanner.find_font_for_text(abcd)[0]
     print('Family for Chinese text:', family)

@@ -5,9 +5,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from struct import unpack, error
 import os
-from calibre.utils.speedups import ReadOnlyFileBuffer
-from calibre.constants import ispy3
-from polyglot.builtins import string_or_bytes, unicode_type
+from ebook_converter.utils.speedups import ReadOnlyFileBuffer
+from ebook_converter.constants import ispy3
+from ebook_converter.polyglot.builtins import string_or_bytes, unicode_type
 
 """ Recognize image file formats and sizes based on their first few bytes."""
 

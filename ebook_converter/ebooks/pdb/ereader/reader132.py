@@ -14,12 +14,12 @@ import re
 import struct
 import zlib
 
-from calibre import CurrentDir
-from calibre.ebooks import DRMError
-from calibre.ebooks.metadata.opf2 import OPFCreator
-from calibre.ebooks.pdb.ereader import EreaderError
-from calibre.ebooks.pdb.formatreader import FormatReader
-from polyglot.builtins import unicode_type, range
+from ebook_converter import CurrentDir
+from ebook_converter.ebooks import DRMError
+from ebook_converter.ebooks.metadata.opf2 import OPFCreator
+from ebook_converter.ebooks.pdb.ereader import EreaderError
+from ebook_converter.ebooks.pdb.formatreader import FormatReader
+from ebook_converter.polyglot.builtins import unicode_type, range
 
 
 class HeaderRecord(object):
@@ -73,7 +73,7 @@ class Reader132(FormatReader):
             else:
                 raise EreaderError('Unknown book compression %i.' % self.header_record.compression)
 
-        from calibre.ebooks.metadata.pdb import get_metadata
+        from ebook_converter.ebooks.metadata.pdb import get_metadata
         self.mi = get_metadata(stream, False)
 
     def section_data(self, number):
@@ -81,7 +81,7 @@ class Reader132(FormatReader):
 
     def decompress_text(self, number):
         if self.header_record.compression == 2:
-            from calibre.ebooks.compression.palmdoc import decompress_doc
+            from ebook_converter.ebooks.compression.palmdoc import decompress_doc
             return decompress_doc(self.section_data(number)).decode('cp1252' if self.encoding is None else self.encoding, 'replace')
         if self.header_record.compression == 10:
             return zlib.decompress(self.section_data(number)).decode('cp1252' if self.encoding is None else self.encoding, 'replace')
@@ -106,8 +106,8 @@ class Reader132(FormatReader):
         return self.decompress_text(number)
 
     def extract_content(self, output_dir):
-        from calibre.ebooks.pml.pmlconverter import footnote_to_html, sidebar_to_html
-        from calibre.ebooks.pml.pmlconverter import PML_HTMLizer
+        from ebook_converter.ebooks.pml.pmlconverter import footnote_to_html, sidebar_to_html
+        from ebook_converter.ebooks.pml.pmlconverter import PML_HTMLizer
 
         output_dir = os.path.abspath(output_dir)
 

@@ -9,10 +9,10 @@ __docformat__ = 'restructuredtext en'
 import io
 import os
 
-from calibre.customize.conversion import OutputFormatPlugin, \
+from ebook_converter.customize.conversion import OutputFormatPlugin, \
     OptionRecommendation
-from calibre.ptempfile import TemporaryDirectory
-from polyglot.builtins import unicode_type
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class HTMLZOutput(OutputFormatPlugin):
@@ -59,20 +59,20 @@ class HTMLZOutput(OutputFormatPlugin):
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
         from lxml import etree
-        from calibre.ebooks.oeb.base import OEB_IMAGES, SVG_MIME
-        from calibre.ebooks.metadata.opf2 import OPF, metadata_to_opf
-        from calibre.utils.zipfile import ZipFile
-        from calibre.utils.filenames import ascii_filename
+        from ebook_converter.ebooks.oeb.base import OEB_IMAGES, SVG_MIME
+        from ebook_converter.ebooks.metadata.opf2 import OPF, metadata_to_opf
+        from ebook_converter.utils.zipfile import ZipFile
+        from ebook_converter.utils.filenames import ascii_filename
 
         # HTML
         if opts.htmlz_css_type == 'inline':
-            from calibre.ebooks.htmlz.oeb2html import OEB2HTMLInlineCSSizer
+            from ebook_converter.ebooks.htmlz.oeb2html import OEB2HTMLInlineCSSizer
             OEB2HTMLizer = OEB2HTMLInlineCSSizer
         elif opts.htmlz_css_type == 'tag':
-            from calibre.ebooks.htmlz.oeb2html import OEB2HTMLNoCSSizer
+            from ebook_converter.ebooks.htmlz.oeb2html import OEB2HTMLNoCSSizer
             OEB2HTMLizer = OEB2HTMLNoCSSizer
         else:
-            from calibre.ebooks.htmlz.oeb2html import OEB2HTMLClassCSSizer as OEB2HTMLizer
+            from ebook_converter.ebooks.htmlz.oeb2html import OEB2HTMLClassCSSizer as OEB2HTMLizer
 
         with TemporaryDirectory(u'_htmlz_output') as tdir:
             htmlizer = OEB2HTMLizer(log)
@@ -80,7 +80,7 @@ class HTMLZOutput(OutputFormatPlugin):
 
             fname = u'index'
             if opts.htmlz_title_filename:
-                from calibre.utils.filenames import shorten_components_to
+                from ebook_converter.utils.filenames import shorten_components_to
                 fname = shorten_components_to(100, (ascii_filename(unicode_type(oeb_book.metadata.title[0])),))[0]
             with open(os.path.join(tdir, fname+u'.html'), 'wb') as tf:
                 if isinstance(html, unicode_type):
@@ -115,7 +115,7 @@ class HTMLZOutput(OutputFormatPlugin):
                     term = oeb_book.metadata.cover[0].term
                     cover_data = oeb_book.guide[term].item.data
                 if cover_data:
-                    from calibre.utils.img import save_cover_data_to
+                    from ebook_converter.utils.img import save_cover_data_to
                     cover_path = os.path.join(tdir, u'cover.jpg')
                     with lopen(cover_path, 'w') as cf:
                         cf.write('')

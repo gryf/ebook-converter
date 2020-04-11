@@ -7,9 +7,9 @@ __docformat__ = 'restructuredtext en'
 import os, re
 
 
-from calibre.customize.conversion import (OutputFormatPlugin,
+from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
-from calibre import CurrentDir
+from ebook_converter import CurrentDir
 
 
 class OEBOutput(OutputFormatPlugin):
@@ -22,14 +22,14 @@ class OEBOutput(OutputFormatPlugin):
     recommendations = {('pretty_print', True, OptionRecommendation.HIGH)}
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
-        from polyglot.urllib import unquote
+        from ebook_converter.polyglot.urllib import unquote
         from lxml import etree
 
         self.log, self.opts = log, opts
         if not os.path.exists(output_path):
             os.makedirs(output_path)
-        from calibre.ebooks.oeb.base import OPF_MIME, NCX_MIME, PAGE_MAP_MIME, OEB_STYLES
-        from calibre.ebooks.oeb.normalize_css import condense_sheet
+        from ebook_converter.ebooks.oeb.base import OPF_MIME, NCX_MIME, PAGE_MAP_MIME, OEB_STYLES
+        from ebook_converter.ebooks.oeb.normalize_css import condense_sheet
         with CurrentDir(output_path):
             results = oeb_book.to_opf2(page_map=True)
             for key in (OPF_MIME, NCX_MIME, PAGE_MAP_MIME):
@@ -89,7 +89,7 @@ class OEBOutput(OutputFormatPlugin):
                     self.log.warn('The cover image has an id != "cover". Renaming'
                             ' to work around bug in Nook Color')
 
-                    from calibre.ebooks.oeb.base import uuid_id
+                    from ebook_converter.ebooks.oeb.base import uuid_id
                     newid = uuid_id()
 
                     for item in manifest_items_with_id('cover'):
@@ -114,7 +114,7 @@ class OEBOutput(OutputFormatPlugin):
     # }}}
 
     def migrate_lang_code(self, root):  # {{{
-        from calibre.utils.localization import lang_as_iso639_1
+        from ebook_converter.utils.localization import lang_as_iso639_1
         for lang in root.xpath('//*[local-name() = "language"]'):
             clc = lang_as_iso639_1(lang.text)
             if clc:

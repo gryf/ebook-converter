@@ -13,9 +13,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 #########################################################################
 import sys, os
 
-from calibre.ebooks.rtf2xml import copy, border_parse
-from calibre.ptempfile import better_mktemp
-from polyglot.builtins import unicode_type
+from ebook_converter.ebooks.rtf2xml import copy, border_parse
+from ebook_converter.ptempfile import better_mktemp
+from ebook_converter.polyglot.builtins import unicode_type
 
 from . import open_for_read, open_for_write
 

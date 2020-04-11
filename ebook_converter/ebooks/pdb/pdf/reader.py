@@ -10,9 +10,9 @@ __copyright__ = '2010, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 
 
-from calibre.ebooks.pdb.formatreader import FormatReader
-from calibre.ptempfile import PersistentTemporaryFile
-from polyglot.builtins import range
+from ebook_converter.ebooks.pdb.formatreader import FormatReader
+from ebook_converter.ptempfile import PersistentTemporaryFile
+from ebook_converter.polyglot.builtins import range
 
 
 class Reader(FormatReader):
@@ -33,7 +33,7 @@ class Reader(FormatReader):
             pdf.write(self.header.section_data(x))
         pdf.close()
 
-        from calibre.customize.ui import plugin_for_input_format
+        from ebook_converter.customize.ui import plugin_for_input_format
 
         pdf_plugin = plugin_for_input_format('pdf')
         for opt in pdf_plugin.options:

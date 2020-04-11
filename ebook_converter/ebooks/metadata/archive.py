@@ -9,9 +9,9 @@ __docformat__ = 'restructuredtext en'
 import os
 from contextlib import closing
 
-from calibre.customize import FileTypePlugin
-from calibre.utils.localization import canonicalize_lang
-from polyglot.builtins import filter, unicode_type
+from ebook_converter.customize import FileTypePlugin
+from ebook_converter.utils.localization import canonicalize_lang
+from ebook_converter.polyglot.builtins import filter, unicode_type
 
 
 def is_comic(list_of_names):
@@ -22,7 +22,7 @@ def is_comic(list_of_names):
 
 
 def archive_type(stream):
-    from calibre.utils.zipfile import stringFileHeader
+    from ebook_converter.utils.zipfile import stringFileHeader
     try:
         pos = stream.tell()
     except:
@@ -51,7 +51,7 @@ class KPFExtract(FileTypePlugin):
     on_import = True
 
     def run(self, archive):
-        from calibre.utils.zipfile import ZipFile
+        from ebook_converter.utils.zipfile import ZipFile
         with ZipFile(archive, 'r') as zf:
             fnames = zf.namelist()
             candidates = [x for x in fnames if x.lower().endswith('.docx')]
@@ -74,10 +74,10 @@ class ArchiveExtract(FileTypePlugin):
     on_import = True
 
     def run(self, archive):
-        from calibre.utils.zipfile import ZipFile
+        from ebook_converter.utils.zipfile import ZipFile
         is_rar = archive.lower().endswith('.rar')
         if is_rar:
-            from calibre.utils.unrar import extract_member, names
+            from ebook_converter.utils.unrar import extract_member, names
         else:
             zf = ZipFile(archive, 'r')
 
@@ -166,7 +166,7 @@ def get_comic_book_info(d, mi, series_index='volume'):
         mi.comments = comments.strip()
     pubm, puby = d.get('publicationMonth', None), d.get('publicationYear', None)
     if puby is not None:
-        from calibre.utils.date import parse_only_date
+        from ebook_converter.utils.date import parse_only_date
         from datetime import date
         try:
             dt = date(puby, 6 if pubm is None else pubm, 15)
@@ -178,7 +178,7 @@ def get_comic_book_info(d, mi, series_index='volume'):
 
 def parse_comic_comment(comment, series_index='volume'):
     # See http://code.google.com/p/comicbookinfo/wiki/Example
-    from calibre.ebooks.metadata import MetaInformation
+    from ebook_converter.ebooks.metadata import MetaInformation
     import json
     mi = MetaInformation(None, None)
     m = json.loads(comment)
@@ -193,11 +193,11 @@ def parse_comic_comment(comment, series_index='volume'):
 def get_comic_metadata(stream, stream_type, series_index='volume'):
     comment = None
     if stream_type == 'cbz':
-        from calibre.utils.zipfile import ZipFile
+        from ebook_converter.utils.zipfile import ZipFile
         zf = ZipFile(stream)
         comment = zf.comment
     elif stream_type == 'cbr':
-        from calibre.utils.unrar import comment as get_comment
+        from ebook_converter.utils.unrar import comment as get_comment
         comment = get_comment(stream)
 
     return parse_comic_comment(comment or b'{}', series_index=series_index)

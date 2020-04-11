@@ -7,16 +7,17 @@ __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 import sys
-from polyglot.builtins import filter
+import unicodedata
+from ebook_converter.polyglot.builtins import filter
 
 is_narrow_build = sys.maxunicode < 0x10ffff
 
 # Setup code {{{
 import codecs
 
-from calibre.constants import plugins
-from calibre.utils.config_base import tweaks
-from polyglot.builtins import unicode_type, cmp
+from ebook_converter.constants import plugins
+from ebook_converter.utils.config_base import tweaks
+from ebook_converter.polyglot.builtins import unicode_type, cmp
 
 _locale = _collator = _primary_collator = _sort_collator = _numeric_collator = _case_sensitive_collator = None
 cmp
@@ -25,44 +26,44 @@ _none = u''
 _none2 = b''
 _cmap = {}
 
-_icu, err = plugins['icu']
+_icu, err = 1, None  # plugins['icu']
 if _icu is None:
     raise RuntimeError('Failed to load icu with error: %s' % err)
 del err
-icu_unicode_version = getattr(_icu, 'unicode_version', None)
-_nmodes = {m:getattr(_icu, m) for m in ('NFC', 'NFD', 'NFKC', 'NFKD')}
+#icu_unicode_version = getattr(_icu, 'unicode_version', None)
+# _nmodes = {m:getattr(_icu, m) for m in ('NFC', 'NFD', 'NFKC', 'NFKD')}
 
 # Ensure that the python internal filesystem and default encodings are not ASCII
 
 
-def is_ascii(name):
-    try:
-        return codecs.lookup(name).name == b'ascii'
-    except (TypeError, LookupError):
-        return True
-
-
-try:
-    if is_ascii(sys.getdefaultencoding()):
-        _icu.set_default_encoding(b'utf-8')
-except:
-    import traceback
-    traceback.print_exc()
-
-try:
-    if is_ascii(sys.getfilesystemencoding()):
-        _icu.set_filesystem_encoding(b'utf-8')
-except:
-    import traceback
-    traceback.print_exc()
-del is_ascii
+#def is_ascii(name):
+#    try:
+#        return codecs.lookup(name).name == b'ascii'
+#    except (TypeError, LookupError):
+#        return True
+#
+#
+#try:
+#    if is_ascii(sys.getdefaultencoding()):
+#        _icu.set_default_encoding(b'utf-8')
+#except:
+#    import traceback
+#    traceback.print_exc()
+#
+#try:
+#    if is_ascii(sys.getfilesystemencoding()):
+#        _icu.set_filesystem_encoding(b'utf-8')
+#except:
+#    import traceback
+#    traceback.print_exc()
+#del is_ascii
 
 
 def collator():
     global _collator, _locale
     if _collator is None:
         if _locale is None:
-            from calibre.utils.localization import get_lang
+            from ebook_converter.utils.localization import get_lang
             if tweaks['locale_for_sorting']:
                 _locale = tweaks['locale_for_sorting']
             else:
@@ -248,9 +249,9 @@ startswith = _make_func(_strcmp_template, 'startswith', collator='_collator', co
 
 primary_startswith = _make_func(_strcmp_template, 'primary_startswith', collator='_primary_collator', collator_func='primary_collator', func='startswith')
 
-safe_chr = _icu.chr
+safe_chr = chr  # _icu.chr
 
-ord_string = _icu.ord_string
+ord_string = str  # _icu.ord_string
 
 
 def character_name(string):
@@ -272,7 +273,8 @@ def normalize(text, mode='NFC'):
     # that unless you have very good reasons not too. Also, it's speed
     # decreases on wide python builds, where conversion to/from ICU's string
     # representation is slower.
-    return _icu.normalize(_nmodes[mode], unicode_type(text))
+    # return _icu.normalize(_nmodes[mode], unicode_type(text))
+    return unicode.normalize(mode, unicode_type(text))
 
 
 def contractions(col=None):
@@ -311,13 +313,13 @@ def partition_by_first_letter(items, reverse=False, key=lambda x:x):
 
 
 # Return the number of unicode codepoints in a string
-string_length = _icu.string_length if is_narrow_build else len
+string_length = len  #_icu.string_length if is_narrow_build else len
 
 # Return the number of UTF-16 codepoints in a string
-utf16_length = len if is_narrow_build else _icu.utf16_length
+utf16_length = len  # if is_narrow_build else _icu.utf16_length
 
 ################################################################################
 
-if __name__ == '__main__':
-    from calibre.utils.icu_test import run
-    run(verbosity=4)
+# if __name__ == '__main__':
+    # from ebook_converter.utils.icu_test import run
+    # run(verbosity=4)

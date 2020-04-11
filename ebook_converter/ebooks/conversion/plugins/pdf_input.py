@@ -7,8 +7,8 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre.customize.conversion import InputFormatPlugin, OptionRecommendation
-from polyglot.builtins import as_bytes, getcwd
+from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from ebook_converter.polyglot.builtins import as_bytes, getcwd
 
 
 class PDFInput(InputFormatPlugin):
@@ -31,9 +31,9 @@ class PDFInput(InputFormatPlugin):
     }
 
     def convert_new(self, stream, accelerators):
-        from calibre.ebooks.pdf.pdftohtml import pdftohtml
-        from calibre.utils.cleantext import clean_ascii_chars
-        from calibre.ebooks.pdf.reflow import PDFDocument
+        from ebook_converter.ebooks.pdf.pdftohtml import pdftohtml
+        from ebook_converter.utils.cleantext import clean_ascii_chars
+        from ebook_converter.ebooks.pdf.reflow import PDFDocument
 
         pdftohtml(getcwd(), stream.name, self.opts.no_images, as_xml=True)
         with lopen('index.xml', 'rb') as f:
@@ -43,8 +43,8 @@ class PDFInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from calibre.ebooks.metadata.opf2 import OPFCreator
-        from calibre.ebooks.pdf.pdftohtml import pdftohtml
+        from ebook_converter.ebooks.metadata.opf2 import OPFCreator
+        from ebook_converter.ebooks.pdf.pdftohtml import pdftohtml
 
         log.debug('Converting file to html...')
         # The main html file will be named index.html
@@ -53,7 +53,7 @@ class PDFInput(InputFormatPlugin):
             return self.convert_new(stream, accelerators)
         pdftohtml(getcwd(), stream.name, options.no_images)
 
-        from calibre.ebooks.metadata.meta import get_metadata
+        from ebook_converter.ebooks.metadata.meta import get_metadata
         log.debug('Retrieving document metadata...')
         mi = get_metadata(stream, 'pdf')
         opf = OPFCreator(getcwd(), mi)

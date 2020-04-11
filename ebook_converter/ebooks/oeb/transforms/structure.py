@@ -11,10 +11,10 @@ import re, uuid
 from lxml import etree
 from collections import OrderedDict, Counter
 
-from calibre.ebooks.oeb.base import XPNSMAP, TOC, XHTML, xml2text, barename
-from calibre.ebooks import ConversionError
-from polyglot.builtins import itervalues, unicode_type
-from polyglot.urllib import urlparse
+from ebook_converter.ebooks.oeb.base import XPNSMAP, TOC, XHTML, xml2text, barename
+from ebook_converter.ebooks import ConversionError
+from ebook_converter.polyglot.builtins import itervalues, unicode_type
+from ebook_converter.polyglot.urllib import urlparse
 
 
 def XPath(x):

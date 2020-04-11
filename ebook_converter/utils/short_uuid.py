@@ -9,7 +9,7 @@ Generate UUID encoded using a user specified alphabet.
 
 import string, math, uuid as _uuid
 
-from polyglot.builtins import unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 def num_to_string(number, alphabet, alphabet_len, pad_to_length=None):

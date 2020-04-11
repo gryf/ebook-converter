@@ -7,8 +7,8 @@ __docformat__ = 'restructuredtext en'
 import os, re, posixpath
 from itertools import cycle
 
-from calibre.customize.conversion import InputFormatPlugin, OptionRecommendation
-from polyglot.builtins import getcwd
+from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from ebook_converter.polyglot.builtins import getcwd
 
 ADOBE_OBFUSCATION =  'http://ns.adobe.com/pdf/enc#RC'
 IDPF_OBFUSCATION = 'http://www.idpf.org/2008/embedding'
@@ -101,7 +101,7 @@ class EPUBInput(InputFormatPlugin):
     def rationalize_cover3(self, opf, log):
         ''' If there is a reference to the cover/titlepage via manifest properties, convert to
         entries in the <guide> so that the rest of the pipeline picks it up. '''
-        from calibre.ebooks.metadata.opf3 import items_with_property
+        from ebook_converter.ebooks.metadata.opf3 import items_with_property
         removed = guide_titlepage_href = guide_titlepage_id = None
 
         # Look for titlepages incorrectly marked in the <guide> as covers
@@ -150,7 +150,7 @@ class EPUBInput(InputFormatPlugin):
         means, at most one entry with type="cover" that points to a raster
         cover and at most one entry with type="titlepage" that points to an
         HTML titlepage. '''
-        from calibre.ebooks.oeb.base import OPF
+        from ebook_converter.ebooks.oeb.base import OPF
         removed = None
         from lxml import etree
         guide_cover, guide_elem = None, None
@@ -215,7 +215,7 @@ class EPUBInput(InputFormatPlugin):
             guide_elem.set('href', raster_cover)
         else:
             # Render the titlepage to create a raster cover
-            from calibre.ebooks import render_html_svg_workaround
+            from ebook_converter.ebooks import render_html_svg_workaround
             guide_elem.set('href', 'calibre_raster_cover.jpg')
             t = etree.SubElement(
                 elem[0].getparent(), OPF('item'), href=guide_elem.get('href'), id='calibre_raster_cover')
@@ -231,7 +231,7 @@ class EPUBInput(InputFormatPlugin):
         return removed
 
     def find_opf(self):
-        from calibre.utils.xml_parse import safe_xml_fromstring
+        from ebook_converter.utils.xml_parse import safe_xml_fromstring
 
         def attr(n, attr):
             for k, v in n.attrib.items():
@@ -254,17 +254,17 @@ class EPUBInput(InputFormatPlugin):
             traceback.print_exc()
 
     def convert(self, stream, options, file_ext, log, accelerators):
-        from calibre.utils.zipfile import ZipFile
-        from calibre import walk
-        from calibre.ebooks import DRMError
-        from calibre.ebooks.metadata.opf2 import OPF
+        from ebook_converter.utils.zipfile import ZipFile
+        from ebook_converter import walk
+        from ebook_converter.ebooks import DRMError
+        from ebook_converter.ebooks.metadata.opf2 import OPF
         try:
             zf = ZipFile(stream)
             zf.extractall(getcwd())
         except:
             log.exception('EPUB appears to be invalid ZIP file, trying a'
                     ' more forgiving ZIP parser')
-            from calibre.utils.localunzip import extractall
+            from ebook_converter.utils.localunzip import extractall
             stream.seek(0)
             extractall(stream)
         encfile = os.path.abspath(os.path.join('META-INF', 'encryption.xml'))
@@ -352,11 +352,11 @@ class EPUBInput(InputFormatPlugin):
 
     def convert_epub3_nav(self, nav_path, opf, log, opts):
         from lxml import etree
-        from calibre.ebooks.chardet import xml_to_unicode
-        from calibre.ebooks.oeb.polish.parsing import parse
-        from calibre.ebooks.oeb.base import EPUB_NS, XHTML, NCX_MIME, NCX, urlnormalize, urlunquote, serialize
-        from calibre.ebooks.oeb.polish.toc import first_child
-        from calibre.utils.xml_parse import safe_xml_fromstring
+        from ebook_converter.ebooks.chardet import xml_to_unicode
+        from ebook_converter.ebooks.oeb.polish.parsing import parse
+        from ebook_converter.ebooks.oeb.base import EPUB_NS, XHTML, NCX_MIME, NCX, urlnormalize, urlunquote, serialize
+        from ebook_converter.ebooks.oeb.polish.toc import first_child
+        from ebook_converter.utils.xml_parse import safe_xml_fromstring
         from tempfile import NamedTemporaryFile
         with lopen(nav_path, 'rb') as f:
             raw = f.read()

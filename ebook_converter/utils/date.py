@@ -10,11 +10,11 @@ import re
 from datetime import datetime, time as dtime, timedelta, MINYEAR, MAXYEAR
 from functools import partial
 
-from calibre import strftime
-from calibre.constants import iswindows, isosx, plugins, preferred_encoding
-from calibre.utils.iso8601 import utc_tz, local_tz, UNDEFINED_DATE
-from calibre.utils.localization import lcdata
-from polyglot.builtins import unicode_type, native_string_type
+from ebook_converter import strftime
+from ebook_converter.constants import iswindows, isosx, plugins, preferred_encoding
+from ebook_converter.utils.iso8601 import utc_tz, local_tz, UNDEFINED_DATE
+from ebook_converter.utils.localization import lcdata
+from ebook_converter.polyglot.builtins import unicode_type, native_string_type
 
 _utc_tz = utc_tz
 _local_tz = local_tz

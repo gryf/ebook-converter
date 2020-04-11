@@ -1,8 +1,8 @@
 from __future__ import unicode_literals, absolute_import, print_function, division
 import os, sys
 
-from calibre.ebooks.rtf2xml import copy, check_encoding
-from calibre.ptempfile import better_mktemp
+from ebook_converter.ebooks.rtf2xml import copy, check_encoding
+from ebook_converter.ptempfile import better_mktemp
 from . import open_for_read, open_for_write
 
 public_dtd = 'rtf2xml1.0.dtd'

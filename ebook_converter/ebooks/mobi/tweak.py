@@ -8,17 +8,17 @@ __docformat__ = 'restructuredtext en'
 
 import os, glob
 
-from calibre import CurrentDir
-from calibre.ebooks.mobi import MobiError
-from calibre.ebooks.mobi.reader.mobi6 import MobiReader
-from calibre.ebooks.mobi.reader.headers import MetadataHeader
-from calibre.utils.logging import default_log
-from calibre.ebooks import DRMError
-from calibre.ebooks.mobi.reader.mobi8 import Mobi8Reader
-from calibre.ebooks.conversion.plumber import Plumber, create_oebbook
-from calibre.customize.ui import (plugin_for_input_format,
+from ebook_converter import CurrentDir
+from ebook_converter.ebooks.mobi import MobiError
+from ebook_converter.ebooks.mobi.reader.mobi6 import MobiReader
+from ebook_converter.ebooks.mobi.reader.headers import MetadataHeader
+from ebook_converter.utils.logging import default_log
+from ebook_converter.ebooks import DRMError
+from ebook_converter.ebooks.mobi.reader.mobi8 import Mobi8Reader
+from ebook_converter.ebooks.conversion.plumber import Plumber, create_oebbook
+from ebook_converter.customize.ui import (plugin_for_input_format,
         plugin_for_output_format)
-from calibre.utils.ipc.simple_worker import fork_job
+from ebook_converter.utils.ipc.simple_worker import fork_job
 
 
 class BadFormat(ValueError):
@@ -70,7 +70,7 @@ def explode(path, dest, question=lambda x:True):
                 'sure?')):
                 return None
 
-    return fork_job('calibre.ebooks.mobi.tweak', 'do_explode', args=(path,
+    return fork_job('ebook_converter.ebooks.mobi.tweak', 'do_explode', args=(path,
             dest), no_output=True)['result']
 
 
@@ -104,6 +104,6 @@ def rebuild(src_dir, dest_path):
     # For debugging, uncomment the following two lines
     # def fork_job(a, b, args=None, no_output=True):
     #     do_rebuild(*args)
-    fork_job('calibre.ebooks.mobi.tweak', 'do_rebuild', args=(opf, dest_path),
+    fork_job('ebook_converter.ebooks.mobi.tweak', 'do_rebuild', args=(opf, dest_path),
             no_output=True)
 

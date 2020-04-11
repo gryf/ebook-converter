@@ -11,24 +11,24 @@ from collections import defaultdict
 
 from lxml import etree
 
-from calibre.ebooks.oeb.base import OPF1_NS, OPF2_NS, OPF2_NSMAP, DC11_NS, \
+from ebook_converter.ebooks.oeb.base import OPF1_NS, OPF2_NS, OPF2_NSMAP, DC11_NS, \
     DC_NSES, OPF, xml2text, XHTML_MIME
-from calibre.ebooks.oeb.base import OEB_DOCS, OEB_STYLES, OEB_IMAGES, \
+from ebook_converter.ebooks.oeb.base import OEB_DOCS, OEB_STYLES, OEB_IMAGES, \
     PAGE_MAP_MIME, JPEG_MIME, NCX_MIME, SVG_MIME
-from calibre.ebooks.oeb.base import XMLDECL_RE, COLLAPSE_RE, \
+from ebook_converter.ebooks.oeb.base import XMLDECL_RE, COLLAPSE_RE, \
     MS_COVER_TYPE, iterlinks
-from calibre.ebooks.oeb.base import namespace, barename, XPath, xpath, \
+from ebook_converter.ebooks.oeb.base import namespace, barename, XPath, xpath, \
                                     urlnormalize, BINARY_MIME, \
                                     OEBError, OEBBook, DirContainer
-from calibre.ebooks.oeb.writer import OEBWriter
-from calibre.utils.xml_parse import safe_xml_fromstring
-from calibre.utils.cleantext import clean_xml_chars
-from calibre.utils.localization import get_lang
-from calibre.ptempfile import TemporaryDirectory
-from calibre.constants import __appname__, __version__
-from calibre import guess_type, xml_replace_entities
-from polyglot.builtins import unicode_type, zip
-from polyglot.urllib import unquote, urldefrag, urlparse
+from ebook_converter.ebooks.oeb.writer import OEBWriter
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.utils.cleantext import clean_xml_chars
+from ebook_converter.utils.localization import get_lang
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.constants import __appname__, __version__
+from ebook_converter import guess_type, xml_replace_entities
+from ebook_converter.polyglot.builtins import unicode_type, zip
+from ebook_converter.polyglot.urllib import unquote, urldefrag, urlparse
 
 __all__ = ['OEBReader']
 
@@ -129,8 +129,8 @@ class OEBReader(object):
         return opf
 
     def _metadata_from_opf(self, opf):
-        from calibre.ebooks.metadata.opf2 import OPF
-        from calibre.ebooks.oeb.transforms.metadata import meta_info_to_oeb_metadata
+        from ebook_converter.ebooks.metadata.opf2 import OPF
+        from ebook_converter.ebooks.oeb.transforms.metadata import meta_info_to_oeb_metadata
         stream = io.BytesIO(etree.tostring(opf, xml_declaration=True, encoding='utf-8'))
         o = OPF(stream)
         pwm = o.primary_writing_mode
@@ -621,7 +621,7 @@ class OEBReader(object):
         return
 
     def _cover_from_html(self, hcover):
-        from calibre.ebooks import render_html_svg_workaround
+        from ebook_converter.ebooks import render_html_svg_workaround
         with TemporaryDirectory('_html_cover') as tdir:
             writer = OEBWriter()
             writer(self.oeb, tdir)

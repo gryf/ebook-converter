@@ -10,9 +10,9 @@ Decode unicode text to an ASCII representation of the text in Vietnamese.
 
 '''
 
-from calibre.ebooks.unihandecode.unidecoder import Unidecoder
-from calibre.ebooks.unihandecode.vncodepoints import CODEPOINTS as HANCODES
-from calibre.ebooks.unihandecode.unicodepoints import CODEPOINTS
+from ebook_converter.ebooks.unihandecode.unidecoder import Unidecoder
+from ebook_converter.ebooks.unihandecode.vncodepoints import CODEPOINTS as HANCODES
+from ebook_converter.ebooks.unihandecode.unicodepoints import CODEPOINTS
 
 
 class Vndecoder(Unidecoder):

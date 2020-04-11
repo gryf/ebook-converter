@@ -5,7 +5,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-from polyglot.builtins import native_string_type
+from ebook_converter.polyglot.builtins import native_string_type
 
 
 class ConversionUserFeedBack(Exception):
@@ -27,4 +27,4 @@ class ConversionUserFeedBack(Exception):
 
 # Ensure exception uses fully qualified name as this is used to detect it in
 # the GUI.
-ConversionUserFeedBack.__name__ = native_string_type('calibre.ebooks.conversion.ConversionUserFeedBack')
+ConversionUserFeedBack.__name__ = native_string_type('ebook_converter.ebooks.conversion.ConversionUserFeedBack')

@@ -14,8 +14,8 @@ import re
 import operator
 import string
 
-from css_selectors.errors import SelectorSyntaxError, ExpressionError
-from polyglot.builtins import unicode_type, codepoint_to_chr, range
+from ebook_converter.css_selectors.errors import SelectorSyntaxError, ExpressionError
+from ebook_converter.polyglot.builtins import unicode_type, codepoint_to_chr, range
 
 
 utab = {c:c+32 for c in range(ord(u'A'), ord(u'Z')+1)}

@@ -6,9 +6,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 __license__   = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
-from calibre.ebooks.oeb.base import CSS_MIME, OEB_DOCS
-from calibre.ebooks.oeb.base import urlnormalize, iterlinks
-from polyglot.urllib import urldefrag
+from ebook_converter.ebooks.oeb.base import CSS_MIME, OEB_DOCS
+from ebook_converter.ebooks.oeb.base import urlnormalize, iterlinks
+from ebook_converter.polyglot.urllib import urldefrag
 
 
 class ManifestTrimmer(object):

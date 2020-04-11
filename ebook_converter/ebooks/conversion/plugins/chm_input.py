@@ -7,10 +7,10 @@ __copyright__  = '2008, Kovid Goyal <kovid at kovidgoyal.net>,' \
 
 import os
 
-from calibre.customize.conversion import InputFormatPlugin
-from calibre.ptempfile import TemporaryDirectory
-from calibre.constants import filesystem_encoding
-from polyglot.builtins import unicode_type, as_bytes
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.constants import filesystem_encoding
+from ebook_converter.polyglot.builtins import unicode_type, as_bytes
 
 
 class CHMInput(InputFormatPlugin):
@@ -22,7 +22,7 @@ class CHMInput(InputFormatPlugin):
     commit_name = 'chm_input'
 
     def _chmtohtml(self, output_dir, chm_path, no_images, log, debug_dump=False):
-        from calibre.ebooks.chm.reader import CHMReader
+        from ebook_converter.ebooks.chm.reader import CHMReader
         log.debug('Opening CHM file')
         rdr = CHMReader(chm_path, log, input_encoding=self.opts.input_encoding)
         log.debug('Extracting CHM to %s' % output_dir)
@@ -31,8 +31,8 @@ class CHMInput(InputFormatPlugin):
         return rdr.hhc_path
 
     def convert(self, stream, options, file_ext, log, accelerators):
-        from calibre.ebooks.chm.metadata import get_metadata_from_reader
-        from calibre.customize.ui import plugin_for_input_format
+        from ebook_converter.ebooks.chm.metadata import get_metadata_from_reader
+        from ebook_converter.customize.ui import plugin_for_input_format
         self.opts = options
 
         log.debug('Processing CHM...')
@@ -62,12 +62,12 @@ class CHMInput(InputFormatPlugin):
                 metadata = get_metadata_from_reader(self._chm_reader)
             except Exception:
                 log.exception('Failed to read metadata, using filename')
-                from calibre.ebooks.metadata.book.base import Metadata
+                from ebook_converter.ebooks.metadata.book.base import Metadata
                 metadata = Metadata(os.path.basename(chm_name))
             encoding = self._chm_reader.get_encoding() or options.input_encoding or 'cp1252'
             self._chm_reader.CloseCHM()
             # print((tdir, mainpath))
-            # from calibre import ipython
+            # from ebook_converter import ipython
             # ipython()
 
             options.debug_pipeline = None
@@ -85,7 +85,7 @@ class CHMInput(InputFormatPlugin):
         return oeb
 
     def parse_html_toc(self, item):
-        from calibre.ebooks.oeb.base import TOC, XPath
+        from ebook_converter.ebooks.oeb.base import TOC, XPath
         dx = XPath('./h:div')
         ax = XPath('./h:a[1]')
 
@@ -102,7 +102,7 @@ class CHMInput(InputFormatPlugin):
 
     def _create_oebbook_html(self, htmlpath, basedir, opts, log, mi):
         # use HTMLInput plugin to generate book
-        from calibre.customize.builtins import HTMLInput
+        from ebook_converter.customize.builtins import HTMLInput
         opts.breadth_first = True
         htmlinput = HTMLInput(None)
         oeb = htmlinput.create_oebbook(htmlpath, basedir, opts, log, mi)
@@ -110,9 +110,9 @@ class CHMInput(InputFormatPlugin):
 
     def _create_html_root(self, hhcpath, log, encoding):
         from lxml import html
-        from polyglot.urllib import unquote as _unquote
-        from calibre.ebooks.oeb.base import urlquote
-        from calibre.ebooks.chardet import xml_to_unicode
+        from ebook_converter.polyglot.urllib import unquote as _unquote
+        from ebook_converter.ebooks.oeb.base import urlquote
+        from ebook_converter.ebooks.chardet import xml_to_unicode
         hhcdata = self._read_file(hhcpath)
         hhcdata = hhcdata.decode(encoding)
         hhcdata = xml_to_unicode(hhcdata, verbose=True,
@@ -179,7 +179,7 @@ class CHMInput(InputFormatPlugin):
         return data
 
     def add_node(self, node, toc, ancestor_map):
-        from calibre.ebooks.chm.reader import match_string
+        from ebook_converter.ebooks.chm.reader import match_string
         if match_string(node.attrib.get('type', ''), 'text/sitemap'):
             p = node.xpath('ancestor::ul[1]/ancestor::li[1]/object[1]')
             parent = p[0] if p else None
@@ -194,7 +194,7 @@ class CHMInput(InputFormatPlugin):
             ancestor_map[node] = child
 
     def _process_nodes(self, root):
-        from calibre.ebooks.oeb.base import TOC
+        from ebook_converter.ebooks.oeb.base import TOC
         toc = TOC()
         ancestor_map = {}
         for node in root.xpath('//object'):

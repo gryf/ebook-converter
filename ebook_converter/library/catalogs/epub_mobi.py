@@ -9,14 +9,14 @@ __docformat__ = 'restructuredtext en'
 import datetime, os, time
 from collections import namedtuple
 
-from calibre import strftime
-from calibre.customize import CatalogPlugin
-from calibre.customize.conversion import OptionRecommendation, DummyReporter
-from calibre.library import current_library_name
-from calibre.library.catalogs import AuthorSortMismatchException, EmptyCatalogException
-from calibre.ptempfile import PersistentTemporaryFile
-from calibre.utils.localization import calibre_langcode_to_name, canonicalize_lang, get_lang
-from polyglot.builtins import unicode_type
+from ebook_converter import strftime
+from ebook_converter.customize import CatalogPlugin
+from ebook_converter.customize.conversion import OptionRecommendation, DummyReporter
+from ebook_converter.library import current_library_name
+from ebook_converter.library.catalogs import AuthorSortMismatchException, EmptyCatalogException
+from ebook_converter.ptempfile import PersistentTemporaryFile
+from ebook_converter.utils.localization import calibre_langcode_to_name, canonicalize_lang, get_lang
+from ebook_converter.polyglot.builtins import unicode_type
 
 Option = namedtuple('Option', 'option, default, dest, action, help')
 
@@ -191,9 +191,9 @@ class EPUB_MOBI(CatalogPlugin):
     # }}}
 
     def run(self, path_to_output, opts, db, notification=DummyReporter()):
-        from calibre.library.catalogs.epub_mobi_builder import CatalogBuilder
-        from calibre.utils.logging import default_log as log
-        from calibre.utils.config import JSONConfig
+        from ebook_converter.library.catalogs.epub_mobi_builder import CatalogBuilder
+        from ebook_converter.utils.logging import default_log as log
+        from ebook_converter.utils.config import JSONConfig
 
         # If preset specified from the cli, insert stored options from JSON file
         if hasattr(opts, 'preset') and opts.preset:
@@ -465,7 +465,7 @@ class EPUB_MOBI(CatalogPlugin):
                 recommendations.append(('cover', cpath, OptionRecommendation.HIGH))
                 log.info("using existing catalog cover")
             else:
-                from calibre.ebooks.covers import calibre_cover2
+                from ebook_converter.ebooks.covers import calibre_cover2
                 log.info("replacing catalog cover")
                 new_cover_path = PersistentTemporaryFile(suffix='.jpg')
                 new_cover = calibre_cover2(opts.catalog_title, 'calibre')
@@ -474,7 +474,7 @@ class EPUB_MOBI(CatalogPlugin):
                 recommendations.append(('cover', new_cover_path.name, OptionRecommendation.HIGH))
 
             # Run ebook-convert
-            from calibre.ebooks.conversion.plumber import Plumber
+            from ebook_converter.ebooks.conversion.plumber import Plumber
             plumber = Plumber(os.path.join(catalog.catalog_path, opts.basename + '.opf'),
                             path_to_output, log, report_progress=notification,
                             abort_after_input_dump=False)
@@ -487,9 +487,9 @@ class EPUB_MOBI(CatalogPlugin):
                 pass
 
             if GENERATE_DEBUG_EPUB:
-                from calibre.ebooks.epub import initialize_container
-                from calibre.ebooks.tweak import zip_rebuilder
-                from calibre.utils.zipfile import ZipFile
+                from ebook_converter.ebooks.epub import initialize_container
+                from ebook_converter.ebooks.tweak import zip_rebuilder
+                from ebook_converter.utils.zipfile import ZipFile
                 input_path = os.path.join(catalog_debug_path, 'input')
                 epub_shell = os.path.join(catalog_debug_path, 'epub_shell.zip')
                 initialize_container(epub_shell, opf_name='content.opf')

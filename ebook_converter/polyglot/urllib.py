@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import
 
-from polyglot.builtins import is_py3
+from ebook_converter.polyglot.builtins import is_py3
 
 if is_py3:
     from urllib.request import (build_opener, getproxies, install_opener,  # noqa

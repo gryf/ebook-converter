@@ -5,13 +5,13 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import os, re, collections
 
-from calibre.utils.config import prefs
-from calibre.constants import filesystem_encoding
-from calibre.ebooks.metadata.opf2 import OPF
-from calibre import isbytestring
-from calibre.customize.ui import get_file_type_metadata, set_file_type_metadata
-from calibre.ebooks.metadata import MetaInformation, string_to_authors
-from polyglot.builtins import getcwd, unicode_type
+from ebook_converter.utils.config import prefs
+from ebook_converter.constants import filesystem_encoding
+from ebook_converter.ebooks.metadata.opf2 import OPF
+from ebook_converter import isbytestring
+from ebook_converter.customize.ui import get_file_type_metadata, set_file_type_metadata
+from ebook_converter.ebooks.metadata import MetaInformation, string_to_authors
+from ebook_converter.polyglot.builtins import getcwd, unicode_type
 
 # The priorities for loading metadata from different file types
 # Higher values should be used to update metadata from lower values
@@ -184,7 +184,7 @@ def metadata_from_filename(name, pat=None, fallback_pat=None):
         try:
             pubdate = match.group('published')
             if pubdate:
-                from calibre.utils.date import parse_only_date
+                from ebook_converter.utils.date import parse_only_date
                 mi.pubdate = parse_only_date(pubdate)
         except:
             pass
@@ -224,7 +224,7 @@ def opf_metadata(opfpath):
 
 
 def forked_read_metadata(path, tdir):
-    from calibre.ebooks.metadata.opf2 import metadata_to_opf
+    from ebook_converter.ebooks.metadata.opf2 import metadata_to_opf
     with lopen(path, 'rb') as f:
         fmt = os.path.splitext(path)[1][1:].lower()
         f.seek(0, 2)

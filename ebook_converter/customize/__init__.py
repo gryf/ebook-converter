@@ -4,9 +4,9 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import os, sys, zipfile, importlib
 
-from calibre.constants import numeric_version, iswindows, isosx
-from calibre.ptempfile import PersistentTemporaryFile
-from polyglot.builtins import unicode_type
+from ebook_converter.constants import numeric_version, iswindows, isosx
+from ebook_converter.ptempfile import PersistentTemporaryFile
+from ebook_converter.polyglot.builtins import unicode_type
 
 platform = 'linux'
 if iswindows:
@@ -134,7 +134,7 @@ class Plugin(object):  # {{{
         '''
         from PyQt5.Qt import QDialog, QDialogButtonBox, QVBoxLayout, \
                 QLabel, Qt, QLineEdit
-        from calibre.gui2 import gprefs
+        from ebook_converter.gui2 import gprefs
 
         prefname = 'plugin config dialog:'+self.type + ':' + self.name
         geom = gprefs.get(prefname, None)
@@ -159,7 +159,7 @@ class Plugin(object):  # {{{
             config_widget = None
 
         if isinstance(config_widget, tuple):
-            from calibre.gui2 import warning_dialog
+            from ebook_converter.gui2 import warning_dialog
             warning_dialog(parent, _('Cannot configure'), config_widget[0],
                     det_msg=config_widget[1], show=True)
             return False
@@ -177,7 +177,7 @@ class Plugin(object):  # {{{
                 else:
                     self.save_settings(config_widget)
         else:
-            from calibre.customize.ui import plugin_customization, \
+            from ebook_converter.customize.ui import plugin_customization, \
                 customize_plugin
             help_text = self.customization_help(gui=True)
             help_text = QLabel(help_text, config_dialog)
@@ -276,7 +276,7 @@ class Plugin(object):  # {{{
                 import something
         '''
         if self.plugin_path is not None:
-            from calibre.utils.zipfile import ZipFile
+            from ebook_converter.utils.zipfile import ZipFile
             zf = ZipFile(self.plugin_path)
             extensions = {x.rpartition('.')[-1].lower() for x in
                 zf.namelist()}
@@ -289,7 +289,7 @@ class Plugin(object):  # {{{
                 sys.path.insert(0, self.plugin_path)
                 self.sys_insertion_path = self.plugin_path
             else:
-                from calibre.ptempfile import TemporaryDirectory
+                from ebook_converter.ptempfile import TemporaryDirectory
                 self._sys_insertion_tdir = TemporaryDirectory('plugin_unzip')
                 self.sys_insertion_path = self._sys_insertion_tdir.__enter__(*args)
                 zf.extractall(self.sys_insertion_path)
@@ -426,7 +426,7 @@ class MetadataReaderPlugin(Plugin):  # {{{
 
         :param type: The type of file. Guaranteed to be one of the entries
             in :attr:`file_types`.
-        :return: A :class:`calibre.ebooks.metadata.book.Metadata` object
+        :return: A :class:`ebook_converter.ebooks.metadata.book.Metadata` object
         '''
         return None
 # }}}
@@ -458,7 +458,7 @@ class MetadataWriterPlugin(Plugin):  # {{{
 
         :param type: The type of file. Guaranteed to be one of the entries
             in :attr:`file_types`.
-        :param mi: A :class:`calibre.ebooks.metadata.book.Metadata` object
+        :param mi: A :class:`ebook_converter.ebooks.metadata.book.Metadata` object
         '''
         pass
 
@@ -484,7 +484,7 @@ class CatalogPlugin(Plugin):  # {{{
     #:   Option = namedtuple('Option', 'option, default, dest, help')
     #:   cli_options = [Option('--catalog-title', default = 'My Catalog',
     #:   dest = 'catalog_title', help = (_('Title of generated catalog. \nDefault:') + " '" + '%default' + "'"))]
-    #:   cli_options parsed in calibre.db.cli.cmd_catalog:option_parser()
+    #:   cli_options parsed in ebook_converter.db.cli.cmd_catalog:option_parser()
     #:
     cli_options = []
 
@@ -526,7 +526,7 @@ class CatalogPlugin(Plugin):  # {{{
 
             # Validate requested_fields
             if requested_fields - all_fields:
-                from calibre.library import current_library_name
+                from ebook_converter.library import current_library_name
                 invalid_fields = sorted(list(requested_fields - all_fields))
                 print("invalid --fields specified: %s" % ', '.join(invalid_fields))
                 print("available fields in '%s': %s" %
@@ -547,11 +547,11 @@ class CatalogPlugin(Plugin):  # {{{
         If plugin is not a built-in, copy the plugin's .ui and .py files from
         the ZIP file to $TMPDIR.
         Tab will be dynamically generated and added to the Catalog Options dialog in
-        calibre.gui2.dialogs.catalog.py:Catalog
+        ebook_converter.gui2.dialogs.catalog.py:Catalog
         '''
-        from calibre.customize.builtins import plugins as builtin_plugins
-        from calibre.customize.ui import config
-        from calibre.ptempfile import PersistentTemporaryDirectory
+        from ebook_converter.customize.builtins import plugins as builtin_plugins
+        from ebook_converter.customize.ui import config
+        from ebook_converter.ptempfile import PersistentTemporaryDirectory
 
         if not type(self) in builtin_plugins and self.name not in config['disabled_plugins']:
             files_to_copy = ["%s.%s" % (self.name.lower(),ext) for ext in ["ui","py"]]
@@ -663,7 +663,7 @@ class PreferencesPlugin(Plugin):  # {{{
         '''
         Create and return the actual Qt widget used for setting this group of
         preferences. The widget must implement the
-        :class:`calibre.gui2.preferences.ConfigWidgetInterface`.
+        :class:`ebook_converter.gui2.preferences.ConfigWidgetInterface`.
 
         The default implementation uses :attr:`config_widget` to instantiate
         the widget.

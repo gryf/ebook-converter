@@ -7,8 +7,8 @@ __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import re
 
-from calibre.ebooks.docx.index import process_index, polish_index_markup
-from polyglot.builtins import iteritems, native_string_type
+from ebook_converter.ebooks.docx.index import process_index, polish_index_markup
+from ebook_converter.polyglot.builtins import iteritems, native_string_type
 
 
 class Field(object):

@@ -1,4 +1,3 @@
-from __future__ import print_function, unicode_literals
 __license__   = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
 __docformat__ = 'restructuredtext en'
@@ -10,7 +9,7 @@ Perform various initialization tasks.
 import locale, sys, os
 
 # Default translation is NOOP
-from polyglot.builtins import builtins, is_py3, unicode_type
+from ebook_converter.polyglot.builtins import builtins, is_py3, unicode_type
 builtins.__dict__['_'] = lambda s: s
 
 # For strings which belong in the translation tables, but which shouldn't be
@@ -21,7 +20,7 @@ builtins.__dict__['__'] = lambda s: s
 builtins.__dict__['dynamic_property'] = lambda func: func(None)
 
 
-from calibre.constants import iswindows, preferred_encoding, plugins, isosx, islinux, isfrozen, DEBUG, isfreebsd, ispy3
+from ebook_converter.constants import iswindows, preferred_encoding, plugins, isosx, islinux, isfrozen, DEBUG, isfreebsd, ispy3
 
 _run_once = False
 winutil = winutilerror = None
@@ -99,7 +98,7 @@ if not _run_once:
             os.path.expanduser = expanduser
 
     # Ensure that all temp files/dirs are created under a calibre tmp dir
-    from calibre.ptempfile import base_dir
+    from ebook_converter.ptempfile import base_dir
     try:
         base_dir()
     except EnvironmentError:
@@ -133,12 +132,12 @@ if not _run_once:
 
     #
     # Setup resources
-    import calibre.utils.resources as resources
+    import ebook_converter.utils.resources as resources
     resources
 
     #
     # Setup translations
-    from calibre.utils.localization import set_translators
+    from ebook_converter.utils.localization import set_translators
 
     set_translators()
 
@@ -201,7 +200,7 @@ if not _run_once:
 
     builtins.__dict__['lopen'] = local_open
 
-    from calibre.utils.icu import title_case, lower as icu_lower, upper as icu_upper
+    from ebook_converter.utils.icu import title_case, lower as icu_lower, upper as icu_upper
     builtins.__dict__['icu_lower'] = icu_lower
     builtins.__dict__['icu_upper'] = icu_upper
     builtins.__dict__['icu_title'] = title_case
@@ -249,8 +248,8 @@ if not _run_once:
 
 
 def test_lopen():
-    from calibre.ptempfile import TemporaryDirectory
-    from calibre import CurrentDir
+    from ebook_converter.ptempfile import TemporaryDirectory
+    from ebook_converter import CurrentDir
     n = 'f\xe4llen'
     print('testing lopen()')
 

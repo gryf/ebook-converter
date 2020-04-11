@@ -9,8 +9,8 @@ __docformat__ = 'restructuredtext en'
 import functools, re, json
 from math import ceil
 
-from calibre import entity_to_unicode, as_unicode
-from polyglot.builtins import unicode_type, range
+from ebook_converter import entity_to_unicode, as_unicode
+from ebook_converter.polyglot.builtins import unicode_type, range
 
 XMLDECL_RE    = re.compile(r'^\s*<[?]xml.*?[?]>')
 SVG_NS       = 'http://www.w3.org/2000/svg'
@@ -70,9 +70,9 @@ def wrap_lines(match):
 
 
 def smarten_punctuation(html, log=None):
-    from calibre.utils.smartypants import smartyPants
-    from calibre.ebooks.chardet import substitute_entites
-    from calibre.ebooks.conversion.utils import HeuristicProcessor
+    from ebook_converter.utils.smartypants import smartyPants
+    from ebook_converter.ebooks.chardet import substitute_entites
+    from ebook_converter.ebooks.conversion.utils import HeuristicProcessor
     preprocessor = HeuristicProcessor(log=log)
     from uuid import uuid4
     start = 'calibre-smartypants-'+unicode_type(uuid4())
@@ -321,7 +321,7 @@ class CSSPreProcessor(object):
         return start + end
 
     def __call__(self, data, add_namespace=False):
-        from calibre.ebooks.oeb.base import XHTML_CSS_NAMESPACE
+        from ebook_converter.ebooks.oeb.base import XHTML_CSS_NAMESPACE
         data = self.MS_PAT.sub(self.ms_sub, data)
         if not add_namespace:
             return data
@@ -497,7 +497,7 @@ class HTMLPreProcessor(object):
         # Function for processing search and replace
 
         def do_search_replace(search_pattern, replace_txt):
-            from calibre.ebooks.conversion.search_replace import compile_regular_expression
+            from ebook_converter.ebooks.conversion.search_replace import compile_regular_expression
             try:
                 search_re = compile_regular_expression(search_pattern)
                 if not replace_txt:
@@ -595,7 +595,7 @@ class HTMLPreProcessor(object):
             html = dehyphenator(html,'html', length)
 
         if is_pdftohtml:
-            from calibre.ebooks.conversion.utils import HeuristicProcessor
+            from ebook_converter.ebooks.conversion.utils import HeuristicProcessor
             pdf_markup = HeuristicProcessor(self.extra_opts, None)
             totalwords = 0
             if pdf_markup.get_word_count(html) > 7000:
@@ -614,15 +614,15 @@ class HTMLPreProcessor(object):
         html = XMLDECL_RE.sub('', html)
 
         if getattr(self.extra_opts, 'asciiize', False):
-            from calibre.utils.localization import get_udc
-            from calibre.utils.mreplace import MReplace
+            from ebook_converter.utils.localization import get_udc
+            from ebook_converter.utils.mreplace import MReplace
             unihandecoder = get_udc()
             mr = MReplace(data={'«':'&lt;'*3, '»':'&gt;'*3})
             html = mr.mreplace(html)
             html = unihandecoder.decode(html)
 
         if getattr(self.extra_opts, 'enable_heuristics', False):
-            from calibre.ebooks.conversion.utils import HeuristicProcessor
+            from ebook_converter.ebooks.conversion.utils import HeuristicProcessor
             preprocessor = HeuristicProcessor(self.extra_opts, self.log)
             html = preprocessor(html)
 
@@ -637,7 +637,7 @@ class HTMLPreProcessor(object):
         except AttributeError:
             unsupported_unicode_chars = ''
         if unsupported_unicode_chars:
-            from calibre.utils.localization import get_udc
+            from ebook_converter.utils.localization import get_udc
             unihandecoder = get_udc()
             for char in unsupported_unicode_chars:
                 asciichar = unihandecoder.decode(char)

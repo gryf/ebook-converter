@@ -4,8 +4,8 @@ __license__ = 'GPL 3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-from calibre.customize import Plugin as _Plugin
-from polyglot.builtins import zip
+from ebook_converter.customize import Plugin as _Plugin
+from ebook_converter.polyglot.builtins import zip
 
 FONT_SIZES = [('xx-small', 1),
               ('x-small',  None),

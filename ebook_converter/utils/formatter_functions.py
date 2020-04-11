@@ -15,15 +15,15 @@ __docformat__ = 'restructuredtext en'
 import inspect, re, traceback, numbers
 from math import trunc
 
-from calibre import human_readable
-from calibre.constants import DEBUG
-from calibre.ebooks.metadata import title_sort
-from calibre.utils.config import tweaks
-from calibre.utils.titlecase import titlecase
-from calibre.utils.icu import capitalize, strcmp, sort_key
-from calibre.utils.date import parse_date, format_date, now, UNDEFINED_DATE
-from calibre.utils.localization import calibre_langcode_to_name, canonicalize_lang
-from polyglot.builtins import iteritems, itervalues, unicode_type
+from ebook_converter import human_readable
+from ebook_converter.constants import DEBUG
+from ebook_converter.ebooks.metadata import title_sort
+from ebook_converter.utils.config import tweaks
+from ebook_converter.utils.titlecase import titlecase
+from ebook_converter.utils.icu import capitalize, strcmp, sort_key
+from ebook_converter.utils.date import parse_date, format_date, now, UNDEFINED_DATE
+from ebook_converter.utils.localization import calibre_langcode_to_name, canonicalize_lang
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
 
 
 class FormatterFunctions(object):
@@ -321,7 +321,7 @@ class BuiltinEval(BuiltinFormatterFunction):
             'template program mode.')
 
     def evaluate(self, formatter, kwargs, mi, locals, template):
-        from calibre.utils.formatter import EvalFormatter
+        from ebook_converter.utils.formatter import EvalFormatter
         template = template.replace('[[', '{').replace(']]', '}')
         return EvalFormatter().safe_format(template, locals, 'EVAL', None)
 
@@ -644,7 +644,7 @@ class BuiltinReGroup(BuiltinFormatterFunction):
             "{series:'re_group($, \"(\\S* )(.*)\", \"[[$:uppercase()]]\", \"[[$]]\")'}")
 
     def evaluate(self, formatter, kwargs, mi, locals, val, pattern, *args):
-        from calibre.utils.formatter import EvalFormatter
+        from ebook_converter.utils.formatter import EvalFormatter
 
         def repl(mo):
             res = ''
@@ -1348,7 +1348,7 @@ class BuiltinListReGroup(BuiltinFormatterFunction):
 
     def evaluate(self, formatter, kwargs, mi, locals, src_list, separator, include_re,
                  search_re, *args):
-        from calibre.utils.formatter import EvalFormatter
+        from ebook_converter.utils.formatter import EvalFormatter
 
         l = [l.strip() for l in src_list.split(separator) if l.strip()]
         res = []
@@ -1467,7 +1467,7 @@ class BuiltinCurrentLibraryName(BuiltinFormatterFunction):
             'template "{:\'current_library_name()\'}".')
 
     def evaluate(self, formatter, kwargs, mi, locals):
-        from calibre.library import current_library_name
+        from ebook_converter.library import current_library_name
         return current_library_name()
 
 
@@ -1481,7 +1481,7 @@ class BuiltinCurrentLibraryPath(BuiltinFormatterFunction):
                 '"{:\'current_library_path()\'}".')
 
     def evaluate(self, formatter, kwargs, mi, locals):
-        from calibre.library import current_library_path
+        from ebook_converter.library import current_library_path
         return current_library_path()
 
 
@@ -1551,7 +1551,7 @@ class BuiltinTransliterate(BuiltinFormatterFunction):
                           u"Фёдор Миха́йлович Достоевский", 'Fiodor Mikhailovich Dostoievskii')
 
     def evaluate(self, formatter, kwargs, mi, locals, source):
-        from calibre.utils.filenames import ascii_text
+        from ebook_converter.utils.filenames import ascii_text
         return ascii_text(source)
 
 
@@ -1648,8 +1648,8 @@ def compile_user_function(name, doc, arg_count, eval_func):
     func = '    ' + '\n    '.join([tabs.sub(replace_func, line)
                                    for line in eval_func.splitlines()])
     prog = '''
-from calibre.utils.formatter_functions import FormatterUserFunction
-from calibre.utils.formatter_functions import formatter_functions
+from ebook_converter.utils.formatter_functions import FormatterUserFunction
+from ebook_converter.utils.formatter_functions import formatter_functions
 class UserFunction(FormatterUserFunction):
 ''' + func
     locals_ = {}

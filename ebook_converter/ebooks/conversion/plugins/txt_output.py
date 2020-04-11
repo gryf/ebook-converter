@@ -9,9 +9,9 @@ import os
 import shutil
 
 
-from calibre.customize.conversion import OutputFormatPlugin, \
+from ebook_converter.customize.conversion import OutputFormatPlugin, \
     OptionRecommendation
-from calibre.ptempfile import TemporaryDirectory, TemporaryFile
+from ebook_converter.ptempfile import TemporaryDirectory, TemporaryFile
 
 NEWLINE_TYPES = ['system', 'unix', 'old_mac', 'windows']
 
@@ -84,15 +84,15 @@ class TXTOutput(OutputFormatPlugin):
      }
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
-        from calibre.ebooks.txt.txtml import TXTMLizer
-        from calibre.utils.cleantext import clean_ascii_chars
-        from calibre.ebooks.txt.newlines import specified_newlines, TxtNewlines
+        from ebook_converter.ebooks.txt.txtml import TXTMLizer
+        from ebook_converter.utils.cleantext import clean_ascii_chars
+        from ebook_converter.ebooks.txt.newlines import specified_newlines, TxtNewlines
 
         if opts.txt_output_formatting.lower() == 'markdown':
-            from calibre.ebooks.txt.markdownml import MarkdownMLizer
+            from ebook_converter.ebooks.txt.markdownml import MarkdownMLizer
             self.writer = MarkdownMLizer(log)
         elif opts.txt_output_formatting.lower() == 'textile':
-            from calibre.ebooks.txt.textileml import TextileMLizer
+            from ebook_converter.ebooks.txt.textileml import TextileMLizer
             self.writer = TextileMLizer(log)
         else:
             self.writer = TXTMLizer(log)
@@ -127,8 +127,8 @@ class TXTZOutput(TXTOutput):
     file_type = 'txtz'
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
-        from calibre.ebooks.oeb.base import OEB_IMAGES
-        from calibre.utils.zipfile import ZipFile
+        from ebook_converter.ebooks.oeb.base import OEB_IMAGES
+        from ebook_converter.utils.zipfile import ZipFile
         from lxml import etree
 
         with TemporaryDirectory('_txtz_output') as tdir:

@@ -12,20 +12,20 @@ import re, sys, unittest, functools, os, uuid, glob, io, json, copy
 
 from lxml import etree
 
-from calibre.ebooks import escape_xpath_attr
-from calibre.constants import __appname__, __version__, filesystem_encoding, ispy3
-from calibre.ebooks.metadata.toc import TOC
-from calibre.ebooks.metadata.utils import parse_opf, pretty_print_opf as _pretty_print
-from calibre.ebooks.metadata import string_to_authors, MetaInformation, check_isbn
-from calibre.ebooks.metadata.book.base import Metadata
-from calibre.utils.date import parse_date, isoformat
-from calibre.utils.localization import get_lang, canonicalize_lang
-from calibre import prints, guess_type
-from calibre.utils.cleantext import clean_ascii_chars, clean_xml_chars
-from calibre.utils.config import tweaks
-from calibre.utils.xml_parse import safe_xml_fromstring
-from polyglot.builtins import iteritems, unicode_type, getcwd, map
-from polyglot.urllib import unquote, urlparse
+from ebook_converter.ebooks import escape_xpath_attr
+from ebook_converter.constants import __appname__, __version__, filesystem_encoding, ispy3
+from ebook_converter.ebooks.metadata.toc import TOC
+from ebook_converter.ebooks.metadata.utils import parse_opf, pretty_print_opf as _pretty_print
+from ebook_converter.ebooks.metadata import string_to_authors, MetaInformation, check_isbn
+from ebook_converter.ebooks.metadata.book.base import Metadata
+from ebook_converter.utils.date import parse_date, isoformat
+from ebook_converter.utils.localization import get_lang, canonicalize_lang
+from ebook_converter import prints, guess_type
+from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
+from ebook_converter.utils.config import tweaks
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, getcwd, map
+from ebook_converter.polyglot.urllib import unquote, urlparse
 
 pretty_print_opf = False
 
@@ -487,8 +487,8 @@ class TitleSortField(MetadataField):
 
 
 def serialize_user_metadata(metadata_elem, all_user_metadata, tail='\n'+(' '*8)):
-    from calibre.utils.config import to_json
-    from calibre.ebooks.metadata.book.json_codec import (object_to_unicode,
+    from ebook_converter.utils.config import to_json
+    from ebook_converter.ebooks.metadata.book.json_codec import (object_to_unicode,
                                                          encode_is_multiple)
 
     for name, fm in all_user_metadata.items():
@@ -512,7 +512,7 @@ def serialize_user_metadata(metadata_elem, all_user_metadata, tail='\n'+(' '*8))
 def dump_dict(cats):
     if not cats:
         cats = {}
-    from calibre.ebooks.metadata.book.json_codec import object_to_unicode
+    from ebook_converter.ebooks.metadata.book.json_codec import object_to_unicode
     return json.dumps(object_to_unicode(cats), ensure_ascii=False,
             skipkeys=True)
 
@@ -620,8 +620,8 @@ class OPF(object):  # {{{
     def read_user_metadata(self):
         self._user_metadata_ = {}
         temp = Metadata('x', ['x'])
-        from calibre.utils.config import from_json
-        from calibre.ebooks.metadata.book.json_codec import decode_is_multiple
+        from ebook_converter.utils.config import from_json
+        from ebook_converter.ebooks.metadata.book.json_codec import decode_is_multiple
         elems = self.root.xpath('//*[name() = "meta" and starts-with(@name,'
                 '"calibre:user_metadata:") and @content]')
         for elem in elems:
@@ -643,7 +643,7 @@ class OPF(object):  # {{{
 
     def to_book_metadata(self):
         if self.package_version >= 3.0:
-            from calibre.ebooks.metadata.opf3 import read_metadata
+            from ebook_converter.ebooks.metadata.opf3 import read_metadata
             return read_metadata(self.root)
         ans = MetaInformation(self)
         for n, v in self._user_metadata_.items():
@@ -964,7 +964,7 @@ class OPF(object):  # {{{
             found_scheme = False
             for attr, val in iteritems(x.attrib):
                 if attr.endswith('scheme'):
-                    typ = icu_lower(val)
+                    typ = val.lower()
                     val = etree.tostring(x, with_tail=False, encoding='unicode',
                             method='text').strip()
                     if val and typ not in ('calibre', 'uuid'):
@@ -1447,7 +1447,7 @@ class OPFCreator(Metadata):
 
         # Actual rendering
         from lxml.builder import ElementMaker
-        from calibre.ebooks.oeb.base import OPF2_NS, DC11_NS, CALIBRE_NS
+        from ebook_converter.ebooks.oeb.base import OPF2_NS, DC11_NS, CALIBRE_NS
         DNS = OPF2_NS+'___xx___'
         E = ElementMaker(namespace=DNS, nsmap={None:DNS})
         M = ElementMaker(namespace=DNS,
@@ -1494,7 +1494,7 @@ class OPFCreator(Metadata):
         if self.publisher:
             a(DC_ELEM('publisher', self.publisher))
         for key, val in iteritems(self.get_identifiers()):
-            a(DC_ELEM('identifier', val, opf_attrs={'scheme':icu_upper(key)}))
+            a(DC_ELEM('identifier', val, opf_attrs={'scheme':key.upper()}))
         if self.rights:
             a(DC_ELEM('rights', self.rights))
         if self.tags:
@@ -1513,7 +1513,7 @@ class OPFCreator(Metadata):
         if self.publication_type is not None:
             a(CAL_ELEM('calibre:publication_type', self.publication_type))
         if self.user_categories:
-            from calibre.ebooks.metadata.book.json_codec import object_to_unicode
+            from ebook_converter.ebooks.metadata.book.json_codec import object_to_unicode
             a(CAL_ELEM('calibre:user_categories',
                        json.dumps(object_to_unicode(self.user_categories))))
         if self.primary_writing_mode:
@@ -1572,7 +1572,7 @@ class OPFCreator(Metadata):
 def metadata_to_opf(mi, as_string=True, default_lang=None):
     from lxml import etree
     import textwrap
-    from calibre.ebooks.oeb.base import OPF, DC
+    from ebook_converter.ebooks.oeb.base import OPF, DC
 
     if not mi.application_id:
         mi.application_id = unicode_type(uuid.uuid4())
@@ -1641,7 +1641,7 @@ def metadata_to_opf(mi, as_string=True, default_lang=None):
     if mi.publisher:
         factory(DC('publisher'), mi.publisher)
     for key, val in iteritems(mi.get_identifiers()):
-        factory(DC('identifier'), val, scheme=icu_upper(key))
+        factory(DC('identifier'), val, scheme=key.upper())
     if mi.rights:
         factory(DC('rights'), mi.rights)
     for lang in mi.languages:
@@ -1689,7 +1689,7 @@ def metadata_to_opf(mi, as_string=True, default_lang=None):
 
 
 def test_m2o():
-    from calibre.utils.date import now as nowf
+    from ebook_converter.utils.date import now as nowf
     mi = MetaInformation('test & title', ['a"1', "a'2"])
     mi.title_sort = 'a\'"b'
     mi.author_sort = 'author sort'

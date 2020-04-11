@@ -8,9 +8,9 @@ __docformat__ = 'restructuredtext en'
 
 import textwrap, os, glob
 
-from calibre.customize import FileTypePlugin
-from calibre.constants import numeric_version
-from polyglot.builtins import unicode_type
+from ebook_converter.customize import FileTypePlugin
+from ebook_converter.constants import numeric_version
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class HTML2ZIP(FileTypePlugin):
@@ -28,11 +28,11 @@ every time you add an HTML file to the library.\
 
     def run(self, htmlfile):
         import codecs
-        from calibre import prints
-        from calibre.ptempfile import TemporaryDirectory
-        from calibre.gui2.convert.gui_conversion import gui_convert
-        from calibre.customize.conversion import OptionRecommendation
-        from calibre.ebooks.epub import initialize_container
+        from ebook_converter import prints
+        from ebook_converter.ptempfile import TemporaryDirectory
+        from ebook_converter.gui2.convert.gui_conversion import gui_convert
+        from ebook_converter.customize.conversion import OptionRecommendation
+        from ebook_converter.ebooks.epub import initialize_container
 
         with TemporaryDirectory('_plugin_html2zip') as tdir:
             recs =[('debug_pipeline', tdir, OptionRecommendation.HIGH)]
@@ -86,7 +86,7 @@ every time you add an HTML file to the library.\
         button_box.accepted.connect(config_dialog.accept)
         button_box.rejected.connect(config_dialog.reject)
         config_dialog.setWindowTitle(_('Customize') + ' ' + self.name)
-        from calibre.customize.ui import (plugin_customization,
+        from ebook_converter.customize.ui import (plugin_customization,
                 customize_plugin)
         help_text = self.customization_help(gui=True)
         help_text = QLabel(help_text, config_dialog)

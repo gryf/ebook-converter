@@ -61,9 +61,9 @@ it under the same terms as Perl itself.
 '''
 
 import re
-from calibre.ebooks.unihandecode.unicodepoints import CODEPOINTS
-from calibre.ebooks.unihandecode.zhcodepoints import CODEPOINTS as HANCODES
-from polyglot.builtins import unicode_type
+from ebook_converter.ebooks.unihandecode.unicodepoints import CODEPOINTS
+from ebook_converter.ebooks.unihandecode.zhcodepoints import CODEPOINTS as HANCODES
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class Unidecoder(object):

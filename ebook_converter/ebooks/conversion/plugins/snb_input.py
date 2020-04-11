@@ -7,10 +7,10 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre.customize.conversion import InputFormatPlugin
-from calibre.ptempfile import TemporaryDirectory
-from calibre.utils.filenames import ascii_filename
-from polyglot.builtins import unicode_type
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.utils.filenames import ascii_filename
+from ebook_converter.polyglot.builtins import unicode_type
 
 HTML_TEMPLATE = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>%s</title></head><body>\n%s\n</body></html>'
 
@@ -33,9 +33,9 @@ class SNBInput(InputFormatPlugin):
                 accelerators):
         import uuid
 
-        from calibre.ebooks.oeb.base import DirContainer
-        from calibre.ebooks.snb.snbfile import SNBFile
-        from calibre.utils.xml_parse import safe_xml_fromstring
+        from ebook_converter.ebooks.oeb.base import DirContainer
+        from ebook_converter.ebooks.snb.snbfile import SNBFile
+        from ebook_converter.utils.xml_parse import safe_xml_fromstring
 
         log.debug("Parsing SNB file...")
         snbFile = SNBFile()
@@ -47,7 +47,7 @@ class SNBInput(InputFormatPlugin):
             log.debug("Invalid SNB file")
             raise ValueError("Invalid SNB file")
         log.debug("Handle meta data ...")
-        from calibre.ebooks.conversion.plumber import create_oebbook
+        from ebook_converter.ebooks.conversion.plumber import create_oebbook
         oeb = create_oebbook(log, None, options,
                 encoding=options.input_encoding, populate=False)
         meta = snbFile.GetFileStream('snbf/book.snbf')

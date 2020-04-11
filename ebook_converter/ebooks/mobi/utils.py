@@ -10,10 +10,10 @@ import struct, string, zlib, os
 from collections import OrderedDict
 from io import BytesIO
 
-from calibre.utils.img import save_cover_data_to, scale_image, image_to_data, image_from_data, resize_image, png_data_to_gif_data
-from calibre.utils.imghdr import what
-from calibre.ebooks import normalize
-from polyglot.builtins import unicode_type, range, as_bytes, map
+from ebook_converter.utils.img import save_cover_data_to, scale_image, image_to_data, image_from_data, resize_image, png_data_to_gif_data
+from ebook_converter.utils.imghdr import what
+from ebook_converter.ebooks import normalize
+from ebook_converter.polyglot.builtins import unicode_type, range, as_bytes, map
 from tinycss.color3 import parse_color_string
 
 IMAGE_MAX_SIZE = 10 * 1024 * 1024

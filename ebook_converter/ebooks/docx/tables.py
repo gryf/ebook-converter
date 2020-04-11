@@ -7,9 +7,9 @@ __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 from lxml.html.builder import TABLE, TR, TD
 
-from calibre.ebooks.docx.block_styles import inherit, read_shd as rs, read_border, binary_property, border_props, ParagraphStyle, border_to_css
-from calibre.ebooks.docx.char_styles import RunStyle
-from polyglot.builtins import filter, iteritems, itervalues, range, unicode_type
+from ebook_converter.ebooks.docx.block_styles import inherit, read_shd as rs, read_border, binary_property, border_props, ParagraphStyle, border_to_css
+from ebook_converter.ebooks.docx.char_styles import RunStyle
+from ebook_converter.polyglot.builtins import filter, iteritems, itervalues, range, unicode_type
 
 # Read from XML {{{
 read_shd = rs

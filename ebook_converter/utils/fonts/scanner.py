@@ -10,12 +10,11 @@ import os
 from collections import defaultdict
 from threading import Thread
 
-from calibre import walk, prints, as_unicode
-from calibre.constants import (config_dir, iswindows, isosx, plugins, DEBUG,
+from ebook_converter import walk, prints, as_unicode
+from ebook_converter.constants import (config_dir, iswindows, isosx, plugins, DEBUG,
         isworker, filesystem_encoding)
-from calibre.utils.fonts.metadata import FontMetadata, UnsupportedFont
-from calibre.utils.icu import sort_key
-from polyglot.builtins import itervalues, unicode_type, filter
+from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
+from ebook_converter.polyglot.builtins import itervalues, unicode_type, filter
 
 
 class NoFonts(ValueError):
@@ -153,12 +152,12 @@ def path_significance(path, folders):
 
 def build_families(cached_fonts, folders, family_attr='font-family'):
     families = defaultdict(list)
-    for f in itervalues(cached_fonts):
-        if not f:
+    for font in itervalues(cached_fonts):
+        if not font:
             continue
-        lf = icu_lower(f.get(family_attr) or '')
+        lf = (font.get(family_attr) or '').lower()
         if lf:
-            families[lf].append(f)
+            families[lf].append(font)
 
     for fonts in itervalues(families):
         # Look for duplicate font files and choose the copy that is from a
@@ -166,26 +165,26 @@ def build_families(cached_fonts, folders, family_attr='font-family'):
         # system directories).
         fmap = {}
         remove = []
-        for f in fonts:
-            fingerprint = (icu_lower(f['font-family']), f['font-weight'],
-                    f['font-stretch'], f['font-style'])
+        for font in fonts:
+            fingerprint = (font['font-family'].lower(), font['font-weight'],
+                           font['font-stretch'], font['font-style'])
             if fingerprint in fmap:
                 opath = fmap[fingerprint]['path']
-                npath = f['path']
+                npath = font['path']
                 if path_significance(npath, folders) >= path_significance(opath, folders):
                     remove.append(fmap[fingerprint])
-                    fmap[fingerprint] = f
+                    fmap[fingerprint] = font
                 else:
-                    remove.append(f)
+                    remove.append(font)
             else:
-                fmap[fingerprint] = f
-        for font in remove:
-            fonts.remove(font)
+                fmap[fingerprint] = font
+        for fnt in remove:
+            fonts.remove(fnt)
         fonts.sort(key=font_priority)
 
     font_family_map = dict.copy(families)
-    font_families = tuple(sorted((f[0]['font-family'] for f in
-            itervalues(font_family_map)), key=sort_key))
+    font_families = tuple(sorted((font[0]['font-family'] for font in
+                                  itervalues(font_family_map))))
     return font_family_map, font_families
 # }}}
 
@@ -198,8 +197,8 @@ class FontScanner(Thread):
         Thread.__init__(self)
         self.folders = folders + font_dirs() + [os.path.join(config_dir, 'fonts'),
                 P('fonts/liberation')]
-        self.folders = [os.path.normcase(os.path.abspath(f)) for f in
-                self.folders]
+        self.folders = [os.path.normcase(os.path.abspath(font)) for font in
+                        self.folders]
         self.font_families = ()
         self.allowed_extensions = allowed_extensions
 
@@ -218,7 +217,7 @@ class FontScanner(Thread):
         '''
         self.join()
         try:
-            return self.font_family_map[icu_lower(family)]
+            return self.font_family_map[family.lower()]
         except KeyError:
             raise NoFonts('No fonts found for the family: %r'%family)
 
@@ -264,7 +263,7 @@ class FontScanner(Thread):
 
         :return: (family name, faces) or None, None
         '''
-        from calibre.utils.fonts.utils import (supports_text,
+        from ebook_converter.utils.fonts.utils import (supports_text,
                 panose_to_css_generic_family, get_printable_characters)
         if not isinstance(text, unicode_type):
             raise TypeError(u'%r is not unicode'%text)
@@ -297,7 +296,7 @@ class FontScanner(Thread):
 
     def reload_cache(self):
         if not hasattr(self, 'cache'):
-            from calibre.utils.config import JSONConfig
+            from ebook_converter.utils.config import JSONConfig
             self.cache = JSONConfig('fonts/scanner_cache')
         else:
             self.cache.refresh()

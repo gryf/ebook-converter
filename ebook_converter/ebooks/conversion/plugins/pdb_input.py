@@ -5,8 +5,8 @@ __license__   = 'GPL v3'
 __copyright__ = '2009, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 
-from calibre.customize.conversion import InputFormatPlugin
-from polyglot.builtins import getcwd
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.polyglot.builtins import getcwd
 
 
 class PDBInput(InputFormatPlugin):
@@ -19,8 +19,8 @@ class PDBInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from calibre.ebooks.pdb.header import PdbHeaderReader
-        from calibre.ebooks.pdb import PDBError, IDENTITY_TO_NAME, get_reader
+        from ebook_converter.ebooks.pdb.header import PdbHeaderReader
+        from ebook_converter.ebooks.pdb import PDBError, IDENTITY_TO_NAME, get_reader
 
         header = PdbHeaderReader(stream)
         Reader = get_reader(header.ident)

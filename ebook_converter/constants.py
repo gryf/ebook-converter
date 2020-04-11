@@ -1,8 +1,7 @@
 #!/usr/bin/env python2
 # vim:fileencoding=utf-8
 # License: GPLv3 Copyright: 2015, Kovid Goyal <kovid at kovidgoyal.net>
-from __future__ import print_function, unicode_literals
-from polyglot.builtins import map, unicode_type, environ_item, hasenv, getenv, as_unicode, native_string_type
+from ebook_converter.polyglot.builtins import map, unicode_type, environ_item, hasenv, getenv, as_unicode, native_string_type
 import sys, locale, codecs, os, importlib, collections
 
 __appname__   = 'calibre'
@@ -151,9 +150,9 @@ def cache_dir():
     return ans
 
 
-plugins_loc = sys.extensions_location
-if ispy3:
-    plugins_loc = os.path.join(plugins_loc, '3')
+# plugins_loc = sys.extensions_location
+# if ispy3:
+    # plugins_loc = os.path.join(plugins_loc, '3')
 
 
 # plugins {{{
@@ -163,35 +162,36 @@ class Plugins(collections.Mapping):
 
     def __init__(self):
         self._plugins = {}
-        plugins = [
-                'pictureflow',
-                'lzx',
-                'msdes',
-                'podofo',
-                'cPalmdoc',
-                'progress_indicator',
-                'chmlib',
-                'icu',
-                'speedup',
-                'html_as_json',
-                'unicode_names',
-                'html_syntax_highlighter',
-                'hyphen',
-                'freetype',
-                'imageops',
-                'hunspell',
-                '_patiencediff_c',
-                'bzzdec',
-                'matcher',
-                'tokenizer',
-                'certgen',
-                'lzma_binding',
-            ]
-        if not ispy3:
-            plugins.extend([
-                'monotonic',
-                'zlib2',
-            ])
+        plugins = []
+        # plugins = [
+                # 'pictureflow',
+                # 'lzx',
+                # 'msdes',
+                # 'podofo',
+                # 'cPalmdoc',
+                # 'progress_indicator',
+                # 'chmlib',
+                # 'icu',
+                # 'speedup',
+                # 'html_as_json',
+                # 'unicode_names',
+                # 'html_syntax_highlighter',
+                # 'hyphen',
+                # 'freetype',
+                # 'imageops',
+                # 'hunspell',
+                # '_patiencediff_c',
+                # 'bzzdec',
+                # 'matcher',
+                # 'tokenizer',
+                # 'certgen',
+                # 'lzma_binding',
+            # ]
+        # if not ispy3:
+            # plugins.extend([
+                # 'monotonic',
+                # 'zlib2',
+            # ])
         if iswindows:
             plugins.extend(['winutil', 'wpd', 'winfonts'])
         if isosx:
@@ -205,7 +205,7 @@ class Plugins(collections.Mapping):
     def load_plugin(self, name):
         if name in self._plugins:
             return
-        sys.path.insert(0, plugins_loc)
+        # sys.path.insert(0, plugins_loc)
         try:
             del sys.modules[name]
         except KeyError:
@@ -220,7 +220,7 @@ class Plugins(collections.Mapping):
             except Exception:
                 plugin_err = as_unicode(native_string_type(err), encoding=preferred_encoding, errors='replace')
         self._plugins[name] = p, plugin_err
-        sys.path.remove(plugins_loc)
+        # sys.path.remove(plugins_loc)
 
     def __iter__(self):
         return iter(self.plugins)

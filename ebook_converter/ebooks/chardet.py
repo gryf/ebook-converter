@@ -7,7 +7,7 @@ __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 import re, codecs
-from polyglot.builtins import unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 _encoding_pats = (
     # XML declaration
@@ -98,7 +98,7 @@ def find_declared_encoding(raw, limit=50*1024):
 
 
 def substitute_entites(raw):
-    from calibre import xml_entity_to_unicode
+    from ebook_converter import xml_entity_to_unicode
     return ENTITY_PATTERN.sub(xml_entity_to_unicode, raw)
 
 
@@ -112,7 +112,7 @@ def detect(*args, **kwargs):
 
 
 def force_encoding(raw, verbose, assume_utf8=False):
-    from calibre.constants import preferred_encoding
+    from ebook_converter.constants import preferred_encoding
 
     try:
         chardet = detect(raw[:1024*50])

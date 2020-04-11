@@ -7,11 +7,11 @@ This package contains logic to read and write LRF files.
 The LRF file format is documented at U{http://www.sven.de/librie/Librie/LrfFormat}.
 """
 
-from calibre.ebooks.lrf.pylrs.pylrs import Book as _Book
-from calibre.ebooks.lrf.pylrs.pylrs import TextBlock, Header, \
+from ebook_converter.ebooks.lrf.pylrs.pylrs import Book as _Book
+from ebook_converter.ebooks.lrf.pylrs.pylrs import TextBlock, Header, \
                                              TextStyle, BlockStyle
-from calibre.ebooks.lrf.fonts import FONT_FILE_MAP
-from calibre.ebooks import ConversionError
+from ebook_converter.ebooks.lrf.fonts import FONT_FILE_MAP
+from ebook_converter.ebooks import ConversionError
 
 __docformat__ = "epytext"
 
@@ -38,7 +38,7 @@ class PRS500_PROFILE(object):
 
 
 def find_custom_fonts(options, logger):
-    from calibre.utils.fonts.scanner import font_scanner
+    from ebook_converter.utils.fonts.scanner import font_scanner
     fonts = {'serif' : None, 'sans' : None, 'mono' : None}
 
     def family(cmd):

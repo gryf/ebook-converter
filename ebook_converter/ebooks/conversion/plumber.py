@@ -8,19 +8,19 @@ __docformat__ = 'restructuredtext en'
 import os, re, sys, shutil, pprint, json
 from functools import partial
 
-from calibre.customize.conversion import OptionRecommendation, DummyReporter
-from calibre.customize.ui import input_profiles, output_profiles, \
+from ebook_converter.customize.conversion import OptionRecommendation, DummyReporter
+from ebook_converter.customize.ui import input_profiles, output_profiles, \
         plugin_for_input_format, plugin_for_output_format, \
         available_input_formats, available_output_formats, \
         run_plugins_on_preprocess, run_plugins_on_postprocess
-from calibre.ebooks.conversion.preprocess import HTMLPreProcessor
-from calibre.ptempfile import PersistentTemporaryDirectory
-from calibre.utils.date import parse_date
-from calibre.utils.zipfile import ZipFile
-from calibre import (extract, walk, isbytestring, filesystem_encoding,
+from ebook_converter.ebooks.conversion.preprocess import HTMLPreProcessor
+from ebook_converter.ptempfile import PersistentTemporaryDirectory
+from ebook_converter.utils.date import parse_date
+from ebook_converter.utils.zipfile import ZipFile
+from ebook_converter import (extract, walk, isbytestring, filesystem_encoding,
         get_types_map)
-from calibre.constants import __version__
-from polyglot.builtins import unicode_type, string_or_bytes, map
+from ebook_converter.constants import __version__
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, map
 
 DEBUG_README=b'''
 This debug directory contains snapshots of the e-book as it passes through the
@@ -799,7 +799,7 @@ OptionRecommendation(name='search_replace',
         files = list(walk(tdir))
         files = [f if isinstance(f, unicode_type) else f.decode(filesystem_encoding)
                 for f in files]
-        from calibre.customize.ui import available_input_formats
+        from ebook_converter.customize.ui import available_input_formats
         fmts = set(available_input_formats())
         fmts -= {'htm', 'html', 'xhtm', 'xhtml'}
         fmts -= set(ARCHIVE_FMTS)
@@ -899,7 +899,7 @@ OptionRecommendation(name='search_replace',
                     self.changed_options.add(rec)
 
     def opts_to_mi(self, mi):
-        from calibre.ebooks.metadata import string_to_authors
+        from ebook_converter.ebooks.metadata import string_to_authors
         for x in self.metadata_option_names:
             val = getattr(self.opts, x, None)
             if val is not None:
@@ -923,10 +923,10 @@ OptionRecommendation(name='search_replace',
                 setattr(mi, x, val)
 
     def download_cover(self, url):
-        from calibre import browser
+        from ebook_converter import browser
         from PIL import Image
         import io
-        from calibre.ptempfile import PersistentTemporaryFile
+        from ebook_converter.ptempfile import PersistentTemporaryFile
         self.log('Downloading cover from %r'%url)
         br = browser()
         raw = br.open_novisit(url).read()
@@ -942,8 +942,8 @@ OptionRecommendation(name='search_replace',
         Read all metadata specified by the user. Command line options override
         metadata from a specified OPF file.
         '''
-        from calibre.ebooks.metadata import MetaInformation
-        from calibre.ebooks.metadata.opf2 import OPF
+        from ebook_converter.ebooks.metadata import MetaInformation
+        from ebook_converter.ebooks.metadata.opf2 import OPF
         mi = MetaInformation(None, [])
         if self.opts.read_metadata_from_opf is not None:
             self.opts.read_metadata_from_opf = os.path.abspath(
@@ -1003,7 +1003,7 @@ OptionRecommendation(name='search_replace',
         if self.opts.verbose > 1:
             self.log.debug('Resolved conversion options')
             try:
-                self.log.debug('calibre version:', __version__)
+                self.log.debug('ebook_converter version:', __version__)
                 odict = dict(self.opts.__dict__)
                 for x in ('username', 'password'):
                     odict.pop(x, None)
@@ -1019,7 +1019,7 @@ OptionRecommendation(name='search_replace',
             pass
 
     def dump_oeb(self, oeb, out_dir):
-        from calibre.ebooks.oeb.writer import OEBWriter
+        from ebook_converter.ebooks.oeb.writer import OEBWriter
         w = OEBWriter(pretty_print=self.opts.pretty_print)
         w(oeb, out_dir)
 
@@ -1054,7 +1054,7 @@ OptionRecommendation(name='search_replace',
         self.flush()
         if self.opts.embed_all_fonts or self.opts.embed_font_family:
             # Start the threaded font scanner now, for performance
-            from calibre.utils.fonts.scanner import font_scanner  # noqa
+            from ebook_converter.utils.fonts.scanner import font_scanner  # noqa
         import css_parser, logging
         css_parser.log.setLevel(logging.WARN)
         get_types_map()  # Ensure the mimetypes module is intialized
@@ -1072,7 +1072,7 @@ OptionRecommendation(name='search_replace',
                     shutil.rmtree(x)
 
         # Run any preprocess plugins
-        from calibre.customize.ui import run_plugins_on_preprocess
+        from ebook_converter.customize.ui import run_plugins_on_preprocess
         self.input = run_plugins_on_preprocess(self.input)
 
         self.flush()
@@ -1091,7 +1091,7 @@ OptionRecommendation(name='search_replace',
         if self.input_fmt == 'azw4' and self.output_plugin.file_type == 'pdf':
             self.ui_reporter(0.01, 'AZW4 files are simply wrappers around PDF files.'
                              ' Skipping the conversion and unwrapping the embedded PDF instead')
-            from calibre.ebooks.azw4.reader import unwrap
+            from ebook_converter.ebooks.azw4.reader import unwrap
             unwrap(stream, self.output)
             self.ui_reporter(1.)
             self.log(self.output_fmt.upper(), 'output written to', self.output)
@@ -1136,9 +1136,9 @@ OptionRecommendation(name='search_replace',
 
         self.oeb.plumber_output_format = self.output_fmt or ''
 
-        from calibre.ebooks.oeb.transforms.data_url import DataURL
+        from ebook_converter.ebooks.oeb.transforms.data_url import DataURL
         DataURL()(self.oeb, self.opts)
-        from calibre.ebooks.oeb.transforms.guide import Clean
+        from ebook_converter.ebooks.oeb.transforms.guide import Clean
         Clean()(self.oeb, self.opts)
         pr(0.1)
         self.flush()
@@ -1146,15 +1146,15 @@ OptionRecommendation(name='search_replace',
         self.opts.source = self.opts.input_profile
         self.opts.dest = self.opts.output_profile
 
-        from calibre.ebooks.oeb.transforms.jacket import RemoveFirstImage
+        from ebook_converter.ebooks.oeb.transforms.jacket import RemoveFirstImage
         RemoveFirstImage()(self.oeb, self.opts, self.user_metadata)
-        from calibre.ebooks.oeb.transforms.metadata import MergeMetadata
+        from ebook_converter.ebooks.oeb.transforms.metadata import MergeMetadata
         MergeMetadata()(self.oeb, self.user_metadata, self.opts,
                 override_input_metadata=self.override_input_metadata)
         pr(0.2)
         self.flush()
 
-        from calibre.ebooks.oeb.transforms.structure import DetectStructure
+        from ebook_converter.ebooks.oeb.transforms.structure import DetectStructure
         DetectStructure()(self.oeb, self.opts)
         pr(0.35)
         self.flush()
@@ -1166,7 +1166,7 @@ OptionRecommendation(name='search_replace',
             if item is not None and item.count() == 0:
                 self.oeb.toc.remove(item)
 
-        from calibre.ebooks.oeb.transforms.flatcss import CSSFlattener
+        from ebook_converter.ebooks.oeb.transforms.flatcss import CSSFlattener
         fbase = self.opts.base_font_size
         if fbase < 1e-4:
             fbase = float(self.opts.dest.fbase)
@@ -1180,7 +1180,7 @@ OptionRecommendation(name='search_replace',
                 self.log.error('Invalid font size key: %r ignoring'%fkey)
                 fkey = self.opts.dest.fkey
 
-        from calibre.ebooks.oeb.transforms.jacket import Jacket
+        from ebook_converter.ebooks.oeb.transforms.jacket import Jacket
         Jacket()(self.oeb, self.opts, self.user_metadata)
         pr(0.4)
         self.flush()
@@ -1205,11 +1205,11 @@ OptionRecommendation(name='search_replace',
 
         if self.opts.linearize_tables and \
                 self.output_plugin.file_type not in ('mobi', 'lrf'):
-            from calibre.ebooks.oeb.transforms.linearize_tables import LinearizeTables
+            from ebook_converter.ebooks.oeb.transforms.linearize_tables import LinearizeTables
             LinearizeTables()(self.oeb, self.opts)
 
         if self.opts.unsmarten_punctuation:
-            from calibre.ebooks.oeb.transforms.unsmarten import UnsmartenPunctuation
+            from ebook_converter.ebooks.oeb.transforms.unsmarten import UnsmartenPunctuation
             UnsmartenPunctuation()(self.oeb, self.opts)
 
         mobi_file_type = getattr(self.opts, 'mobi_file_type', 'old')
@@ -1235,23 +1235,23 @@ OptionRecommendation(name='search_replace',
         self.opts.insert_blank_line = oibl
         self.opts.remove_paragraph_spacing = orps
 
-        from calibre.ebooks.oeb.transforms.page_margin import \
+        from ebook_converter.ebooks.oeb.transforms.page_margin import \
             RemoveFakeMargins, RemoveAdobeMargins
         RemoveFakeMargins()(self.oeb, self.log, self.opts)
         RemoveAdobeMargins()(self.oeb, self.log, self.opts)
 
         if self.opts.embed_all_fonts:
-            from calibre.ebooks.oeb.transforms.embed_fonts import EmbedFonts
+            from ebook_converter.ebooks.oeb.transforms.embed_fonts import EmbedFonts
             EmbedFonts()(self.oeb, self.log, self.opts)
 
         if self.opts.subset_embedded_fonts and self.output_plugin.file_type != 'pdf':
-            from calibre.ebooks.oeb.transforms.subset import SubsetFonts
+            from ebook_converter.ebooks.oeb.transforms.subset import SubsetFonts
             SubsetFonts()(self.oeb, self.log, self.opts)
 
         pr(0.9)
         self.flush()
 
-        from calibre.ebooks.oeb.transforms.trimmanifest import ManifestTrimmer
+        from ebook_converter.ebooks.oeb.transforms.trimmanifest import ManifestTrimmer
 
         self.log.info('Cleaning up manifest...')
         trimmer = ManifestTrimmer()
@@ -1296,7 +1296,7 @@ def create_oebbook(log, path_or_stream, opts, reader=None,
     '''
     Create an OEBBook.
     '''
-    from calibre.ebooks.oeb.base import OEBBook
+    from ebook_converter.ebooks.oeb.base import OEBBook
     html_preprocessor = HTMLPreProcessor(log, opts, regex_wizard_callback=regex_wizard_callback)
     if not encoding:
         encoding = None
@@ -1310,7 +1310,7 @@ def create_oebbook(log, path_or_stream, opts, reader=None,
     log('Parsing all content...')
     oeb.removed_items_to_ignore = removed_items
     if reader is None:
-        from calibre.ebooks.oeb.reader import OEBReader
+        from ebook_converter.ebooks.oeb.reader import OEBReader
         reader = OEBReader
 
     reader()(oeb, path_or_stream)
@@ -1318,7 +1318,7 @@ def create_oebbook(log, path_or_stream, opts, reader=None,
 
 
 def create_dummy_plumber(input_format, output_format):
-    from calibre.utils.logging import Log
+    from ebook_converter.utils.logging import Log
     input_format = input_format.lower()
     output_format = output_format.lower()
     output_path = 'dummy.'+output_format

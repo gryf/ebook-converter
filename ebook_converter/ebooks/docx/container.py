@@ -9,16 +9,16 @@ import os, sys, shutil
 
 from lxml import etree
 
-from calibre import walk, guess_type
-from calibre.ebooks.metadata import string_to_authors, authors_to_sort_string
-from calibre.ebooks.metadata.book.base import Metadata
-from calibre.ebooks.docx import InvalidDOCX
-from calibre.ebooks.docx.names import DOCXNamespace
-from calibre.ptempfile import PersistentTemporaryDirectory
-from calibre.utils.localization import canonicalize_lang
-from calibre.utils.logging import default_log
-from calibre.utils.zipfile import ZipFile
-from calibre.utils.xml_parse import safe_xml_fromstring
+from ebook_converter import walk, guess_type
+from ebook_converter.ebooks.metadata import string_to_authors, authors_to_sort_string
+from ebook_converter.ebooks.metadata.book.base import Metadata
+from ebook_converter.ebooks.docx import InvalidDOCX
+from ebook_converter.ebooks.docx.names import DOCXNamespace
+from ebook_converter.ptempfile import PersistentTemporaryDirectory
+from ebook_converter.utils.localization import canonicalize_lang
+from ebook_converter.utils.logging import default_log
+from ebook_converter.utils.zipfile import ZipFile
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
 
 
 def fromstring(raw, parser=None):
@@ -113,7 +113,7 @@ class DOCX(object):
         except:
             self.log.exception('DOCX appears to be invalid ZIP file, trying a'
                     ' more forgiving ZIP parser')
-            from calibre.utils.localunzip import extractall
+            from ebook_converter.utils.localunzip import extractall
             stream.seek(0)
             extractall(stream, self.tdir)
 

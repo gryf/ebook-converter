@@ -9,12 +9,12 @@ __docformat__ = 'restructuredtext en'
 import re, codecs, os, numbers
 from collections import namedtuple
 
-from calibre import strftime
-from calibre.customize import CatalogPlugin
-from calibre.library.catalogs import FIELDS, TEMPLATE_ALLOWED_FIELDS
-from calibre.customize.conversion import DummyReporter
-from calibre.ebooks.metadata import format_isbn
-from polyglot.builtins import filter, string_or_bytes, unicode_type
+from ebook_converter import strftime
+from ebook_converter.customize import CatalogPlugin
+from ebook_converter.library.catalogs import FIELDS, TEMPLATE_ALLOWED_FIELDS
+from ebook_converter.customize.conversion import DummyReporter
+from ebook_converter.ebooks.metadata import format_isbn
+from ebook_converter.polyglot.builtins import filter, string_or_bytes, unicode_type
 
 
 class BIBTEX(CatalogPlugin):
@@ -108,12 +108,12 @@ class BIBTEX(CatalogPlugin):
                 "Applies to: BIBTEX output format"))]
 
     def run(self, path_to_output, opts, db, notification=DummyReporter()):
-        from calibre.utils.date import isoformat
-        from calibre.utils.html2text import html2text
-        from calibre.utils.bibtex import BibTeX
-        from calibre.library.save_to_disk import preprocess_template
-        from calibre.utils.logging import default_log as log
-        from calibre.utils.filenames import ascii_text
+        from ebook_converter.utils.date import isoformat
+        from ebook_converter.utils.html2text import html2text
+        from ebook_converter.utils.bibtex import BibTeX
+        from ebook_converter.library.save_to_disk import preprocess_template
+        from ebook_converter.utils.logging import default_log as log
+        from ebook_converter.utils.filenames import ascii_text
 
         library_name = os.path.basename(db.library_path)
 

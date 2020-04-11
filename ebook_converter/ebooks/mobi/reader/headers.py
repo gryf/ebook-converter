@@ -8,15 +8,15 @@ __docformat__ = 'restructuredtext en'
 
 import struct, re, os
 
-from calibre import replace_entities
-from calibre.utils.date import parse_date
-from calibre.ebooks.mobi import MobiError
-from calibre.ebooks.metadata import MetaInformation, check_isbn
-from calibre.ebooks.mobi.langcodes import main_language, sub_language, mobi2iana
-from calibre.utils.cleantext import clean_ascii_chars, clean_xml_chars
-from calibre.utils.localization import canonicalize_lang
-from calibre.utils.config_base import tweaks
-from polyglot.builtins import unicode_type
+from ebook_converter import replace_entities
+from ebook_converter.utils.date import parse_date
+from ebook_converter.ebooks.mobi import MobiError
+from ebook_converter.ebooks.metadata import MetaInformation, check_isbn
+from ebook_converter.ebooks.mobi.langcodes import main_language, sub_language, mobi2iana
+from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
+from ebook_converter.utils.localization import canonicalize_lang
+from ebook_converter.utils.config_base import tweaks
+from ebook_converter.polyglot.builtins import unicode_type
 
 NULL_INDEX = 0xffffffff
 

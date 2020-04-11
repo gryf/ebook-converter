@@ -9,10 +9,10 @@ __docformat__ = 'restructuredtext en'
 import os, errno, sys
 from threading import Thread
 
-from calibre import force_unicode
-from calibre.constants import iswindows, get_windows_username, islinux, filesystem_encoding, ispy3
-from calibre.utils.filenames import ascii_filename
-from polyglot.functools import lru_cache
+from ebook_converter import force_unicode
+from ebook_converter.constants import iswindows, get_windows_username, islinux, filesystem_encoding, ispy3
+from ebook_converter.utils.filenames import ascii_filename
+from ebook_converter.polyglot.functools import lru_cache
 
 VADDRESS = None
 

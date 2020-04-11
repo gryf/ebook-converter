@@ -16,13 +16,13 @@ from css_parser.css import (CSSStyleRule, CSSPageRule, CSSFontFaceRule,
         cssproperties)
 from css_parser import (profile as cssprofiles, parseString, parseStyle, log as
         css_parser_log, CSSParser, profiles, replaceUrls)
-from calibre import force_unicode, as_unicode
-from calibre.ebooks import unit_convert
-from calibre.ebooks.oeb.base import XHTML, XHTML_NS, CSS_MIME, OEB_STYLES, xpath, urlnormalize
-from calibre.ebooks.oeb.normalize_css import DEFAULTS, normalizers
-from css_selectors import Select, SelectorError, INAPPROPRIATE_PSEUDO_CLASSES
-from polyglot.builtins import iteritems, unicode_type, filter
-from tinycss.media3 import CSSMedia3Parser
+from ebook_converter import force_unicode, as_unicode
+from ebook_converter.ebooks import unit_convert
+from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS, CSS_MIME, OEB_STYLES, xpath, urlnormalize
+from ebook_converter.ebooks.oeb.normalize_css import DEFAULTS, normalizers
+from ebook_converter.css_selectors import Select, SelectorError, INAPPROPRIATE_PSEUDO_CLASSES
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, filter
+from ebook_converter.tinycss.media3 import CSSMedia3Parser
 
 css_parser_log.setLevel(logging.WARN)
 
@@ -194,7 +194,7 @@ class Stylizer(object):
             # Use the default profile. This should really be using
             # opts.output_profile, but I don't want to risk changing it, as
             # doing so might well have hard to debug font size effects.
-            from calibre.customize.ui import output_profiles
+            from ebook_converter.customize.ui import output_profiles
             for x in output_profiles():
                 if x.short_name == 'default':
                     self.profile = x

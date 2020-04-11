@@ -11,8 +11,8 @@ License: http://www.opensource.org/licenses/mit-license.php
 
 import re
 
-from calibre.utils.icu import capitalize, upper
-from polyglot.builtins import unicode_type
+from ebook_converter.utils.icu import capitalize, upper
+from ebook_converter.polyglot.builtins import unicode_type
 
 __all__ = ['titlecase']
 __version__ = '0.5'
@@ -37,7 +37,7 @@ _lang = None
 def lang():
     global _lang
     if _lang is None:
-        from calibre.utils.localization import get_lang
+        from ebook_converter.utils.localization import get_lang
         _lang = get_lang().lower()
     return _lang
 

@@ -1,11 +1,10 @@
-from __future__ import unicode_literals, print_function
 ''' E-book management software'''
 __license__   = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 import sys, os, re, time, random, warnings
-from polyglot.builtins import codepoint_to_chr, unicode_type, range, hasenv, native_string_type
+from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, range, hasenv, native_string_type
 from math import floor
 from functools import partial
 
@@ -16,12 +15,12 @@ try:
 except EnvironmentError:
     os.chdir(os.path.expanduser('~'))
 
-from calibre.constants import (iswindows, isosx, islinux, isfrozen,
+from ebook_converter.constants import (iswindows, isosx, islinux, isfrozen,
         isbsd, preferred_encoding, __appname__, __version__, __author__,
         win32event, win32api, winerror, fcntl, ispy3,
         filesystem_encoding, plugins, config_dir)
-from calibre.startup import winutil, winutilerror
-from calibre.utils.icu import safe_chr
+from ebook_converter.startup import winutil, winutilerror
+from ebook_converter.utils.icu import safe_chr
 
 if False:
     # Prevent pyflakes from complaining
@@ -163,7 +162,7 @@ def prints(*args, **kwargs):
     for i, arg in enumerate(args):
         if isinstance(arg, unicode_type):
             if iswindows:
-                from calibre.utils.terminal import Detect
+                from ebook_converter.utils.terminal import Detect
                 cs = Detect(file)
                 if cs.is_console:
                     cs.write_unicode_text(arg)
@@ -255,19 +254,19 @@ def extract(path, dir):
     with open(path, 'rb') as f:
         id_ = f.read(3)
     if id_ == b'Rar':
-        from calibre.utils.unrar import extract as rarextract
+        from ebook_converter.utils.unrar import extract as rarextract
         extractor = rarextract
     elif id_.startswith(b'PK'):
-        from calibre.libunzip import extract as zipextract
+        from ebook_converter.libunzip import extract as zipextract
         extractor = zipextract
     if extractor is None:
         # Fallback to file extension
         ext = os.path.splitext(path)[1][1:].lower()
         if ext in ['zip', 'cbz', 'epub', 'oebzip']:
-            from calibre.libunzip import extract as zipextract
+            from ebook_converter.libunzip import extract as zipextract
             extractor = zipextract
         elif ext in ['cbr', 'rar']:
-            from calibre.utils.unrar import extract as rarextract
+            from ebook_converter.utils.unrar import extract as rarextract
             extractor = rarextract
     if extractor is None:
         raise Exception('Unknown archive type')
@@ -363,7 +362,7 @@ def is_mobile_ua(ua):
 
 
 def random_user_agent(choose=None, allow_ie=True):
-    from calibre.utils.random_ua import common_user_agents
+    from ebook_converter.utils.random_ua import common_user_agents
     ua_list = common_user_agents()
     ua_list = [x for x in ua_list if not is_mobile_ua(x)]
     if not allow_ie:
@@ -380,7 +379,7 @@ def browser(honor_time=True, max_time=2, mobile_browser=False, user_agent=None, 
     :param max_time: Maximum time in seconds to wait during a refresh request
     :param verify_ssl_certificates: If false SSL certificates errors are ignored
     '''
-    from calibre.utils.browser import Browser
+    from ebook_converter.utils.browser import Browser
     opener = Browser(verify_ssl=verify_ssl_certificates)
     opener.set_handle_refresh(handle_refresh, max_time=max_time, honor_time=honor_time)
     opener.set_handle_robots(False)
@@ -560,7 +559,7 @@ def entity_to_unicode(match, exceptions=[], encoding='cp1252',
             return check(bytes(bytearray((num,))).decode(encoding))
         except UnicodeDecodeError:
             return check(my_unichr(num))
-    from calibre.ebooks.html_entities import html5_entities
+    from ebook_converter.ebooks.html_entities import html5_entities
     try:
         return check(html5_entities[ent])
     except KeyError:
@@ -654,7 +653,7 @@ def human_readable(size, sep=' '):
 
 
 def ipython(user_ns=None):
-    from calibre.utils.ipython import ipython
+    from ebook_converter.utils.ipython import ipython
     ipython(user_ns=user_ns)
 
 

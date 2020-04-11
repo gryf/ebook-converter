@@ -8,10 +8,10 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre.customize.conversion import InputFormatPlugin, OptionRecommendation
-from calibre.constants import numeric_version
-from calibre import walk
-from polyglot.builtins import unicode_type
+from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from ebook_converter.constants import numeric_version
+from ebook_converter import walk
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class RecipeDisabled(Exception):
@@ -58,10 +58,10 @@ class RecipeInput(InputFormatPlugin):
 
     def convert(self, recipe_or_file, opts, file_ext, log,
             accelerators):
-        from calibre.web.feeds.recipes import compile_recipe
+        from ebook_converter.web.feeds.recipes import compile_recipe
         opts.output_profile.flow_size = 0
         if file_ext == 'downloaded_recipe':
-            from calibre.utils.zipfile import ZipFile
+            from ebook_converter.utils.zipfile import ZipFile
             zf = ZipFile(recipe_or_file, 'r')
             zf.extractall()
             zf.close()
@@ -72,7 +72,7 @@ class RecipeInput(InputFormatPlugin):
             self.recipe_object = recipe(opts, log, self.report_progress)
         else:
             if os.environ.get('CALIBRE_RECIPE_URN'):
-                from calibre.web.feeds.recipes.collection import get_custom_recipe, get_builtin_recipe_by_id
+                from ebook_converter.web.feeds.recipes.collection import get_custom_recipe, get_builtin_recipe_by_id
                 urn = os.environ['CALIBRE_RECIPE_URN']
                 log('Downloading recipe urn: ' + urn)
                 rtype, recipe_id = urn.partition(':')[::2]
@@ -93,7 +93,7 @@ class RecipeInput(InputFormatPlugin):
                 recipe = compile_recipe(self.recipe_source)
                 log('Using custom recipe')
             else:
-                from calibre.web.feeds.recipes.collection import (
+                from ebook_converter.web.feeds.recipes.collection import (
                         get_builtin_recipe_by_title, get_builtin_recipe_titles)
                 title = getattr(opts, 'original_recipe_input_arg', recipe_or_file)
                 title = os.path.basename(title).rpartition('.')[0]
@@ -157,7 +157,7 @@ class RecipeInput(InputFormatPlugin):
 
     def specialize(self, oeb, opts, log, output_fmt):
         if opts.no_inline_navbars:
-            from calibre.ebooks.oeb.base import XPath
+            from ebook_converter.ebooks.oeb.base import XPath
             for item in oeb.spine:
                 for div in XPath('//h:div[contains(@class, "calibre_navbar")]')(item.data):
                     div.getparent().remove(div)

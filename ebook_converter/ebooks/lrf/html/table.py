@@ -4,11 +4,11 @@ __license__   = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 import math, sys, re, numbers
 
-from calibre.ebooks.lrf.fonts import get_font
-from calibre.ebooks.lrf.pylrs.pylrs import TextBlock, Text, CR, Span, \
+from ebook_converter.ebooks.lrf.fonts import get_font
+from ebook_converter.ebooks.lrf.pylrs.pylrs import TextBlock, Text, CR, Span, \
                                              CharButton, Plot, Paragraph, \
                                              LrsTextTag
-from polyglot.builtins import string_or_bytes, range, native_string_type
+from ebook_converter.polyglot.builtins import string_or_bytes, range, native_string_type
 
 
 def ceil(num):
@@ -16,7 +16,7 @@ def ceil(num):
 
 
 def print_xml(elem):
-    from calibre.ebooks.lrf.pylrs.pylrs import ElementWriter
+    from ebook_converter.ebooks.lrf.pylrs.pylrs import ElementWriter
     elem = elem.toElement(native_string_type('utf8'))
     ew = ElementWriter(elem, sourceEncoding=native_string_type('utf8'))
     ew.write(sys.stdout)

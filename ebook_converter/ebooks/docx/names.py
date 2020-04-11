@@ -9,8 +9,8 @@ import re
 
 from lxml.etree import XPath as X
 
-from calibre.utils.filenames import ascii_text
-from polyglot.builtins import iteritems
+from ebook_converter.utils.filenames import ascii_text
+from ebook_converter.polyglot.builtins import iteritems
 
 # Names {{{
 TRANSITIONAL_NAMES = {

@@ -9,8 +9,8 @@ __docformat__ = 'restructuredtext en'
 import numbers
 from collections import Counter
 
-from calibre.ebooks.oeb.base import barename, XPath
-from polyglot.builtins import iteritems
+from ebook_converter.ebooks.oeb.base import barename, XPath
+from ebook_converter.polyglot.builtins import iteritems
 
 
 class RemoveAdobeMargins(object):

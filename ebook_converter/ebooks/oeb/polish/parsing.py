@@ -10,11 +10,11 @@ import re
 from lxml.etree import Element as LxmlElement
 import html5_parser
 
-from calibre import xml_replace_entities
-from calibre.utils.xml_parse import safe_xml_fromstring
-from calibre.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
-from calibre.utils.cleantext import clean_xml_chars
-from polyglot.builtins import unicode_type
+from ebook_converter import xml_replace_entities
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
+from ebook_converter.utils.cleantext import clean_xml_chars
+from ebook_converter.polyglot.builtins import unicode_type
 
 XHTML_NS     = 'http://www.w3.org/1999/xhtml'
 

@@ -8,14 +8,14 @@ __docformat__ = 'restructuredtext en'
 
 import copy, traceback
 
-from calibre import prints
-from calibre.constants import DEBUG, ispy3
-from calibre.ebooks.metadata.book import (SC_COPYABLE_FIELDS,
+from ebook_converter import prints
+from ebook_converter.constants import DEBUG, ispy3
+from ebook_converter.ebooks.metadata.book import (SC_COPYABLE_FIELDS,
         SC_FIELDS_COPY_NOT_NULL, STANDARD_METADATA_FIELDS,
         TOP_LEVEL_IDENTIFIERS, ALL_METADATA_FIELDS)
-from calibre.library.field_metadata import FieldMetadata
-from calibre.utils.icu import sort_key
-from polyglot.builtins import iteritems, unicode_type, filter, map
+from ebook_converter.library.field_metadata import FieldMetadata
+from ebook_converter.utils.icu import sort_key
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, filter, map
 
 # Special sets used to optimize the performance of getting and setting
 # attributes on Metadata objects
@@ -52,7 +52,7 @@ def reset_field_metadata():
     field_metadata = FieldMetadata()
 
 
-ck = lambda typ: icu_lower(typ).strip().replace(':', '').replace(',', '')
+ck = lambda typ: typ.lower().strip().replace(':', '').replace(',', '')
 cv = lambda val: val.strip().replace(',', '|')
 
 
@@ -97,7 +97,7 @@ class Metadata(object):
                 # List of strings or []
                 self.author = list(authors) if authors else []  # Needed for backward compatibility
                 self.authors = list(authors) if authors else []
-        from calibre.ebooks.metadata.book.formatter import SafeFormat
+        from ebook_converter.ebooks.metadata.book.formatter import SafeFormat
         self.formatter = SafeFormat() if formatter is None else formatter
         self.template_cache = template_cache
 
@@ -441,7 +441,7 @@ class Metadata(object):
         '''
         if not ops:
             return
-        from calibre.ebooks.metadata.book.formatter import SafeFormat
+        from ebook_converter.ebooks.metadata.book.formatter import SafeFormat
         formatter = SafeFormat()
         for op in ops:
             try:
@@ -584,14 +584,15 @@ class Metadata(object):
                 for attr in TOP_LEVEL_IDENTIFIERS:
                     copy_not_none(self, other, attr)
 
-        other_lang = getattr(other, 'languages', [])
-        if other_lang and other_lang != ['und']:
-            self.languages = list(other_lang)
+        # other_lang = getattr(other, 'languages', [])
+        # if other_lang and other_lang != ['und']:
+            # self.languages = list(other_lang)
+        self.languages = []
         if not getattr(self, 'series', None):
             self.series_index = None
 
     def format_series_index(self, val=None):
-        from calibre.ebooks.metadata import fmt_sidx
+        from ebook_converter.ebooks.metadata import fmt_sidx
         v = self.series_index if val is None else val
         try:
             x = float(v)
@@ -600,11 +601,11 @@ class Metadata(object):
         return fmt_sidx(x)
 
     def authors_from_string(self, raw):
-        from calibre.ebooks.metadata import string_to_authors
+        from ebook_converter.ebooks.metadata import string_to_authors
         self.authors = string_to_authors(raw)
 
     def format_authors(self):
-        from calibre.ebooks.metadata import authors_to_string
+        from ebook_converter.ebooks.metadata import authors_to_string
         return authors_to_string(self.authors)
 
     def format_tags(self):
@@ -625,12 +626,12 @@ class Metadata(object):
         return (name, val)
 
     def format_field_extended(self, key, series_with_index=True):
-        from calibre.ebooks.metadata import authors_to_string
+        from ebook_converter.ebooks.metadata import authors_to_string
         '''
         returns the tuple (display_name, formatted_value, original_value,
         field_metadata)
         '''
-        from calibre.utils.date import format_date
+        from ebook_converter.utils.date import format_date
 
         # Handle custom series index
         if key.startswith('#') and key.endswith('_index'):
@@ -715,8 +716,8 @@ class Metadata(object):
         A string representation of this object, suitable for printing to
         console
         '''
-        from calibre.utils.date import isoformat
-        from calibre.ebooks.metadata import authors_to_string
+        from ebook_converter.utils.date import isoformat
+        from ebook_converter.ebooks.metadata import authors_to_string
         ans = []
 
         def fmt(x, y):
@@ -765,8 +766,8 @@ class Metadata(object):
         '''
         A HTML representation of this object.
         '''
-        from calibre.ebooks.metadata import authors_to_string
-        from calibre.utils.date import isoformat
+        from ebook_converter.ebooks.metadata import authors_to_string
+        from ebook_converter.utils.date import isoformat
         ans = [(_('Title'), unicode_type(self.title))]
         ans += [(_('Author(s)'), (authors_to_string(self.authors) if self.authors else _('Unknown')))]
         ans += [(_('Publisher'), unicode_type(self.publisher))]
@@ -817,7 +818,7 @@ def field_from_string(field, raw, field_metadata):
     elif dt == 'rating':
         val = float(raw) * 2
     elif dt == 'datetime':
-        from calibre.utils.date import parse_only_date
+        from ebook_converter.utils.date import parse_only_date
         val = parse_only_date(raw)
     elif dt == 'bool':
         if raw.lower() in {'true', 'yes', 'y'}:
@@ -833,7 +834,7 @@ def field_from_string(field, raw, field_metadata):
             if field == 'identifiers':
                 val = {x.partition(':')[0]:x.partition(':')[-1] for x in val}
             elif field == 'languages':
-                from calibre.utils.localization import canonicalize_lang
+                from ebook_converter.utils.localization import canonicalize_lang
                 val = [canonicalize_lang(x) for x in val]
                 val = [x for x in val if x]
     if val is object:

@@ -9,13 +9,13 @@ __docformat__ = 'restructuredtext en'
 import re, tempfile, os
 from functools import partial
 
-from calibre.constants import islinux, isbsd
-from calibre.customize.conversion import (InputFormatPlugin,
+from ebook_converter.constants import islinux, isbsd
+from ebook_converter.customize.conversion import (InputFormatPlugin,
         OptionRecommendation)
-from calibre.utils.localization import get_lang
-from calibre.utils.filenames import ascii_filename
-from calibre.utils.imghdr import what
-from polyglot.builtins import unicode_type, zip, getcwd, as_unicode
+from ebook_converter.utils.localization import get_lang
+from ebook_converter.utils.filenames import ascii_filename
+from ebook_converter.utils.imghdr import what
+from ebook_converter.polyglot.builtins import unicode_type, zip, getcwd, as_unicode
 
 
 def sanitize_file_name(x):
@@ -74,17 +74,17 @@ class HTMLInput(InputFormatPlugin):
         if file_ext != 'opf':
             if opts.dont_package:
                 raise ValueError('The --dont-package option is not supported for an HTML input file')
-            from calibre.ebooks.metadata.html import get_metadata
+            from ebook_converter.ebooks.metadata.html import get_metadata
             mi = get_metadata(stream)
             if fname:
-                from calibre.ebooks.metadata.meta import metadata_from_filename
+                from ebook_converter.ebooks.metadata.meta import metadata_from_filename
                 fmi = metadata_from_filename(fname)
                 fmi.smart_update(mi)
                 mi = fmi
             oeb = self.create_oebbook(stream.name, basedir, opts, log, mi)
             return oeb
 
-        from calibre.ebooks.conversion.plumber import create_oebbook
+        from ebook_converter.ebooks.conversion.plumber import create_oebbook
         return create_oebbook(log, stream.name, opts,
                 encoding=opts.input_encoding)
 
@@ -98,16 +98,16 @@ class HTMLInput(InputFormatPlugin):
 
     def create_oebbook(self, htmlpath, basedir, opts, log, mi):
         import uuid
-        from calibre.ebooks.conversion.plumber import create_oebbook
-        from calibre.ebooks.oeb.base import (DirContainer,
+        from ebook_converter.ebooks.conversion.plumber import create_oebbook
+        from ebook_converter.ebooks.oeb.base import (DirContainer,
             rewrite_links, urlnormalize, urldefrag, BINARY_MIME, OEB_STYLES,
             xpath, urlquote)
-        from calibre import guess_type
-        from calibre.ebooks.oeb.transforms.metadata import \
+        from ebook_converter import guess_type
+        from ebook_converter.ebooks.oeb.transforms.metadata import \
             meta_info_to_oeb_metadata
-        from calibre.ebooks.html.input import get_filelist
-        from calibre.ebooks.metadata import string_to_authors
-        from calibre.utils.localization import canonicalize_lang
+        from ebook_converter.ebooks.html.input import get_filelist
+        from ebook_converter.ebooks.metadata import string_to_authors
+        from ebook_converter.utils.localization import canonicalize_lang
         import css_parser, logging
         css_parser.log.setLevel(logging.WARN)
         self.OEB_STYLES = OEB_STYLES
@@ -223,7 +223,7 @@ class HTMLInput(InputFormatPlugin):
         return oeb
 
     def link_to_local_path(self, link_, base=None):
-        from calibre.ebooks.html.input import Link
+        from ebook_converter.ebooks.html.input import Link
         if not isinstance(link_, unicode_type):
             try:
                 link_ = link_.decode('utf-8', 'error')
@@ -245,7 +245,7 @@ class HTMLInput(InputFormatPlugin):
         return link, frag
 
     def resource_adder(self, link_, base=None):
-        from polyglot.urllib import quote
+        from ebook_converter.polyglot.urllib import quote
         link, frag = self.link_to_local_path(link_, base=base)
         if link is None:
             return link_

@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 __license__   = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
@@ -9,9 +7,9 @@ from various formats.
 '''
 
 import os, re, numbers, sys
-from calibre import prints
-from calibre.ebooks.chardet import xml_to_unicode
-from polyglot.builtins import unicode_type
+from ebook_converter import prints
+from ebook_converter.ebooks.chardet import xml_to_unicode
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class ConversionError(Exception):
@@ -42,7 +40,7 @@ BOOK_EXTENSIONS = ['lrf', 'rar', 'zip', 'rtf', 'lit', 'txt', 'txtz', 'text', 'ht
 
 
 def return_raster_image(path):
-    from calibre.utils.imghdr import what
+    from ebook_converter.utils.imghdr import what
     if os.access(path, os.R_OK):
         with open(path, 'rb') as f:
             raw = f.read()
@@ -51,8 +49,8 @@ def return_raster_image(path):
 
 
 def extract_cover_from_embedded_svg(html, base, log):
-    from calibre.ebooks.oeb.base import XPath, SVG, XLINK
-    from calibre.utils.xml_parse import safe_xml_fromstring
+    from ebook_converter.ebooks.oeb.base import XPath, SVG, XLINK
+    from ebook_converter.utils.xml_parse import safe_xml_fromstring
     root = safe_xml_fromstring(html)
 
     svg = XPath('//svg:svg')(root)
@@ -65,7 +63,7 @@ def extract_cover_from_embedded_svg(html, base, log):
 
 
 def extract_calibre_cover(raw, base, log):
-    from calibre.ebooks.BeautifulSoup import BeautifulSoup
+    from ebook_converter.ebooks.BeautifulSoup import BeautifulSoup
     soup = BeautifulSoup(raw)
     matches = soup.find(name=['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span',
         'font', 'br'])
@@ -93,7 +91,7 @@ def extract_calibre_cover(raw, base, log):
 
 
 def render_html_svg_workaround(path_to_html, log, width=590, height=750):
-    from calibre.ebooks.oeb.base import SVG_NS
+    from ebook_converter.ebooks.oeb.base import SVG_NS
     with open(path_to_html, 'rb') as f:
         raw = f.read()
     raw = xml_to_unicode(raw, strip_encoding_pats=True)[0]
@@ -116,8 +114,8 @@ def render_html_svg_workaround(path_to_html, log, width=590, height=750):
 
 
 def render_html_data(path_to_html, width, height):
-    from calibre.ptempfile import TemporaryDirectory
-    from calibre.utils.ipc.simple_worker import fork_job, WorkerError
+    from ebook_converter.ptempfile import TemporaryDirectory
+    from ebook_converter.utils.ipc.simple_worker import fork_job, WorkerError
     result = {}
 
     def report_error(text=''):
@@ -130,7 +128,7 @@ def render_html_data(path_to_html, width, height):
 
     with TemporaryDirectory('-render-html') as tdir:
         try:
-            result = fork_job('calibre.ebooks.render_html', 'main', args=(path_to_html, tdir, 'jpeg'))
+            result = fork_job('ebook_converter.ebooks.render_html', 'main', args=(path_to_html, tdir, 'jpeg'))
         except WorkerError as e:
             report_error(e.orig_tb)
         else:
@@ -163,8 +161,8 @@ def calibre_cover(title, author_string, series_string=None,
     title = normalize(title)
     author_string = normalize(author_string)
     series_string = normalize(series_string)
-    from calibre.ebooks.covers import calibre_cover2
-    from calibre.utils.img import image_to_data
+    from ebook_converter.ebooks.covers import calibre_cover2
+    from ebook_converter.utils.img import image_to_data
     ans = calibre_cover2(title, author_string or '', series_string or '', logo_path=logo_path, as_qimage=True)
     return image_to_data(ans, fmt=output_format)
 
@@ -226,10 +224,10 @@ def parse_css_length(value):
 
 
 def generate_masthead(title, output_path=None, width=600, height=60):
-    from calibre.ebooks.conversion.config import load_defaults
+    from ebook_converter.ebooks.conversion.config import load_defaults
     recs = load_defaults('mobi_output')
     masthead_font_family = recs.get('masthead_font', None)
-    from calibre.ebooks.covers import generate_masthead
+    from ebook_converter.ebooks.covers import generate_masthead
     return generate_masthead(title, output_path=output_path, width=width, height=height, font_family=masthead_font_family)
 
 

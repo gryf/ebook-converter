@@ -7,13 +7,13 @@ __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 import os, re
-from calibre.utils.date import isoformat, now
-from calibre import guess_type
-from polyglot.builtins import iteritems
+from ebook_converter.utils.date import isoformat, now
+from ebook_converter import guess_type
+from ebook_converter.polyglot.builtins import iteritems
 
 
 def meta_info_to_oeb_metadata(mi, m, log, override_input_metadata=False):
-    from calibre.ebooks.oeb.base import OPF
+    from ebook_converter.ebooks.oeb.base import OPF
     if not mi.is_null('title'):
         m.clear('title')
         m.add('title', mi.title)
@@ -167,7 +167,7 @@ class MergeMetadata(object):
         return id
 
     def remove_old_cover(self, cover_item, new_cover_href=None):
-        from calibre.ebooks.oeb.base import XPath, XLINK
+        from ebook_converter.ebooks.oeb.base import XPath, XLINK
         from lxml import etree
 
         self.oeb.manifest.remove(cover_item)

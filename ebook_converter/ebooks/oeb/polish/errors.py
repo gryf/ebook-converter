@@ -6,7 +6,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-from calibre.ebooks import DRMError as _DRMError
+from ebook_converter.ebooks import DRMError as _DRMError
 
 
 class InvalidBook(ValueError):

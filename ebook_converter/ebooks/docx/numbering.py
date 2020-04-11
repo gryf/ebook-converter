@@ -11,10 +11,10 @@ from functools import partial
 
 from lxml.html.builder import OL, UL, SPAN
 
-from calibre.ebooks.docx.block_styles import ParagraphStyle
-from calibre.ebooks.docx.char_styles import RunStyle, inherit
-from calibre.ebooks.metadata import roman
-from polyglot.builtins import iteritems, unicode_type
+from ebook_converter.ebooks.docx.block_styles import ParagraphStyle
+from ebook_converter.ebooks.docx.char_styles import RunStyle, inherit
+from ebook_converter.ebooks.metadata import roman
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 STYLE_MAP = {
     'aiueo': 'hiragana',

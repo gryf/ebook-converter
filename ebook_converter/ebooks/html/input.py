@@ -13,12 +13,12 @@ Input plugin for HTML or OPF ebooks.
 
 import os, re, sys,  errno as gerrno
 
-from calibre.ebooks.oeb.base import urlunquote
-from calibre.ebooks.chardet import detect_xml_encoding
-from calibre.constants import iswindows
-from calibre import unicode_path, as_unicode, replace_entities
-from polyglot.builtins import is_py3, unicode_type
-from polyglot.urllib import urlparse, urlunparse
+from ebook_converter.ebooks.oeb.base import urlunquote
+from ebook_converter.ebooks.chardet import detect_xml_encoding
+from ebook_converter.constants import iswindows
+from ebook_converter import unicode_path, as_unicode, replace_entities
+from ebook_converter.polyglot.builtins import is_py3, unicode_type
+from ebook_converter.polyglot.urllib import urlparse, urlunparse
 
 
 class Link(object):

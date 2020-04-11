@@ -7,10 +7,10 @@ __docformat__ = 'restructuredtext en'
 
 import os, io
 
-from calibre.customize.conversion import (OutputFormatPlugin,
+from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
-from calibre.ptempfile import TemporaryDirectory
-from polyglot.builtins import unicode_type
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class PMLOutput(OutputFormatPlugin):
@@ -37,8 +37,8 @@ class PMLOutput(OutputFormatPlugin):
     }
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
-        from calibre.ebooks.pml.pmlml import PMLMLizer
-        from calibre.utils.zipfile import ZipFile
+        from ebook_converter.ebooks.pml.pmlml import PMLMLizer
+        from ebook_converter.utils.zipfile import ZipFile
 
         with TemporaryDirectory('_pmlz_output') as tdir:
             pmlmlizer = PMLMLizer(log)
@@ -58,7 +58,7 @@ class PMLOutput(OutputFormatPlugin):
     def write_images(self, manifest, image_hrefs, out_dir, opts):
         from PIL import Image
 
-        from calibre.ebooks.oeb.base import OEB_RASTER_IMAGES
+        from ebook_converter.ebooks.oeb.base import OEB_RASTER_IMAGES
         for item in manifest:
             if item.media_type in OEB_RASTER_IMAGES and item.href in image_hrefs.keys():
                 if opts.full_image_depth:

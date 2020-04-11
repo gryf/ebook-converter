@@ -7,12 +7,12 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 import os
-from polyglot.builtins import range
+from ebook_converter.polyglot.builtins import range
 
 
 def db(path=None, read_only=False):
-    from calibre.db.legacy import LibraryDatabase
-    from calibre.utils.config import prefs
+    from ebook_converter.db.legacy import LibraryDatabase
+    from ebook_converter.utils.config import prefs
     return LibraryDatabase(os.path.expanduser(path) if path else prefs['library_path'],
             read_only=read_only)
 
@@ -28,7 +28,7 @@ def generate_test_db(library_path,  # {{{
         max_tags=10
         ):
     import random, string, os, sys, time
-    from calibre.constants import preferred_encoding
+    from ebook_converter.constants import preferred_encoding
 
     if not os.path.exists(library_path):
         os.makedirs(library_path)
@@ -59,7 +59,7 @@ def generate_test_db(library_path,  # {{{
         authors = [random.choice(all_authors) for i in range(authors)]
         tags = random.randint(0, max_tags)
         tags = [random.choice(all_tags) for i in range(tags)]
-        from calibre.ebooks.metadata.book.base import Metadata
+        from ebook_converter.ebooks.metadata.book.base import Metadata
         mi = Metadata(title, authors)
         mi.tags = tags
         testdb.import_book(mi, [])
@@ -71,7 +71,7 @@ def generate_test_db(library_path,  # {{{
 
 
 def current_library_path():
-    from calibre.utils.config import prefs
+    from ebook_converter.utils.config import prefs
     path = prefs['library_path']
     if path:
         path = path.replace('\\', '/')

@@ -7,7 +7,7 @@ __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 import os, sys
-from calibre.customize.conversion import InputFormatPlugin
+from ebook_converter.customize.conversion import InputFormatPlugin
 
 
 class LRFInput(InputFormatPlugin):
@@ -20,12 +20,12 @@ class LRFInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from calibre.ebooks.lrf.input import (MediaType, Styles, TextBlock,
+        from ebook_converter.ebooks.lrf.input import (MediaType, Styles, TextBlock,
                 Canvas, ImageBlock, RuledLine)
         self.log = log
         self.log('Generating XML')
-        from calibre.ebooks.lrf.lrfparser import LRFDocument
-        from calibre.utils.xml_parse import safe_xml_fromstring
+        from ebook_converter.ebooks.lrf.lrfparser import LRFDocument
+        from ebook_converter.utils.xml_parse import safe_xml_fromstring
         from lxml import etree
         d = LRFDocument(stream)
         d.parse()

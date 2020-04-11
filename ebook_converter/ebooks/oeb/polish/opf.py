@@ -7,8 +7,8 @@ __copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 from lxml import etree
 
-from calibre.ebooks.oeb.polish.container import OPF_NAMESPACES
-from calibre.utils.localization import canonicalize_lang
+from ebook_converter.ebooks.oeb.polish.container import OPF_NAMESPACES
+from ebook_converter.utils.localization import canonicalize_lang
 
 
 def get_book_language(container):

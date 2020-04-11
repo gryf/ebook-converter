@@ -6,8 +6,8 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre.customize.conversion import InputFormatPlugin
-from polyglot.builtins import unicode_type
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class MOBIInput(InputFormatPlugin):
@@ -23,7 +23,7 @@ class MOBIInput(InputFormatPlugin):
         self.is_kf8 = False
         self.mobi_is_joint = False
 
-        from calibre.ebooks.mobi.reader.mobi6 import MobiReader
+        from ebook_converter.ebooks.mobi.reader.mobi6 import MobiReader
         from lxml import html
         parse_cache = {}
         try:
@@ -42,7 +42,7 @@ class MOBIInput(InputFormatPlugin):
             log('Found KF8 MOBI of type %r'%mr.kf8_type)
             if mr.kf8_type == 'joint':
                 self.mobi_is_joint = True
-            from calibre.ebooks.mobi.reader.mobi8 import Mobi8Reader
+            from ebook_converter.ebooks.mobi.reader.mobi8 import Mobi8Reader
             mr = Mobi8Reader(mr, log)
             opf = os.path.abspath(mr())
             self.encrypted_fonts = mr.encrypted_fonts
@@ -55,7 +55,7 @@ class MOBIInput(InputFormatPlugin):
                 raw = raw.encode('utf-8')
             with lopen('debug-raw.html', 'wb') as f:
                 f.write(raw)
-        from calibre.ebooks.oeb.base import close_self_closing_tags
+        from ebook_converter.ebooks.oeb.base import close_self_closing_tags
         for f, root in parse_cache.items():
             raw = html.tostring(root, encoding='utf-8', method='xml',
                     include_meta_content_type=False)

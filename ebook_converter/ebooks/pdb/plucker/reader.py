@@ -12,12 +12,12 @@ import zlib
 
 from collections import OrderedDict
 
-from calibre import CurrentDir
-from calibre.ebooks.pdb.formatreader import FormatReader
-from calibre.ebooks.compression.palmdoc import decompress_doc
-from calibre.utils.imghdr import identify
-from calibre.utils.img import save_cover_data_to, Canvas, image_from_data
-from polyglot.builtins import codepoint_to_chr, range
+from ebook_converter import CurrentDir
+from ebook_converter.ebooks.pdb.formatreader import FormatReader
+from ebook_converter.ebooks.compression.palmdoc import decompress_doc
+from ebook_converter.utils.imghdr import identify
+from ebook_converter.utils.img import save_cover_data_to, Canvas, image_from_data
+from ebook_converter.polyglot.builtins import codepoint_to_chr, range
 
 DATATYPE_PHTML = 0
 DATATYPE_PHTML_COMPRESSED = 1
@@ -353,7 +353,7 @@ class Reader(FormatReader):
             self.owner_id = mdata_section.owner_id
 
         # Get the metadata (tile, author, ...) with the metadata reader.
-        from calibre.ebooks.metadata.pdb import get_metadata
+        from ebook_converter.ebooks.metadata.pdb import get_metadata
         self.mi = get_metadata(stream, False)
 
     def extract_content(self, output_dir):
@@ -445,7 +445,7 @@ class Reader(FormatReader):
                     self.log.error('Failed to write composite image with uid %s: %s' % (uid, e))
 
         # Run the HTML through the html processing plugin.
-        from calibre.customize.ui import plugin_for_input_format
+        from ebook_converter.customize.ui import plugin_for_input_format
         html_input = plugin_for_input_format('html')
         for opt in html_input.options:
             setattr(self.options, opt.option.name, opt.recommended_value)
@@ -474,7 +474,7 @@ class Reader(FormatReader):
                 raise NotImplementedError
             return zlib.decompress(data)
         elif self.header_record.compression == 1:
-            from calibre.ebooks.compression.palmdoc import decompress_doc
+            from ebook_converter.ebooks.compression.palmdoc import decompress_doc
             return decompress_doc(data)
 
     def process_phtml(self, d, paragraph_offsets=[]):

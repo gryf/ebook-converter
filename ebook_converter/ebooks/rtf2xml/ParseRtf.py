@@ -15,7 +15,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # $Date: 2006/03/24 23:50:07 $
 import sys, os
 
-from calibre.ebooks.rtf2xml import headings_to_sections, \
+from ebook_converter.ebooks.rtf2xml import headings_to_sections, \
     line_endings, footnote, fields_small, default_encoding, \
     make_lists, preamble_div, header, colors, group_borders, \
     check_encoding, add_brackets, table, combine_borders, \
@@ -25,8 +25,8 @@ from calibre.ebooks.rtf2xml import headings_to_sections, \
     list_numbers, info, pict, table_info, fonts, paragraphs, \
     body_styles, preamble_rest, group_styles, \
     inline
-from calibre.ebooks.rtf2xml.old_rtf import OldRtf
-from polyglot.builtins import unicode_type
+from ebook_converter.ebooks.rtf2xml.old_rtf import OldRtf
+from ebook_converter.polyglot.builtins import unicode_type
 
 from . import open_for_read, open_for_write
 

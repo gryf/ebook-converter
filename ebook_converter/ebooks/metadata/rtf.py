@@ -9,9 +9,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import codecs
 import re
 
-from calibre import force_unicode
-from calibre.ebooks.metadata import MetaInformation
-from polyglot.builtins import codepoint_to_chr, string_or_bytes, unicode_type, int_to_byte, filter
+from ebook_converter import force_unicode
+from ebook_converter.ebooks.metadata import MetaInformation
+from ebook_converter.polyglot.builtins import codepoint_to_chr, string_or_bytes, unicode_type, int_to_byte, filter
 
 title_pat    = re.compile(br'\{\\info.*?\{\\title(.*?)(?<!\\)\}', re.DOTALL)
 author_pat   = re.compile(br'\{\\info.*?\{\\author(.*?)(?<!\\)\}', re.DOTALL)
@@ -232,7 +232,7 @@ def set_metadata(stream, options):
 def find_tests():
     import unittest
     from io import BytesIO
-    from calibre.ebooks.metadata.book.base import Metadata
+    from ebook_converter.ebooks.metadata.book.base import Metadata
 
     class Test(unittest.TestCase):
 

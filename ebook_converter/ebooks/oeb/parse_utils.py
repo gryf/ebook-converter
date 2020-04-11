@@ -10,11 +10,11 @@ import re
 
 from lxml import etree, html
 
-from calibre import xml_replace_entities, force_unicode
-from calibre.utils.xml_parse import safe_xml_fromstring
-from calibre.constants import filesystem_encoding
-from calibre.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
-from polyglot.builtins import iteritems, itervalues, unicode_type, string_or_bytes, map
+from ebook_converter import xml_replace_entities, force_unicode
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.constants import filesystem_encoding
+from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, string_or_bytes, map
 
 RECOVER_PARSER = etree.XMLParser(recover=True, no_network=True, resolve_entities=False)
 XHTML_NS     = 'http://www.w3.org/1999/xhtml'
@@ -94,7 +94,7 @@ def node_depth(node):
 
 def html5_parse(data, max_nesting_depth=100):
     from html5_parser import parse
-    from calibre.utils.cleantext import clean_xml_chars
+    from ebook_converter.utils.cleantext import clean_xml_chars
     data = parse(clean_xml_chars(data), maybe_xhtml=True, keep_doctype=False, sanitize_names=True)
     # Check that the asinine HTML 5 algorithm did not result in a tree with
     # insane nesting depths
@@ -160,7 +160,7 @@ def check_for_html5(prefix, root):
 def parse_html(data, log=None, decoder=None, preprocessor=None,
         filename='<string>', non_html_file_tags=frozenset()):
     if log is None:
-        from calibre.utils.logging import default_log
+        from ebook_converter.utils.logging import default_log
         log = default_log
 
     filename = force_unicode(filename, enc=filesystem_encoding)

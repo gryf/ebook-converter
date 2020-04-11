@@ -5,9 +5,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 __license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
-from calibre.ebooks.metadata.book import TOP_LEVEL_IDENTIFIERS, ALL_METADATA_FIELDS
+from ebook_converter.ebooks.metadata.book import TOP_LEVEL_IDENTIFIERS, ALL_METADATA_FIELDS
 
-from calibre.utils.formatter import TemplateFormatter
+from ebook_converter.utils.formatter import TemplateFormatter
 
 
 class SafeFormat(TemplateFormatter):
@@ -21,7 +21,7 @@ class SafeFormat(TemplateFormatter):
         key = orig_key = orig_key.lower()
         if (key != 'title_sort' and key not in TOP_LEVEL_IDENTIFIERS and
                 key not in ALL_METADATA_FIELDS):
-            from calibre.ebooks.metadata.book.base import field_metadata
+            from ebook_converter.ebooks.metadata.book.base import field_metadata
             key = field_metadata.search_term_to_field_key(key)
             if key is None or (self.book and
                                 key not in self.book.all_field_keys()):

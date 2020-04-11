@@ -7,10 +7,10 @@ __docformat__ = 'restructuredtext en'
 import os, re, shutil
 from os.path import dirname, abspath, relpath as _relpath, exists, basename
 
-from calibre.customize.conversion import OutputFormatPlugin, OptionRecommendation
-from calibre import CurrentDir
-from calibre.ptempfile import PersistentTemporaryDirectory
-from polyglot.builtins import unicode_type
+from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
+from ebook_converter import CurrentDir
+from ebook_converter.ptempfile import PersistentTemporaryDirectory
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 def relpath(*args):
@@ -48,10 +48,10 @@ class HTMLOutput(OutputFormatPlugin):
         Generate table of contents
         '''
         from lxml import etree
-        from polyglot.urllib import unquote
+        from ebook_converter.polyglot.urllib import unquote
 
-        from calibre.ebooks.oeb.base import element
-        from calibre.utils.cleantext import clean_xml_chars
+        from ebook_converter.ebooks.oeb.base import element
+        from ebook_converter.utils.cleantext import clean_xml_chars
         with CurrentDir(output_dir):
             def build_node(current_node, parent=None):
                 if parent is None:
@@ -85,10 +85,10 @@ class HTMLOutput(OutputFormatPlugin):
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
         from lxml import etree
-        from calibre.utils import zipfile
+        from ebook_converter.utils import zipfile
         from templite import Templite
-        from polyglot.urllib import unquote
-        from calibre.ebooks.html.meta import EasyMeta
+        from ebook_converter.polyglot.urllib import unquote
+        from ebook_converter.ebooks.html.meta import EasyMeta
 
         # read template files
         if opts.template_html_index is not None:

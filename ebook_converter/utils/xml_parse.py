@@ -63,5 +63,5 @@ def find_tests():
 
 
 if __name__ == '__main__':
-    from calibre.utils.run_tests import run_tests
+    from ebook_converter.utils.run_tests import run_tests
     run_tests(find_tests)

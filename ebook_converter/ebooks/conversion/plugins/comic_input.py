@@ -10,10 +10,10 @@ Based on ideas from comiclrf created by FangornUK.
 
 import shutil, textwrap, codecs, os
 
-from calibre.customize.conversion import InputFormatPlugin, OptionRecommendation
-from calibre import CurrentDir
-from calibre.ptempfile import PersistentTemporaryDirectory
-from polyglot.builtins import getcwd, map
+from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from ebook_converter import CurrentDir
+from ebook_converter.ptempfile import PersistentTemporaryDirectory
+from ebook_converter.polyglot.builtins import getcwd, map
 
 
 class ComicInput(InputFormatPlugin):
@@ -93,7 +93,7 @@ class ComicInput(InputFormatPlugin):
         }
 
     def get_comics_from_collection(self, stream):
-        from calibre.libunzip import extract as zipextract
+        from ebook_converter.libunzip import extract as zipextract
         tdir = PersistentTemporaryDirectory('_comic_collection')
         zipextract(stream, tdir)
         comics = []
@@ -129,7 +129,7 @@ class ComicInput(InputFormatPlugin):
         return comics
 
     def get_pages(self, comic, tdir2):
-        from calibre.ebooks.comic.input import (extract_comic,  process_pages,
+        from ebook_converter.ebooks.comic.input import (extract_comic,  process_pages,
                 find_pages)
         tdir  = extract_comic(comic)
         new_pages = find_pages(tdir, sort_on_mtime=self.opts.no_sort,
@@ -165,9 +165,9 @@ class ComicInput(InputFormatPlugin):
         return self._images
 
     def convert(self, stream, opts, file_ext, log, accelerators):
-        from calibre.ebooks.metadata import MetaInformation
-        from calibre.ebooks.metadata.opf2 import OPFCreator
-        from calibre.ebooks.metadata.toc import TOC
+        from ebook_converter.ebooks.metadata import MetaInformation
+        from ebook_converter.ebooks.metadata.opf2 import OPFCreator
+        from ebook_converter.ebooks.metadata.toc import TOC
 
         self.opts, self.log= opts, log
         if file_ext == 'cbc':
@@ -245,7 +245,7 @@ class ComicInput(InputFormatPlugin):
         return os.path.abspath('metadata.opf')
 
     def create_wrappers(self, pages):
-        from calibre.ebooks.oeb.base import XHTML_NS
+        from ebook_converter.ebooks.oeb.base import XHTML_NS
         wrappers = []
         WRAPPER = textwrap.dedent('''\
         <html xmlns="%s">
@@ -275,7 +275,7 @@ class ComicInput(InputFormatPlugin):
         return wrappers
 
     def create_viewer_wrapper(self, pages):
-        from calibre.ebooks.oeb.base import XHTML_NS
+        from ebook_converter.ebooks.oeb.base import XHTML_NS
 
         def page(src):
             return '<img src="{}"></img>'.format(os.path.basename(src))

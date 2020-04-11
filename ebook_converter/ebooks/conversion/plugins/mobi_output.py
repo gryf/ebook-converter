@@ -6,13 +6,13 @@ __license__   = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-from calibre.customize.conversion import (OutputFormatPlugin,
+from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
-from polyglot.builtins import unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 def remove_html_cover(oeb, log):
-    from calibre.ebooks.oeb.base import OEB_DOCS
+    from ebook_converter.ebooks.oeb.base import OEB_DOCS
 
     if not oeb.metadata.cover \
         or 'cover' not in oeb.guide:
@@ -32,7 +32,7 @@ def remove_html_cover(oeb, log):
 
 def extract_mobi(output_path, opts):
     if opts.extract_to is not None:
-        from calibre.ebooks.mobi.debug.main import inspect_mobi
+        from ebook_converter.ebooks.mobi.debug.main import inspect_mobi
         ddir = opts.extract_to
         inspect_mobi(output_path, ddir=ddir)
 
@@ -120,7 +120,7 @@ class MOBIOutput(OutputFormatPlugin):
     def check_for_masthead(self):
         found = 'masthead' in self.oeb.guide
         if not found:
-            from calibre.ebooks import generate_masthead
+            from ebook_converter.ebooks import generate_masthead
             self.oeb.log.debug('No masthead found in manifest, generating default mastheadImage...')
             raw = generate_masthead(unicode_type(self.oeb.metadata['title'][0]))
             id, href = self.oeb.manifest.generate('masthead', 'masthead')
@@ -130,7 +130,7 @@ class MOBIOutput(OutputFormatPlugin):
             self.oeb.log.debug('Using mastheadImage supplied in manifest...')
 
     def periodicalize_toc(self):
-        from calibre.ebooks.oeb.base import TOC
+        from ebook_converter.ebooks.oeb.base import TOC
         toc = self.oeb.toc
         if not toc or len(self.oeb.spine) < 3:
             return
@@ -183,7 +183,7 @@ class MOBIOutput(OutputFormatPlugin):
             toc.nodes[0].href = toc.nodes[0].nodes[0].href
 
     def convert(self, oeb, output_path, input_plugin, opts, log):
-        from calibre.ebooks.mobi.writer2.resources import Resources
+        from ebook_converter.ebooks.mobi.writer2.resources import Resources
         self.log, self.opts, self.oeb = log, opts, oeb
 
         mobi_type = opts.mobi_file_type
@@ -197,10 +197,10 @@ class MOBIOutput(OutputFormatPlugin):
         self.check_for_periodical()
 
         if create_kf8:
-            from calibre.ebooks.mobi.writer8.cleanup import remove_duplicate_anchors
+            from ebook_converter.ebooks.mobi.writer8.cleanup import remove_duplicate_anchors
             remove_duplicate_anchors(self.oeb)
             # Split on pagebreaks so that the resulting KF8 is faster to load
-            from calibre.ebooks.oeb.transforms.split import Split
+            from ebook_converter.ebooks.oeb.transforms.split import Split
             Split()(self.oeb, self.opts)
 
         kf8 = self.create_kf8(resources, for_joint=mobi_type=='both'
@@ -214,16 +214,16 @@ class MOBIOutput(OutputFormatPlugin):
         self.write_mobi(input_plugin, output_path, kf8, resources)
 
     def create_kf8(self, resources, for_joint=False):
-        from calibre.ebooks.mobi.writer8.main import create_kf8_book
+        from ebook_converter.ebooks.mobi.writer8.main import create_kf8_book
         return create_kf8_book(self.oeb, self.opts, resources,
                 for_joint=for_joint)
 
     def write_mobi(self, input_plugin, output_path, kf8, resources):
-        from calibre.ebooks.mobi.mobiml import MobiMLizer
-        from calibre.ebooks.oeb.transforms.manglecase import CaseMangler
-        from calibre.ebooks.oeb.transforms.rasterize import SVGRasterizer, Unavailable
-        from calibre.ebooks.oeb.transforms.htmltoc import HTMLTOCAdder
-        from calibre.customize.ui import plugin_for_input_format
+        from ebook_converter.ebooks.mobi.mobiml import MobiMLizer
+        from ebook_converter.ebooks.oeb.transforms.manglecase import CaseMangler
+        from ebook_converter.ebooks.oeb.transforms.rasterize import SVGRasterizer, Unavailable
+        from ebook_converter.ebooks.oeb.transforms.htmltoc import HTMLTOCAdder
+        from ebook_converter.customize.ui import plugin_for_input_format
 
         opts, oeb = self.opts, self.oeb
         if not opts.no_inline_toc:
@@ -245,20 +245,20 @@ class MOBIOutput(OutputFormatPlugin):
         mobimlizer = MobiMLizer(ignore_tables=opts.linearize_tables)
         mobimlizer(oeb, opts)
         write_page_breaks_after_item = input_plugin is not plugin_for_input_format('cbz')
-        from calibre.ebooks.mobi.writer2.main import MobiWriter
+        from ebook_converter.ebooks.mobi.writer2.main import MobiWriter
         writer = MobiWriter(opts, resources, kf8,
                         write_page_breaks_after_item=write_page_breaks_after_item)
         writer(oeb, output_path)
         extract_mobi(output_path, opts)
 
     def specialize_css_for_output(self, log, opts, item, stylizer):
-        from calibre.ebooks.mobi.writer8.cleanup import CSSCleanup
+        from ebook_converter.ebooks.mobi.writer8.cleanup import CSSCleanup
         CSSCleanup(log, opts)(item, stylizer)
 
     def workaround_fire_bugs(self, jacket):
         # The idiotic Fire crashes when trying to render the table used to
         # layout the jacket
-        from calibre.ebooks.oeb.base import XHTML
+        from ebook_converter.ebooks.oeb.base import XHTML
         for table in jacket.data.xpath('//*[local-name()="table"]'):
             table.tag = XHTML('div')
             for tr in table.xpath('descendant::*[local-name()="tr"]'):
@@ -309,9 +309,9 @@ class AZW3Output(OutputFormatPlugin):
     }
 
     def convert(self, oeb, output_path, input_plugin, opts, log):
-        from calibre.ebooks.mobi.writer2.resources import Resources
-        from calibre.ebooks.mobi.writer8.main import create_kf8_book
-        from calibre.ebooks.mobi.writer8.cleanup import remove_duplicate_anchors
+        from ebook_converter.ebooks.mobi.writer2.resources import Resources
+        from ebook_converter.ebooks.mobi.writer8.main import create_kf8_book
+        from ebook_converter.ebooks.mobi.writer8.cleanup import remove_duplicate_anchors
 
         self.oeb, self.opts, self.log = oeb, opts, log
         opts.mobi_periodical = self.is_periodical
@@ -324,7 +324,7 @@ class AZW3Output(OutputFormatPlugin):
             remove_html_cover(self.oeb, self.log)
 
             # Split on pagebreaks so that the resulting KF8 is faster to load
-            from calibre.ebooks.oeb.transforms.split import Split
+            from ebook_converter.ebooks.oeb.transforms.split import Split
             Split()(self.oeb, self.opts)
 
         kf8 = create_kf8_book(self.oeb, self.opts, resources, for_joint=False)
@@ -333,5 +333,5 @@ class AZW3Output(OutputFormatPlugin):
         extract_mobi(output_path, opts)
 
     def specialize_css_for_output(self, log, opts, item, stylizer):
-        from calibre.ebooks.mobi.writer8.cleanup import CSSCleanup
+        from ebook_converter.ebooks.mobi.writer8.cleanup import CSSCleanup
         CSSCleanup(log, opts)(item, stylizer)

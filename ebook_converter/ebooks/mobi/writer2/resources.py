@@ -8,14 +8,14 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre.ebooks.mobi import MAX_THUMB_DIMEN, MAX_THUMB_SIZE
-from calibre.ebooks.mobi.utils import (rescale_image, mobify_image,
+from ebook_converter.ebooks.mobi import MAX_THUMB_DIMEN, MAX_THUMB_SIZE
+from ebook_converter.ebooks.mobi.utils import (rescale_image, mobify_image,
         write_font_record)
-from calibre.ebooks import generate_masthead
-from calibre.ebooks.oeb.base import OEB_RASTER_IMAGES
-from calibre.ptempfile import PersistentTemporaryFile
-from calibre.utils.imghdr import what
-from polyglot.builtins import iteritems, unicode_type
+from ebook_converter.ebooks import generate_masthead
+from ebook_converter.ebooks.oeb.base import OEB_RASTER_IMAGES
+from ebook_converter.ptempfile import PersistentTemporaryFile
+from ebook_converter.utils.imghdr import what
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 PLACEHOLDER_GIF = b'GIF89a\x01\x00\x01\x00\xf0\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00!\xfe calibre-placeholder-gif-for-azw3\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'  # noqa
 
@@ -51,7 +51,7 @@ class Resources(object):
             with PersistentTemporaryFile(suffix='.png') as pt:
                 pt.write(data)
             try:
-                from calibre.utils.img import optimize_png
+                from ebook_converter.utils.img import optimize_png
                 optimize_png(pt.name)
                 data = lopen(pt.name, 'rb').read()
             finally:

@@ -13,19 +13,18 @@ from itertools import count
 from operator import attrgetter
 
 from lxml import etree, html
-from calibre import force_unicode
-from calibre.constants import filesystem_encoding, __version__, ispy3
-from calibre.translations.dynamic import translate
-from calibre.utils.xml_parse import safe_xml_fromstring
-from calibre.ebooks.chardet import xml_to_unicode
-from calibre.ebooks.conversion.preprocess import CSSPreProcessor
-from calibre import (isbytestring, as_unicode, get_types_map)
-from calibre.ebooks.oeb.parse_utils import barename, XHTML_NS, namespace, XHTML, parse_html, NotHTML
-from calibre.utils.cleantext import clean_xml_chars
-from calibre.utils.short_uuid import uuid4
-from polyglot.builtins import iteritems, unicode_type, string_or_bytes, range, itervalues, filter, codepoint_to_chr
-from polyglot.urllib import unquote as urlunquote, urldefrag, urljoin, urlparse, urlunparse
-from calibre.utils.icu import numeric_sort_key
+from ebook_converter import force_unicode
+from ebook_converter.constants import filesystem_encoding, __version__, ispy3
+from ebook_converter.translations.dynamic import translate
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.ebooks.chardet import xml_to_unicode
+from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor
+from ebook_converter import (isbytestring, as_unicode, get_types_map)
+from ebook_converter.ebooks.oeb.parse_utils import barename, XHTML_NS, namespace, XHTML, parse_html, NotHTML
+from ebook_converter.utils.cleantext import clean_xml_chars
+from ebook_converter.utils.short_uuid import uuid4
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes, range, itervalues, filter, codepoint_to_chr
+from ebook_converter.polyglot.urllib import unquote as urlunquote, urldefrag, urljoin, urlparse, urlunparse
 
 XML_NS       = 'http://www.w3.org/XML/1998/namespace'
 OEB_DOC_NS   = 'http://openebook.org/namespaces/oeb-document/1.0/'
@@ -971,7 +970,7 @@ class Manifest(object):
 
             self.oeb.log.debug('Converting', self.href, '...')
 
-            from calibre.ebooks.txt.processor import convert_markdown
+            from ebook_converter.ebooks.txt.processor import convert_markdown
 
             title = self.oeb.metadata.title
             if title:
@@ -1064,7 +1063,7 @@ class Manifest(object):
         def unload_data_from_memory(self, memory=None):
             if isinstance(self._data, bytes):
                 if memory is None:
-                    from calibre.ptempfile import PersistentTemporaryFile
+                    from ebook_converter.ptempfile import PersistentTemporaryFile
                     pt = PersistentTemporaryFile(suffix='_oeb_base_mem_unloader.img')
                     with pt:
                         pt.write(self._data)
@@ -1124,7 +1123,8 @@ class Manifest(object):
             if isinstance(href, bytes):
                 href = force_unicode(href)
             sp = self.spine_position if isinstance(self.spine_position, numbers.Number) else sys.maxsize
-            return sp, (self.media_type or '').lower(), numeric_sort_key(href), self.id
+
+            return sp, (self.media_type or '').lower(), href, self.id
 
         def relhref(self, href):
             """Convert the URL provided in :param:`href` from a book-absolute

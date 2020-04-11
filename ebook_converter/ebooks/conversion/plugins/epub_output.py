@@ -8,11 +8,11 @@ __docformat__ = 'restructuredtext en'
 
 import os, shutil, re
 
-from calibre.customize.conversion import (OutputFormatPlugin,
+from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
-from calibre.ptempfile import TemporaryDirectory
-from calibre import CurrentDir
-from polyglot.builtins import unicode_type, filter, map, zip, range, as_bytes
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter import CurrentDir
+from ebook_converter.polyglot.builtins import unicode_type, filter, map, zip, range, as_bytes
 
 block_level_tags = (
       'address',
@@ -130,7 +130,7 @@ class EPUBOutput(OutputFormatPlugin):
     recommendations = {('pretty_print', True, OptionRecommendation.HIGH)}
 
     def workaround_webkit_quirks(self):  # {{{
-        from calibre.ebooks.oeb.base import XPath
+        from ebook_converter.ebooks.oeb.base import XPath
         for x in self.oeb.spine:
             root = x.data
             body = XPath('//h:body')(root)
@@ -147,7 +147,7 @@ class EPUBOutput(OutputFormatPlugin):
 
     def upshift_markup(self):  # {{{
         'Upgrade markup to comply with XHTML 1.1 where possible'
-        from calibre.ebooks.oeb.base import XPath, XML
+        from ebook_converter.ebooks.oeb.base import XPath, XML
         for x in self.oeb.spine:
             root = x.data
             if (not root.get(XML('lang'))) and (root.get('lang')):
@@ -181,32 +181,32 @@ class EPUBOutput(OutputFormatPlugin):
         self.log, self.opts, self.oeb = log, opts, oeb
 
         if self.opts.epub_inline_toc:
-            from calibre.ebooks.mobi.writer8.toc import TOCAdder
+            from ebook_converter.ebooks.mobi.writer8.toc import TOCAdder
             opts.mobi_toc_at_start = not opts.epub_toc_at_end
             opts.mobi_passthrough = False
             opts.no_inline_toc = False
             TOCAdder(oeb, opts, replace_previous_inline_toc=True, ignore_existing_toc=True)
 
         if self.opts.epub_flatten:
-            from calibre.ebooks.oeb.transforms.filenames import FlatFilenames
+            from ebook_converter.ebooks.oeb.transforms.filenames import FlatFilenames
             FlatFilenames()(oeb, opts)
         else:
-            from calibre.ebooks.oeb.transforms.filenames import UniqueFilenames
+            from ebook_converter.ebooks.oeb.transforms.filenames import UniqueFilenames
             UniqueFilenames()(oeb, opts)
 
         self.workaround_ade_quirks()
         self.workaround_webkit_quirks()
         self.upshift_markup()
-        from calibre.ebooks.oeb.transforms.rescale import RescaleImages
+        from ebook_converter.ebooks.oeb.transforms.rescale import RescaleImages
         RescaleImages(check_colorspaces=True)(oeb, opts)
 
-        from calibre.ebooks.oeb.transforms.split import Split
+        from ebook_converter.ebooks.oeb.transforms.split import Split
         split = Split(not self.opts.dont_split_on_page_breaks,
                 max_flow_size=self.opts.flow_size*1024
                 )
         split(self.oeb, self.opts)
 
-        from calibre.ebooks.oeb.transforms.cover import CoverManager
+        from ebook_converter.ebooks.oeb.transforms.cover import CoverManager
         cm = CoverManager(
                 no_default_cover=self.opts.no_default_epub_cover,
                 no_svg_cover=self.opts.no_svg_cover,
@@ -221,7 +221,7 @@ class EPUBOutput(OutputFormatPlugin):
             first = next(iter(self.oeb.spine))
             self.oeb.toc.add(_('Start'), first.href)
 
-        from calibre.ebooks.oeb.base import OPF
+        from ebook_converter.ebooks.oeb.base import OPF
         identifiers = oeb.metadata['identifier']
         uuid = None
         for x in identifiers:
@@ -245,12 +245,12 @@ class EPUBOutput(OutputFormatPlugin):
                     x.content = 'urn:uuid:'+uuid
 
         with TemporaryDirectory('_epub_output') as tdir:
-            from calibre.customize.ui import plugin_for_output_format
+            from ebook_converter.customize.ui import plugin_for_output_format
             metadata_xml = None
             extra_entries = []
             if self.is_periodical:
                 if self.opts.output_profile.epub_periodical_format == 'sony':
-                    from calibre.ebooks.epub.periodical import sony_metadata
+                    from ebook_converter.ebooks.epub.periodical import sony_metadata
                     metadata_xml, atom_xml = sony_metadata(oeb)
                     extra_entries = [('atom.xml', 'application/atom+xml', atom_xml)]
             oeb_output = plugin_for_output_format('oeb')
@@ -264,7 +264,7 @@ class EPUBOutput(OutputFormatPlugin):
             if encrypted_fonts:
                 encryption = self.encrypt_fonts(encrypted_fonts, tdir, uuid)
 
-            from calibre.ebooks.epub import initialize_container
+            from ebook_converter.ebooks.epub import initialize_container
             with initialize_container(output_path, os.path.basename(opf),
                     extra_entries=extra_entries) as epub:
                 epub.add_dir(tdir)
@@ -274,7 +274,7 @@ class EPUBOutput(OutputFormatPlugin):
                     epub.writestr('META-INF/metadata.xml',
                             metadata_xml.encode('utf-8'))
             if opts.extract_to is not None:
-                from calibre.utils.zipfile import ZipFile
+                from ebook_converter.utils.zipfile import ZipFile
                 if os.path.exists(opts.extract_to):
                     if os.path.isdir(opts.extract_to):
                         shutil.rmtree(opts.extract_to)
@@ -287,17 +287,17 @@ class EPUBOutput(OutputFormatPlugin):
 
     def upgrade_to_epub3(self, tdir, opf):
         self.log.info('Upgrading to EPUB 3...')
-        from calibre.ebooks.epub import simple_container_xml
-        from calibre.ebooks.oeb.polish.cover import fix_conversion_titlepage_links_in_nav
+        from ebook_converter.ebooks.epub import simple_container_xml
+        from ebook_converter.ebooks.oeb.polish.cover import fix_conversion_titlepage_links_in_nav
         try:
             os.mkdir(os.path.join(tdir, 'META-INF'))
         except EnvironmentError:
             pass
         with open(os.path.join(tdir, 'META-INF', 'container.xml'), 'wb') as f:
             f.write(simple_container_xml(os.path.basename(opf)).encode('utf-8'))
-        from calibre.ebooks.oeb.polish.container import EpubContainer
+        from ebook_converter.ebooks.oeb.polish.container import EpubContainer
         container = EpubContainer(tdir, self.log)
-        from calibre.ebooks.oeb.polish.upgrade import epub_2_to_3
+        from ebook_converter.ebooks.oeb.polish.upgrade import epub_2_to_3
         existing_nav = getattr(self.opts, 'epub3_nav_parsed', None)
         nav_href = getattr(self.opts, 'epub3_nav_href', None)
         previous_nav = (nav_href, existing_nav) if existing_nav and nav_href else None
@@ -311,7 +311,7 @@ class EPUBOutput(OutputFormatPlugin):
             pass
 
     def encrypt_fonts(self, uris, tdir, uuid):  # {{{
-        from polyglot.binary import from_hex_bytes
+        from ebook_converter.polyglot.binary import from_hex_bytes
 
         key = re.sub(r'[^a-fA-F0-9]', '', uuid)
         if len(key) < 16:
@@ -376,7 +376,7 @@ class EPUBOutput(OutputFormatPlugin):
         Perform various markup transforms to get the output to render correctly
         in the quirky ADE.
         '''
-        from calibre.ebooks.oeb.base import XPath, XHTML, barename, urlunquote
+        from ebook_converter.ebooks.oeb.base import XPath, XHTML, barename, urlunquote
 
         stylesheet = self.oeb.manifest.main_stylesheet
 
@@ -517,8 +517,8 @@ class EPUBOutput(OutputFormatPlugin):
         '''
         Perform toc link transforms to alleviate slow loading.
         '''
-        from calibre.ebooks.oeb.base import urldefrag, XPath
-        from calibre.ebooks.oeb.polish.toc import item_at_top
+        from ebook_converter.ebooks.oeb.base import urldefrag, XPath
+        from ebook_converter.ebooks.oeb.polish.toc import item_at_top
 
         def frag_is_at_top(root, frag):
             elem = XPath('//*[@id="%s" or @name="%s"]'%(frag, frag))(root)

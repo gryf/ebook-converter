@@ -8,28 +8,28 @@ import json
 import re
 from collections import defaultdict, namedtuple
 from functools import wraps
-from polyglot.builtins import iteritems, map, filter
+from ebook_converter.polyglot.builtins import iteritems, map, filter
 
 from lxml import etree
 
-from calibre import prints
-from calibre.ebooks.metadata import authors_to_string, check_isbn, string_to_authors
-from calibre.ebooks.metadata.book.base import Metadata
-from calibre.ebooks.metadata.book.json_codec import (
+from ebook_converter import prints
+from ebook_converter.ebooks.metadata import authors_to_string, check_isbn, string_to_authors
+from ebook_converter.ebooks.metadata.book.base import Metadata
+from ebook_converter.ebooks.metadata.book.json_codec import (
     decode_is_multiple, encode_is_multiple, object_to_unicode
 )
-from calibre.ebooks.metadata.utils import (
+from ebook_converter.ebooks.metadata.utils import (
     create_manifest_item, ensure_unique, normalize_languages, parse_opf,
     pretty_print_opf
 )
-from calibre.ebooks.oeb.base import DC, OPF, OPF2_NSMAP
-from calibre.utils.config import from_json, to_json
-from calibre.utils.date import (
+from ebook_converter.ebooks.oeb.base import DC, OPF, OPF2_NSMAP
+from ebook_converter.utils.config import from_json, to_json
+from ebook_converter.utils.date import (
     fix_only_date, is_date_undefined, isoformat, parse_date as parse_date_, utcnow,
     w3cdtf
 )
-from calibre.utils.iso8601 import parse_iso8601
-from calibre.utils.localization import canonicalize_lang
+from ebook_converter.utils.iso8601 import parse_iso8601
+from ebook_converter.utils.localization import canonicalize_lang
 
 # Utils {{{
 _xpath_cache = {}

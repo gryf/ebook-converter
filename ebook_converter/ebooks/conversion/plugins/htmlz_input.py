@@ -8,9 +8,9 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre import guess_type
-from calibre.customize.conversion import InputFormatPlugin
-from polyglot.builtins import getcwd
+from ebook_converter import guess_type
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.polyglot.builtins import getcwd
 
 
 class HTMLZInput(InputFormatPlugin):
@@ -23,9 +23,9 @@ class HTMLZInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from calibre.ebooks.chardet import xml_to_unicode
-        from calibre.ebooks.metadata.opf2 import OPF
-        from calibre.utils.zipfile import ZipFile
+        from ebook_converter.ebooks.chardet import xml_to_unicode
+        from ebook_converter.ebooks.metadata.opf2 import OPF
+        from ebook_converter.utils.zipfile import ZipFile
 
         self.log = log
         html = u''
@@ -82,7 +82,7 @@ class HTMLZInput(InputFormatPlugin):
         html = html.decode(ienc, 'replace')
 
         # Run the HTML through the html processing plugin.
-        from calibre.customize.ui import plugin_for_input_format
+        from ebook_converter.customize.ui import plugin_for_input_format
         html_input = plugin_for_input_format('html')
         for opt in html_input.options:
             setattr(options, opt.option.name, opt.recommended_value)
@@ -105,8 +105,8 @@ class HTMLZInput(InputFormatPlugin):
         os.remove(htmlfile)
 
         # Set metadata from file.
-        from calibre.customize.ui import get_file_type_metadata
-        from calibre.ebooks.oeb.transforms.metadata import meta_info_to_oeb_metadata
+        from ebook_converter.customize.ui import get_file_type_metadata
+        from ebook_converter.ebooks.oeb.transforms.metadata import meta_info_to_oeb_metadata
         mi = get_file_type_metadata(stream, file_ext)
         meta_info_to_oeb_metadata(mi, oeb.metadata, log)
 

@@ -7,7 +7,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre.customize.conversion import OutputFormatPlugin
+from ebook_converter.customize.conversion import OutputFormatPlugin
 
 
 class RTFOutput(OutputFormatPlugin):
@@ -18,7 +18,7 @@ class RTFOutput(OutputFormatPlugin):
     commit_name = 'rtf_output'
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
-        from calibre.ebooks.rtf.rtfml import RTFMLizer
+        from ebook_converter.ebooks.rtf.rtfml import RTFMLizer
 
         rtfmlitzer = RTFMLizer(log)
         content = rtfmlitzer.extract_content(oeb_book, opts)

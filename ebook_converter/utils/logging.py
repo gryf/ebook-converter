@@ -14,8 +14,8 @@ import sys, traceback, io
 from functools import partial
 from threading import Lock
 
-from calibre import isbytestring, force_unicode, as_unicode, prints
-from polyglot.builtins import unicode_type, iteritems
+from ebook_converter import isbytestring, force_unicode, as_unicode, prints
+from ebook_converter.polyglot.builtins import unicode_type, iteritems
 
 
 class Stream(object):
@@ -45,7 +45,7 @@ class ANSIStream(Stream):
         }
 
     def prints(self, level, *args, **kwargs):
-        from calibre.utils.terminal import ColoredStream
+        from ebook_converter.utils.terminal import ColoredStream
         with ColoredStream(self.stream, self.color[level]):
             self._prints(*args, **kwargs)
 

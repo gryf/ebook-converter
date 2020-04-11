@@ -10,11 +10,11 @@ import os, zipfile, posixpath, importlib, threading, re, imp, sys
 from collections import OrderedDict
 from functools import partial
 
-from calibre import as_unicode
-from calibre.constants import ispy3
-from calibre.customize import (Plugin, numeric_version, platform,
+from ebook_converter import as_unicode
+from ebook_converter.constants import ispy3
+from ebook_converter.customize import (Plugin, numeric_version, platform,
         InvalidPlugin, PluginNotFound)
-from polyglot.builtins import (itervalues, map, string_or_bytes,
+from ebook_converter.polyglot.builtins import (itervalues, map, string_or_bytes,
         unicode_type, reload)
 
 # PEP 302 based plugin loading mechanism, works around the bug in zipimport in
@@ -94,7 +94,7 @@ def load_translations(namespace, zfp):
     if trans is None:
         return
     if trans is null:
-        from calibre.utils.localization import get_lang
+        from ebook_converter.utils.localization import get_lang
         lang = get_lang()
         if not lang or lang == 'en':  # performance optimization
             _translations_cache[zfp] = None
@@ -303,8 +303,8 @@ sys.meta_path.insert(0, loader)
 
 if __name__ == '__main__':
     from tempfile import NamedTemporaryFile
-    from calibre.customize.ui import add_plugin
-    from calibre import CurrentDir
+    from ebook_converter.customize.ui import add_plugin
+    from ebook_converter import CurrentDir
     path = sys.argv[-1]
     with NamedTemporaryFile(suffix='.zip') as f:
         with zipfile.ZipFile(f, 'w') as zf:

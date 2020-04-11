@@ -7,7 +7,7 @@ __copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 from struct import unpack_from, error
 
-from calibre.utils.imghdr import what
+from ebook_converter.utils.imghdr import what
 
 
 def find_imgtype(data):

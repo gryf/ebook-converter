@@ -10,12 +10,12 @@ from bs4 import (  # noqa
     SoupStrainer, Tag, __version__
 )
 
-from polyglot.builtins import unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 def parse_html(markup):
-    from calibre.ebooks.chardet import strip_encoding_declarations, xml_to_unicode, substitute_entites
-    from calibre.utils.cleantext import clean_xml_chars
+    from ebook_converter.ebooks.chardet import strip_encoding_declarations, xml_to_unicode, substitute_entites
+    from ebook_converter.utils.cleantext import clean_xml_chars
     if isinstance(markup, unicode_type):
         markup = strip_encoding_declarations(markup)
         markup = substitute_entites(markup)

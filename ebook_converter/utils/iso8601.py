@@ -7,10 +7,10 @@ from datetime import datetime
 
 from dateutil.tz import tzlocal, tzutc, tzoffset
 
-from calibre.constants import plugins
-speedup, err = plugins['speedup']
-if not speedup:
-    raise RuntimeError(err)
+from ebook_converter.constants import plugins
+# speedup, err = plugins['speedup']
+# if not speedup:
+    # raise RuntimeError(err)
 
 
 class SafeLocalTimeZone(tzlocal):

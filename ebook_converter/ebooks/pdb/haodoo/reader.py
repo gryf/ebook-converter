@@ -13,11 +13,11 @@ __docformat__ = 'restructuredtext en'
 import struct
 import os
 
-from calibre import prepare_string_for_xml
-from calibre.ebooks.pdb.formatreader import FormatReader
-from calibre.ebooks.metadata import MetaInformation
-from calibre.ebooks.txt.processor import opf_writer, HTML_TEMPLATE
-from polyglot.builtins import range, map
+from ebook_converter import prepare_string_for_xml
+from ebook_converter.ebooks.pdb.formatreader import FormatReader
+from ebook_converter.ebooks.metadata import MetaInformation
+from ebook_converter.ebooks.txt.processor import opf_writer, HTML_TEMPLATE
+from ebook_converter.polyglot.builtins import range, map
 
 BPDB_IDENT = b'BOOKMTIT'
 UPDB_IDENT = b'BOOKMTIU'

@@ -13,7 +13,7 @@ __docformat__ = 'restructuredtext en'
 import re
 import struct
 import time
-from polyglot.builtins import long_type
+from ebook_converter.polyglot.builtins import long_type
 
 
 class PdbHeaderReader(object):

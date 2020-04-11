@@ -4,8 +4,8 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from polyglot.builtins import unicode_type
-from calibre.constants import ispy3
+from ebook_converter.polyglot.builtins import unicode_type
+from ebook_converter.constants import ispy3
 
 
 MSGPACK_MIME = 'application/x-msgpack'
@@ -31,11 +31,11 @@ def create_encoder(for_json=False):
         if isinstance(obj, (set, frozenset)):
             return encoded(1, tuple(obj), ExtType)
         if getattr(obj, '__calibre_serializable__', False):
-            from calibre.ebooks.metadata.book.base import Metadata
-            from calibre.library.field_metadata import FieldMetadata, fm_as_dict
-            from calibre.db.categories import Tag
+            from ebook_converter.ebooks.metadata.book.base import Metadata
+            from ebook_converter.library.field_metadata import FieldMetadata, fm_as_dict
+            from ebook_converter.db.categories import Tag
             if isinstance(obj, Metadata):
-                from calibre.ebooks.metadata.book.serialize import metadata_as_dict
+                from ebook_converter.ebooks.metadata.book.serialize import metadata_as_dict
                 return encoded(
                     2, metadata_as_dict(obj, encode_cover_data=for_json), ExtType
                 )
@@ -66,8 +66,8 @@ def json_dumps(data, **kw):
 
 
 def decode_metadata(x, for_json):
-    from polyglot.binary import from_base64_bytes
-    from calibre.ebooks.metadata.book.serialize import metadata_from_dict
+    from ebook_converter.polyglot.binary import from_base64_bytes
+    from ebook_converter.ebooks.metadata.book.serialize import metadata_from_dict
     obj = metadata_from_dict(x)
     if for_json and obj.cover_data and obj.cover_data[1]:
         obj.cover_data = obj.cover_data[0], from_base64_bytes(obj.cover_data[1])
@@ -75,17 +75,17 @@ def decode_metadata(x, for_json):
 
 
 def decode_field_metadata(x, for_json):
-    from calibre.library.field_metadata import fm_from_dict
+    from ebook_converter.library.field_metadata import fm_from_dict
     return fm_from_dict(x)
 
 
 def decode_category_tag(x, for_json):
-    from calibre.db.categories import Tag
+    from ebook_converter.db.categories import Tag
     return Tag.from_dict(x)
 
 
 def decode_datetime(x, fj):
-    from calibre.utils.iso8601 import parse_iso8601
+    from ebook_converter.utils.iso8601 import parse_iso8601
     return parse_iso8601(x, assume_utc=True)
 
 

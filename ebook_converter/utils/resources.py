@@ -1,7 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 __license__   = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
@@ -9,8 +5,8 @@ __docformat__ = 'restructuredtext en'
 
 import sys, os
 
-from calibre import config_dir
-from polyglot.builtins import builtins
+from ebook_converter import config_dir
+from ebook_converter.polyglot.builtins import builtins
 
 
 user_dir = os.path.join(config_dir, 'resources')
@@ -19,6 +15,7 @@ user_dir = os.path.join(config_dir, 'resources')
 class PathResolver(object):
 
     def __init__(self):
+        sys.resources_location = os.path.abspath(os.path.dirname(__file__))
         self.locations = [sys.resources_location]
         self.cache = {}
 
@@ -86,6 +83,7 @@ _resolver = PathResolver()
 
 def get_path(path, data=False, allow_user_override=True):
     fpath = _resolver(path, allow_user_override=allow_user_override)
+
     if data:
         with open(fpath, 'rb') as f:
             return f.read()

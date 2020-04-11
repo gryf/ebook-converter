@@ -14,14 +14,14 @@ from lxml import etree
 import css_parser
 from css_parser.css import Property
 
-from calibre import guess_type
-from calibre.ebooks import unit_convert
-from calibre.ebooks.oeb.base import (XHTML, XHTML_NS, CSS_MIME, OEB_STYLES,
+from ebook_converter import guess_type
+from ebook_converter.ebooks import unit_convert
+from ebook_converter.ebooks.oeb.base import (XHTML, XHTML_NS, CSS_MIME, OEB_STYLES,
         namespace, barename, XPath, css_text)
-from calibre.ebooks.oeb.stylizer import Stylizer
-from calibre.utils.filenames import ascii_filename, ascii_text
-from calibre.utils.icu import numeric_sort_key
-from polyglot.builtins import iteritems, unicode_type, string_or_bytes, map
+from ebook_converter.ebooks.oeb.stylizer import Stylizer
+from ebook_converter.utils.filenames import ascii_filename, ascii_text
+from ebook_converter.utils.icu import numeric_sort_key
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes, map
 
 COLLAPSE = re.compile(r'[ \t\r\n\v]+')
 STRIPNUM = re.compile(r'[-0-9]+$')
@@ -139,7 +139,7 @@ class CSSFlattener(object):
         self.fbase = fbase
         self.transform_css_rules = transform_css_rules
         if self.transform_css_rules:
-            from calibre.ebooks.css_transform_rules import compile_rules
+            from ebook_converter.ebooks.css_transform_rules import compile_rules
             self.transform_css_rules = compile_rules(self.transform_css_rules)
         self.fkey = fkey
         self.lineh = lineh
@@ -180,7 +180,7 @@ class CSSFlattener(object):
             except:
                 self.oeb.log.warning('Failed to parse filter_css, ignoring')
             else:
-                from calibre.ebooks.oeb.normalize_css import normalize_filter_css
+                from ebook_converter.ebooks.oeb.normalize_css import normalize_filter_css
                 self.filter_css = frozenset(normalize_filter_css(self.filter_css))
                 self.oeb.log.debug('Filtering CSS properties: %s'%
                     ', '.join(self.filter_css))
@@ -223,8 +223,8 @@ class CSSFlattener(object):
         body_font_family = None
         if not family:
             return body_font_family, efi
-        from calibre.utils.fonts.scanner import font_scanner, NoFonts
-        from calibre.utils.fonts.utils import panose_to_css_generic_family
+        from ebook_converter.utils.fonts.scanner import font_scanner, NoFonts
+        from ebook_converter.utils.fonts.utils import panose_to_css_generic_family
         try:
             faces = font_scanner.fonts_for_family(family)
         except NoFonts:
@@ -610,7 +610,7 @@ class CSSFlattener(object):
         id, href = manifest.generate('css', 'stylesheet.css')
         sheet = css_parser.parseString(css, validate=False)
         if self.transform_css_rules:
-            from calibre.ebooks.css_transform_rules import transform_sheet
+            from ebook_converter.ebooks.css_transform_rules import transform_sheet
             transform_sheet(self.transform_css_rules, sheet)
         item = manifest.add(id, href, CSS_MIME, data=sheet)
         self.oeb.manifest.main_stylesheet = item
@@ -642,7 +642,7 @@ class CSSFlattener(object):
                 id_, href = manifest.generate('page_css', 'page_styles.css')
                 sheet = css_parser.parseString(css, validate=False)
                 if self.transform_css_rules:
-                    from calibre.ebooks.css_transform_rules import transform_sheet
+                    from ebook_converter.ebooks.css_transform_rules import transform_sheet
                     transform_sheet(self.transform_css_rules, sheet)
                 manifest.add(id_, href, CSS_MIME, data=sheet)
             gc_map[css] = href
@@ -664,7 +664,7 @@ class CSSFlattener(object):
             fsize = self.context.dest.fbase
             self.flatten_node(html, stylizer, names, styles, pseudo_styles, fsize, item.id, recurse=False)
             self.flatten_node(html.find(XHTML('body')), stylizer, names, styles, pseudo_styles, fsize, item.id)
-        items = sorted(((key, val) for (val, key) in iteritems(styles)), key=lambda x:numeric_sort_key(x[0]))
+        items = sorted(((key, val) for (val, key) in iteritems(styles)))
         # :hover must come after link and :active must come after :hover
         psels = sorted(pseudo_styles, key=lambda x :
                 {'hover':1, 'active':2}.get(x, 0))

@@ -1,8 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 __license__   = 'GPL v3'
 __copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
@@ -12,9 +7,9 @@ from functools import partial
 from collections import defaultdict
 from copy import deepcopy
 
-from calibre.utils.lock import ExclusiveFile
-from calibre.constants import config_dir, CONFIG_DIR_MODE, ispy3, preferred_encoding, filesystem_encoding, iswindows
-from polyglot.builtins import unicode_type, iteritems, map
+from ebook_converter.utils.lock import ExclusiveFile
+from ebook_converter.constants import config_dir, CONFIG_DIR_MODE, ispy3, preferred_encoding, filesystem_encoding, iswindows
+from ebook_converter.polyglot.builtins import unicode_type, iteritems, map
 
 plugin_dir = os.path.join(config_dir, 'plugins')
 
@@ -46,7 +41,7 @@ def to_json(obj):
         return {'__class__': 'bytearray',
                 '__value__': standard_b64encode(bytes(obj)).decode('ascii')}
     if isinstance(obj, datetime.datetime):
-        from calibre.utils.date import isoformat
+        from ebook_converter.utils.date import isoformat
         return {'__class__': 'datetime.datetime',
                 '__value__': isoformat(obj, as_utc=True)}
     if isinstance(obj, (set, frozenset)):
@@ -73,7 +68,7 @@ def from_json(obj):
             from base64 import standard_b64decode
             return bytearray(standard_b64decode(obj['__value__'].encode('ascii')))
         if custom == 'datetime.datetime':
-            from calibre.utils.iso8601 import parse_iso8601
+            from ebook_converter.utils.iso8601 import parse_iso8601
             return parse_iso8601(obj['__value__'], assume_utc=True)
         if custom == 'set':
             return set(obj['__value__'])
@@ -263,7 +258,7 @@ class OptionSet(object):
                     opt.help = opt.help.format(u'ñ')
 
     def option_parser(self, user_defaults=None, usage='', gui_mode=False):
-        from calibre.utils.config import OptionParser
+        from ebook_converter.utils.config import OptionParser
         parser = OptionParser(usage, gui_mode=gui_mode)
         groups = defaultdict(lambda : parser)
         for group, desc in self.groups.items():
@@ -376,7 +371,7 @@ class Config(ConfigInterface):
                     traceback.print_exc()
         if not src:
             path = path.rpartition('.')[0]
-            from calibre.utils.shared_file import share_open
+            from ebook_converter.utils.shared_file import share_open
             try:
                 with share_open(path, 'rb') as f:
                     src = f.read().decode('utf-8')

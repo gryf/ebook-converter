@@ -6,8 +6,8 @@ __copyright__ = '2009, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 
 
-from calibre.customize.conversion import InputFormatPlugin
-from polyglot.builtins import getcwd
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.polyglot.builtins import getcwd
 
 
 class RBInput(InputFormatPlugin):
@@ -20,7 +20,7 @@ class RBInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from calibre.ebooks.rb.reader import Reader
+        from ebook_converter.ebooks.rb.reader import Reader
 
         reader = Reader(stream, log, options.input_encoding)
         opf = reader.extract_content(getcwd())

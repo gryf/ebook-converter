@@ -10,12 +10,12 @@ import shutil
 import time
 from math import ceil
 
-from calibre import force_unicode, isbytestring, prints, sanitize_file_name
-from calibre.constants import (
+from ebook_converter import force_unicode, isbytestring, prints, sanitize_file_name
+from ebook_converter.constants import (
     filesystem_encoding, iswindows, plugins, preferred_encoding, isosx, ispy3
 )
-from calibre.utils.localization import get_udc
-from polyglot.builtins import iteritems, itervalues, unicode_type, range
+from ebook_converter.utils.localization import get_udc
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, range
 
 
 def ascii_text(orig):

@@ -13,9 +13,9 @@ from __future__ import unicode_literals, absolute_import, print_function, divisi
 #########################################################################
 import os
 
-from calibre.ebooks.rtf2xml import copy
-from calibre.utils.cleantext import clean_ascii_chars
-from calibre.ptempfile import better_mktemp
+from ebook_converter.ebooks.rtf2xml import copy
+from ebook_converter.utils.cleantext import clean_ascii_chars
+from ebook_converter.ptempfile import better_mktemp
 
 
 class FixLineEndings:

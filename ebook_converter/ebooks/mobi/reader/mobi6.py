@@ -10,20 +10,20 @@ import shutil, os, re, struct, textwrap, io
 
 from lxml import html, etree
 
-from calibre import xml_entity_to_unicode, entity_to_unicode, guess_type
-from calibre.utils.cleantext import clean_ascii_chars, clean_xml_chars
-from calibre.ebooks import DRMError, unit_convert
-from calibre.ebooks.chardet import strip_encoding_declarations
-from calibre.ebooks.mobi import MobiError
-from calibre.ebooks.mobi.huffcdic import HuffReader
-from calibre.ebooks.compression.palmdoc import decompress_doc
-from calibre.ebooks.metadata import MetaInformation
-from calibre.ebooks.metadata.opf2 import OPFCreator, OPF
-from calibre.ebooks.metadata.toc import TOC
-from calibre.ebooks.mobi.reader.headers import BookHeader
-from calibre.utils.img import save_cover_data_to, gif_data_to_png_data, AnimatedGIF
-from calibre.utils.imghdr import what
-from polyglot.builtins import iteritems, unicode_type, range, map
+from ebook_converter import xml_entity_to_unicode, entity_to_unicode, guess_type
+from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
+from ebook_converter.ebooks import DRMError, unit_convert
+from ebook_converter.ebooks.chardet import strip_encoding_declarations
+from ebook_converter.ebooks.mobi import MobiError
+from ebook_converter.ebooks.mobi.huffcdic import HuffReader
+from ebook_converter.ebooks.compression.palmdoc import decompress_doc
+from ebook_converter.ebooks.metadata import MetaInformation
+from ebook_converter.ebooks.metadata.opf2 import OPFCreator, OPF
+from ebook_converter.ebooks.metadata.toc import TOC
+from ebook_converter.ebooks.mobi.reader.headers import BookHeader
+from ebook_converter.utils.img import save_cover_data_to, gif_data_to_png_data, AnimatedGIF
+from ebook_converter.utils.imghdr import what
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, range, map
 
 
 class TopazError(ValueError):

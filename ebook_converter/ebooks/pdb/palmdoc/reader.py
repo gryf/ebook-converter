@@ -12,7 +12,7 @@ __docformat__ = 'restructuredtext en'
 import struct, io
 
 
-from calibre.ebooks.pdb.formatreader import FormatReader
+from ebook_converter.ebooks.pdb.formatreader import FormatReader
 
 
 class HeaderRecord(object):
@@ -48,7 +48,7 @@ class Reader(FormatReader):
         if self.header_record.compression == 1:
             return self.section_data(number)
         if self.header_record.compression == 2 or self.header_record.compression == 258:
-            from calibre.ebooks.compression.palmdoc import decompress_doc
+            from ebook_converter.ebooks.compression.palmdoc import decompress_doc
             return decompress_doc(self.section_data(number))
         return b''
 
@@ -63,7 +63,7 @@ class Reader(FormatReader):
         self.log.info('Converting text to OEB...')
         stream = io.BytesIO(raw_txt)
 
-        from calibre.customize.ui import plugin_for_input_format
+        from ebook_converter.customize.ui import plugin_for_input_format
 
         txt_plugin = plugin_for_input_format('txt')
         for opt in txt_plugin.options:

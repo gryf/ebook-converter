@@ -8,12 +8,12 @@ __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 import os, re
 from collections import namedtuple
 
-from calibre.ebooks.docx.block_styles import binary_property, inherit
-from calibre.utils.filenames import ascii_filename
-from calibre.utils.fonts.scanner import font_scanner, NoFonts
-from calibre.utils.fonts.utils import panose_to_css_generic_family, is_truetype_font
-from calibre.utils.icu import ord_string
-from polyglot.builtins import codepoint_to_chr, iteritems, range
+from ebook_converter.ebooks.docx.block_styles import binary_property, inherit
+from ebook_converter.utils.filenames import ascii_filename
+from ebook_converter.utils.fonts.scanner import font_scanner, NoFonts
+from ebook_converter.utils.fonts.utils import panose_to_css_generic_family, is_truetype_font
+from ebook_converter.utils.icu import ord_string
+from ebook_converter.polyglot.builtins import codepoint_to_chr, iteritems, range
 
 Embed = namedtuple('Embed', 'name key subsetted')
 

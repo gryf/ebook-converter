@@ -13,7 +13,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 #########################################################################
 import sys
 
-from polyglot.builtins import unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 from . import open_for_read
 

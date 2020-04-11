@@ -12,13 +12,13 @@ import sys, os, numbers
 from optparse import OptionGroup, Option
 from collections import OrderedDict
 
-from calibre.utils.config import OptionParser
-from calibre.utils.logging import Log
-from calibre.customize.conversion import OptionRecommendation
-from calibre import patheq
-from calibre.ebooks.conversion import ConversionUserFeedBack
-from calibre.utils.localization import localize_user_manual_link
-from polyglot.builtins import iteritems
+from ebook_converter.utils.config import OptionParser
+from ebook_converter.utils.logging import Log
+from ebook_converter.customize.conversion import OptionRecommendation
+from ebook_converter import patheq
+from ebook_converter.ebooks.conversion import ConversionUserFeedBack
+from ebook_converter.utils.localization import localize_user_manual_link
+from ebook_converter.polyglot.builtins import iteritems
 
 USAGE = '%prog ' + _('''\
 input_file output_file [options]
@@ -290,12 +290,12 @@ class ProgressBar(object):
 
 def create_option_parser(args, log):
     if '--version' in args:
-        from calibre.constants import __appname__, __version__, __author__
+        from ebook_converter.constants import __appname__, __version__, __author__
         log(os.path.basename(args[0]), '('+__appname__, __version__+')')
         log('Created by:', __author__)
         raise SystemExit(0)
     if '--list-recipes' in args:
-        from calibre.web.feeds.recipes.collection import get_builtin_recipe_titles
+        from ebook_converter.web.feeds.recipes.collection import get_builtin_recipe_titles
         log('Available recipes:')
         titles = sorted(get_builtin_recipe_titles())
         for title in titles:
@@ -316,7 +316,7 @@ def create_option_parser(args, log):
 
     input, output = check_command_line_options(parser, args, log)
 
-    from calibre.ebooks.conversion.plumber import Plumber
+    from ebook_converter.ebooks.conversion.plumber import Plumber
 
     reporter = ProgressBar(log)
     if patheq(input, output):
@@ -380,7 +380,7 @@ def main(args=sys.argv):
     if opts.search_replace:
         opts.search_replace = read_sr_patterns(opts.search_replace, log)
     if opts.transform_css_rules:
-        from calibre.ebooks.css_transform_rules import import_rules, validate_rule
+        from ebook_converter.ebooks.css_transform_rules import import_rules, validate_rule
         with open(opts.transform_css_rules, 'rb') as tcr:
             opts.transform_css_rules = rules = list(import_rules(tcr.read()))
             for rule in rules:

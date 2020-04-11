@@ -10,15 +10,15 @@ import sys, os, re
 from xml.sax.saxutils import escape
 from string import Formatter
 
-from calibre import guess_type, strftime
-from calibre.constants import iswindows
-from calibre.ebooks.oeb.base import XPath, XHTML_NS, XHTML, xml2text, urldefrag, urlnormalize
-from calibre.library.comments import comments_to_html, markdown
-from calibre.utils.date import is_date_undefined, as_local_time
-from calibre.utils.icu import sort_key
-from calibre.ebooks.chardet import strip_encoding_declarations
-from calibre.ebooks.metadata import fmt_sidx, rating_to_stars
-from polyglot.builtins import unicode_type, map
+from ebook_converter import guess_type, strftime
+from ebook_converter.constants import iswindows
+from ebook_converter.ebooks.oeb.base import XPath, XHTML_NS, XHTML, xml2text, urldefrag, urlnormalize
+from ebook_converter.library.comments import comments_to_html, markdown
+from ebook_converter.utils.date import is_date_undefined, as_local_time
+from ebook_converter.utils.icu import sort_key
+from ebook_converter.ebooks.chardet import strip_encoding_declarations
+from ebook_converter.ebooks.metadata import fmt_sidx, rating_to_stars
+from ebook_converter.polyglot.builtins import unicode_type, map
 
 JACKET_XPATH = '//h:meta[@name="calibre-content" and @content="jacket"]'
 
@@ -346,7 +346,7 @@ def render_jacket(mi, output_profile,
 
         return strip_encoding_declarations(generated_html)
 
-    from calibre.ebooks.oeb.polish.parsing import parse
+    from ebook_converter.ebooks.oeb.polish.parsing import parse
     raw = generate_html(comments)
     root = parse(raw, line_numbers=False, force_html5_parse=True)
 
@@ -367,7 +367,7 @@ def render_jacket(mi, output_profile,
                 fw.append(child)
             body.append(fw)
     postprocess_jacket(root, output_profile, has_data)
-    from calibre.ebooks.oeb.polish.pretty import pretty_html_tree
+    from ebook_converter.ebooks.oeb.polish.pretty import pretty_html_tree
     pretty_html_tree(None, root)
     return root
 

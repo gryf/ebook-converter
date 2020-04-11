@@ -9,19 +9,19 @@ Created on 4 Jun 2010
 import json, traceback
 from datetime import datetime, time
 
-from calibre.ebooks.metadata.book import SERIALIZABLE_FIELDS
-from calibre.constants import filesystem_encoding, preferred_encoding
-from calibre.library.field_metadata import FieldMetadata
-from calibre import isbytestring
-from polyglot.builtins import iteritems, itervalues, as_bytes
-from polyglot.binary import as_base64_unicode, from_base64_bytes
+from ebook_converter.ebooks.metadata.book import SERIALIZABLE_FIELDS
+from ebook_converter.constants import filesystem_encoding, preferred_encoding
+from ebook_converter.library.field_metadata import FieldMetadata
+from ebook_converter import isbytestring
+from ebook_converter.polyglot.builtins import iteritems, itervalues, as_bytes
+from ebook_converter.polyglot.binary import as_base64_unicode, from_base64_bytes
 
 # Translate datetimes to and from strings. The string form is the datetime in
 # UTC. The returned date is also UTC
 
 
 def string_to_datetime(src):
-    from calibre.utils.iso8601 import parse_iso8601
+    from ebook_converter.utils.iso8601 import parse_iso8601
     if src != "None":
         try:
             return parse_iso8601(src)
@@ -31,7 +31,7 @@ def string_to_datetime(src):
 
 
 def datetime_to_string(dateval):
-    from calibre.utils.date import isoformat, UNDEFINED_DATE, local_tz
+    from ebook_converter.utils.date import isoformat, UNDEFINED_DATE, local_tz
     if dateval is None:
         return "None"
     if not isinstance(dateval, datetime):
@@ -47,7 +47,7 @@ def encode_thumbnail(thumbnail):
     '''
     Encode the image part of a thumbnail, then return the 3 part tuple
     '''
-    from calibre.utils.imghdr import identify
+    from ebook_converter.utils.imghdr import identify
     if thumbnail is None:
         return None
     if not isinstance(thumbnail, (tuple, list)):

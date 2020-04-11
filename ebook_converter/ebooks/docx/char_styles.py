@@ -6,7 +6,7 @@ __license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 from collections import OrderedDict
-from calibre.ebooks.docx.block_styles import (  # noqa
+from ebook_converter.ebooks.docx.block_styles import (  # noqa
     inherit, simple_color, LINE_STYLES, simple_float, binary_property, read_shd)
 
 # Read from XML {{{
@@ -89,7 +89,7 @@ def read_lang(parent, dest, XPath, get):
         except (ValueError, TypeError):
             ans = val
         else:
-            from calibre.ebooks.docx.lcid import lcid
+            from ebook_converter.ebooks.docx.lcid import lcid
             val = lcid.get(code, None)
             if val:
                 ans = val

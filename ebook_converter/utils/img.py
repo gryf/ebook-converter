@@ -13,21 +13,21 @@ from io import BytesIO
 from threading import Thread
 
 # We use explicit module imports so tracebacks when importing are more useful
-from PyQt5.QtCore import QBuffer, QByteArray, Qt
-from PyQt5.QtGui import QColor, QImage, QImageReader, QImageWriter, QPixmap, QTransform
+#from PyQt5.QtCore import QBuffer, QByteArray, Qt
+#from PyQt5.QtGui import QColor, QImage, QImageReader, QImageWriter, QPixmap, QTransform
 
-from calibre import fit_image, force_unicode
-from calibre.constants import iswindows, plugins, ispy3
-from calibre.ptempfile import TemporaryDirectory
-from calibre.utils.config_base import tweaks
-from calibre.utils.filenames import atomic_rename
-from calibre.utils.imghdr import what
-from polyglot.builtins import string_or_bytes, unicode_type
+from ebook_converter import fit_image, force_unicode
+from ebook_converter.constants import iswindows, plugins, ispy3
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.utils.config_base import tweaks
+from ebook_converter.utils.filenames import atomic_rename
+from ebook_converter.utils.imghdr import what
+from ebook_converter.polyglot.builtins import string_or_bytes, unicode_type
 
 # Utilities {{{
-imageops, imageops_err = plugins['imageops']
-if imageops is None:
-    raise RuntimeError(imageops_err)
+# imageops, imageops_err = plugins['imageops']
+# if imageops is None:
+    # raise RuntimeError(imageops_err)
 
 
 class NotImage(ValueError):
@@ -42,7 +42,7 @@ def normalize_format_name(fmt):
 
 
 def get_exe_path(name):
-    from calibre.ebooks.pdf.pdftohtml import PDFTOHTML
+    from ebook_converter.ebooks.pdf.pdftohtml import PDFTOHTML
     base = os.path.dirname(PDFTOHTML)
     if iswindows:
         name += '-calibre.exe'
@@ -609,7 +609,7 @@ def optimize_png(file_path, level=7):
 
 
 def encode_jpeg(file_path, quality=80):
-    from calibre.utils.speedups import ReadOnlyFileBuffer
+    from ebook_converter.utils.speedups import ReadOnlyFileBuffer
     quality = max(0, min(100, int(quality)))
     exe = get_exe_path('cjpeg')
     cmd = [exe] + '-optimize -progressive -maxmemory 100M -quality'.split() + [unicode_type(quality)]
@@ -626,8 +626,8 @@ def encode_jpeg(file_path, quality=80):
 
 
 def test():  # {{{
-    from calibre.ptempfile import TemporaryDirectory
-    from calibre import CurrentDir
+    from ebook_converter.ptempfile import TemporaryDirectory
+    from ebook_converter import CurrentDir
     from glob import glob
     img = image_from_data(I('lt.png', data=True, allow_user_override=False))
     with TemporaryDirectory() as tdir, CurrentDir(tdir):

@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 __license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
-from calibre.customize.conversion import InputFormatPlugin, OptionRecommendation
+from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 
 
 class DOCXInput(InputFormatPlugin):
@@ -29,6 +29,6 @@ class DOCXInput(InputFormatPlugin):
     recommendations = {('page_breaks_before', '/', OptionRecommendation.MED)}
 
     def convert(self, stream, options, file_ext, log, accelerators):
-        from calibre.ebooks.docx.to_html import Convert
+        from ebook_converter.ebooks.docx.to_html import Convert
         return Convert(stream, detect_cover=not options.docx_no_cover, log=log, notes_nopb=options.docx_no_pagebreaks_between_notes,
                        nosupsub=options.docx_inline_subsup)()

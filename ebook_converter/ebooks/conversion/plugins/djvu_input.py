@@ -9,8 +9,8 @@ __docformat__ = 'restructuredtext en'
 import os
 from io import BytesIO
 
-from calibre.customize.conversion import InputFormatPlugin
-from polyglot.builtins import getcwd
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.polyglot.builtins import getcwd
 
 
 class DJVUInput(InputFormatPlugin):
@@ -22,10 +22,10 @@ class DJVUInput(InputFormatPlugin):
     commit_name = 'djvu_input'
 
     def convert(self, stream, options, file_ext, log, accelerators):
-        from calibre.ebooks.txt.processor import convert_basic
+        from ebook_converter.ebooks.txt.processor import convert_basic
 
         stdout = BytesIO()
-        from calibre.ebooks.djvu.djvu import DJVUFile
+        from ebook_converter.ebooks.djvu.djvu import DJVUFile
         x = DJVUFile(stream)
         x.get_text(stdout)
         raw_text = stdout.getvalue()
@@ -36,7 +36,7 @@ class DJVUInput(InputFormatPlugin):
         html = convert_basic(raw_text.replace(b"\n", b' ').replace(
             b'\037', b'\n\n'))
         # Run the HTMLized text through the html processing plugin.
-        from calibre.customize.ui import plugin_for_input_format
+        from ebook_converter.customize.ui import plugin_for_input_format
         html_input = plugin_for_input_format('html')
         for opt in html_input.options:
             setattr(options, opt.option.name, opt.recommended_value)
@@ -59,8 +59,8 @@ class DJVUInput(InputFormatPlugin):
         os.remove(htmlfile)
 
         # Set metadata from file.
-        from calibre.customize.ui import get_file_type_metadata
-        from calibre.ebooks.oeb.transforms.metadata import meta_info_to_oeb_metadata
+        from ebook_converter.customize.ui import get_file_type_metadata
+        from ebook_converter.ebooks.oeb.transforms.metadata import meta_info_to_oeb_metadata
         mi = get_file_type_metadata(stream, file_ext)
         meta_info_to_oeb_metadata(mi, oeb.metadata, log)
 

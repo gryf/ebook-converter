@@ -8,9 +8,9 @@ __docformat__ = 'restructuredtext en'
 
 import sys, os
 
-from calibre.customize.conversion import OutputFormatPlugin
-from calibre.customize.conversion import OptionRecommendation
-from polyglot.builtins import unicode_type
+from ebook_converter.customize.conversion import OutputFormatPlugin
+from ebook_converter.customize.conversion import OptionRecommendation
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class LRFOptions(object):
@@ -53,7 +53,7 @@ class LRFOptions(object):
         self.use_spine = True
         self.font_delta = 0
         self.ignore_colors = False
-        from calibre.ebooks.lrf import PRS500_PROFILE
+        from ebook_converter.ebooks.lrf import PRS500_PROFILE
         self.profile = PRS500_PROFILE
         self.link_levels = sys.maxsize
         self.link_exclude = '@'
@@ -140,9 +140,9 @@ class LRFOutput(OutputFormatPlugin):
         ('change_justification', 'original', OptionRecommendation.HIGH)}
 
     def convert_images(self, pages, opts, wide):
-        from calibre.ebooks.lrf.pylrs.pylrs import Book, BookSetting, ImageStream, ImageBlock
+        from ebook_converter.ebooks.lrf.pylrs.pylrs import Book, BookSetting, ImageStream, ImageBlock
         from uuid import uuid4
-        from calibre.constants import __appname__, __version__
+        from ebook_converter.constants import __appname__, __version__
 
         width, height = (784, 1012) if wide else (584, 754)
 
@@ -168,7 +168,7 @@ class LRFOutput(OutputFormatPlugin):
         book.renderLrf(open(opts.output, 'wb'))
 
     def flatten_toc(self):
-        from calibre.ebooks.oeb.base import TOC
+        from ebook_converter.ebooks.oeb.base import TOC
         nroot = TOC()
         for x in self.oeb.toc.iterdescendants():
             nroot.add(x.title, x.href)
@@ -186,11 +186,11 @@ class LRFOutput(OutputFormatPlugin):
 
         self.flatten_toc()
 
-        from calibre.ptempfile import TemporaryDirectory
+        from ebook_converter.ptempfile import TemporaryDirectory
         with TemporaryDirectory('_lrf_output') as tdir:
-            from calibre.customize.ui import plugin_for_output_format
+            from ebook_converter.customize.ui import plugin_for_output_format
             oeb_output = plugin_for_output_format('oeb')
             oeb_output.convert(oeb, tdir, input_plugin, opts, log)
             opf = [x for x in os.listdir(tdir) if x.endswith('.opf')][0]
-            from calibre.ebooks.lrf.html.convert_from import process_file
+            from ebook_converter.ebooks.lrf.html.convert_from import process_file
             process_file(os.path.join(tdir, opf), lrf_opts, self.log)

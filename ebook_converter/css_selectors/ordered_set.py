@@ -6,7 +6,7 @@ __license__ = 'GPL v3'
 __copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import collections
-from polyglot.builtins import string_or_bytes
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 SLICE_ALL = slice(None)
 

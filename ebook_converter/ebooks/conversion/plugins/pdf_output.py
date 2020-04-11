@@ -11,10 +11,10 @@ Convert OEB ebook format to PDF.
 
 import glob, os
 
-from calibre.customize.conversion import (OutputFormatPlugin,
+from ebook_converter.customize.conversion import (OutputFormatPlugin,
     OptionRecommendation)
-from calibre.ptempfile import TemporaryDirectory
-from polyglot.builtins import iteritems, unicode_type
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 UNITS = ('millimeter', 'centimeter', 'point', 'inch' , 'pica' , 'didot',
         'cicero', 'devicepixel')
@@ -150,8 +150,8 @@ class PDFOutput(OutputFormatPlugin):
         # that hopefully no Qt application has been constructed as yet
         from PyQt5.QtWebEngineCore import QWebEngineUrlScheme
         from PyQt5.QtWebEngineWidgets import QWebEnginePage  # noqa
-        from calibre.gui2 import must_use_qt
-        from calibre.constants import FAKE_PROTOCOL
+        from ebook_converter.gui2 import must_use_qt
+        from ebook_converter.constants import FAKE_PROTOCOL
         scheme = QWebEngineUrlScheme(FAKE_PROTOCOL.encode('ascii'))
         scheme.setSyntax(QWebEngineUrlScheme.Syntax.Host)
         scheme.setFlags(QWebEngineUrlScheme.SecureScheme)
@@ -169,13 +169,13 @@ class PDFOutput(OutputFormatPlugin):
         self.oeb = oeb_book
         self.input_plugin, self.opts, self.log = input_plugin, opts, log
         self.output_path = output_path
-        from calibre.ebooks.oeb.base import OPF, OPF2_NS
+        from ebook_converter.ebooks.oeb.base import OPF, OPF2_NS
         from lxml import etree
         from io import BytesIO
         package = etree.Element(OPF('package'),
             attrib={'version': '2.0', 'unique-identifier': 'dummy'},
             nsmap={None: OPF2_NS})
-        from calibre.ebooks.metadata.opf2 import OPF
+        from ebook_converter.ebooks.metadata.opf2 import OPF
         self.oeb.metadata.to_opf2(package)
         self.metadata = OPF(BytesIO(etree.tostring(package))).to_book_metadata()
         self.cover_data = None
@@ -188,7 +188,7 @@ class PDFOutput(OutputFormatPlugin):
             self.convert_text(oeb_book)
 
     def convert_images(self, images):
-        from calibre.ebooks.pdf.image_writer import convert
+        from ebook_converter.ebooks.pdf.image_writer import convert
         convert(images, self.output_path, self.opts, self.metadata, self.report_progress)
 
     def get_cover_data(self):
@@ -200,8 +200,8 @@ class PDFOutput(OutputFormatPlugin):
 
     def process_fonts(self):
         ''' Make sure all fonts are embeddable '''
-        from calibre.ebooks.oeb.base import urlnormalize
-        from calibre.utils.fonts.utils import remove_embed_restriction
+        from ebook_converter.ebooks.oeb.base import urlnormalize
+        from ebook_converter.utils.fonts.utils import remove_embed_restriction
 
         processed = set()
         for item in list(self.oeb.manifest):
@@ -232,7 +232,7 @@ class PDFOutput(OutputFormatPlugin):
 
     def convert_text(self, oeb_book):
         import json
-        from calibre.ebooks.pdf.html_writer import convert
+        from ebook_converter.ebooks.pdf.html_writer import convert
         self.get_cover_data()
         self.process_fonts()
 
@@ -245,7 +245,7 @@ class PDFOutput(OutputFormatPlugin):
                         root.set('data-calibre-pdf-output-page-margins', json.dumps(margins))
 
         with TemporaryDirectory('_pdf_out') as oeb_dir:
-            from calibre.customize.ui import plugin_for_output_format
+            from ebook_converter.customize.ui import plugin_for_output_format
             oeb_dir = os.path.realpath(oeb_dir)
             oeb_output = plugin_for_output_format('oeb')
             oeb_output.convert(oeb_book, oeb_dir, self.input_plugin, self.opts, self.log)

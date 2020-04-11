@@ -9,10 +9,10 @@ __docformat__ = 'restructuredtext en'
 import re, codecs, os
 from collections import namedtuple
 
-from calibre.customize import CatalogPlugin
-from calibre.library.catalogs import FIELDS
-from calibre.customize.conversion import DummyReporter
-from polyglot.builtins import unicode_type
+from ebook_converter.customize import CatalogPlugin
+from ebook_converter.library.catalogs import FIELDS
+from ebook_converter.customize.conversion import DummyReporter
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class CSV_XML(CatalogPlugin):
@@ -52,12 +52,12 @@ class CSV_XML(CatalogPlugin):
                 "Applies to: CSV, XML output formats"))]
 
     def run(self, path_to_output, opts, db, notification=DummyReporter()):
-        from calibre.library import current_library_name
-        from calibre.utils.date import isoformat
-        from calibre.utils.html2text import html2text
-        from calibre.utils.logging import default_log as log
+        from ebook_converter.library import current_library_name
+        from ebook_converter.utils.date import isoformat
+        from ebook_converter.utils.html2text import html2text
+        from ebook_converter.utils.logging import default_log as log
         from lxml import etree
-        from calibre.ebooks.metadata import authors_to_string
+        from ebook_converter.ebooks.metadata import authors_to_string
 
         self.fmt = path_to_output.rpartition('.')[2]
         self.notification = notification

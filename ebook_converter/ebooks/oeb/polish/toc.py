@@ -14,17 +14,17 @@ from operator import itemgetter
 from lxml import etree
 from lxml.builder import ElementMaker
 
-from calibre import __version__
-from calibre.ebooks.oeb.base import (
+from ebook_converter import __version__
+from ebook_converter.ebooks.oeb.base import (
     XPath, uuid_id, xml2text, NCX, NCX_NS, XML, XHTML, XHTML_NS, serialize, EPUB_NS, XML_NS, OEB_DOCS)
-from calibre.ebooks.oeb.polish.errors import MalformedMarkup
-from calibre.ebooks.oeb.polish.utils import guess_type, extract
-from calibre.ebooks.oeb.polish.opf import set_guide_item, get_book_language
-from calibre.ebooks.oeb.polish.pretty import pretty_html_tree
-from calibre.translations.dynamic import translate
-from calibre.utils.localization import get_lang, canonicalize_lang, lang_as_iso639_1
-from polyglot.builtins import iteritems, map, unicode_type
-from polyglot.urllib import urlparse
+from ebook_converter.ebooks.oeb.polish.errors import MalformedMarkup
+from ebook_converter.ebooks.oeb.polish.utils import guess_type, extract
+from ebook_converter.ebooks.oeb.polish.opf import set_guide_item, get_book_language
+from ebook_converter.ebooks.oeb.polish.pretty import pretty_html_tree
+from ebook_converter.translations.dynamic import translate
+from ebook_converter.utils.localization import get_lang, canonicalize_lang, lang_as_iso639_1
+from ebook_converter.polyglot.builtins import iteritems, map, unicode_type
+from ebook_converter.polyglot.urllib import urlparse
 
 ns = etree.FunctionNamespace('calibre_xpath_extensions')
 ns.prefix = 'calibre'
@@ -677,7 +677,7 @@ def ensure_single_nav_of_type(root, ntype='toc'):
 
 
 def commit_nav_toc(container, toc, lang=None, landmarks=None, previous_nav=None):
-    from calibre.ebooks.oeb.polish.pretty import pretty_xml_tree
+    from ebook_converter.ebooks.oeb.polish.pretty import pretty_xml_tree
     tocname = find_existing_nav_toc(container)
     if previous_nav is not None:
         nav_name = container.href_to_name(previous_nav[0])

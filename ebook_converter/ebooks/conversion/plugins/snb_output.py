@@ -7,10 +7,10 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre.customize.conversion import OutputFormatPlugin, OptionRecommendation
-from calibre.ptempfile import TemporaryDirectory
-from calibre.constants import __appname__, __version__
-from polyglot.builtins import unicode_type
+from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.constants import __appname__, __version__
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class SNBOutput(OutputFormatPlugin):
@@ -51,11 +51,11 @@ class SNBOutput(OutputFormatPlugin):
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
         from lxml import etree
-        from calibre.ebooks.snb.snbfile import SNBFile
-        from calibre.ebooks.snb.snbml import SNBMLizer, ProcessFileName
+        from ebook_converter.ebooks.snb.snbfile import SNBFile
+        from ebook_converter.ebooks.snb.snbml import SNBMLizer, ProcessFileName
 
         self.opts = opts
-        from calibre.ebooks.oeb.transforms.rasterize import SVGRasterizer, Unavailable
+        from ebook_converter.ebooks.oeb.transforms.rasterize import SVGRasterizer, Unavailable
         try:
             rasterizer = SVGRasterizer()
             rasterizer(oeb_book, opts)
@@ -176,7 +176,7 @@ class SNBOutput(OutputFormatPlugin):
             mergeLast = False
             lastName = None
             for item in s:
-                from calibre.ebooks.oeb.base import OEB_DOCS, OEB_IMAGES
+                from ebook_converter.ebooks.oeb.base import OEB_DOCS, OEB_IMAGES
                 if m.hrefs[item.href].media_type in OEB_DOCS:
                     if item.href not in outputFiles:
                         log.debug('File %s is unused in TOC. Continue in last chapter' % item.href)
@@ -225,7 +225,7 @@ class SNBOutput(OutputFormatPlugin):
             snbFile.Output(output_path)
 
     def HandleImage(self, imageData, imagePath):
-        from calibre.utils.img import image_from_data, resize_image, image_to_data
+        from ebook_converter.utils.img import image_from_data, resize_image, image_to_data
         img = image_from_data(imageData)
         x, y = img.width(), img.height()
         if self.opts:
@@ -250,10 +250,10 @@ class SNBOutput(OutputFormatPlugin):
 
 
 if __name__ == '__main__':
-    from calibre.ebooks.oeb.reader import OEBReader
-    from calibre.ebooks.oeb.base import OEBBook
-    from calibre.ebooks.conversion.preprocess import HTMLPreProcessor
-    from calibre.customize.profiles import HanlinV3Output
+    from ebook_converter.ebooks.oeb.reader import OEBReader
+    from ebook_converter.ebooks.oeb.base import OEBBook
+    from ebook_converter.ebooks.conversion.preprocess import HTMLPreProcessor
+    from ebook_converter.customize.profiles import HanlinV3Output
 
     class OptionValues(object):
         pass
@@ -262,7 +262,7 @@ if __name__ == '__main__':
     opts.output_profile = HanlinV3Output(None)
 
     html_preprocessor = HTMLPreProcessor(None, None, opts)
-    from calibre.utils.logging import default_log
+    from ebook_converter.utils.logging import default_log
     oeb = OEBBook(default_log, html_preprocessor)
     reader = OEBReader
     reader()(oeb, '/tmp/bbb/processed/')

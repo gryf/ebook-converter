@@ -13,8 +13,8 @@ and igorsk.
 
 import struct
 
-from calibre.ebooks.mobi import MobiError
-from polyglot.builtins import map
+from ebook_converter.ebooks.mobi import MobiError
+from ebook_converter.polyglot.builtins import map
 
 
 class Reader(object):

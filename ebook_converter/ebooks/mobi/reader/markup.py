@@ -8,8 +8,8 @@ __docformat__ = 'restructuredtext en'
 
 import re, os
 
-from calibre.ebooks.chardet import strip_encoding_declarations
-from polyglot.builtins import unicode_type, range
+from ebook_converter.ebooks.chardet import strip_encoding_declarations
+from ebook_converter.polyglot.builtins import unicode_type, range
 
 
 def update_internal_links(mobi8_reader, log):

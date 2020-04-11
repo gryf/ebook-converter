@@ -12,11 +12,11 @@ __docformat__ = 'restructuredtext en'
 import os
 import struct
 
-from calibre import CurrentDir
-from calibre.ebooks.metadata.opf2 import OPFCreator
-from calibre.ebooks.pdb.formatreader import FormatReader
-from calibre.ebooks.pdb.ereader import EreaderError
-from polyglot.builtins import unicode_type, range
+from ebook_converter import CurrentDir
+from ebook_converter.ebooks.metadata.opf2 import OPFCreator
+from ebook_converter.ebooks.pdb.formatreader import FormatReader
+from ebook_converter.ebooks.pdb.ereader import EreaderError
+from ebook_converter.polyglot.builtins import unicode_type, range
 
 
 class HeaderRecord(object):
@@ -51,14 +51,14 @@ class Reader202(FormatReader):
         if self.header_record.version not in (2, 4):
             raise EreaderError('Unknown book version %i.' % self.header_record.version)
 
-        from calibre.ebooks.metadata.pdb import get_metadata
+        from ebook_converter.ebooks.metadata.pdb import get_metadata
         self.mi = get_metadata(stream, False)
 
     def section_data(self, number):
         return self.sections[number]
 
     def decompress_text(self, number):
-        from calibre.ebooks.compression.palmdoc import decompress_doc
+        from ebook_converter.ebooks.compression.palmdoc import decompress_doc
         data = bytearray(self.section_data(number))
         data = bytes(bytearray(x ^ 0xA5 for x in data))
         return decompress_doc(data).decode(self.encoding or 'cp1252', 'replace')
@@ -86,7 +86,7 @@ class Reader202(FormatReader):
         return self.decompress_text(number)
 
     def extract_content(self, output_dir):
-        from calibre.ebooks.pml.pmlconverter import pml_to_html
+        from ebook_converter.ebooks.pml.pmlconverter import pml_to_html
 
         output_dir = os.path.abspath(output_dir)
 

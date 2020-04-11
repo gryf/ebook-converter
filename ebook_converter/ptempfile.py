@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
 __license__   = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 """
@@ -6,9 +5,9 @@ Provides platform independent temporary files that persist even after
 being closed.
 """
 import tempfile, os, atexit
-from polyglot.builtins import map, getenv
+from ebook_converter.polyglot.builtins import map, getenv
 
-from calibre.constants import (__version__, __appname__, filesystem_encoding,
+from ebook_converter.constants import (__version__, __appname__, filesystem_encoding,
         iswindows, get_windows_temp_path, isosx, ispy3)
 
 
@@ -91,8 +90,8 @@ def base_dir():
     if _base_dir is None:
         td = os.environ.get('CALIBRE_WORKER_TEMP_DIR', None)
         if td is not None:
-            from calibre.utils.serialize import msgpack_loads
-            from polyglot.binary import from_hex_bytes
+            from ebook_converter.utils.serialize import msgpack_loads
+            from ebook_converter.polyglot.binary import from_hex_bytes
             try:
                 td = msgpack_loads(from_hex_bytes(td))
             except Exception:

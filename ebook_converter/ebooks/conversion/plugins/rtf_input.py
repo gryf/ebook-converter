@@ -4,8 +4,8 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import os, glob, re, textwrap
 
-from calibre.customize.conversion import InputFormatPlugin, OptionRecommendation
-from polyglot.builtins import iteritems, filter, getcwd, as_bytes
+from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from ebook_converter.polyglot.builtins import iteritems, filter, getcwd, as_bytes
 
 border_style_map = {
         'single' : 'solid',
@@ -53,7 +53,7 @@ class RTFInput(InputFormatPlugin):
     }
 
     def generate_xml(self, stream):
-        from calibre.ebooks.rtf2xml.ParseRtf import ParseRtf
+        from ebook_converter.ebooks.rtf2xml.ParseRtf import ParseRtf
         ofile = u'dataxml.xml'
         run_lev, debug_dir, indent_out = 1, None, 0
         if getattr(self.opts, 'debug_pipeline', None) is not None:
@@ -117,7 +117,7 @@ class RTFInput(InputFormatPlugin):
             return f.read()
 
     def extract_images(self, picts):
-        from calibre.utils.imghdr import what
+        from ebook_converter.utils.imghdr import what
         from binascii import unhexlify
         self.log('Extracting images...')
 
@@ -167,7 +167,7 @@ class RTFInput(InputFormatPlugin):
         if self.opts.ignore_wmf:
             os.remove(name)
             return '__REMOVE_ME__'
-        from calibre.ebooks.covers import message_image
+        from ebook_converter.ebooks.covers import message_image
         if self.default_img is None:
             self.default_img = message_image('Conversion of WMF images is not supported.'
             ' Use Microsoft Word or OpenOffice to save this RTF file'
@@ -178,7 +178,7 @@ class RTFInput(InputFormatPlugin):
         return name
 
     def rasterize_wmf(self, name):
-        from calibre.utils.wmf.parse import wmf_unwrap
+        from ebook_converter.utils.wmf.parse import wmf_unwrap
         with open(name, 'rb') as f:
             data = f.read()
         data = wmf_unwrap(data)
@@ -247,11 +247,11 @@ class RTFInput(InputFormatPlugin):
     def convert(self, stream, options, file_ext, log,
                 accelerators):
         from lxml import etree
-        from calibre.ebooks.metadata.meta import get_metadata
-        from calibre.ebooks.metadata.opf2 import OPFCreator
-        from calibre.ebooks.rtf2xml.ParseRtf import RtfInvalidCodeException
-        from calibre.ebooks.rtf.input import InlineClass
-        from calibre.utils.xml_parse import safe_xml_fromstring
+        from ebook_converter.ebooks.metadata.meta import get_metadata
+        from ebook_converter.ebooks.metadata.opf2 import OPFCreator
+        from ebook_converter.ebooks.rtf2xml.ParseRtf import RtfInvalidCodeException
+        from ebook_converter.ebooks.rtf.input import InlineClass
+        from ebook_converter.utils.xml_parse import safe_xml_fromstring
         self.opts = options
         self.log = log
         self.log('Converting RTF to XML...')

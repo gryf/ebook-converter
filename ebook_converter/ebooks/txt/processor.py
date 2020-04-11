@@ -12,12 +12,12 @@ Read content from txt file.
 
 import os, re
 
-from calibre import prepare_string_for_xml, isbytestring
-from calibre.ebooks.metadata.opf2 import OPFCreator
+from ebook_converter import prepare_string_for_xml, isbytestring
+from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 
-from calibre.ebooks.conversion.preprocess import DocAnalysis
-from calibre.utils.cleantext import clean_ascii_chars
-from polyglot.builtins import iteritems, unicode_type, map, range, long_type
+from ebook_converter.ebooks.conversion.preprocess import DocAnalysis
+from ebook_converter.utils.cleantext import clean_ascii_chars
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, map, range, long_type
 
 HTML_TEMPLATE = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>%s </title></head><body>\n%s\n</body></html>'
 
@@ -111,7 +111,7 @@ DEFAULT_MD_EXTENSIONS = ('footnotes', 'tables', 'toc')
 def create_markdown_object(extensions):
     # Need to load markdown extensions without relying on pkg_resources
     import importlib
-    from calibre.ebooks.markdown import Markdown
+    from ebook_converter.ebooks.markdown import Markdown
     from markdown import Extension
 
     class NotBrainDeadMarkdown(Markdown):
@@ -127,7 +127,7 @@ def create_markdown_object(extensions):
                     return x(**configs)
             raise ImportError('No extension class in {}'.format(ext_name))
 
-    from calibre.ebooks.conversion.plugins.txt_input import MD_EXTENSIONS
+    from ebook_converter.ebooks.conversion.plugins.txt_input import MD_EXTENSIONS
     extensions = [x.lower() for x in extensions]
     extensions = [x for x in extensions if x in MD_EXTENSIONS]
     md = NotBrainDeadMarkdown(extensions=extensions)
@@ -140,9 +140,9 @@ def convert_markdown(txt, title='', extensions=DEFAULT_MD_EXTENSIONS):
 
 
 def convert_markdown_with_metadata(txt, title='', extensions=DEFAULT_MD_EXTENSIONS):
-    from calibre.ebooks.metadata.book.base import Metadata
-    from calibre.utils.date import parse_only_date
-    from calibre.db.write import get_series_values
+    from ebook_converter.ebooks.metadata.book.base import Metadata
+    from ebook_converter.utils.date import parse_only_date
+    from ebook_converter.db.write import get_series_values
     if 'meta' not in extensions:
         extensions.append('meta')
     md = create_markdown_object(extensions)
@@ -176,7 +176,7 @@ def convert_markdown_with_metadata(txt, title='', extensions=DEFAULT_MD_EXTENSIO
 
 
 def convert_textile(txt, title=''):
-    from calibre.ebooks.textile import textile
+    from ebook_converter.ebooks.textile import textile
     html = textile(txt, encoding='utf-8')
     return HTML_TEMPLATE % (title, html)
 

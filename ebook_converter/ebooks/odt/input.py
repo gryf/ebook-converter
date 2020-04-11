@@ -17,10 +17,10 @@ from odf.opendocument import load as odLoad
 from odf.draw import Frame as odFrame, Image as odImage
 from odf.namespaces import TEXTNS as odTEXTNS
 
-from calibre import CurrentDir, walk
-from calibre.ebooks.oeb.base import _css_logger
-from calibre.utils.xml_parse import safe_xml_fromstring
-from polyglot.builtins import unicode_type, string_or_bytes, filter, getcwd, as_bytes
+from ebook_converter import CurrentDir, walk
+from ebook_converter.ebooks.oeb.base import _css_logger
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, filter, getcwd, as_bytes
 
 
 class Extract(ODF2XHTML):
@@ -88,7 +88,7 @@ class Extract(ODF2XHTML):
                     return rule
 
     def epubify_markup(self, root, log):
-        from calibre.ebooks.oeb.base import XPath, XHTML
+        from ebook_converter.ebooks.oeb.base import XPath, XHTML
         # Fix empty title tags
         for t in XPath('//h:title')(root):
             if not t.text:
@@ -265,9 +265,9 @@ class Extract(ODF2XHTML):
         self._walknode(self.document.topnode)
 
     def __call__(self, stream, odir, log):
-        from calibre.utils.zipfile import ZipFile
-        from calibre.ebooks.metadata.odt import get_metadata
-        from calibre.ebooks.metadata.opf2 import OPFCreator
+        from ebook_converter.utils.zipfile import ZipFile
+        from ebook_converter.ebooks.metadata.odt import get_metadata
+        from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 
         if not os.path.exists(odir):
             os.makedirs(odir)

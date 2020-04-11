@@ -15,12 +15,12 @@ from collections import defaultdict
 from html5_parser import parse
 from lxml.etree import Comment
 
-from calibre.ebooks.metadata import string_to_authors, authors_to_string
-from calibre.ebooks.metadata.book.base import Metadata
-from calibre.ebooks.chardet import xml_to_unicode
-from calibre import replace_entities, isbytestring
-from calibre.utils.date import parse_date, is_date_undefined
-from polyglot.builtins import iteritems
+from ebook_converter.ebooks.metadata import string_to_authors, authors_to_string
+from ebook_converter.ebooks.metadata.book.base import Metadata
+from ebook_converter.ebooks.chardet import xml_to_unicode
+from ebook_converter import replace_entities, isbytestring
+from ebook_converter.utils.date import parse_date, is_date_undefined
+from ebook_converter.polyglot.builtins import iteritems
 
 
 def get_metadata(stream):

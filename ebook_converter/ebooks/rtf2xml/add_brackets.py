@@ -14,9 +14,9 @@ from __future__ import unicode_literals, absolute_import, print_function, divisi
 #########################################################################
 import sys, os
 
-from calibre.ebooks.rtf2xml import copy, check_brackets
-from calibre.ptempfile import better_mktemp
-from polyglot.builtins import iteritems
+from ebook_converter.ebooks.rtf2xml import copy, check_brackets
+from ebook_converter.ptempfile import better_mktemp
+from ebook_converter.polyglot.builtins import iteritems
 from . import open_for_read, open_for_write
 
 

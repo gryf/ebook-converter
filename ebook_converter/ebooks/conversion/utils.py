@@ -8,10 +8,10 @@ __docformat__ = 'restructuredtext en'
 
 import re
 from math import ceil
-from calibre.ebooks.conversion.preprocess import DocAnalysis, Dehyphenator
-from calibre.utils.logging import default_log
-from calibre.utils.wordcount import get_wordcount_obj
-from polyglot.builtins import unicode_type
+from ebook_converter.ebooks.conversion.preprocess import DocAnalysis, Dehyphenator
+from ebook_converter.utils.logging import default_log
+from ebook_converter.utils.wordcount import get_wordcount_obj
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class HeuristicProcessor(object):
@@ -49,7 +49,7 @@ class HeuristicProcessor(object):
         return '<meta name="generator" content="ABBYY FineReader' in src[:1000]
 
     def chapter_head(self, match):
-        from calibre.utils.html2text import html2text
+        from ebook_converter.utils.html2text import html2text
         chap = match.group('chap')
         title = match.group('title')
         if not title:
@@ -400,7 +400,7 @@ class HeuristicProcessor(object):
         return content
 
     def txt_process(self, match):
-        from calibre.ebooks.txt.processor import convert_basic, separate_paragraphs_single_line
+        from ebook_converter.ebooks.txt.processor import convert_basic, separate_paragraphs_single_line
         content = match.group('text')
         content = separate_paragraphs_single_line(content)
         content = convert_basic(content, epub_split_size_kb=0)
@@ -412,7 +412,7 @@ class HeuristicProcessor(object):
             self.log.debug("Running Text Processing")
             outerhtml = re.compile(r'.*?(?<=<pre>)(?P<text>.*?)</pre>', re.IGNORECASE|re.DOTALL)
             html = outerhtml.sub(self.txt_process, html)
-            from calibre.ebooks.conversion.preprocess import convert_entities
+            from ebook_converter.ebooks.conversion.preprocess import convert_entities
             html = re.sub(r'&(\S+?);', convert_entities, html)
         else:
             # Add markup naively
@@ -616,7 +616,7 @@ class HeuristicProcessor(object):
             elif re.match('^<img', replacement_break):
                 scene_break = self.scene_break_open+replacement_break+'</p>'
             else:
-                from calibre.utils.html2text import html2text
+                from ebook_converter.utils.html2text import html2text
                 replacement_break = html2text(replacement_break)
                 replacement_break = re.sub('\\s', '&nbsp;', replacement_break)
                 scene_break = self.scene_break_open+replacement_break+'</p>'

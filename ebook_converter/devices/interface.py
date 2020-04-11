@@ -5,9 +5,9 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 import os
 from collections import namedtuple
 
-from calibre import prints
-from calibre.constants import iswindows
-from calibre.customize import Plugin
+from ebook_converter import prints
+from ebook_converter.constants import iswindows
+from ebook_converter.customize import Plugin
 
 
 class DevicePlugin(Plugin):

@@ -12,7 +12,7 @@ import codecs
 import os
 
 from .pylrfopt import tagListOptimizer
-from polyglot.builtins import iteritems, string_or_bytes, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, unicode_type
 
 PYLRF_VERSION = "1.0"
 

@@ -7,7 +7,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre.customize.conversion import OutputFormatPlugin, \
+from ebook_converter.customize.conversion import OutputFormatPlugin, \
     OptionRecommendation
 
 
@@ -25,8 +25,8 @@ class TCROutput(OutputFormatPlugin):
             'The default is utf-8.'))}
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
-        from calibre.ebooks.txt.txtml import TXTMLizer
-        from calibre.ebooks.compression.tcr import compress
+        from ebook_converter.ebooks.txt.txtml import TXTMLizer
+        from ebook_converter.ebooks.compression.tcr import compress
 
         close = False
         if not hasattr(output_path, 'write'):

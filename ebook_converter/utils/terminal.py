@@ -8,8 +8,8 @@ __docformat__ = 'restructuredtext en'
 
 import os, sys, re
 
-from calibre.constants import iswindows, ispy3
-from polyglot.builtins import iteritems, range, zip, native_string_type
+from ebook_converter.constants import iswindows, ispy3
+from ebook_converter.polyglot.builtins import iteritems, range, zip, native_string_type
 
 if iswindows:
     import ctypes.wintypes
@@ -174,7 +174,7 @@ class Detect(object):
                         # message and the asciized version of the text.
                         print('Non-ASCII text detected. You must set your Console\'s font to'
                                ' Lucida Console or Consolas or some other TrueType font to see this text', file=self.stream, end=' -- ')
-                        from calibre.utils.filenames import ascii_text
+                        from ebook_converter.utils.filenames import ascii_text
                         print(ascii_text(t + text), file=self.stream, end='')
                         continue
                     if not ignore_errors:

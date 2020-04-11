@@ -6,7 +6,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-from calibre.customize.conversion import InputFormatPlugin
+from ebook_converter.customize.conversion import InputFormatPlugin
 
 
 class LITInput(InputFormatPlugin):
@@ -19,13 +19,13 @@ class LITInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from calibre.ebooks.lit.reader import LitReader
-        from calibre.ebooks.conversion.plumber import create_oebbook
+        from ebook_converter.ebooks.lit.reader import LitReader
+        from ebook_converter.ebooks.conversion.plumber import create_oebbook
         self.log = log
         return create_oebbook(log, stream, options, reader=LitReader)
 
     def postprocess_book(self, oeb, opts, log):
-        from calibre.ebooks.oeb.base import XHTML_NS, XPath, XHTML
+        from ebook_converter.ebooks.oeb.base import XHTML_NS, XPath, XHTML
         for item in oeb.spine:
             root = item.data
             if not hasattr(root, 'xpath'):
@@ -40,10 +40,10 @@ class LITInput(InputFormatPlugin):
                 body = body[0]
                 if len(body) == 1 and body[0].tag == XHTML('pre'):
                     pre = body[0]
-                    from calibre.ebooks.txt.processor import convert_basic, \
+                    from ebook_converter.ebooks.txt.processor import convert_basic, \
                         separate_paragraphs_single_line
-                    from calibre.ebooks.chardet import xml_to_unicode
-                    from calibre.utils.xml_parse import safe_xml_fromstring
+                    from ebook_converter.ebooks.chardet import xml_to_unicode
+                    from ebook_converter.utils.xml_parse import safe_xml_fromstring
                     import copy
                     self.log('LIT file with all text in singe <pre> tag detected')
                     html = separate_paragraphs_single_line(pre.text)
@@ -53,7 +53,7 @@ class LITInput(InputFormatPlugin):
                             resolve_entities=True)[0]
                     if opts.smarten_punctuation:
                         # SmartyPants skips text inside <pre> tags
-                        from calibre.ebooks.conversion.preprocess import smarten_punctuation
+                        from ebook_converter.ebooks.conversion.preprocess import smarten_punctuation
                         html = smarten_punctuation(html, self.log)
                     root = safe_xml_fromstring(html)
                     body = XPath('//h:body')(root)

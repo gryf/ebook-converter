@@ -5,7 +5,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
-from polyglot.builtins import range, unicode_type
+from ebook_converter.polyglot.builtins import range, unicode_type
 
 
 class ReadOnlyFileBuffer(object):

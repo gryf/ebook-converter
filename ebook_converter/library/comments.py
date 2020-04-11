@@ -6,14 +6,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import re
 
-from calibre import prepare_string_for_xml
-from calibre.constants import preferred_encoding
-from calibre.ebooks.BeautifulSoup import (
+from ebook_converter import prepare_string_for_xml
+from ebook_converter.constants import preferred_encoding
+from ebook_converter.ebooks.BeautifulSoup import (
     BeautifulSoup, CData, Comment, Declaration, NavigableString,
     ProcessingInstruction
 )
-from calibre.utils.html2text import html2text
-from polyglot.builtins import unicode_type
+from ebook_converter.utils.html2text import html2text
+from ebook_converter.polyglot.builtins import unicode_type
 
 # Hackish - ignoring sentences ending or beginning in numbers to avoid
 # confusion with decimal points.
@@ -135,7 +135,7 @@ def markdown(val):
     try:
         md = markdown.Markdown
     except AttributeError:
-        from calibre.ebooks.markdown import Markdown
+        from ebook_converter.ebooks.markdown import Markdown
         md = markdown.Markdown = Markdown()
     return md.convert(val)
 
@@ -145,7 +145,7 @@ def merge_comments(one, two):
 
 
 def sanitize_comments_html(html):
-    from calibre.ebooks.markdown import Markdown
+    from ebook_converter.ebooks.markdown import Markdown
     text = html2text(html)
     md = Markdown()
     html = md.convert(text)

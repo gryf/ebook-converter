@@ -13,10 +13,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 #########################################################################
 import sys, os, io
 
-from calibre.ebooks.rtf2xml import get_char_map, copy
-from calibre.ebooks.rtf2xml.char_set import char_set
-from calibre.ptempfile import better_mktemp
-from polyglot.builtins import unicode_type
+from ebook_converter.ebooks.rtf2xml import get_char_map, copy
+from ebook_converter.ebooks.rtf2xml.char_set import char_set
+from ebook_converter.ptempfile import better_mktemp
+from ebook_converter.polyglot.builtins import unicode_type
 
 from . import open_for_read, open_for_write
 

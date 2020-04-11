@@ -9,12 +9,12 @@ import os
 
 from lxml.html.builder import IMG, HR
 
-from calibre.constants import iswindows
-from calibre.ebooks.docx.names import barename
-from calibre.utils.filenames import ascii_filename
-from calibre.utils.img import resize_to_fit, image_to_data
-from calibre.utils.imghdr import what
-from polyglot.builtins import iteritems, itervalues
+from ebook_converter.constants import iswindows
+from ebook_converter.ebooks.docx.names import barename
+from ebook_converter.utils.filenames import ascii_filename
+from ebook_converter.utils.img import resize_to_fit, image_to_data
+from ebook_converter.utils.imghdr import what
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 class LinkedImageNotFound(ValueError):
@@ -143,7 +143,7 @@ class Images(object):
         if ext == 'emf':
             # For an example, see: https://bugs.launchpad.net/bugs/1224849
             self.log('Found an EMF image: %s, trying to extract embedded raster image' % fname)
-            from calibre.utils.wmf.emf import emf_unwrap
+            from ebook_converter.utils.wmf.emf import emf_unwrap
             try:
                 raw = emf_unwrap(raw)
             except Exception:

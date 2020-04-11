@@ -1,8 +1,4 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
 # License: GPLv3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
-
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import atexit
 import errno
@@ -12,15 +8,15 @@ import tempfile
 import time
 from functools import partial
 
-from calibre.constants import (
+from ebook_converter.constants import (
     __appname__, fcntl, filesystem_encoding, islinux, isosx, iswindows, plugins, ispy3
 )
-from calibre.utils.monotonic import monotonic
+from ebook_converter.utils.monotonic import monotonic
 
-speedup = plugins['speedup'][0]
+# speedup = plugins['speedup'][0]
 if iswindows:
     import msvcrt, win32file, pywintypes, winerror, win32api, win32event
-    from calibre.constants import get_windows_username
+    from ebook_converter.constants import get_windows_username
     excl_file_mode = stat.S_IREAD | stat.S_IWRITE
 else:
     excl_file_mode = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH
@@ -29,14 +25,14 @@ else:
 def unix_open(path):
     flags = os.O_RDWR | os.O_CREAT
     has_cloexec = False
-    if hasattr(speedup, 'O_CLOEXEC'):
-        try:
-            fd = os.open(path, flags | speedup.O_CLOEXEC, excl_file_mode)
-            has_cloexec = True
-        except EnvironmentError as err:
-            # Kernel may not support O_CLOEXEC
-            if err.errno != errno.EINVAL:
-                raise
+    #if hasattr(speedup, 'O_CLOEXEC'):
+    #    try:
+    #        fd = os.open(path, flags | speedup.O_CLOEXEC, excl_file_mode)
+    #        has_cloexec = True
+    #    except EnvironmentError as err:
+    #        # Kernel may not support O_CLOEXEC
+    #        if err.errno != errno.EINVAL:
+    #            raise
 
     if not has_cloexec:
         fd = os.open(path, flags, excl_file_mode)
@@ -85,7 +81,7 @@ def retry_for_a_time(timeout, sleep_time, func, error_retry, *args):
         time.sleep(sleep_time)
 
 
-def lock_file(path, timeout=15, sleep_time=0.2):
+def _lock_file(path, timeout=15, sleep_time=0.2):
     if iswindows:
         return retry_for_a_time(
             timeout, sleep_time, windows_open, windows_retry, path
@@ -96,6 +92,13 @@ def lock_file(path, timeout=15, sleep_time=0.2):
         f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB
     )
     return f
+
+
+def lock_file(path, timeout=15, sleep_time=0.2):
+    from filelock import FileLock
+    lock = FileLock(path + '.lock', timeout=timeout)
+    with lock:
+        return unix_open(path)
 
 
 class ExclusiveFile(object):
@@ -147,7 +150,7 @@ elif islinux:
 
     def create_single_instance_mutex(name, per_user=True):
         import socket
-        from calibre.utils.ipc import eintr_retry_call
+        from ebook_converter.utils.ipc import eintr_retry_call
         name = '%s-singleinstance-%s-%s' % (
             __appname__, (os.geteuid() if per_user else ''), name
         )
@@ -185,7 +188,7 @@ else:
         )
 
     def create_single_instance_mutex(name, per_user=True):
-        from calibre.utils.ipc import eintr_retry_call
+        from ebook_converter.utils.ipc import eintr_retry_call
         path = singleinstance_path(name, per_user)
         f = lopen(path, 'w')
         try:

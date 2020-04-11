@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from base64 import standard_b64decode, standard_b64encode
 from binascii import hexlify, unhexlify
 
-from polyglot.builtins import unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 def as_base64_bytes(x, enc='utf-8'):

@@ -8,8 +8,8 @@ __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 import re, os
 from bisect import bisect
 
-from calibre import guess_type as _guess_type, replace_entities
-from polyglot.builtins import filter
+from ebook_converter import guess_type as _guess_type, replace_entities
+from ebook_converter.polyglot.builtins import filter
 
 
 def guess_type(x):
@@ -25,7 +25,7 @@ def setup_css_parser_serialization(tab_width=2):
 
 
 def actual_case_for_name(container, name):
-    from calibre.utils.filenames import samefile
+    from ebook_converter.utils.filenames import samefile
     if not container.exists(name):
         raise ValueError('Cannot get actual case for %s as it does not exist' % name)
     parts = name.split('/')
@@ -103,7 +103,7 @@ class CommentFinder(object):
 
 
 def link_stylesheets(container, names, sheets, remove=False, mtype='text/css'):
-    from calibre.ebooks.oeb.base import XPath, XHTML
+    from ebook_converter.ebooks.oeb.base import XPath, XHTML
     changed_names = set()
     snames = set(sheets)
     lp = XPath('//h:link[@href]')
@@ -164,7 +164,7 @@ def parse_css(data, fname='<string>', is_declaration=False, decode=None, log_lev
         import logging
         log_level = logging.WARNING
     from css_parser import CSSParser, log
-    from calibre.ebooks.oeb.base import _css_logger
+    from ebook_converter.ebooks.oeb.base import _css_logger
     log.setLevel(log_level)
     log.raiseExceptions = False
     data = data or ''

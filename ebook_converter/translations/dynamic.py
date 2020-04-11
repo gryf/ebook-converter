@@ -8,8 +8,8 @@ __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 import io
 from gettext import GNUTranslations
-from calibre.constants import ispy3
-from calibre.utils.localization import get_lc_messages_path
+from ebook_converter.constants import ispy3
+from ebook_converter.utils.localization import get_lc_messages_path
 from zipfile import ZipFile
 
 __all__ = ['translate']

@@ -6,7 +6,7 @@ This is impudent ripoff of the bits from `Calibre project`_, and is aimed only
 for converter thing.
 
 My motivation is to have only converter for ebooks run from commandline,
-without all of those bells and whistles Calibre have, and with cleanest more
+without all of those bells and whistles Calibre has, and with cleanest more
 *pythonic* approach.
 
 

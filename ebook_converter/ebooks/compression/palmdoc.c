@@ -219,11 +219,11 @@ static struct PyModuleDef cPalmdoc_module = {
     /* m_clear    */ 0,
     /* m_free     */ 0,
 };
-CALIBRE_MODINIT_FUNC PyInit_cPalmdoc(void) {
+PyObject* PyInit_cPalmdoc(void) {
 #else
 #define INITERROR return
 #define INITMODULE Py_InitModule3("cPalmdoc", cPalmdoc_methods, cPalmdoc_doc)
-CALIBRE_MODINIT_FUNC initcPalmdoc(void) {
+PyObject* initcPalmdoc(void) {
 #endif
 
     PyObject *m;

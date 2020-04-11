@@ -9,9 +9,9 @@ import unittest, sys, argparse
 
 from lxml import etree, html
 
-from css_selectors.errors import SelectorSyntaxError, ExpressionError
-from css_selectors.parser import tokenize, parse
-from css_selectors.select import Select
+from ebook_converter.css_selectors.errors import SelectorSyntaxError, ExpressionError
+from ebook_converter.css_selectors.parser import tokenize, parse
+from ebook_converter.css_selectors.select import Select
 
 
 class TestCSSSelectors(unittest.TestCase):

@@ -12,23 +12,23 @@ from lxml import html
 from lxml.html.builder import (
     HTML, HEAD, TITLE, BODY, LINK, META, P, SPAN, BR, DIV, A, DT, DL, DD, H1)
 
-from calibre import guess_type
-from calibre.ebooks.docx.container import DOCX, fromstring
-from calibre.ebooks.docx.names import XML, generate_anchor
-from calibre.ebooks.docx.styles import Styles, inherit, PageProperties
-from calibre.ebooks.docx.numbering import Numbering
-from calibre.ebooks.docx.fonts import Fonts, is_symbol_font, map_symbol_text
-from calibre.ebooks.docx.images import Images
-from calibre.ebooks.docx.tables import Tables
-from calibre.ebooks.docx.footnotes import Footnotes
-from calibre.ebooks.docx.cleanup import cleanup_markup
-from calibre.ebooks.docx.theme import Theme
-from calibre.ebooks.docx.toc import create_toc
-from calibre.ebooks.docx.fields import Fields
-from calibre.ebooks.docx.settings import Settings
-from calibre.ebooks.metadata.opf2 import OPFCreator
-from calibre.utils.localization import canonicalize_lang, lang_as_iso639_1
-from polyglot.builtins import iteritems, itervalues, filter, getcwd, map, unicode_type
+from ebook_converter import guess_type
+from ebook_converter.ebooks.docx.container import DOCX, fromstring
+from ebook_converter.ebooks.docx.names import XML, generate_anchor
+from ebook_converter.ebooks.docx.styles import Styles, inherit, PageProperties
+from ebook_converter.ebooks.docx.numbering import Numbering
+from ebook_converter.ebooks.docx.fonts import Fonts, is_symbol_font, map_symbol_text
+from ebook_converter.ebooks.docx.images import Images
+from ebook_converter.ebooks.docx.tables import Tables
+from ebook_converter.ebooks.docx.footnotes import Footnotes
+from ebook_converter.ebooks.docx.cleanup import cleanup_markup
+from ebook_converter.ebooks.docx.theme import Theme
+from ebook_converter.ebooks.docx.toc import create_toc
+from ebook_converter.ebooks.docx.fields import Fields
+from ebook_converter.ebooks.docx.settings import Settings
+from ebook_converter.ebooks.metadata.opf2 import OPFCreator
+from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
+from ebook_converter.polyglot.builtins import iteritems, itervalues, filter, getcwd, map, unicode_type
 
 
 NBSP = '\xa0'
@@ -830,7 +830,7 @@ class Convert(object):
 
 if __name__ == '__main__':
     import shutil
-    from calibre.utils.logging import default_log
+    from ebook_converter.utils.logging import default_log
     default_log.filter_level = default_log.DEBUG
     dest_dir = os.path.join(getcwd(), 'docx_input')
     if os.path.exists(dest_dir):

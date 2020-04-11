@@ -7,9 +7,9 @@ __docformat__ = 'restructuredtext en'
 
 import os
 
-from calibre import _ent_pat, walk, xml_entity_to_unicode
-from calibre.customize.conversion import InputFormatPlugin, OptionRecommendation
-from polyglot.builtins import getcwd
+from ebook_converter import _ent_pat, walk, xml_entity_to_unicode
+from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from ebook_converter.polyglot.builtins import getcwd
 
 MD_EXTENSIONS = {
     'abbr': _('Abbreviations'),
@@ -129,10 +129,10 @@ class TXTInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from calibre.ebooks.conversion.preprocess import DocAnalysis, Dehyphenator
-        from calibre.ebooks.chardet import detect
-        from calibre.utils.zipfile import ZipFile
-        from calibre.ebooks.txt.processor import (convert_basic,
+        from ebook_converter.ebooks.conversion.preprocess import DocAnalysis, Dehyphenator
+        from ebook_converter.ebooks.chardet import detect
+        from ebook_converter.utils.zipfile import ZipFile
+        from ebook_converter.ebooks.txt.processor import (convert_basic,
                 convert_markdown_with_metadata, separate_paragraphs_single_line,
                 separate_paragraphs_print_formatted, preserve_spaces,
                 detect_paragraph_type, detect_formatting_type,
@@ -225,7 +225,7 @@ class TXTInput(InputFormatPlugin):
             txt = separate_paragraphs_print_formatted(txt)
             txt = block_to_single_line(txt)
         elif options.paragraph_type == 'unformatted':
-            from calibre.ebooks.conversion.utils import HeuristicProcessor
+            from ebook_converter.ebooks.conversion.utils import HeuristicProcessor
             # unwrap lines based on punctuation
             docanalysis = DocAnalysis('txt', txt)
             length = docanalysis.line_length(.5)
@@ -275,7 +275,7 @@ class TXTInput(InputFormatPlugin):
                 html = convert_basic(txt, epub_split_size_kb=flow_size)
 
             # Run the HTMLized text through the html processing plugin.
-            from calibre.customize.ui import plugin_for_input_format
+            from ebook_converter.customize.ui import plugin_for_input_format
             html_input = plugin_for_input_format('html')
             for opt in html_input.options:
                 setattr(options, opt.option.name, opt.recommended_value)
@@ -292,9 +292,9 @@ class TXTInput(InputFormatPlugin):
 
         # Set metadata from file.
         if input_mi is None:
-            from calibre.customize.ui import get_file_type_metadata
+            from ebook_converter.customize.ui import get_file_type_metadata
             input_mi = get_file_type_metadata(stream, file_ext)
-        from calibre.ebooks.oeb.transforms.metadata import meta_info_to_oeb_metadata
+        from ebook_converter.ebooks.oeb.transforms.metadata import meta_info_to_oeb_metadata
         meta_info_to_oeb_metadata(input_mi, oeb.metadata, log)
         self.html_postprocess_title = input_mi.title
 

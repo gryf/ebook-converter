@@ -19,42 +19,42 @@ from itertools import count
 
 from css_parser import getUrls, replaceUrls
 
-from calibre import CurrentDir, walk
-from calibre.constants import iswindows
-from calibre.customize.ui import plugin_for_input_format, plugin_for_output_format
-from calibre.ebooks import escape_xpath_attr
-from calibre.ebooks.chardet import xml_to_unicode
-from calibre.ebooks.conversion.plugins.epub_input import (
+from ebook_converter import CurrentDir, walk
+from ebook_converter.constants import iswindows
+from ebook_converter.customize.ui import plugin_for_input_format, plugin_for_output_format
+from ebook_converter.ebooks import escape_xpath_attr
+from ebook_converter.ebooks.chardet import xml_to_unicode
+from ebook_converter.ebooks.conversion.plugins.epub_input import (
     ADOBE_OBFUSCATION, IDPF_OBFUSCATION, decrypt_font_data
 )
-from calibre.ebooks.conversion.preprocess import (
+from ebook_converter.ebooks.conversion.preprocess import (
     CSSPreProcessor as cssp, HTMLPreProcessor
 )
-from calibre.ebooks.metadata.opf3 import (
+from ebook_converter.ebooks.metadata.opf3 import (
     CALIBRE_PREFIX, ensure_prefix, items_with_property, read_prefixes
 )
-from calibre.ebooks.metadata.utils import parse_opf_version
-from calibre.ebooks.mobi import MobiError
-from calibre.ebooks.mobi.reader.headers import MetadataHeader
-from calibre.ebooks.mobi.tweak import set_cover
-from calibre.ebooks.oeb.base import (
+from ebook_converter.ebooks.metadata.utils import parse_opf_version
+from ebook_converter.ebooks.mobi import MobiError
+from ebook_converter.ebooks.mobi.reader.headers import MetadataHeader
+from ebook_converter.ebooks.mobi.tweak import set_cover
+from ebook_converter.ebooks.oeb.base import (
     DC11_NS, OEB_DOCS, OEB_STYLES, OPF, OPF2_NS, Manifest, itercsslinks, iterlinks,
     rewrite_links, serialize, urlquote, urlunquote
 )
-from calibre.ebooks.oeb.parse_utils import NotHTML, parse_html
-from calibre.ebooks.oeb.polish.errors import DRMError, InvalidBook
-from calibre.ebooks.oeb.polish.parsing import parse as parse_html_tweak
-from calibre.ebooks.oeb.polish.utils import (
+from ebook_converter.ebooks.oeb.parse_utils import NotHTML, parse_html
+from ebook_converter.ebooks.oeb.polish.errors import DRMError, InvalidBook
+from ebook_converter.ebooks.oeb.polish.parsing import parse as parse_html_tweak
+from ebook_converter.ebooks.oeb.polish.utils import (
     CommentFinder, PositionFinder, guess_type, parse_css
 )
-from calibre.ptempfile import PersistentTemporaryDirectory, PersistentTemporaryFile
-from calibre.utils.filenames import hardlink_file, nlinks_file
-from calibre.utils.ipc.simple_worker import WorkerError, fork_job
-from calibre.utils.logging import default_log
-from calibre.utils.xml_parse import safe_xml_fromstring
-from calibre.utils.zipfile import ZipFile
-from polyglot.builtins import iteritems, map, unicode_type, zip
-from polyglot.urllib import urlparse
+from ebook_converter.ptempfile import PersistentTemporaryDirectory, PersistentTemporaryFile
+from ebook_converter.utils.filenames import hardlink_file, nlinks_file
+from ebook_converter.utils.ipc.simple_worker import WorkerError, fork_job
+from ebook_converter.utils.logging import default_log
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.utils.zipfile import ZipFile
+from ebook_converter.polyglot.builtins import iteritems, map, unicode_type, zip
+from ebook_converter.polyglot.urllib import urlparse
 
 exists, join, relpath = os.path.exists, os.path.join, os.path.relpath
 
@@ -432,7 +432,7 @@ class Container(ContainerBase):  # {{{
         if current_name == self.opf_name:
             self.opf_name = new_name
         if os.path.dirname(old_path) != os.path.dirname(new_path):
-            from calibre.ebooks.oeb.polish.replace import LinkRebaser
+            from ebook_converter.ebooks.oeb.polish.replace import LinkRebaser
             repl = LinkRebaser(self, current_name, new_name)
             self.replace_links(new_name, repl)
             self.dirty(new_name)
@@ -641,7 +641,7 @@ class Container(ContainerBase):  # {{{
         ''' The metadata of this book as a Metadata object. Note that this
         object is constructed on the fly every time this property is requested,
         so use it sparingly. '''
-        from calibre.ebooks.metadata.opf2 import OPF as O
+        from ebook_converter.ebooks.metadata.opf2 import OPF as O
         mi = self.serialize_item(self.opf_name)
         return O(BytesIO(mi), basedir=self.opf_dir, unquote_urls=False,
                 populate_spine=False).to_book_metadata()
@@ -1158,7 +1158,7 @@ class EpubContainer(Container):
                 except:
                     log.exception('EPUB appears to be invalid ZIP file, trying a'
                             ' more forgiving ZIP parser')
-                    from calibre.utils.localunzip import extractall
+                    from ebook_converter.utils.localunzip import extractall
                     stream.seek(0)
                     extractall(stream, path=tdir)
         try:
@@ -1320,7 +1320,7 @@ class EpubContainer(Container):
             self.obfuscated_fonts[font] = (alg, tkey)
 
     def update_modified_timestamp(self):
-        from calibre.ebooks.metadata.opf3 import set_last_modified_in_opf
+        from ebook_converter.ebooks.metadata.opf3 import set_last_modified_in_opf
         set_last_modified_in_opf(self.opf)
         self.dirty(self.opf_name)
 
@@ -1372,7 +1372,7 @@ class EpubContainer(Container):
                         shutil.copyfileobj(src, dest)
 
         else:
-            from calibre.ebooks.tweak import zip_rebuilder
+            from ebook_converter.ebooks.tweak import zip_rebuilder
             with lopen(join(self.root, 'mimetype'), 'wb') as f:
                 et = guess_type('a.epub')
                 if not isinstance(et, bytes):
@@ -1401,8 +1401,8 @@ class InvalidMobi(InvalidBook):
 
 
 def do_explode(path, dest):
-    from calibre.ebooks.mobi.reader.mobi6 import MobiReader
-    from calibre.ebooks.mobi.reader.mobi8 import Mobi8Reader
+    from ebook_converter.ebooks.mobi.reader.mobi6 import MobiReader
+    from ebook_converter.ebooks.mobi.reader.mobi8 import Mobi8Reader
     with lopen(path, 'rb') as stream:
         mr = MobiReader(stream, default_log, None, None)
 
@@ -1415,7 +1415,7 @@ def do_explode(path, dest):
 
 
 def opf_to_azw3(opf, outpath, container):
-    from calibre.ebooks.conversion.plumber import Plumber, create_oebbook
+    from ebook_converter.ebooks.conversion.plumber import Plumber, create_oebbook
 
     class Item(Manifest.Item):
 
@@ -1489,7 +1489,7 @@ class AZW3Container(Container):
 
         try:
             opf_path, obfuscated_fonts = fork_job(
-            'calibre.ebooks.oeb.polish.container', 'do_explode',
+            'ebook_converter.ebooks.oeb.polish.container', 'do_explode',
             args=(pathtoazw3, tdir), no_output=True)['result']
         except WorkerError as e:
             log(e.orig_tb)

@@ -8,10 +8,10 @@ __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 import textwrap
 from collections import OrderedDict, Counter
 
-from calibre.ebooks.docx.block_styles import ParagraphStyle, inherit, twips
-from calibre.ebooks.docx.char_styles import RunStyle
-from calibre.ebooks.docx.tables import TableStyle
-from polyglot.builtins import iteritems, itervalues
+from ebook_converter.ebooks.docx.block_styles import ParagraphStyle, inherit, twips
+from ebook_converter.ebooks.docx.char_styles import RunStyle
+from ebook_converter.ebooks.docx.tables import TableStyle
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 class PageProperties(object):

@@ -5,9 +5,9 @@ Defines the plugin system for conversions.
 '''
 import re, os, shutil, numbers
 
-from calibre import CurrentDir
-from calibre.customize import Plugin
-from polyglot.builtins import unicode_type
+from ebook_converter import CurrentDir
+from ebook_converter.customize import Plugin
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class ConversionOption(object):
@@ -106,7 +106,7 @@ def gui_configuration_widget(name, parent, get_option_by_name,
     if for_output:
         try:
             output_widget = importlib.import_module(
-                    'calibre.gui2.convert.'+name)
+                    'ebook_converter.gui2.convert.'+name)
             pw = output_widget.PluginWidget
             pw.ICON = I('back.png')
             pw.HELP = _('Options specific to the output format.')
@@ -116,7 +116,7 @@ def gui_configuration_widget(name, parent, get_option_by_name,
     else:
         try:
             input_widget = importlib.import_module(
-                    'calibre.gui2.convert.'+name)
+                    'ebook_converter.gui2.convert.'+name)
             pw = input_widget.PluginWidget
             pw.ICON = I('forward.png')
             pw.HELP = _('Options specific to the input format.')

@@ -7,9 +7,9 @@ Convert .fb2 files to .lrf
 """
 import os, re
 
-from calibre.customize.conversion import InputFormatPlugin, OptionRecommendation
-from calibre import guess_type
-from polyglot.builtins import iteritems, getcwd
+from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from ebook_converter import guess_type
+from ebook_converter.polyglot.builtins import iteritems, getcwd
 
 FB2NS  = 'http://www.gribuser.ru/xml/fictionbook/2.0'
 FB21NS = 'http://www.gribuser.ru/xml/fictionbook/2.1'
@@ -39,12 +39,12 @@ class FB2Input(InputFormatPlugin):
     def convert(self, stream, options, file_ext, log,
                 accelerators):
         from lxml import etree
-        from calibre.utils.xml_parse import safe_xml_fromstring
-        from calibre.ebooks.metadata.fb2 import ensure_namespace, get_fb2_data
-        from calibre.ebooks.metadata.opf2 import OPFCreator
-        from calibre.ebooks.metadata.meta import get_metadata
-        from calibre.ebooks.oeb.base import XLINK_NS, XHTML_NS
-        from calibre.ebooks.chardet import xml_to_unicode
+        from ebook_converter.utils.xml_parse import safe_xml_fromstring
+        from ebook_converter.ebooks.metadata.fb2 import ensure_namespace, get_fb2_data
+        from ebook_converter.ebooks.metadata.opf2 import OPFCreator
+        from ebook_converter.ebooks.metadata.meta import get_metadata
+        from ebook_converter.ebooks.oeb.base import XLINK_NS, XHTML_NS
+        from ebook_converter.ebooks.chardet import xml_to_unicode
         self.log = log
         log.debug('Parsing XML...')
         raw = get_fb2_data(stream)[0]
@@ -156,7 +156,7 @@ class FB2Input(InputFormatPlugin):
         return os.path.join(getcwd(), 'metadata.opf')
 
     def extract_embedded_content(self, doc):
-        from calibre.ebooks.fb2 import base64_decode
+        from ebook_converter.ebooks.fb2 import base64_decode
         self.binary_map = {}
         for elem in doc.xpath('./*'):
             if elem.text and 'binary' in elem.tag and 'id' in elem.attrib:

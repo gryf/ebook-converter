@@ -6,7 +6,7 @@ __copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
 __docformat__ = 'restructuredtext en'
 
 from struct import pack
-from calibre.utils.localization import lang_as_iso639_1
+from ebook_converter.utils.localization import lang_as_iso639_1
 
 lang_codes = {
         }

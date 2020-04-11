@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 """ elements.py -- replacements and helpers for ElementTree """
 
-from polyglot.builtins import unicode_type, string_or_bytes
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
 
 
 class ElementWriter(object):

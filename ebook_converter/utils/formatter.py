@@ -11,10 +11,10 @@ __docformat__ = 'restructuredtext en'
 
 import re, string, traceback, numbers
 
-from calibre import prints
-from calibre.constants import DEBUG
-from calibre.utils.formatter_functions import formatter_functions
-from polyglot.builtins import unicode_type, error_message
+from ebook_converter import prints
+from ebook_converter.constants import DEBUG
+from ebook_converter.utils.formatter_functions import formatter_functions
+from ebook_converter.polyglot.builtins import unicode_type, error_message
 
 
 class _Parser(object):
@@ -393,7 +393,7 @@ class ValidateFormatter(TemplateFormatter):
         return self._validation_string
 
     def validate(self, x):
-        from calibre.ebooks.metadata.book.base import Metadata
+        from ebook_converter.ebooks.metadata.book.base import Metadata
         return self.safe_format(x, {}, 'VALIDATE ERROR', Metadata(''))
 
 

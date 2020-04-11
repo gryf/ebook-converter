@@ -10,12 +10,12 @@ from collections import Counter
 from lxml import etree
 from lxml.builder import ElementMaker
 
-from calibre.constants import __appname__, __version__
-from calibre.ebooks.chardet import xml_to_unicode
-from calibre.utils.xml_parse import safe_xml_fromstring
-from calibre.utils.cleantext import clean_xml_chars
-from polyglot.builtins import unicode_type, getcwd
-from polyglot.urllib import unquote, urlparse
+from ebook_converter.constants import __appname__, __version__
+from ebook_converter.ebooks.chardet import xml_to_unicode
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.utils.cleantext import clean_xml_chars
+from ebook_converter.polyglot.builtins import unicode_type, getcwd
+from ebook_converter.polyglot.urllib import unquote, urlparse
 
 NCX_NS = "http://www.daisy.org/z3986/2005/ncx/"
 CALIBRE_NS = "http://calibre.kovidgoyal.net/2009/metadata"
@@ -26,7 +26,7 @@ C = ElementMaker(namespace=CALIBRE_NS, nsmap=NSMAP)
 
 def parse_html_toc(data):
     from html5_parser import parse
-    from calibre.utils.cleantext import clean_xml_chars
+    from ebook_converter.utils.cleantext import clean_xml_chars
     from lxml import etree
     if isinstance(data, bytes):
         data = xml_to_unicode(data, strip_encoding_pats=True, resolve_entities=True)[0]

@@ -8,10 +8,10 @@ import binascii
 from contextlib import closing
 from tempfile import SpooledTemporaryFile
 
-from calibre import sanitize_file_name
-from calibre.constants import filesystem_encoding
-from calibre.ebooks.chardet import detect
-from polyglot.builtins import unicode_type, string_or_bytes, getcwd, map, as_bytes
+from ebook_converter import sanitize_file_name
+from ebook_converter.constants import filesystem_encoding
+from ebook_converter.ebooks.chardet import detect
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, getcwd, map, as_bytes
 
 try:
     import zlib  # We may need its compression method

@@ -6,14 +6,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from collections import namedtuple
 
-from calibre.ebooks.chardet import xml_to_unicode
-from calibre.ebooks.oeb.base import OPF
-from calibre.ebooks.oeb.polish.utils import guess_type
-from calibre.spell import parse_lang_code
-from calibre.utils.cleantext import clean_xml_chars
-from calibre.utils.localization import lang_as_iso639_1
-from calibre.utils.xml_parse import safe_xml_fromstring
-from polyglot.builtins import filter, map
+from ebook_converter.ebooks.chardet import xml_to_unicode
+from ebook_converter.ebooks.oeb.base import OPF
+from ebook_converter.ebooks.oeb.polish.utils import guess_type
+from ebook_converter.spell import parse_lang_code
+from ebook_converter.utils.cleantext import clean_xml_chars
+from ebook_converter.utils.localization import lang_as_iso639_1
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.polyglot.builtins import filter, map
 
 OPFVersion = namedtuple('OPFVersion', 'major minor patch')
 
@@ -99,6 +99,6 @@ def create_manifest_item(root, href_template, id_template, media_type=None):
 
 
 def pretty_print_opf(root):
-    from calibre.ebooks.oeb.polish.pretty import pretty_opf, pretty_xml_tree
+    from ebook_converter.ebooks.oeb.polish.pretty import pretty_opf, pretty_xml_tree
     pretty_opf(root)
     pretty_xml_tree(root)

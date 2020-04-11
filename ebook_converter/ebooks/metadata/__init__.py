@@ -11,10 +11,10 @@ Provides abstraction for metadata reading.writing from a variety of ebook format
 """
 import os, sys, re
 
-from calibre import relpath, guess_type, prints, force_unicode
-from calibre.utils.config_base import tweaks
-from polyglot.builtins import codepoint_to_chr, unicode_type, range, map, zip, getcwd, iteritems, itervalues, as_unicode
-from polyglot.urllib import quote, unquote, urlparse
+from ebook_converter import relpath, guess_type, prints, force_unicode
+from ebook_converter.utils.config_base import tweaks
+from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, range, map, zip, getcwd, iteritems, itervalues, as_unicode
+from ebook_converter.polyglot.urllib import quote, unquote, urlparse
 
 
 try:
@@ -131,7 +131,7 @@ def get_title_sort_pat(lang=None):
     if ans is not None:
         return ans
     q = lang
-    from calibre.utils.localization import canonicalize_lang, get_lang
+    from ebook_converter.utils.localization import canonicalize_lang, get_lang
     if lang is None:
         q = tweaks['default_language_for_title_sort']
         if q is None:
@@ -348,7 +348,7 @@ def MetaInformation(title, authors=(_('Unknown'),)):
         @param title: title or ``_('Unknown')`` or a MetaInformation object
         @param authors: List of strings or []
     '''
-    from calibre.ebooks.metadata.book.base import Metadata
+    from ebook_converter.ebooks.metadata.book.base import Metadata
     mi = None
     if hasattr(title, 'title') and hasattr(title, 'authors'):
         mi = title

@@ -9,8 +9,8 @@ Created on 25 May 2010
 import traceback
 from collections import OrderedDict
 
-from calibre.utils.config_base import tweaks
-from polyglot.builtins import iteritems, itervalues
+from ebook_converter.utils.config_base import tweaks
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 category_icon_map = {
                     'authors'    : 'user_profile.png',

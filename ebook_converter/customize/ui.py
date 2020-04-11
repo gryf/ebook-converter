@@ -6,23 +6,23 @@ import os, shutil, traceback, functools, sys
 from collections import defaultdict
 from itertools import chain
 
-from calibre.customize import (CatalogPlugin, FileTypePlugin, PluginNotFound,
+from ebook_converter.customize import (CatalogPlugin, FileTypePlugin, PluginNotFound,
                               MetadataReaderPlugin, MetadataWriterPlugin,
                               InterfaceActionBase as InterfaceAction,
                               PreferencesPlugin, platform, InvalidPlugin,
                               StoreBase as Store, EditBookToolPlugin,
                               LibraryClosedPlugin)
-from calibre.customize.conversion import InputFormatPlugin, OutputFormatPlugin
-from calibre.customize.zipplugin import loader
-from calibre.customize.profiles import InputProfile, OutputProfile
-from calibre.customize.builtins import plugins as builtin_plugins
-from calibre.devices.interface import DevicePlugin
-from calibre.ebooks.metadata import MetaInformation
-from calibre.utils.config import (make_config_dir, Config, ConfigProxy,
+from ebook_converter.customize.conversion import InputFormatPlugin, OutputFormatPlugin
+from ebook_converter.customize.zipplugin import loader
+from ebook_converter.customize.profiles import InputProfile, OutputProfile
+from ebook_converter.customize.builtins import plugins as builtin_plugins
+# from ebook_converter.devices.interface import DevicePlugin
+from ebook_converter.ebooks.metadata import MetaInformation
+from ebook_converter.utils.config import (make_config_dir, Config, ConfigProxy,
                                  plugin_dir, OptionParser)
-from calibre.ebooks.metadata.sources.base import Source
-from calibre.constants import DEBUG, numeric_version
-from polyglot.builtins import iteritems, itervalues, unicode_type
+# from ebook_converter.ebooks.metadata.sources.base import Source
+from ebook_converter.constants import DEBUG, numeric_version
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
 
 builtin_names = frozenset(p.name for p in builtin_plugins)
 BLACKLISTED_PLUGINS = frozenset({'Marvin XD', 'iOS reader applications'})
@@ -448,7 +448,7 @@ def set_file_type_metadata(stream, mi, ftype, report_error=None):
                         break
                     except:
                         if report_error is None:
-                            from calibre import prints
+                            from ebook_converter import prints
                             prints('Failed to set metadata for the', ftype.upper(), 'format of:', getattr(mi, 'title', ''), file=sys.stderr)
                             traceback.print_exc()
                         else:
@@ -737,9 +737,9 @@ def initialized_plugins():
 
 
 def build_plugin(path):
-    from calibre import prints
-    from calibre.ptempfile import PersistentTemporaryFile
-    from calibre.utils.zipfile import ZipFile, ZIP_STORED
+    from ebook_converter import prints
+    from ebook_converter.ptempfile import PersistentTemporaryFile
+    from ebook_converter.utils.zipfile import ZipFile, ZIP_STORED
     path = unicode_type(path)
     names = frozenset(os.listdir(path))
     if '__init__.py' not in names:

@@ -6,7 +6,7 @@ __license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import os
-from polyglot.builtins import itervalues, range
+from ebook_converter.polyglot.builtins import itervalues, range
 
 NBSP = '\xa0'
 
@@ -218,7 +218,7 @@ def cleanup_markup(log, root, styles, dest_dir, detect_cover, XPath):
             img = img[0]
             path = os.path.join(dest_dir, img.get('src'))
             if os.path.exists(path) and before_count(root, img, limit=10) < 5:
-                from calibre.utils.imghdr import identify
+                from ebook_converter.utils.imghdr import identify
                 try:
                     with lopen(path, 'rb') as imf:
                         fmt, width, height = identify(imf)

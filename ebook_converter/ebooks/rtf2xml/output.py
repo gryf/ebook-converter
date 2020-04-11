@@ -12,7 +12,7 @@ from __future__ import unicode_literals, absolute_import, print_function, divisi
 #                                                                       #
 #########################################################################
 import sys, os
-from polyglot.builtins import raw_input
+from ebook_converter.polyglot.builtins import raw_input
 from . import open_for_read, open_for_write
 # , codecs
 

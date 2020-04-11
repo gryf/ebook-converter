@@ -1,7 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 __license__   = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
@@ -9,7 +5,7 @@ __docformat__ = 'restructuredtext en'
 import os, locale, re, io, sys
 from gettext import GNUTranslations, NullTranslations
 
-from polyglot.builtins import is_py3, iteritems, unicode_type
+from ebook_converter.polyglot.builtins import is_py3, iteritems, unicode_type
 
 _available_translations = None
 
@@ -19,7 +15,7 @@ def available_translations():
     if _available_translations is None:
         stats = P('localization/stats.calibre_msgpack', allow_user_override=False)
         if os.path.exists(stats):
-            from calibre.utils.serialize import msgpack_loads
+            from ebook_converter.utils.serialize import msgpack_loads
             with open(stats, 'rb') as f:
                 stats = msgpack_loads(f.read())
         else:
@@ -29,11 +25,11 @@ def available_translations():
 
 
 def get_system_locale():
-    from calibre.constants import iswindows, isosx, plugins
+    from ebook_converter.constants import iswindows, isosx, plugins
     lang = None
     if iswindows:
         try:
-            from calibre.constants import get_windows_user_locale_name
+            from ebook_converter.constants import get_windows_user_locale_name
             lang = get_windows_user_locale_name()
             lang = lang.strip()
             if not lang:
@@ -86,7 +82,7 @@ def sanitize_lang(lang):
 
 def get_lang():
     'Try to figure out what language to display the interface in'
-    from calibre.utils.config_base import prefs
+    from ebook_converter.utils.config_base import prefs
     lang = prefs['language']
     lang = os.environ.get('CALIBRE_OVERRIDE_LANG', lang)
     if lang:
@@ -197,7 +193,7 @@ lcdata = {
 
 
 def load_po(path):
-    from calibre.translations.msgfmt import make
+    from ebook_converter.translations.msgfmt import make
     buf = io.BytesIO()
     try:
         make(path, buf)
@@ -238,7 +234,7 @@ def set_translators():
                 except:
                     pass  # No iso639 translations for this lang
                 if buf is not None:
-                    from calibre.utils.serialize import msgpack_loads
+                    from ebook_converter.utils.serialize import msgpack_loads
                     try:
                         lcdata = msgpack_loads(zf.read(mpath + '/lcdata.calibre_msgpack'))
                     except:
@@ -264,7 +260,7 @@ def set_translators():
     # Now that we have installed a translator, we have to retranslate the help
     # for the global prefs object as it was instantiated in get_lang(), before
     # the translator was installed.
-    from calibre.utils.config_base import prefs
+    from ebook_converter.utils.config_base import prefs
     prefs.retranslate_help()
 
 
@@ -367,7 +363,7 @@ def _load_iso639():
     global _iso639
     if _iso639 is None:
         ip = P('localization/iso639.calibre_msgpack', allow_user_override=False, data=True)
-        from calibre.utils.serialize import msgpack_loads
+        from ebook_converter.utils.serialize import msgpack_loads
         _iso639 = msgpack_loads(ip)
         if 'by_3' not in _iso639:
             _iso639['by_3'] = _iso639['by_3t']
@@ -491,7 +487,7 @@ _udc = None
 def get_udc():
     global _udc
     if _udc is None:
-        from calibre.ebooks.unihandecode import Unihandecoder
+        from ebook_converter.ebooks.unihandecode import Unihandecoder
         _udc = Unihandecoder(lang=get_lang())
     return _udc
 
@@ -509,19 +505,19 @@ def user_manual_stats():
 
 
 def localize_user_manual_link(url):
-    lc = lang_as_iso639_1(get_lang())
-    if lc == 'en':
-        return url
-    stats = user_manual_stats()
-    if stats.get(lc, 0) < 0.3:
-        return url
-    from polyglot.urllib import urlparse, urlunparse
-    parts = urlparse(url)
-    path = re.sub(r'/generated/[a-z]+/', '/generated/%s/' % lc, parts.path or '')
-    path = '/%s%s' % (lc, path)
-    parts = list(parts)
-    parts[2] = path
-    return urlunparse(parts)
+    #lc = lang_as_iso639_1(get_lang())
+    # if lc == 'en':
+    return url
+    # stats = user_manual_stats()
+    # if stats.get(lc, 0) < 0.3:
+        # return url
+    # from polyglot.urllib import urlparse, urlunparse
+    # parts = urlparse(url)
+    # path = re.sub(r'/generated/[a-z]+/', '/generated/%s/' % lc, parts.path or '')
+    # path = '/%s%s' % (lc, path)
+    # parts = list(parts)
+    # parts[2] = path
+    # return urlunparse(parts)
 
 
 def website_languages():
@@ -540,7 +536,7 @@ def localize_website_link(url):
     langs = website_languages()
     if lc == 'en' or lc not in langs:
         return url
-    from polyglot.urllib import urlparse, urlunparse
+    from ebook_converter.polyglot.urllib import urlparse, urlunparse
     parts = urlparse(url)
     path = '/{}{}'.format(lc, parts.path)
     parts = list(parts)

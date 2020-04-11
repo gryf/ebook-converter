@@ -4,17 +4,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import re
-from polyglot.builtins import codepoint_to_chr, map, range, filter
-from polyglot.html_entities import name2codepoint
-from calibre.constants import plugins, preferred_encoding
-
-_ncxc = plugins['speedup'][0].clean_xml_chars
-
-
-def native_clean_xml_chars(x):
-    if isinstance(x, bytes):
-        x = x.decode(preferred_encoding)
-    return _ncxc(x)
+from ebook_converter.polyglot.builtins import codepoint_to_chr, map, range, filter
+from ebook_converter.polyglot.html_entities import name2codepoint
+from ebook_converter.constants import plugins, preferred_encoding
 
 
 def ascii_pat(for_binary=False):
@@ -59,7 +51,7 @@ def py_clean_xml_chars(unicode_string):
     return ''.join(filter(allowed, unicode_string))
 
 
-clean_xml_chars = native_clean_xml_chars or py_clean_xml_chars
+clean_xml_chars = py_clean_xml_chars
 
 
 def test_clean_xml_chars():

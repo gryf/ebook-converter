@@ -12,11 +12,11 @@ from itertools import chain
 
 from lxml import etree
 
-from css_selectors.errors import ExpressionError
-from css_selectors.parser import parse, ascii_lower, Element, FunctionalPseudoElement
-from css_selectors.ordered_set import OrderedSet
+from ebook_converter.css_selectors.errors import ExpressionError
+from ebook_converter.css_selectors.parser import parse, ascii_lower, Element, FunctionalPseudoElement
+from ebook_converter.css_selectors.ordered_set import OrderedSet
 
-from polyglot.builtins import iteritems, itervalues
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 PARSE_CACHE_SIZE = 200
 parse_cache = OrderedDict()

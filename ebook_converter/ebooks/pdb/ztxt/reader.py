@@ -14,8 +14,8 @@ import zlib
 import io
 
 
-from calibre.ebooks.pdb.formatreader import FormatReader
-from calibre.ebooks.pdb.ztxt import zTXTError
+from ebook_converter.ebooks.pdb.formatreader import FormatReader
+from ebook_converter.ebooks.pdb.ztxt import zTXTError
 
 SUPPORTED_VERSION = (1, 40)
 
@@ -83,7 +83,7 @@ class Reader(FormatReader):
         self.log.info('Converting text to OEB...')
         stream = io.BytesIO(raw_txt)
 
-        from calibre.customize.ui import plugin_for_input_format
+        from ebook_converter.customize.ui import plugin_for_input_format
 
         txt_plugin = plugin_for_input_format('txt')
         for opt in txt_plugin.options:
