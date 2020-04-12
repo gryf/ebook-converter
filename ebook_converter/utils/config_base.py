@@ -6,6 +6,7 @@ import os, re, traceback, numbers
 from functools import partial
 from collections import defaultdict
 from copy import deepcopy
+import pkg_resources
 
 from ebook_converter.utils.lock import ExclusiveFile
 from ebook_converter.constants import config_dir, CONFIG_DIR_MODE, ispy3, preferred_encoding, filesystem_encoding, iswindows
@@ -634,7 +635,9 @@ def read_custom_tweaks():
 
 
 def default_tweaks_raw():
-    return P('default_tweaks.py', data=True, allow_user_override=False)
+    with open(pkg_resources.resource_filename('ebook_converter',
+                                              'data/default_tweaks.py')) as f:
+        return f.read().encode()
 
 
 def read_tweaks():

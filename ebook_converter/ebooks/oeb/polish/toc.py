@@ -10,6 +10,7 @@ import re
 from collections import Counter, OrderedDict
 from functools import partial
 from operator import itemgetter
+import pkg_resources
 
 from lxml import etree
 from lxml.builder import ElementMaker
@@ -690,7 +691,10 @@ def commit_nav_toc(container, toc, lang=None, landmarks=None, previous_nav=None)
         if previous_nav is not None:
             root = previous_nav[1]
         else:
-            root = container.parse_xhtml(P('templates/new_nav.html', data=True).decode('utf-8'))
+            with open(pkg_resources.
+                      resource_filename('ebook_converter',
+                                        'data/new_nav.html')) as fobj:
+                root = container.parse_xhtml(fobj.read())
         container.replace(tocname, root)
     else:
         root = container.parsed(tocname)

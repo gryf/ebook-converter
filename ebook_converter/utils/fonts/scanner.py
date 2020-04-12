@@ -195,8 +195,7 @@ class FontScanner(Thread):
 
     def __init__(self, folders=[], allowed_extensions={'ttf', 'otf'}):
         Thread.__init__(self)
-        self.folders = folders + font_dirs() + [os.path.join(config_dir, 'fonts'),
-                P('fonts/liberation')]
+        self.folders = folders + font_dirs()
         self.folders = [os.path.normcase(os.path.abspath(font)) for font in
                         self.folders]
         self.font_families = ()

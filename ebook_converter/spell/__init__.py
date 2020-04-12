@@ -6,6 +6,8 @@ __license__ = 'GPL v3'
 __copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 from collections import namedtuple
+import json
+import pkg_resources
 
 from ebook_converter.utils.localization import canonicalize_lang
 
@@ -17,9 +19,31 @@ ccodes, ccodemap, country_names = None, None, None
 def get_codes():
     global ccodes, ccodemap, country_names
     if ccodes is None:
-        from ebook_converter.utils.serialize import msgpack_loads
-        data = msgpack_loads(P('localization/iso3166.calibre_msgpack', allow_user_override=False, data=True))
-        ccodes, ccodemap, country_names = data['codes'], data['three_map'], data['names']
+        src = pkg_resources.resource_filename('ebook_converter',
+                                              'data/iso_3166-1.json')
+        with open(src, 'rb') as f:
+            db = json.load(f)
+        codes = set()
+        three_map = {}
+        name_map = {}
+        unicode_type = type(u'')
+        for x in db['3166-1']:
+            two = x.get('alpha_2')
+            if two:
+                two = unicode_type(two)
+            codes.add(two)
+            name_map[two] = x.get('name')
+            if name_map[two]:
+                name_map[two] = unicode_type(name_map[two])
+            three = x.get('alpha_3')
+            if three:
+                three_map[unicode_type(three)] = two
+        data = {'names': name_map,
+                'codes': frozenset(codes),
+                'three_map': three_map}
+
+        ccodes, ccodemap, country_names = (data['codes'], data['three_map'],
+                                           data['names'])
     return ccodes, ccodemap
 
 

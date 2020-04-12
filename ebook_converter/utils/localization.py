@@ -2,7 +2,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-import os, locale, re, io, sys
+import re, io, sys
 import json
 from gettext import GNUTranslations, NullTranslations
 import pkg_resources
@@ -10,64 +10,6 @@ import pkg_resources
 from ebook_converter.polyglot.builtins import is_py3, iteritems, unicode_type
 
 _available_translations = None
-
-
-def available_translations():
-    global _available_translations
-    if _available_translations is None:
-        stats = P('localization/stats.calibre_msgpack', allow_user_override=False)
-        if os.path.exists(stats):
-            from ebook_converter.utils.serialize import msgpack_loads
-            with open(stats, 'rb') as f:
-                stats = msgpack_loads(f.read())
-        else:
-            stats = {}
-        _available_translations = [x for x in stats if stats[x] > 0.1]
-    return _available_translations
-
-
-def get_system_locale():
-    from ebook_converter.constants import iswindows, isosx, plugins
-    lang = None
-    if iswindows:
-        try:
-            from ebook_converter.constants import get_windows_user_locale_name
-            lang = get_windows_user_locale_name()
-            lang = lang.strip()
-            if not lang:
-                lang = None
-        except:
-            pass  # Windows XP does not have the GetUserDefaultLocaleName fn
-    elif isosx:
-        try:
-            lang = plugins['usbobserver'][0].user_locale() or None
-        except:
-            # Fallback to environment vars if something bad happened
-            import traceback
-            traceback.print_exc()
-    if lang is None:
-        try:
-            envvars = ['LANGUAGE', 'LC_ALL', 'LC_CTYPE', 'LC_MESSAGES', 'LANG']
-            lang = locale.getdefaultlocale(envvars)[0]
-
-            # lang is None in two cases: either the environment variable is not
-            # set or it's "C". Stop looking for a language in the latter case.
-            if lang is None:
-                for var in envvars:
-                    if os.environ.get(var) == 'C':
-                        lang = 'en_US'
-                        break
-        except:
-            pass  # This happens on Ubuntu apparently
-        if lang is None and 'LANG' in os.environ:  # Needed for OS X
-            try:
-                lang = os.environ['LANG']
-            except:
-                pass
-    if lang:
-        lang = lang.replace('-', '_')
-        lang = '_'.join(lang.split('_')[:2])
-    return lang
 
 
 def sanitize_lang(lang):
@@ -83,99 +25,14 @@ def sanitize_lang(lang):
 
 
 def get_lang():
-    'Try to figure out what language to display the interface in'
-    from ebook_converter.utils.config_base import prefs
-    lang = prefs['language']
-    lang = os.environ.get('CALIBRE_OVERRIDE_LANG', lang)
-    if lang:
-        return lang
-    try:
-        lang = get_system_locale()
-    except:
-        import traceback
-        traceback.print_exc()
-        lang = None
-    return sanitize_lang(lang)
+    return 'en_US'
 
 
 def is_rtl():
     return get_lang()[:2].lower() in {'he', 'ar'}
 
 
-def get_lc_messages_path(lang):
-    hlang = None
-    if zf_exists():
-        if lang in available_translations():
-            hlang = lang
-        else:
-            xlang = lang.split('_')[0].lower()
-            if xlang in available_translations():
-                hlang = xlang
-    return hlang
-
-
-def zf_exists():
-    return os.path.exists(P('localization/locales.zip',
-                allow_user_override=False))
-
-
 _lang_trans = None
-
-
-def get_all_translators():
-    from zipfile import ZipFile
-    with ZipFile(P('localization/locales.zip', allow_user_override=False), 'r') as zf:
-        for lang in available_translations():
-            mpath = get_lc_messages_path(lang)
-            if mpath is not None:
-                buf = io.BytesIO(zf.read(mpath + '/messages.mo'))
-                yield lang, GNUTranslations(buf)
-
-
-def get_single_translator(mpath, which='messages'):
-    from zipfile import ZipFile
-    with ZipFile(P('localization/locales.zip', allow_user_override=False), 'r') as zf:
-        path = '{}/{}.mo'.format(mpath, which)
-        data = zf.read(path)
-        buf = io.BytesIO(data)
-        try:
-            return GNUTranslations(buf)
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            import hashlib
-            sig = hashlib.sha1(data).hexdigest()
-            raise ValueError('Failed to load translations for: {} (size: {} and signature: {}) with error: {}'.format(
-                path, len(data), sig, e))
-
-
-def get_iso639_translator(lang):
-    lang = sanitize_lang(lang)
-    mpath = get_lc_messages_path(lang) if lang else None
-    return get_single_translator(mpath, 'iso639') if mpath else None
-
-
-def get_translator(bcp_47_code):
-    parts = bcp_47_code.replace('-', '_').split('_')[:2]
-    parts[0] = lang_as_iso639_1(parts[0].lower()) or 'en'
-    if len(parts) > 1:
-        parts[1] = parts[1].upper()
-    lang = '_'.join(parts)
-    lang = {'pt':'pt_BR', 'zh':'zh_CN'}.get(lang, lang)
-    available = available_translations()
-    found = True
-    if lang == 'en' or lang.startswith('en_'):
-        return found, lang, NullTranslations()
-    if lang not in available:
-        lang = {'pt':'pt_BR', 'zh':'zh_CN'}.get(parts[0], parts[0])
-        if lang not in available:
-            lang = get_lang()
-            if lang not in available:
-                lang = 'en'
-            found = False
-    if lang == 'en':
-        return True, lang, NullTranslations()
-    return found, lang, get_single_translator(lang)
 
 
 lcdata = {
@@ -208,62 +65,9 @@ def load_po(path):
 
 
 def set_translators():
-    global _lang_trans, lcdata
-    # To test different translations invoke as
-    # CALIBRE_OVERRIDE_LANG=de_DE.utf8 program
-    lang = get_lang()
-    t = buf = iso639 = None
-
-    if 'CALIBRE_TEST_TRANSLATION' in os.environ:
-        buf = load_po(os.path.expanduser(os.environ['CALIBRE_TEST_TRANSLATION']))
-
-    if lang:
-        mpath = get_lc_messages_path(lang)
-        if buf is None and mpath and os.access(mpath + '.po', os.R_OK):
-            buf = load_po(mpath + '.po')
-
-        if mpath is not None:
-            from zipfile import ZipFile
-            with ZipFile(P('localization/locales.zip',
-                allow_user_override=False), 'r') as zf:
-                if buf is None:
-                    buf = io.BytesIO(zf.read(mpath + '/messages.mo'))
-                if mpath == 'nds':
-                    mpath = 'de'
-                isof = mpath + '/iso639.mo'
-                try:
-                    iso639 = io.BytesIO(zf.read(isof))
-                except:
-                    pass  # No iso639 translations for this lang
-                if buf is not None:
-                    from ebook_converter.utils.serialize import msgpack_loads
-                    try:
-                        lcdata = msgpack_loads(zf.read(mpath + '/lcdata.calibre_msgpack'))
-                    except:
-                        pass  # No lcdata
-
-    if buf is not None:
-        t = GNUTranslations(buf)
-        if iso639 is not None:
-            iso639 = _lang_trans = GNUTranslations(iso639)
-            t.add_fallback(iso639)
-
-    if t is None:
-        t = NullTranslations()
-
-    try:
-        set_translators.lang = t.info().get('language')
-    except Exception:
-        pass
-    if is_py3:
-        t.install(names=('ngettext',))
-    else:
-        t.install(unicode=True, names=('ngettext',))
-    # Now that we have installed a translator, we have to retranslate the help
-    # for the global prefs object as it was instantiated in get_lang(), before
-    # the translator was installed.
-    from ebook_converter.utils.config_base import prefs
-    prefs.retranslate_help()
+    t = NullTranslations()
+    set_translators.lang = t.info().get('language')
+    t.install(names=('ngettext',))
 
 
 set_translators.lang = None
@@ -535,53 +339,5 @@ def get_udc():
     return _udc
 
 
-def user_manual_stats():
-    stats = getattr(user_manual_stats, 'stats', None)
-    if stats is None:
-        import json
-        try:
-            stats = json.loads(P('user-manual-translation-stats.json', allow_user_override=False, data=True))
-        except EnvironmentError:
-            stats = {}
-        user_manual_stats.stats = stats
-    return stats
-
-
 def localize_user_manual_link(url):
-    #lc = lang_as_iso639_1(get_lang())
-    # if lc == 'en':
     return url
-    # stats = user_manual_stats()
-    # if stats.get(lc, 0) < 0.3:
-        # return url
-    # from polyglot.urllib import urlparse, urlunparse
-    # parts = urlparse(url)
-    # path = re.sub(r'/generated/[a-z]+/', '/generated/%s/' % lc, parts.path or '')
-    # path = '/%s%s' % (lc, path)
-    # parts = list(parts)
-    # parts[2] = path
-    # return urlunparse(parts)
-
-
-def website_languages():
-    stats = getattr(website_languages, 'stats', None)
-    if stats is None:
-        try:
-            stats = frozenset(P('localization/website-languages.txt', allow_user_override=False, data=True).split())
-        except EnvironmentError:
-            stats = frozenset()
-        website_languages.stats = stats
-    return stats
-
-
-def localize_website_link(url):
-    lc = lang_as_iso639_1(get_lang())
-    langs = website_languages()
-    if lc == 'en' or lc not in langs:
-        return url
-    from ebook_converter.polyglot.urllib import urlparse, urlunparse
-    parts = urlparse(url)
-    path = '/{}{}'.format(lc, parts.path)
-    parts = list(parts)
-    parts[2] = path
-    return urlunparse(parts)

@@ -451,6 +451,7 @@ def get_font_for_text(text, candidate_font_data=None):
 
 def test_glyph_ids():
     from ebook_converter.utils.fonts.free_type import FreeType
+    # TODO(gryf): move this test to test files
     data = P('fonts/liberation/LiberationSerif-Regular.ttf', data=True)
     ft = FreeType()
     font = ft.load_font(data)
@@ -462,6 +463,7 @@ def test_glyph_ids():
 
 
 def test_supports_text():
+    # TODO(gryf): move this test to test files
     data = P('fonts/calibreSymbols.otf', data=True)
     if not supports_text(data, '.★½'):
         raise RuntimeError('Incorrectly returning that text is not supported')
@@ -470,6 +472,7 @@ def test_supports_text():
 
 
 def test_find_font():
+    # TODO(gryf): move this test to test files
     from ebook_converter.utils.fonts.scanner import font_scanner
     abcd = '诶比西迪'
     family = font_scanner.find_font_for_text(abcd)[0]

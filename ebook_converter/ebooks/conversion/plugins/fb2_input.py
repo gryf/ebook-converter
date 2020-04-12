@@ -6,6 +6,7 @@ __copyright__ = '2008, Anatoly Shipitsin <norguhtar at gmail.com>'
 Convert .fb2 files to .lrf
 """
 import os, re
+import pkg_resources
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter import guess_type
@@ -86,8 +87,9 @@ class FB2Input(InputFormatPlugin):
             css = re.sub(r'name\s*=\s*', 'class=', css)
         self.extract_embedded_content(doc)
         log.debug('Converting XML to HTML...')
-        with open(P('templates/fb2.xsl'), 'rb') as f:
-            ss = f.read().decode('utf-8')
+        with open(pkg_resources.resource_filename('ebook_converter',
+                                                  'data/fb2.xsl')) as f:
+            ss = f.read().decode()
         ss = ss.replace("__FB_NS__", fb_ns)
         if options.no_inline_fb2_toc:
             log('Disabling generation of inline FB2 TOC')

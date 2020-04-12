@@ -7,6 +7,8 @@ __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 import os, sys
+import pkg_resources
+
 from ebook_converter.customize.conversion import InputFormatPlugin
 
 
@@ -54,7 +56,12 @@ class LRFInput(InputFormatPlugin):
                     plot_map[ro] = imgstr[0].get('file')
 
         self.log('Converting XML to HTML...')
-        styledoc = safe_xml_fromstring(P('templates/lrf.xsl', data=True))
+
+        with open(pkg_resources.
+                  resource_filename('ebook_converter',
+                                    'data/lrf.xsl')) as fobj:
+            # TODO(gryf): change this nonsense to etree.parse() instead.
+            styledoc = safe_xml_fromstring(fobj.read())
         media_type = MediaType()
         styles = Styles()
         text_block = TextBlock(styles, char_button_map, plot_map, log)

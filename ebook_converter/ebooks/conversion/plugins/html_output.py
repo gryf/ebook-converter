@@ -6,6 +6,7 @@ __docformat__ = 'restructuredtext en'
 
 import os, re, shutil
 from os.path import dirname, abspath, relpath as _relpath, exists, basename
+import pkg_resources
 
 from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
 from ebook_converter import CurrentDir
@@ -95,19 +96,31 @@ class HTMLOutput(OutputFormatPlugin):
             with open(opts.template_html_index, 'rb') as f:
                 template_html_index_data = f.read()
         else:
-            template_html_index_data = P('templates/html_export_default_index.tmpl', data=True)
+            with open(pkg_resources.
+                      resource_filename('ebook_converter',
+                                        'data/html_export_default_index.tmpl')
+                     ) as fobj:
+                template_html_index_data = fobj.read().decode()
 
         if opts.template_html is not None:
             with open(opts.template_html, 'rb') as f:
                 template_html_data = f.read()
         else:
-            template_html_data = P('templates/html_export_default.tmpl', data=True)
+            with open(pkg_resources.
+                      resource_filename('ebook_converter',
+                                        'data/html_export_default.tmpl')
+                     ) as fobj:
+                template_html_data = fobj.read().decode()
 
         if opts.template_css is not None:
             with open(opts.template_css, 'rb') as f:
                 template_css_data = f.read()
         else:
-            template_css_data = P('templates/html_export_default.css', data=True)
+            with open(pkg_resources.
+                      resource_filename('ebook_converter',
+                                        'data/html_export_default.css')
+                     ) as fobj:
+                template_css_data = fobj.read().decode()
 
         template_html_index_data = template_html_index_data.decode('utf-8')
         template_html_data = template_html_data.decode('utf-8')

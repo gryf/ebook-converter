@@ -9,13 +9,13 @@ __docformat__ = 'restructuredtext en'
 import sys, os, re
 from xml.sax.saxutils import escape
 from string import Formatter
+import pkg_resources
 
 from ebook_converter import guess_type, strftime
 from ebook_converter.constants import iswindows
 from ebook_converter.ebooks.oeb.base import XPath, XHTML_NS, XHTML, xml2text, urldefrag, urlnormalize
 from ebook_converter.library.comments import comments_to_html, markdown
 from ebook_converter.utils.date import is_date_undefined, as_local_time
-from ebook_converter.utils.icu import sort_key
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
 from ebook_converter.ebooks.metadata import fmt_sidx, rating_to_stars
 from ebook_converter.polyglot.builtins import unicode_type, map
@@ -196,7 +196,7 @@ class Tags(unicode_type):
     def __new__(self, tags, output_profile):
         tags = [escape(x) for x in tags or ()]
         t = unicode_type.__new__(self, ', '.join(tags))
-        t.alphabetical = ', '.join(sorted(tags, key=sort_key))
+        t.alphabetical = ', '.join(sorted(tags))
         t.tags_list = tags
         return t
 
@@ -232,8 +232,14 @@ def postprocess_jacket(root, output_profile, has_data):
 def render_jacket(mi, output_profile,
         alt_title=_('Unknown'), alt_tags=[], alt_comments='',
         alt_publisher='', rescale_fonts=False, alt_authors=None):
-    css = P('jacket/stylesheet.css', data=True).decode('utf-8')
-    template = P('jacket/template.xhtml', data=True).decode('utf-8')
+    with open(pkg_resources.resource_filename('ebook_converter',
+                                              'data/jacket/stylesheet.css'),
+              'rb') as fobj:
+        css = fobj.read().decode()
+    with open(pkg_resources.resource_filename('ebook_converter',
+                                              'data/jacket/template.xhtml'),
+              'rb') as fobj:
+        template = fobj.read().decode()
 
     template = re.sub(r'<!--.*?-->', '', template, flags=re.DOTALL)
     css = re.sub(r'/\*.*?\*/', '', css, flags=re.DOTALL)
