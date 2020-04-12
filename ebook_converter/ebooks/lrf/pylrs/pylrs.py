@@ -1166,6 +1166,9 @@ class TextStyle(LrsStyle):
         tb.attrs = self.attrs.copy()
         return tb
 
+    def __hash__(self):
+        return id(self)
+
 
 class BlockStyle(LrsStyle):
     """
