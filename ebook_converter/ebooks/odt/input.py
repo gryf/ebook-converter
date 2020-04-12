@@ -280,7 +280,11 @@ class Extract(ODF2XHTML):
             if not mi.authors:
                 mi.authors = [_('Unknown')]
             self.filter_load(stream, mi, log)
-            html = self.xhtml()
+
+            # NOTE(gryf): Here is a workaround for ODF2XHTML.xhtml() method,
+            # which expects, that all lines are strings.
+            html = ''.join([str(l) for l in self.lines])
+
             # A blanket img specification like this causes problems
             # with EPUB output as the containing element often has
             # an absolute height and width set that is larger than
