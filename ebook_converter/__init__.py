@@ -4,6 +4,7 @@ __copyright__ = '2008, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 import sys, os, re, time, random, warnings
+import pkg_resources
 from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, range, hasenv, native_string_type
 from math import floor
 from functools import partial
@@ -34,7 +35,8 @@ _mt_inited = False
 def _init_mimetypes():
     global _mt_inited
     import mimetypes
-    mimetypes.init([P('mime.types')])
+    mimetypes.init([pkg_resources.resource_filename('ebook_converter',
+                                                    'data/mime.types')])
     _mt_inited = True
 
 

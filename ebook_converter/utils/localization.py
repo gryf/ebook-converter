@@ -3,7 +3,9 @@ __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 import os, locale, re, io, sys
+import json
 from gettext import GNUTranslations, NullTranslations
+import pkg_resources
 
 from ebook_converter.polyglot.builtins import is_py3, iteritems, unicode_type
 
@@ -361,12 +363,53 @@ for k in _extra_lang_codes:
 
 def _load_iso639():
     global _iso639
+
+    # NOTE(gryf): msgpacked data was originally added for speed purposes. In
+    # my tests, I cannot see any speed gain either on python2 or python3. It
+    # is even slower (around 4-8 times), than just using code below (which is
+    # excerpt form Calibre transform code which is executed during Calibre
+    # build).
     if _iso639 is None:
-        ip = P('localization/iso639.calibre_msgpack', allow_user_override=False, data=True)
-        from ebook_converter.utils.serialize import msgpack_loads
-        _iso639 = msgpack_loads(ip)
-        if 'by_3' not in _iso639:
-            _iso639['by_3'] = _iso639['by_3t']
+        src = pkg_resources.resource_filename('ebook_converter',
+                                              'data/iso_639-3.json')
+
+        with open(src, 'rb') as f:
+            root = json.load(f)
+
+        entries = root['639-3']
+        by_2 = {}
+        by_3 = {}
+        m2to3 = {}
+        m3to2 = {}
+        nm = {}
+        codes2, codes3 = set(), set()
+        for x in entries:
+            two = x.get('alpha_2')
+            threeb = x.get('alpha_3')
+            if threeb is None:
+                continue
+            name = x.get('inverted_name') or x.get('name')
+            if not name or name[0] in '!~=/\'"':
+                continue
+
+            if two is not None:
+                by_2[two] = name
+                codes2.add(two)
+                m2to3[two] = threeb
+                m3to2[threeb] = two
+            codes3.add(threeb)
+            by_3[threeb] = name
+            base_name = name.lower()
+            nm[base_name] = threeb
+
+        _iso639 = {'by_2': by_2,
+                   'by_3': by_3,
+                   'codes2': codes2,
+                   'codes3': codes3,
+                   '2to3': m2to3,
+                   '3to2': m3to2,
+                   'name_map': nm}
+
     return _iso639
 
 

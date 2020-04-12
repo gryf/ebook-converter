@@ -9,6 +9,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 import os, re, logging, copy, unicodedata, numbers
+import pkg_resources
 from operator import itemgetter
 from weakref import WeakKeyDictionary
 from xml.dom import SyntaxErr as CSSSyntaxError
@@ -32,7 +33,8 @@ _html_css_stylesheet = None
 def html_css_stylesheet():
     global _html_css_stylesheet
     if _html_css_stylesheet is None:
-        with open(P('templates/html.css'), 'rb') as f:
+        with open(pkg_resources.resource_filename('ebook_converter',
+                                                  'data/html.css'), 'rb') as f:
             html_css = f.read().decode('utf-8')
         _html_css_stylesheet = parseString(html_css, validate=False)
     return _html_css_stylesheet

@@ -3,6 +3,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import os, glob, re, textwrap
+import pkg_resources
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter.polyglot.builtins import iteritems, filter, getcwd, as_bytes
@@ -282,7 +283,9 @@ class RTFInput(InputFormatPlugin):
 
         self.log('Converting XML to HTML...')
         inline_class = InlineClass(self.log)
-        styledoc = safe_xml_fromstring(P('templates/rtf.xsl', data=True), recover=False)
+        with open(pkg_resources.resource_filename('ebook_converter',
+                                                  'data/rtf.xsl')) as fobj:
+            styledoc = safe_xml_fromstring(fobj.read())
         extensions = {('calibre', 'inline-class') : inline_class}
         transform = etree.XSLT(styledoc, extensions=extensions)
         result = transform(doc)
