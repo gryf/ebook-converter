@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 try:
     from time import monotonic
 except ImportError:
-    from calibre.constants import plugins
+    from ebook_converter.constants import plugins
 
     monotonicp, err = plugins['monotonic']
     if err:
