@@ -15,7 +15,6 @@ from operator import attrgetter
 from lxml import etree, html
 from ebook_converter import force_unicode
 from ebook_converter.constants import filesystem_encoding, __version__, ispy3
-from ebook_converter.translations.dynamic import translate
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor
@@ -1843,9 +1842,7 @@ class OEBBook(object):
 
     def translate(self, text):
         """Translate :param:`text` into the book's primary language."""
-        lang = unicode_type(self.metadata.language[0])
-        lang = lang.split('-', 1)[0].lower()
-        return translate(lang, text)
+        return text
 
     def decode(self, data):
         """Automatically decode :param:`data` into a `unicode` object."""
