@@ -626,10 +626,12 @@ def encode_jpeg(file_path, quality=80):
 
 
 def test():  # {{{
+    # TODO(gryf): move this test to separate file.
     from ebook_converter.ptempfile import TemporaryDirectory
     from ebook_converter import CurrentDir
     from glob import glob
-    img = image_from_data(I('lt.png', data=True, allow_user_override=False))
+    # TODO(gryf): make the sample image out of pillow or smth
+    # img = image_from_data(I('lt.png', data=True, allow_user_override=False))
     with TemporaryDirectory() as tdir, CurrentDir(tdir):
         save_image(img, 'test.jpg')
         ret = optimize_jpeg('test.jpg')
@@ -638,7 +640,9 @@ def test():  # {{{
         ret = encode_jpeg('test.jpg')
         if ret is not None:
             raise SystemExit('encode_jpeg failed: %s' % ret)
-        shutil.copyfile(I('lt.png'), 'test.png')
+        # TODO(gryf): make the sample image out of pillow or smth. for sure
+        # tempfile would be better idea.
+        #shutil.copyfile(I('lt.png'), 'test.png')
         ret = optimize_png('test.png')
         if ret is not None:
             raise SystemExit('optimize_png failed: %s' % ret)

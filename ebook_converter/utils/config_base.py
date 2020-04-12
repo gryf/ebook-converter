@@ -635,9 +635,8 @@ def read_custom_tweaks():
 
 
 def default_tweaks_raw():
-    with open(pkg_resources.resource_filename('ebook_converter',
-                                              'data/default_tweaks.py')) as f:
-        return f.read().encode()
+    return pkg_resources.resource_filename('ebook_converter',
+                                           'data/default_tweaks.py')
 
 
 def read_tweaks():

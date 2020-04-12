@@ -1102,277 +1102,277 @@ plugins += [ActionAdd, ActionFetchAnnotations, ActionGenerateCatalog,
 # Preferences Plugins {{{
 
 
-class LookAndFeel(PreferencesPlugin):
-    name = 'Look & Feel'
-    icon = I('lookfeel.png')
-    gui_name = _('Look & feel')
-    category = 'Interface'
-    gui_category = _('Interface')
-    category_order = 1
-    name_order = 1
-    config_widget = 'ebook_converter.gui2.preferences.look_feel'
-    description = _('Adjust the look and feel of the calibre interface'
-            ' to suit your tastes')
+# class LookAndFeel(PreferencesPlugin):
+    # name = 'Look & Feel'
+    # icon = I('lookfeel.png')
+    # gui_name = _('Look & feel')
+    # category = 'Interface'
+    # gui_category = _('Interface')
+    # category_order = 1
+    # name_order = 1
+    # config_widget = 'ebook_converter.gui2.preferences.look_feel'
+    # description = _('Adjust the look and feel of the calibre interface'
+            # ' to suit your tastes')
 
 
-class Behavior(PreferencesPlugin):
-    name = 'Behavior'
-    icon = I('config.png')
-    gui_name = _('Behavior')
-    category = 'Interface'
-    gui_category = _('Interface')
-    category_order = 1
-    name_order = 2
-    config_widget = 'ebook_converter.gui2.preferences.behavior'
-    description = _('Change the way calibre behaves')
+# class Behavior(PreferencesPlugin):
+    # name = 'Behavior'
+    # icon = I('config.png')
+    # gui_name = _('Behavior')
+    # category = 'Interface'
+    # gui_category = _('Interface')
+    # category_order = 1
+    # name_order = 2
+    # config_widget = 'ebook_converter.gui2.preferences.behavior'
+    # description = _('Change the way calibre behaves')
 
 
-class Columns(PreferencesPlugin):
-    name = 'Custom Columns'
-    icon = I('column.png')
-    gui_name = _('Add your own columns')
-    category = 'Interface'
-    gui_category = _('Interface')
-    category_order = 1
-    name_order = 3
-    config_widget = 'ebook_converter.gui2.preferences.columns'
-    description = _('Add/remove your own columns to the calibre book list')
+# class Columns(PreferencesPlugin):
+    # name = 'Custom Columns'
+    # icon = I('column.png')
+    # gui_name = _('Add your own columns')
+    # category = 'Interface'
+    # gui_category = _('Interface')
+    # category_order = 1
+    # name_order = 3
+    # config_widget = 'ebook_converter.gui2.preferences.columns'
+    # description = _('Add/remove your own columns to the calibre book list')
 
 
-class Toolbar(PreferencesPlugin):
-    name = 'Toolbar'
-    icon = I('wizard.png')
-    gui_name = _('Toolbars & menus')
-    category = 'Interface'
-    gui_category = _('Interface')
-    category_order = 1
-    name_order = 4
-    config_widget = 'ebook_converter.gui2.preferences.toolbar'
-    description = _('Customize the toolbars and context menus, changing which'
-            ' actions are available in each')
+# class Toolbar(PreferencesPlugin):
+    # name = 'Toolbar'
+    # icon = I('wizard.png')
+    # gui_name = _('Toolbars & menus')
+    # category = 'Interface'
+    # gui_category = _('Interface')
+    # category_order = 1
+    # name_order = 4
+    # config_widget = 'ebook_converter.gui2.preferences.toolbar'
+    # description = _('Customize the toolbars and context menus, changing which'
+            # ' actions are available in each')
 
 
-class Search(PreferencesPlugin):
-    name = 'Search'
-    icon = I('search.png')
-    gui_name = _('Searching')
-    category = 'Interface'
-    gui_category = _('Interface')
-    category_order = 1
-    name_order = 5
-    config_widget = 'ebook_converter.gui2.preferences.search'
-    description = _('Customize the way searching for books works in calibre')
+# class Search(PreferencesPlugin):
+    # name = 'Search'
+    # icon = I('search.png')
+    # gui_name = _('Searching')
+    # category = 'Interface'
+    # gui_category = _('Interface')
+    # category_order = 1
+    # name_order = 5
+    # config_widget = 'ebook_converter.gui2.preferences.search'
+    # description = _('Customize the way searching for books works in calibre')
 
 
-class InputOptions(PreferencesPlugin):
-    name = 'Input Options'
-    icon = I('arrow-down.png')
-    gui_name = _('Input options')
-    category = 'Conversion'
-    gui_category = _('Conversion')
-    category_order = 2
-    name_order = 1
-    config_widget = 'ebook_converter.gui2.preferences.conversion:InputOptions'
-    description = _('Set conversion options specific to each input format')
+# class InputOptions(PreferencesPlugin):
+    # name = 'Input Options'
+    # icon = I('arrow-down.png')
+    # gui_name = _('Input options')
+    # category = 'Conversion'
+    # gui_category = _('Conversion')
+    # category_order = 2
+    # name_order = 1
+    # config_widget = 'ebook_converter.gui2.preferences.conversion:InputOptions'
+    # description = _('Set conversion options specific to each input format')
 
-    def create_widget(self, *args, **kwargs):
-        # The DOC Input plugin tries to override this
-        self.config_widget = 'ebook_converter.gui2.preferences.conversion:InputOptions'
-        return PreferencesPlugin.create_widget(self, *args, **kwargs)
-
-
-class CommonOptions(PreferencesPlugin):
-    name = 'Common Options'
-    icon = I('convert.png')
-    gui_name = _('Common options')
-    category = 'Conversion'
-    gui_category = _('Conversion')
-    category_order = 2
-    name_order = 2
-    config_widget = 'ebook_converter.gui2.preferences.conversion:CommonOptions'
-    description = _('Set conversion options common to all formats')
+    # def create_widget(self, *args, **kwargs):
+        # # The DOC Input plugin tries to override this
+        # self.config_widget = 'ebook_converter.gui2.preferences.conversion:InputOptions'
+        # return PreferencesPlugin.create_widget(self, *args, **kwargs)
 
 
-class OutputOptions(PreferencesPlugin):
-    name = 'Output Options'
-    icon = I('arrow-up.png')
-    gui_name = _('Output options')
-    category = 'Conversion'
-    gui_category = _('Conversion')
-    category_order = 2
-    name_order = 3
-    config_widget = 'ebook_converter.gui2.preferences.conversion:OutputOptions'
-    description = _('Set conversion options specific to each output format')
+# class CommonOptions(PreferencesPlugin):
+    # name = 'Common Options'
+    # icon = I('convert.png')
+    # gui_name = _('Common options')
+    # category = 'Conversion'
+    # gui_category = _('Conversion')
+    # category_order = 2
+    # name_order = 2
+    # config_widget = 'ebook_converter.gui2.preferences.conversion:CommonOptions'
+    # description = _('Set conversion options common to all formats')
 
 
-class Adding(PreferencesPlugin):
-    name = 'Adding'
-    icon = I('add_book.png')
-    gui_name = _('Adding books')
-    category = 'Import/Export'
-    gui_category = _('Import/export')
-    category_order = 3
-    name_order = 1
-    config_widget = 'ebook_converter.gui2.preferences.adding'
-    description = _('Control how calibre reads metadata from files when '
-            'adding books')
+# class OutputOptions(PreferencesPlugin):
+    # name = 'Output Options'
+    # icon = I('arrow-up.png')
+    # gui_name = _('Output options')
+    # category = 'Conversion'
+    # gui_category = _('Conversion')
+    # category_order = 2
+    # name_order = 3
+    # config_widget = 'ebook_converter.gui2.preferences.conversion:OutputOptions'
+    # description = _('Set conversion options specific to each output format')
 
 
-class Saving(PreferencesPlugin):
-    name = 'Saving'
-    icon = I('save.png')
-    gui_name = _('Saving books to disk')
-    category = 'Import/Export'
-    gui_category = _('Import/export')
-    category_order = 3
-    name_order = 2
-    config_widget = 'ebook_converter.gui2.preferences.saving'
-    description = _('Control how calibre exports files from its database '
-            'to disk when using Save to disk')
+# class Adding(PreferencesPlugin):
+    # name = 'Adding'
+    # icon = I('add_book.png')
+    # gui_name = _('Adding books')
+    # category = 'Import/Export'
+    # gui_category = _('Import/export')
+    # category_order = 3
+    # name_order = 1
+    # config_widget = 'ebook_converter.gui2.preferences.adding'
+    # description = _('Control how calibre reads metadata from files when '
+            # 'adding books')
 
 
-class Sending(PreferencesPlugin):
-    name = 'Sending'
-    icon = I('sync.png')
-    gui_name = _('Sending books to devices')
-    category = 'Import/Export'
-    gui_category = _('Import/export')
-    category_order = 3
-    name_order = 3
-    config_widget = 'ebook_converter.gui2.preferences.sending'
-    description = _('Control how calibre transfers files to your '
-            'e-book reader')
+# class Saving(PreferencesPlugin):
+    # name = 'Saving'
+    # icon = I('save.png')
+    # gui_name = _('Saving books to disk')
+    # category = 'Import/Export'
+    # gui_category = _('Import/export')
+    # category_order = 3
+    # name_order = 2
+    # config_widget = 'ebook_converter.gui2.preferences.saving'
+    # description = _('Control how calibre exports files from its database '
+            # 'to disk when using Save to disk')
 
 
-class Plugboard(PreferencesPlugin):
-    name = 'Plugboard'
-    icon = I('plugboard.png')
-    gui_name = _('Metadata plugboards')
-    category = 'Import/Export'
-    gui_category = _('Import/export')
-    category_order = 3
-    name_order = 4
-    config_widget = 'ebook_converter.gui2.preferences.plugboard'
-    description = _('Change metadata fields before saving/sending')
+# class Sending(PreferencesPlugin):
+    # name = 'Sending'
+    # icon = I('sync.png')
+    # gui_name = _('Sending books to devices')
+    # category = 'Import/Export'
+    # gui_category = _('Import/export')
+    # category_order = 3
+    # name_order = 3
+    # config_widget = 'ebook_converter.gui2.preferences.sending'
+    # description = _('Control how calibre transfers files to your '
+            # 'e-book reader')
 
 
-class TemplateFunctions(PreferencesPlugin):
-    name = 'TemplateFunctions'
-    icon = I('template_funcs.png')
-    gui_name = _('Template functions')
-    category = 'Advanced'
-    gui_category = _('Advanced')
-    category_order = 5
-    name_order = 5
-    config_widget = 'ebook_converter.gui2.preferences.template_functions'
-    description = _('Create your own template functions')
+# class Plugboard(PreferencesPlugin):
+    # name = 'Plugboard'
+    # icon = I('plugboard.png')
+    # gui_name = _('Metadata plugboards')
+    # category = 'Import/Export'
+    # gui_category = _('Import/export')
+    # category_order = 3
+    # name_order = 4
+    # config_widget = 'ebook_converter.gui2.preferences.plugboard'
+    # description = _('Change metadata fields before saving/sending')
 
 
-class Email(PreferencesPlugin):
-    name = 'Email'
-    icon = I('mail.png')
-    gui_name = _('Sharing books by email')
-    category = 'Sharing'
-    gui_category = _('Sharing')
-    category_order = 4
-    name_order = 1
-    config_widget = 'ebook_converter.gui2.preferences.emailp'
-    description = _('Setup sharing of books via email. Can be used '
-            'for automatic sending of downloaded news to your devices')
+# class TemplateFunctions(PreferencesPlugin):
+    # name = 'TemplateFunctions'
+    # icon = I('template_funcs.png')
+    # gui_name = _('Template functions')
+    # category = 'Advanced'
+    # gui_category = _('Advanced')
+    # category_order = 5
+    # name_order = 5
+    # config_widget = 'ebook_converter.gui2.preferences.template_functions'
+    # description = _('Create your own template functions')
 
 
-class Server(PreferencesPlugin):
-    name = 'Server'
-    icon = I('network-server.png')
-    gui_name = _('Sharing over the net')
-    category = 'Sharing'
-    gui_category = _('Sharing')
-    category_order = 4
-    name_order = 2
-    config_widget = 'ebook_converter.gui2.preferences.server'
-    description = _('Setup the calibre Content server which will '
-            'give you access to your calibre library from anywhere, '
-            'on any device, over the internet')
+# class Email(PreferencesPlugin):
+    # name = 'Email'
+    # icon = I('mail.png')
+    # gui_name = _('Sharing books by email')
+    # category = 'Sharing'
+    # gui_category = _('Sharing')
+    # category_order = 4
+    # name_order = 1
+    # config_widget = 'ebook_converter.gui2.preferences.emailp'
+    # description = _('Setup sharing of books via email. Can be used '
+            # 'for automatic sending of downloaded news to your devices')
 
 
-class MetadataSources(PreferencesPlugin):
-    name = 'Metadata download'
-    icon = I('download-metadata.png')
-    gui_name = _('Metadata download')
-    category = 'Sharing'
-    gui_category = _('Sharing')
-    category_order = 4
-    name_order = 3
-    config_widget = 'ebook_converter.gui2.preferences.metadata_sources'
-    description = _('Control how calibre downloads e-book metadata from the net')
+# class Server(PreferencesPlugin):
+    # name = 'Server'
+    # icon = I('network-server.png')
+    # gui_name = _('Sharing over the net')
+    # category = 'Sharing'
+    # gui_category = _('Sharing')
+    # category_order = 4
+    # name_order = 2
+    # config_widget = 'ebook_converter.gui2.preferences.server'
+    # description = _('Setup the calibre Content server which will '
+            # 'give you access to your calibre library from anywhere, '
+            # 'on any device, over the internet')
 
 
-class IgnoredDevices(PreferencesPlugin):
-    name = 'Ignored Devices'
-    icon = I('reader.png')
-    gui_name = _('Ignored devices')
-    category = 'Sharing'
-    gui_category = _('Sharing')
-    category_order = 4
-    name_order = 4
-    config_widget = 'ebook_converter.gui2.preferences.ignored_devices'
-    description = _('Control which devices calibre will ignore when they are connected '
-            'to the computer.')
+# class MetadataSources(PreferencesPlugin):
+    # name = 'Metadata download'
+    # icon = I('download-metadata.png')
+    # gui_name = _('Metadata download')
+    # category = 'Sharing'
+    # gui_category = _('Sharing')
+    # category_order = 4
+    # name_order = 3
+    # config_widget = 'ebook_converter.gui2.preferences.metadata_sources'
+    # description = _('Control how calibre downloads e-book metadata from the net')
 
 
-class Plugins(PreferencesPlugin):
-    name = 'Plugins'
-    icon = I('plugins.png')
-    gui_name = _('Plugins')
-    category = 'Advanced'
-    gui_category = _('Advanced')
-    category_order = 5
-    name_order = 1
-    config_widget = 'ebook_converter.gui2.preferences.plugins'
-    description = _('Add/remove/customize various bits of calibre '
-            'functionality')
+# class IgnoredDevices(PreferencesPlugin):
+    # name = 'Ignored Devices'
+    # icon = I('reader.png')
+    # gui_name = _('Ignored devices')
+    # category = 'Sharing'
+    # gui_category = _('Sharing')
+    # category_order = 4
+    # name_order = 4
+    # config_widget = 'ebook_converter.gui2.preferences.ignored_devices'
+    # description = _('Control which devices calibre will ignore when they are connected '
+            # 'to the computer.')
 
 
-class Tweaks(PreferencesPlugin):
-    name = 'Tweaks'
-    icon = I('tweaks.png')
-    gui_name = _('Tweaks')
-    category = 'Advanced'
-    gui_category = _('Advanced')
-    category_order = 5
-    name_order = 2
-    config_widget = 'ebook_converter.gui2.preferences.tweaks'
-    description = _('Fine tune how calibre behaves in various contexts')
+# class Plugins(PreferencesPlugin):
+    # name = 'Plugins'
+    # icon = I('plugins.png')
+    # gui_name = _('Plugins')
+    # category = 'Advanced'
+    # gui_category = _('Advanced')
+    # category_order = 5
+    # name_order = 1
+    # config_widget = 'ebook_converter.gui2.preferences.plugins'
+    # description = _('Add/remove/customize various bits of calibre '
+            # 'functionality')
 
 
-class Keyboard(PreferencesPlugin):
-    name = 'Keyboard'
-    icon = I('keyboard-prefs.png')
-    gui_name = _('Shortcuts')
-    category = 'Advanced'
-    gui_category = _('Advanced')
-    category_order = 5
-    name_order = 4
-    config_widget = 'ebook_converter.gui2.preferences.keyboard'
-    description = _('Customize the keyboard shortcuts used by calibre')
+# class Tweaks(PreferencesPlugin):
+    # name = 'Tweaks'
+    # icon = I('tweaks.png')
+    # gui_name = _('Tweaks')
+    # category = 'Advanced'
+    # gui_category = _('Advanced')
+    # category_order = 5
+    # name_order = 2
+    # config_widget = 'ebook_converter.gui2.preferences.tweaks'
+    # description = _('Fine tune how calibre behaves in various contexts')
 
 
-class Misc(PreferencesPlugin):
-    name = 'Misc'
-    icon = I('exec.png')
-    gui_name = _('Miscellaneous')
-    category = 'Advanced'
-    gui_category = _('Advanced')
-    category_order = 5
-    name_order = 3
-    config_widget = 'ebook_converter.gui2.preferences.misc'
-    description = _('Miscellaneous advanced configuration')
+# class Keyboard(PreferencesPlugin):
+    # name = 'Keyboard'
+    # icon = I('keyboard-prefs.png')
+    # gui_name = _('Shortcuts')
+    # category = 'Advanced'
+    # gui_category = _('Advanced')
+    # category_order = 5
+    # name_order = 4
+    # config_widget = 'ebook_converter.gui2.preferences.keyboard'
+    # description = _('Customize the keyboard shortcuts used by calibre')
 
 
-plugins += [LookAndFeel, Behavior, Columns, Toolbar, Search, InputOptions,
-        CommonOptions, OutputOptions, Adding, Saving, Sending, Plugboard,
-        Email, Server, Plugins, Tweaks, Misc, TemplateFunctions,
-        MetadataSources, Keyboard, IgnoredDevices]
+# class Misc(PreferencesPlugin):
+    # name = 'Misc'
+    # icon = I('exec.png')
+    # gui_name = _('Miscellaneous')
+    # category = 'Advanced'
+    # gui_category = _('Advanced')
+    # category_order = 5
+    # name_order = 3
+    # config_widget = 'ebook_converter.gui2.preferences.misc'
+    # description = _('Miscellaneous advanced configuration')
+
+
+# plugins += [LookAndFeel, Behavior, Columns, Toolbar, Search, InputOptions,
+        # CommonOptions, OutputOptions, Adding, Saving, Sending, Plugboard,
+        # Email, Server, Plugins, Tweaks, Misc, TemplateFunctions,
+        # MetadataSources, Keyboard, IgnoredDevices]
 
 # }}}
 

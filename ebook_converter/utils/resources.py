@@ -98,7 +98,3 @@ def get_image_path(path, data=False, allow_user_override=True):
 
 def set_data(path, data=None):
     return _resolver.set_data(path, data)
-
-
-builtins.__dict__['P'] = get_path
-builtins.__dict__['I'] = get_image_path
