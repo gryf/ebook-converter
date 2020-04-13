@@ -14,15 +14,15 @@ from datetime import datetime
 
 from lxml import etree
 
-from calibre import prepare_string_for_xml
-from calibre.constants import __appname__, __version__
-from calibre.utils.localization import lang_as_iso639_1
-from calibre.utils.xml_parse import safe_xml_fromstring
-from calibre.utils.img import save_cover_data_to
-from calibre.ebooks.oeb.base import urlnormalize
-from polyglot.builtins import unicode_type, string_or_bytes, range, filter
-from polyglot.binary import as_base64_unicode
-from polyglot.urllib import urlparse
+from ebook_converter import prepare_string_for_xml
+from ebook_converter.constants import __appname__, __version__
+from ebook_converter.utils.localization import lang_as_iso639_1
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.utils.img import save_cover_data_to
+from ebook_converter.ebooks.oeb.base import urlnormalize
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, range, filter
+from ebook_converter.polyglot.binary import as_base64_unicode
+from ebook_converter.polyglot.urllib import urlparse
 
 
 class FB2MLizer(object):
@@ -112,7 +112,7 @@ class FB2MLizer(object):
         return text
 
     def fb2_header(self):
-        from calibre.ebooks.oeb.base import OPF
+        from ebook_converter.ebooks.oeb.base import OPF
         metadata = {}
         metadata['title'] = self.oeb_book.metadata.title[0].value
         metadata['appname'] = __appname__
@@ -204,7 +204,7 @@ class FB2MLizer(object):
         except Exception:
             metadata['comments'] = ''
         else:
-            from calibre.utils.html2text import html2text
+            from ebook_converter.utils.html2text import html2text
             metadata['comments'] = '<annotation><p>{}</p></annotation>'.format(prepare_string_for_xml(html2text(comments.value).strip()))
 
         # Keep the indentation level of the description the same as the body.
@@ -242,7 +242,7 @@ class FB2MLizer(object):
         return '</FictionBook>'
 
     def get_cover(self):
-        from calibre.ebooks.oeb.base import OEB_RASTER_IMAGES
+        from ebook_converter.ebooks.oeb.base import OEB_RASTER_IMAGES
 
         cover_href = None
 
@@ -276,8 +276,8 @@ class FB2MLizer(object):
         return ''
 
     def get_text(self):
-        from calibre.ebooks.oeb.base import XHTML
-        from calibre.ebooks.oeb.stylizer import Stylizer
+        from ebook_converter.ebooks.oeb.base import XHTML
+        from ebook_converter.ebooks.oeb.stylizer import Stylizer
         text = ['<body>']
 
         # Create main section if there are no others to create
@@ -314,7 +314,7 @@ class FB2MLizer(object):
         '''
         This function uses the self.image_hrefs dictionary mapping. It is populated by the dump_text function.
         '''
-        from calibre.ebooks.oeb.base import OEB_RASTER_IMAGES
+        from ebook_converter.ebooks.oeb.base import OEB_RASTER_IMAGES
 
         images = []
         for item in self.oeb_book.manifest:
@@ -405,7 +405,7 @@ class FB2MLizer(object):
 
         @return: List of string representing the XHTML converted to FB2 markup.
         '''
-        from calibre.ebooks.oeb.base import XHTML_NS, barename, namespace
+        from ebook_converter.ebooks.oeb.base import XHTML_NS, barename, namespace
         elem = elem_tree
 
         # Ensure what we are converting is not a string and that the fist tag is part of the XHTML namespace.

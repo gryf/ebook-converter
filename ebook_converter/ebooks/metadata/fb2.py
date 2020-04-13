@@ -13,15 +13,15 @@ from string import ascii_letters, digits
 
 from lxml import etree
 
-from calibre.utils.date import parse_only_date
-from calibre.utils.img import save_cover_data_to
-from calibre.utils.xml_parse import safe_xml_fromstring
-from calibre.utils.imghdr import identify
-from calibre import guess_type, guess_all_extensions, prints, force_unicode
-from calibre.ebooks.metadata import MetaInformation, check_isbn
-from calibre.ebooks.chardet import xml_to_unicode
-from polyglot.builtins import unicode_type
-from polyglot.binary import as_base64_unicode
+from ebook_converter.utils.date import parse_only_date
+from ebook_converter.utils.img import save_cover_data_to
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.utils.imghdr import identify
+from ebook_converter import guess_type, guess_all_extensions, prints, force_unicode
+from ebook_converter.ebooks.metadata import MetaInformation, check_isbn
+from ebook_converter.ebooks.chardet import xml_to_unicode
+from ebook_converter.polyglot.builtins import unicode_type
+from ebook_converter.polyglot.binary import as_base64_unicode
 
 
 NAMESPACES = {
@@ -90,7 +90,7 @@ class Context(object):
 
 
 def get_fb2_data(stream):
-    from calibre.utils.zipfile import ZipFile, BadZipfile
+    from ebook_converter.utils.zipfile import ZipFile, BadZipfile
     pos = stream.tell()
     try:
         zf = ZipFile(stream)
@@ -225,7 +225,7 @@ def _parse_cover(root, mi, ctx):
 
 
 def _parse_cover_data(root, imgid, mi, ctx):
-    from calibre.ebooks.fb2 import base64_decode
+    from ebook_converter.ebooks.fb2 import base64_decode
     elm_binary = ctx.XPath('//fb:binary[@id="%s"]'%imgid)(root)
     if elm_binary:
         mimetype = elm_binary[0].get('content-type', 'image/jpeg')
@@ -330,7 +330,7 @@ def _set_title(title_info, mi, ctx):
 
 def _set_comments(title_info, mi, ctx):
     if not mi.is_null('comments'):
-        from calibre.utils.html2text import html2text
+        from ebook_converter.utils.html2text import html2text
         ctx.clear_meta_tags(title_info, 'annotation')
         title = ctx.get_or_create(title_info, 'annotation')
         ctx.text2fb2(title, html2text(mi.comments))
@@ -432,7 +432,7 @@ def set_metadata(stream, mi, apply_null=False, update_timestamp=False):
     stream.seek(0)
     stream.truncate()
     if zip_file_name:
-        from calibre.utils.zipfile import ZipFile
+        from ebook_converter.utils.zipfile import ZipFile
         with ZipFile(stream, 'w') as zf:
             zf.writestr(zip_file_name, raw)
     else:

@@ -89,7 +89,7 @@ class FB2Input(InputFormatPlugin):
         log.debug('Converting XML to HTML...')
         with open(pkg_resources.resource_filename('ebook_converter',
                                                   'data/fb2.xsl')) as f:
-            ss = f.read().decode()
+            ss = f.read()
         ss = ss.replace("__FB_NS__", fb_ns)
         if options.no_inline_fb2_toc:
             log('Disabling generation of inline FB2 TOC')
