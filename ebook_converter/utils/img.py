@@ -246,6 +246,14 @@ def save_cover_data_to(
     :param letterbox: If True, in addition to fit resize_to inside minify_to,
         the image will be letterboxed (i.e., centered on a black background).
     '''
+    # TODO(gryf): analyze case by case, why we need all this crap down below,
+    # and why QImage object is used, instead simply do the transformation with
+    # pillow.
+    with open(path, 'wb') as fobj:
+        fobj.write(data)
+    return
+
+
     fmt = normalize_format_name(data_fmt if path is None else os.path.splitext(path)[1][1:])
     if isinstance(data, QImage):
         img = data
@@ -254,6 +262,7 @@ def save_cover_data_to(
         img, orig_fmt = image_and_format_from_data(data)
         orig_fmt = normalize_format_name(orig_fmt)
         changed = fmt != orig_fmt
+
     if resize_to is not None:
         changed = True
         img = img.scaled(resize_to[0], resize_to[1], Qt.IgnoreAspectRatio, Qt.SmoothTransformation)

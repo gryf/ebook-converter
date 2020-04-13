@@ -7,6 +7,7 @@ __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 import shutil, os, re, struct, textwrap, io
+import logging
 
 from lxml import html, etree
 
@@ -912,6 +913,8 @@ class MobiReader(object):
                 try:
                     save_cover_data_to(data, path, minify_to=(10000, 10000))
                 except Exception:
+                    logging.exception('Exception has been thrown during '
+                                      'transforming image')
                     continue
             self.image_names.append(os.path.basename(path))
         return image_name_map
