@@ -10,8 +10,8 @@ import array, sys
 from operator import itemgetter
 from itertools import repeat
 
-from calibre.utils.fonts.sfnt import UnknownTable
-from polyglot.builtins import iteritems, range
+from ebook_converter.utils.fonts.sfnt import UnknownTable
+from ebook_converter.polyglot.builtins import iteritems, range
 
 
 def four_byte_type_code():

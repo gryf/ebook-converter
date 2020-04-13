@@ -9,15 +9,15 @@ import os
 import posixpath
 from collections import namedtuple
 from functools import partial
-from polyglot.builtins import iteritems, itervalues, map, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, itervalues, map, unicode_type
 
 from lxml import etree
 
-from calibre import fit_image
-from calibre.ebooks.oeb.base import urlunquote
-from calibre.ebooks.docx.images import pt_to_emu
-from calibre.utils.filenames import ascii_filename
-from calibre.utils.imghdr import identify
+from ebook_converter import fit_image
+from ebook_converter.ebooks.oeb.base import urlunquote
+from ebook_converter.ebooks.docx.images import pt_to_emu
+from ebook_converter.utils.filenames import ascii_filename
+from ebook_converter.utils.imghdr import identify
 
 Image = namedtuple('Image', 'rid fname width height fmt item')
 

@@ -9,12 +9,12 @@ __docformat__ = 'restructuredtext en'
 from struct import unpack_from, unpack, calcsize
 from functools import partial
 
-from calibre.utils.fonts.sfnt import UnknownTable
-from calibre.utils.fonts.sfnt.errors import UnsupportedFont, NoGlyphs
-from calibre.utils.fonts.sfnt.cff.dict_data import TopDict, PrivateDict
-from calibre.utils.fonts.sfnt.cff.constants import (cff_standard_strings,
+from ebook_converter.utils.fonts.sfnt import UnknownTable
+from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont, NoGlyphs
+from ebook_converter.utils.fonts.sfnt.cff.dict_data import TopDict, PrivateDict
+from ebook_converter.utils.fonts.sfnt.cff.constants import (cff_standard_strings,
         STANDARD_CHARSETS)
-from polyglot.builtins import iteritems, itervalues, range
+from ebook_converter.polyglot.builtins import iteritems, itervalues, range
 
 # Useful links
 # http://www.adobe.com/content/dam/Adobe/en/devnet/font/pdfs/5176.CFF.pdf
@@ -194,7 +194,7 @@ class CFFTable(UnknownTable):
         self.cff = CFF(self.raw)
 
     def subset(self, character_map, extra_glyphs):
-        from calibre.utils.fonts.sfnt.cff.writer import Subset
+        from ebook_converter.utils.fonts.sfnt.cff.writer import Subset
         # Map codes from the cmap table to glyph names, this will be used to
         # reconstruct character_map for the subset font
         charset_map = {code:self.cff.charset.safe_lookup(glyph_id) for code,

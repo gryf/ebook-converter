@@ -8,9 +8,9 @@ __copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 from collections import defaultdict
 from uuid import uuid4
 
-from calibre.ebooks.oeb.base import OEB_STYLES
-from calibre.ebooks.oeb.transforms.subset import find_font_face_rules
-from polyglot.builtins import range
+from ebook_converter.ebooks.oeb.base import OEB_STYLES
+from ebook_converter.ebooks.oeb.transforms.subset import find_font_face_rules
+from ebook_converter.polyglot.builtins import range
 
 
 def obfuscate_font_data(data, key):

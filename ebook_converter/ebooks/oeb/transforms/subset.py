@@ -8,10 +8,10 @@ __docformat__ = 'restructuredtext en'
 
 from collections import defaultdict
 
-from calibre.ebooks.oeb.base import urlnormalize, css_text
-from calibre.utils.fonts.sfnt.subset import subset, NoGlyphs, UnsupportedFont
-from polyglot.builtins import iteritems, itervalues, unicode_type, range
-from tinycss.fonts3 import parse_font_family
+from ebook_converter.ebooks.oeb.base import urlnormalize, css_text
+from ebook_converter.utils.fonts.sfnt.subset import subset, NoGlyphs, UnsupportedFont
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, range
+from ebook_converter.tinycss.fonts3 import parse_font_family
 
 
 def get_font_properties(rule, default=None):

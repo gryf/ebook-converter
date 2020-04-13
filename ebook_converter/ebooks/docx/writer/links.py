@@ -8,9 +8,9 @@ __copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 import posixpath, re
 from uuid import uuid4
 
-from calibre.utils.filenames import ascii_text
-from polyglot.builtins import unicode_type
-from polyglot.urllib import urlparse
+from ebook_converter.utils.filenames import ascii_text
+from ebook_converter.polyglot.builtins import unicode_type
+from ebook_converter.polyglot.urllib import urlparse
 
 
 def start_text(tag, prefix_len=0, top_level=True):

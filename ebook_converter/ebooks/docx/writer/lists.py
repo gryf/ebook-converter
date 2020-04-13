@@ -8,7 +8,7 @@ __copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 from collections import defaultdict
 from operator import attrgetter
 
-from polyglot.builtins import iteritems, itervalues, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
 
 LIST_STYLES = frozenset(
     'disc circle square decimal decimal-leading-zero lower-roman upper-roman'

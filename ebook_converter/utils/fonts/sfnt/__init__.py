@@ -75,6 +75,6 @@ def load_font(stream_or_path):
     raw = stream_or_path
     if hasattr(raw, 'read'):
         raw = raw.read()
-    from calibre.utils.fonts.sfnt.container import Sfnt
+    from ebook_converter.utils.fonts.sfnt.container import Sfnt
     return Sfnt(raw)
 

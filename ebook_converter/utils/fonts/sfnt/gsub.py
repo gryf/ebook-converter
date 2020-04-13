@@ -9,12 +9,12 @@ __docformat__ = 'restructuredtext en'
 from struct import unpack_from
 from functools import partial
 
-from calibre.utils.fonts.sfnt import UnknownTable, FixedProperty
-from calibre.utils.fonts.sfnt.errors import UnsupportedFont
-from calibre.utils.fonts.sfnt.common import (ScriptListTable, FeatureListTable,
+from ebook_converter.utils.fonts.sfnt import UnknownTable, FixedProperty
+from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
+from ebook_converter.utils.fonts.sfnt.common import (ScriptListTable, FeatureListTable,
         SimpleListTable, LookupTable, ExtensionSubstitution,
         UnknownLookupSubTable)
-from polyglot.builtins import iteritems, itervalues
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 class SingleSubstitution(UnknownLookupSubTable):

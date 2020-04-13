@@ -9,8 +9,8 @@ __docformat__ = 'restructuredtext en'
 from struct import unpack_from
 from collections import OrderedDict
 
-from calibre.utils.fonts.sfnt import UnknownTable
-from polyglot.builtins import iteritems
+from ebook_converter.utils.fonts.sfnt import UnknownTable
+from ebook_converter.polyglot.builtins import iteritems
 
 ARG_1_AND_2_ARE_WORDS      = 0x0001  # if set args are words otherwise they are bytes
 ARGS_ARE_XY_VALUES         = 0x0002  # if set args are xy values, otherwise they are points

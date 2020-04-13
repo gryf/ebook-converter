@@ -7,19 +7,19 @@ from collections import OrderedDict
 from io import BytesIO
 from struct import calcsize, pack
 
-from calibre.utils.fonts.sfnt import UnknownTable, align_block, max_power_of_two
-from calibre.utils.fonts.sfnt.cff.table import CFFTable
-from calibre.utils.fonts.sfnt.cmap import CmapTable
-from calibre.utils.fonts.sfnt.errors import UnsupportedFont
-from calibre.utils.fonts.sfnt.glyf import GlyfTable
-from calibre.utils.fonts.sfnt.gsub import GSUBTable
-from calibre.utils.fonts.sfnt.head import (
+from ebook_converter.utils.fonts.sfnt import UnknownTable, align_block, max_power_of_two
+from ebook_converter.utils.fonts.sfnt.cff.table import CFFTable
+from ebook_converter.utils.fonts.sfnt.cmap import CmapTable
+from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
+from ebook_converter.utils.fonts.sfnt.glyf import GlyfTable
+from ebook_converter.utils.fonts.sfnt.gsub import GSUBTable
+from ebook_converter.utils.fonts.sfnt.head import (
     HeadTable, HorizontalHeader, OS2Table, PostTable, VerticalHeader
 )
-from calibre.utils.fonts.sfnt.kern import KernTable
-from calibre.utils.fonts.sfnt.loca import LocaTable
-from calibre.utils.fonts.sfnt.maxp import MaxpTable
-from calibre.utils.fonts.utils import checksum_of_block, get_tables, verify_checksums
+from ebook_converter.utils.fonts.sfnt.kern import KernTable
+from ebook_converter.utils.fonts.sfnt.loca import LocaTable
+from ebook_converter.utils.fonts.sfnt.maxp import MaxpTable
+from ebook_converter.utils.fonts.utils import checksum_of_block, get_tables, verify_checksums
 
 # OpenType spec: http://www.microsoft.com/typography/otspec/otff.htm
 

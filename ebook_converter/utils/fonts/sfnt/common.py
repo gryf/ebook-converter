@@ -9,8 +9,8 @@ __docformat__ = 'restructuredtext en'
 from struct import unpack_from, calcsize
 from collections import OrderedDict, namedtuple
 
-from calibre.utils.fonts.sfnt.errors import UnsupportedFont
-from polyglot.builtins import range, iteritems
+from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
+from ebook_converter.polyglot.builtins import range, iteritems
 
 
 class Unpackable(object):

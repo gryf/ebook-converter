@@ -10,15 +10,15 @@ import textwrap, os
 from lxml import etree
 from lxml.builder import ElementMaker
 
-from calibre import guess_type
-from calibre.constants import numeric_version, __appname__
-from calibre.ebooks.docx.names import DOCXNamespace
-from calibre.ebooks.metadata import authors_to_string
-from calibre.ebooks.pdf.render.common import PAPER_SIZES
-from calibre.utils.date import utcnow
-from calibre.utils.localization import canonicalize_lang, lang_as_iso639_1
-from calibre.utils.zipfile import ZipFile
-from polyglot.builtins import iteritems, map, unicode_type, native_string_type
+from ebook_converter import guess_type
+from ebook_converter.constants import numeric_version, __appname__
+from ebook_converter.ebooks.docx.names import DOCXNamespace
+from ebook_converter.ebooks.metadata import authors_to_string
+from ebook_converter.ebooks.pdf.render.common import PAPER_SIZES
+from ebook_converter.utils.date import utcnow
+from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
+from ebook_converter.utils.zipfile import ZipFile
+from ebook_converter.polyglot.builtins import iteritems, map, unicode_type, native_string_type
 
 
 def xml2str(root, pretty_print=False, with_tail=False):

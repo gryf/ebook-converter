@@ -12,10 +12,10 @@ __docformat__ = 'restructuredtext en'
 from struct import unpack_from, calcsize, pack
 from collections import OrderedDict
 
-from calibre.utils.fonts.utils import read_bmp_prefix
-from calibre.utils.fonts.sfnt import UnknownTable, max_power_of_two
-from calibre.utils.fonts.sfnt.errors import UnsupportedFont
-from polyglot.builtins import range
+from ebook_converter.utils.fonts.utils import read_bmp_prefix
+from ebook_converter.utils.fonts.sfnt import UnknownTable, max_power_of_two
+from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
+from ebook_converter.polyglot.builtins import range
 
 
 def split_range(start_code, end_code, cmap):  # {{{

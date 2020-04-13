@@ -11,10 +11,10 @@ from collections import OrderedDict
 from operator import itemgetter
 from functools import partial
 
-from calibre.utils.icu import safe_chr, ord_string
-from calibre.utils.fonts.sfnt.container import Sfnt
-from calibre.utils.fonts.sfnt.errors import UnsupportedFont, NoGlyphs
-from polyglot.builtins import unicode_type, range, iteritems, itervalues, map
+from ebook_converter.utils.icu import safe_chr, ord_string
+from ebook_converter.utils.fonts.sfnt.container import Sfnt
+from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont, NoGlyphs
+from ebook_converter.polyglot.builtins import unicode_type, range, iteritems, itervalues, map
 
 # TrueType outlines {{{
 
@@ -193,7 +193,7 @@ def subset(raw, individual_chars, ranges=(), warnings=None):
 
 def option_parser():
     import textwrap
-    from calibre.utils.config import OptionParser
+    from ebook_converter.utils.config import OptionParser
     parser = OptionParser(usage=textwrap.dedent('''\
             %prog [options] input_font_file output_font_file characters_to_keep
 
@@ -212,7 +212,7 @@ def option_parser():
 
 
 def print_stats(old_stats, new_stats):
-    from calibre import prints
+    from ebook_converter import prints
     prints('========= Table comparison (original vs. subset) =========')
     prints('Table', ' ', '%10s'%'Size', '  ', 'Percent', '   ', '%10s'%'New Size',
             ' New Percent')
@@ -236,7 +236,7 @@ def print_stats(old_stats, new_stats):
 
 def main(args):
     import sys, time
-    from calibre import prints
+    from ebook_converter import prints
     parser = option_parser()
     opts, args = parser.parse_args(args)
     if len(args) < 4 or len(args) > 4:
@@ -303,7 +303,7 @@ if __name__ == '__main__':
 
 
 def test_mem():
-    from calibre.utils.mem import memory
+    from ebook_converter.utils.mem import memory
     import gc
     gc.collect()
     start_mem = memory()
@@ -325,7 +325,7 @@ def test():
 
 
 def all():
-    from calibre.utils.fonts.scanner import font_scanner
+    from ebook_converter.utils.fonts.scanner import font_scanner
     failed = []
     unsupported = []
     warnings = {}

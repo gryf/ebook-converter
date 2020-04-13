@@ -10,12 +10,12 @@ import codecs, zlib, numbers
 from io import BytesIO
 from datetime import datetime
 
-from calibre.constants import plugins, ispy3
-from calibre.utils.logging import default_log
-from polyglot.builtins import iteritems, unicode_type, codepoint_to_chr
-from polyglot.binary import as_hex_bytes
+from ebook_converter.constants import ispy3
+from ebook_converter.utils.logging import default_log
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, codepoint_to_chr
+from ebook_converter.polyglot.binary import as_hex_bytes
 
-pdf_float = plugins['speedup'][0].pdf_float
+pdf_float = lambda x: f"{x:.1f}"
 
 EOL = b'\n'
 

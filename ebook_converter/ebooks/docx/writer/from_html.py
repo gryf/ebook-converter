@@ -8,17 +8,17 @@ __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 import re
 from collections import Counter
 
-from calibre.ebooks.docx.writer.container import create_skeleton, page_size, page_effective_area
-from calibre.ebooks.docx.writer.styles import StylesManager, FloatSpec
-from calibre.ebooks.docx.writer.links import LinksManager
-from calibre.ebooks.docx.writer.images import ImagesManager
-from calibre.ebooks.docx.writer.fonts import FontsManager
-from calibre.ebooks.docx.writer.tables import Table
-from calibre.ebooks.docx.writer.lists import ListsManager
-from calibre.ebooks.oeb.stylizer import Stylizer as Sz, Style as St
-from calibre.ebooks.oeb.base import XPath, barename
-from calibre.utils.localization import lang_as_iso639_1
-from polyglot.builtins import unicode_type, string_or_bytes
+from ebook_converter.ebooks.docx.writer.container import create_skeleton, page_size, page_effective_area
+from ebook_converter.ebooks.docx.writer.styles import StylesManager, FloatSpec
+from ebook_converter.ebooks.docx.writer.links import LinksManager
+from ebook_converter.ebooks.docx.writer.images import ImagesManager
+from ebook_converter.ebooks.docx.writer.fonts import FontsManager
+from ebook_converter.ebooks.docx.writer.tables import Table
+from ebook_converter.ebooks.docx.writer.lists import ListsManager
+from ebook_converter.ebooks.oeb.stylizer import Stylizer as Sz, Style as St
+from ebook_converter.ebooks.oeb.base import XPath, barename
+from ebook_converter.utils.localization import lang_as_iso639_1
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
 
 
 def lang_for_tag(tag):
@@ -424,7 +424,7 @@ class Convert(object):
         p.width_pts, p.height_pts = page_effective_area(self.opts)
 
     def __call__(self):
-        from calibre.ebooks.oeb.transforms.rasterize import SVGRasterizer
+        from ebook_converter.ebooks.oeb.transforms.rasterize import SVGRasterizer
         self.svg_rasterizer = SVGRasterizer(base_css=self.base_css)
         self.svg_rasterizer(self.oeb, self.opts)
 

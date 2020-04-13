@@ -8,9 +8,9 @@ __docformat__ = 'restructuredtext en'
 
 from struct import unpack_from, pack
 
-from calibre.utils.fonts.sfnt import UnknownTable, FixedProperty
-from calibre.utils.fonts.sfnt.errors import UnsupportedFont
-from polyglot.builtins import zip
+from ebook_converter.utils.fonts.sfnt import UnknownTable, FixedProperty
+from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
+from ebook_converter.polyglot.builtins import zip
 
 
 class MaxpTable(UnknownTable):
