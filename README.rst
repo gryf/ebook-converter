@@ -66,6 +66,7 @@ Currently, following formats are supported:
 
 - lrf (for Sony readers)
 - epub
+- mobi
 
 
 Installation

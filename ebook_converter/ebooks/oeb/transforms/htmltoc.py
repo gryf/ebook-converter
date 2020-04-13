@@ -6,10 +6,10 @@ HTML-TOC-adding transform.
 __license__   = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
-from calibre.ebooks.oeb.base import XML, XHTML, XHTML_NS
-from calibre.ebooks.oeb.base import XHTML_MIME, CSS_MIME
-from calibre.ebooks.oeb.base import element, XPath
-from polyglot.builtins import unicode_type
+from ebook_converter.ebooks.oeb.base import XML, XHTML, XHTML_NS
+from ebook_converter.ebooks.oeb.base import XHTML_MIME, CSS_MIME
+from ebook_converter.ebooks.oeb.base import element, XPath
+from ebook_converter.polyglot.builtins import unicode_type
 
 __all__ = ['HTMLTOCAdder']
 
@@ -69,7 +69,7 @@ class HTMLTOCAdder(object):
 
         if 'toc' in oeb.guide:
             # Ensure toc pointed to in <guide> is in spine
-            from calibre.ebooks.oeb.base import urlnormalize
+            from ebook_converter.ebooks.oeb.base import urlnormalize
             href = urlnormalize(oeb.guide['toc'].href)
             if href in oeb.manifest.hrefs:
                 item = oeb.manifest.hrefs[href]

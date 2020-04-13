@@ -175,9 +175,9 @@ def rescale_image(data, maxsizeb=IMAGE_MAX_SIZE, dimen=None):
         else:
             width = height = dimen
         data = scale_image(data, width=width, height=height, compression_quality=90)[-1]
-    else:
+    # else:
         # Replace transparent pixels with white pixels and convert to JPEG
-        data = save_cover_data_to(data)
+        #data = save_cover_data_to(data)
     if len(data) <= maxsizeb:
         return data
     orig_data = data  # save it in case compression fails

@@ -46,8 +46,14 @@ class Resources(object):
         try:
             return func(data)
         except Exception:
-            if 'png' != what(None, data):
+            ext = what(None, data)
+            if ext not in ('png', 'gif'):
                 raise
+            if ext == 'gif':
+                with PersistentTemporaryFile(suffix='.gif') as pt:
+                    pt.write(data)
+                    return mobify_image(data)
+
             with PersistentTemporaryFile(suffix='.png') as pt:
                 pt.write(data)
             try:

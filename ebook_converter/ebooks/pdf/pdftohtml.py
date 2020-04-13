@@ -11,15 +11,15 @@ import shutil
 import subprocess
 import sys
 
-from calibre import CurrentDir, xml_replace_entities, prints
-from calibre.constants import (
+from ebook_converter import CurrentDir, xml_replace_entities, prints
+from ebook_converter.constants import (
     filesystem_encoding, isbsd, islinux, isosx, ispy3, iswindows
 )
-from calibre.ebooks import ConversionError, DRMError
-from calibre.ebooks.chardet import xml_to_unicode
-from calibre.ptempfile import PersistentTemporaryFile
-from calibre.utils.cleantext import clean_xml_chars
-from calibre.utils.ipc import eintr_retry_call
+from ebook_converter.ebooks import ConversionError, DRMError
+from ebook_converter.ebooks.chardet import xml_to_unicode
+from ebook_converter.ptempfile import PersistentTemporaryFile
+from ebook_converter.utils.cleantext import clean_xml_chars
+from ebook_converter.utils.ipc import eintr_retry_call
 
 
 PDFTOHTML = 'pdftohtml'
@@ -98,7 +98,7 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
             with lopen(index, 'r+b') as i:
                 raw = i.read().decode('utf-8', 'replace')
                 raw = flip_images(raw)
-                raw = raw.replace('<head', '<!-- created by calibre\'s pdftohtml -->\n  <head', 1)
+                raw = raw.replace('<head', '<!-- created by ebook_converter\'s pdftohtml -->\n  <head', 1)
                 i.seek(0)
                 i.truncate()
                 # versions of pdftohtml >= 0.20 output self closing <br> tags, this
@@ -129,11 +129,11 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
 
 def parse_outline(raw, output_dir):
     from lxml import etree
-    from calibre.utils.xml_parse import safe_xml_fromstring
+    from ebook_converter.utils.xml_parse import safe_xml_fromstring
     raw = clean_xml_chars(xml_to_unicode(raw, strip_encoding_pats=True, assume_utf8=True)[0])
     outline = safe_xml_fromstring(raw).xpath('(//outline)[1]')
     if outline:
-        from calibre.ebooks.oeb.polish.toc import TOC, create_ncx
+        from ebook_converter.ebooks.oeb.polish.toc import TOC, create_ncx
         outline = outline[0]
         toc = TOC()
         count = [0]
@@ -156,7 +156,7 @@ def parse_outline(raw, output_dir):
 
 
 def flip_image(img, flip):
-    from calibre.utils.img import flip_image, image_and_format_from_data, image_to_data
+    from ebook_converter.utils.img import flip_image, image_and_format_from_data, image_to_data
     with lopen(img, 'r+b') as f:
         img, fmt = image_and_format_from_data(f.read())
         img = flip_image(img, horizontal='x' in flip, vertical='y' in flip)

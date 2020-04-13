@@ -8,17 +8,17 @@ __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 import os, re
 
-from PyQt5.Qt import (
-    Qt, QByteArray, QBuffer, QIODevice, QColor, QImage, QPainter, QSvgRenderer)
-from calibre.ebooks.oeb.base import XHTML, XLINK
-from calibre.ebooks.oeb.base import SVG_MIME, PNG_MIME
-from calibre.ebooks.oeb.base import xml2str, xpath
-from calibre.ebooks.oeb.base import urlnormalize
-from calibre.ebooks.oeb.stylizer import Stylizer
-from calibre.ptempfile import PersistentTemporaryFile
-from calibre.utils.imghdr import what
-from polyglot.builtins import unicode_type
-from polyglot.urllib import urldefrag
+# from PyQt5.Qt import (
+    # Qt, QByteArray, QBuffer, QIODevice, QColor, QImage, QPainter, QSvgRenderer)
+from ebook_converter.ebooks.oeb.base import XHTML, XLINK
+from ebook_converter.ebooks.oeb.base import SVG_MIME, PNG_MIME
+from ebook_converter.ebooks.oeb.base import xml2str, xpath
+from ebook_converter.ebooks.oeb.base import urlnormalize
+from ebook_converter.ebooks.oeb.stylizer import Stylizer
+from ebook_converter.ptempfile import PersistentTemporaryFile
+from ebook_converter.utils.imghdr import what
+from ebook_converter.polyglot.builtins import unicode_type
+from ebook_converter.polyglot.urllib import urldefrag
 
 IMAGE_TAGS = {XHTML('img'), XHTML('object')}
 KEEP_ATTRS = {'class', 'style', 'width', 'height', 'align'}
@@ -32,8 +32,8 @@ class SVGRasterizer(object):
 
     def __init__(self, base_css=''):
         self.base_css = base_css
-        from calibre.gui2 import must_use_qt
-        must_use_qt()
+        # from ebook_converter.gui2 import must_use_qt
+        # must_use_qt()
 
     @classmethod
     def config(cls, cfg):

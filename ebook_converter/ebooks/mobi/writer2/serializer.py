@@ -12,13 +12,13 @@ import unicodedata
 from collections import defaultdict
 from io import BytesIO
 
-from calibre.ebooks.mobi.mobiml import MBP_NS
-from calibre.ebooks.mobi.utils import is_guide_ref_start
-from calibre.ebooks.oeb.base import (
+from ebook_converter.ebooks.mobi.mobiml import MBP_NS
+from ebook_converter.ebooks.mobi.utils import is_guide_ref_start
+from ebook_converter.ebooks.oeb.base import (
     OEB_DOCS, XHTML, XHTML_NS, XML_NS, namespace, prefixname, urlnormalize
 )
-from polyglot.builtins import unicode_type, string_or_bytes
-from polyglot.urllib import urldefrag
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
+from ebook_converter.polyglot.urllib import urldefrag
 
 
 class Buf(BytesIO):

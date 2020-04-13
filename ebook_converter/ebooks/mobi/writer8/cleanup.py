@@ -6,7 +6,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-from calibre.ebooks.oeb.base import XPath
+from ebook_converter.ebooks.oeb.base import XPath
 
 
 class CSSCleanup(object):

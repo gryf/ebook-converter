@@ -11,13 +11,13 @@ import copy
 import re
 import numbers
 from lxml import etree
-from calibre.ebooks.oeb.base import namespace, barename
-from calibre.ebooks.oeb.base import XHTML, XHTML_NS, urlnormalize
-from calibre.ebooks.oeb.stylizer import Stylizer
-from calibre.ebooks.oeb.transforms.flatcss import KeyMapper
-from calibre.ebooks.mobi.utils import convert_color_for_font_tag
-from calibre.utils.imghdr import identify
-from polyglot.builtins import unicode_type, string_or_bytes
+from ebook_converter.ebooks.oeb.base import namespace, barename
+from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS, urlnormalize
+from ebook_converter.ebooks.oeb.stylizer import Stylizer
+from ebook_converter.ebooks.oeb.transforms.flatcss import KeyMapper
+from ebook_converter.ebooks.mobi.utils import convert_color_for_font_tag
+from ebook_converter.utils.imghdr import identify
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
 
 MBP_NS = 'http://mobipocket.com/ns/mbp'
 

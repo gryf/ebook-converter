@@ -10,11 +10,11 @@ import re
 from struct import pack
 from io import BytesIO
 
-from calibre.constants import iswindows, isosx
-from calibre.ebooks.mobi.utils import (utf8_text, to_base)
-from calibre.utils.localization import lang_as_iso639_1
-from calibre.ebooks.metadata import authors_to_sort_string
-from polyglot.builtins import iteritems, unicode_type
+from ebook_converter.constants import iswindows, isosx
+from ebook_converter.ebooks.mobi.utils import (utf8_text, to_base)
+from ebook_converter.utils.localization import lang_as_iso639_1
+from ebook_converter.ebooks.metadata import authors_to_sort_string
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 EXTH_CODES = {
     'creator': 100,
@@ -99,7 +99,7 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
 
     # Write UUID as ASIN
     uuid = None
-    from calibre.ebooks.oeb.base import OPF
+    from ebook_converter.ebooks.oeb.base import OPF
     for x in metadata['identifier']:
         if (x.get(OPF('scheme'), None).lower() == 'uuid' or
                 unicode_type(x).startswith('urn:uuid:')):

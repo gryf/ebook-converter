@@ -11,9 +11,9 @@ from struct import pack
 import io
 from collections import OrderedDict, defaultdict
 
-from calibre.ebooks.mobi.utils import (encint, encode_number_as_hex,
+from ebook_converter.ebooks.mobi.utils import (encint, encode_number_as_hex,
         encode_tbs, align_block, RECORD_SIZE, CNCX as CNCX_)
-from polyglot.builtins import filter, iteritems, itervalues, map, range
+from ebook_converter.polyglot.builtins import filter, iteritems, itervalues, map, range
 
 
 class CNCX(CNCX_):  # {{{

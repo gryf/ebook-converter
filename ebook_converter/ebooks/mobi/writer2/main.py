@@ -9,16 +9,16 @@ __docformat__ = 'restructuredtext en'
 import io, random, time
 from struct import pack
 
-from calibre.ebooks import normalize
-from calibre.ebooks.mobi.writer2.serializer import Serializer
-from calibre.ebooks.compression.palmdoc import compress_doc
-from calibre.ebooks.mobi.langcodes import iana2mobi
-from calibre.utils.filenames import ascii_filename
-from calibre.ebooks.mobi.writer2 import (PALMDOC, UNCOMPRESSED)
-from calibre.ebooks.mobi.utils import (encint, encode_trailing_data,
+from ebook_converter.ebooks import normalize
+from ebook_converter.ebooks.mobi.writer2.serializer import Serializer
+from ebook_converter.ebooks.compression.palmdoc import compress_doc
+from ebook_converter.ebooks.mobi.langcodes import iana2mobi
+from ebook_converter.utils.filenames import ascii_filename
+from ebook_converter.ebooks.mobi.writer2 import (PALMDOC, UNCOMPRESSED)
+from ebook_converter.ebooks.mobi.utils import (encint, encode_trailing_data,
         align_block, detect_periodical, RECORD_SIZE, create_text_record)
-from calibre.ebooks.mobi.writer2.indexer import Indexer
-from polyglot.builtins import iteritems, unicode_type, range
+from ebook_converter.ebooks.mobi.writer2.indexer import Indexer
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, range
 
 # Disabled as I dont care about uncrossable breaks
 WRITE_UNCROSSABLE_BREAKS = False
@@ -201,7 +201,7 @@ class MobiWriter(object):
                 # header as well
                 bt = 0x103 if self.indexer.is_flat_periodical else 0x101
 
-        from calibre.ebooks.mobi.writer8.exth import build_exth
+        from ebook_converter.ebooks.mobi.writer8.exth import build_exth
         exth = build_exth(metadata,
                 prefer_author_sort=self.opts.prefer_author_sort,
                 is_periodical=self.is_periodical,
@@ -374,9 +374,9 @@ class MobiWriter(object):
     # }}}
 
     def generate_joint_record0(self):  # {{{
-        from calibre.ebooks.mobi.writer8.mobi import (MOBIHeader,
+        from ebook_converter.ebooks.mobi.writer8.mobi import (MOBIHeader,
                 HEADER_FIELDS)
-        from calibre.ebooks.mobi.writer8.exth import build_exth
+        from ebook_converter.ebooks.mobi.writer8.exth import build_exth
 
         # Insert resource records
         first_image_record = None
