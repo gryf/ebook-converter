@@ -9,15 +9,15 @@ from collections import defaultdict
 from functools import partial
 
 from css_parser.css import CSSRule, CSSStyleDeclaration
-from css_selectors import parse, SelectorSyntaxError
+from ebook_converter.css_selectors import parse, SelectorSyntaxError
 
-from calibre import force_unicode
-from calibre.ebooks.oeb.base import OEB_STYLES, OEB_DOCS, XHTML, css_text
-from calibre.ebooks.oeb.normalize_css import normalize_filter_css, normalizers
-from calibre.ebooks.oeb.polish.pretty import pretty_script_or_style, pretty_xml_tree, serialize
-from calibre.utils.icu import numeric_sort_key
-from css_selectors import Select, SelectorError
-from polyglot.builtins import iteritems, itervalues, unicode_type, filter
+from ebook_converter import force_unicode
+from ebook_converter.ebooks.oeb.base import OEB_STYLES, OEB_DOCS, XHTML, css_text
+from ebook_converter.ebooks.oeb.normalize_css import normalize_filter_css, normalizers
+from ebook_converter.ebooks.oeb.polish.pretty import pretty_script_or_style, pretty_xml_tree, serialize
+from ebook_converter.utils.icu import numeric_sort_key
+from ebook_converter.css_selectors import Select, SelectorError
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, filter
 
 
 def filter_used_rules(rules, log, select):

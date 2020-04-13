@@ -52,7 +52,7 @@ Currently, I've tested following input formats:
 - Palm pdb
 - rtf
 - mobi
-
+- fb2
 
 Note, that old Microsoft doc format is not supported, although old documents
 can be fairly easy converted using text processors programs, lik Word or
@@ -62,11 +62,10 @@ LibreOffice to supported formats.
 Output formats
 ~~~~~~~~~~~~~~
 
-Currenlty, the only format which is supported is BBeB (lrf) mainly because it
-is the only one I care for now ;) I'm happy user of Sony PRS-505, and I have no
-zero motivation to change that reader to something more fancy. Or plastic.
+Currently, following formats are supported:
 
-I'm going to enable others pretty soon.
+- lrf (for Sony readers)
+- epub
 
 
 Installation

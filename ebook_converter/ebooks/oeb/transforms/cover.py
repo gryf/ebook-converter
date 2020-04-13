@@ -8,11 +8,11 @@ __docformat__ = 'restructuredtext en'
 
 import textwrap
 
-from calibre import guess_type
-from calibre.utils.imghdr import identify
-from calibre.utils.xml_parse import safe_xml_fromstring
-from polyglot.builtins import unicode_type
-from polyglot.urllib import unquote
+from ebook_converter import guess_type
+from ebook_converter.utils.imghdr import identify
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.polyglot.builtins import unicode_type
+from ebook_converter.polyglot.urllib import unquote
 
 
 class CoverManager(object):
@@ -84,39 +84,8 @@ class CoverManager(object):
         self.log = log
         self.insert_cover()
 
-    def default_cover(self):
-        '''
-        Create a generic cover for books that dont have a cover
-        '''
-        if self.no_default_cover:
-            return None
-        self.log('Generating default cover')
-        m = self.oeb.metadata
-        title = unicode_type(m.title[0])
-        authors = [unicode_type(x) for x in m.creator if x.role == 'aut']
-        try:
-            from calibre.ebooks.covers import create_cover
-            series = series_index = None
-            if m.series:
-                try:
-                    series, series_index = unicode_type(m.series[0]), m.series_index[0]
-                except IndexError:
-                    pass
-            img_data = create_cover(title, authors, series, series_index)
-            id, href = self.oeb.manifest.generate('cover',
-                    'cover_image.jpg')
-            item = self.oeb.manifest.add(id, href, guess_type('t.jpg')[0],
-                        data=img_data)
-            m.clear('cover')
-            m.add('cover', item.id)
-
-            return item.href
-        except:
-            self.log.exception('Failed to generate default cover')
-        return None
-
     def inspect_cover(self, href):
-        from calibre.ebooks.oeb.base import urlnormalize
+        from ebook_converter.ebooks.oeb.base import urlnormalize
         for x in self.oeb.manifest:
             if x.href == urlnormalize(href):
                 try:
@@ -127,14 +96,13 @@ class CoverManager(object):
         return -1, -1
 
     def insert_cover(self):
-        from calibre.ebooks.oeb.base import urldefrag
+        from ebook_converter.ebooks.oeb.base import urldefrag
         g, m = self.oeb.guide, self.oeb.manifest
         item = None
+        href = None
         if 'titlepage' not in g:
             if 'cover' in g:
                 href = g['cover'].href
-            else:
-                href = self.default_cover()
             if href is None:
                 return
             width, height = self.inspect_cover(href)

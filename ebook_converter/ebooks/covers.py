@@ -9,7 +9,7 @@ import re, random, unicodedata, numbers
 from collections import namedtuple
 from contextlib import contextmanager
 from math import ceil, sqrt, cos, sin, atan2
-from polyglot.builtins import iteritems, itervalues, map, zip, string_or_bytes
+from ebook_converter.polyglot.builtins import iteritems, itervalues, map, zip, string_or_bytes
 from itertools import chain
 
 from PyQt5.Qt import (
@@ -18,14 +18,14 @@ from PyQt5.Qt import (
     QPainterPath, QPen, QRectF, QTransform, QRadialGradient
 )
 
-from calibre import force_unicode, fit_image
-from calibre.constants import __appname__, __version__
-from calibre.ebooks.metadata import fmt_sidx
-from calibre.ebooks.metadata.book.base import Metadata
-from calibre.ebooks.metadata.book.formatter import SafeFormat
-from calibre.gui2 import ensure_app, config, load_builtin_fonts, pixmap_to_data
-from calibre.utils.cleantext import clean_ascii_chars, clean_xml_chars
-from calibre.utils.config import JSONConfig
+from ebook_converter import force_unicode, fit_image
+from ebook_converter.constants import __appname__, __version__
+from ebook_converter.ebooks.metadata import fmt_sidx
+from ebook_converter.ebooks.metadata.book.base import Metadata
+from ebook_converter.ebooks.metadata.book.formatter import SafeFormat
+from ebook_converter.gui2 import ensure_app, config, load_builtin_fonts, pixmap_to_data
+from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
+from ebook_converter.utils.config import JSONConfig
 
 # Default settings {{{
 cprefs = JSONConfig('cover_generation')
@@ -492,7 +492,7 @@ class Ornamental(Style):
 
     def __call__(self, painter, rect, color_theme, title_block, subtitle_block, footer_block):
         if not self.PATH_CACHE:
-            from calibre.utils.speedups import svg_path_to_painter_path
+            from ebook_converter.utils.speedups import svg_path_to_painter_path
             try:
                 self.__class__.PATH_CACHE['corner'] = svg_path_to_painter_path(self.CORNER_VECTOR)
             except Exception:
@@ -728,7 +728,7 @@ def generate_masthead(title, output_path=None, width=600, height=60, as_qimage=F
 
 def test(scale=0.25):
     from PyQt5.Qt import QLabel, QPixmap, QMainWindow, QWidget, QScrollArea, QGridLayout
-    from calibre.gui2 import Application
+    from ebook_converter.gui2 import Application
     app = Application([])
     mi = Metadata('Unknown', ['Kovid Goyal', 'John & Doe', 'Author'])
     mi.series = 'A series & styles'

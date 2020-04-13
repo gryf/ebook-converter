@@ -6,14 +6,14 @@ __license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import copy, os, re
-from polyglot.builtins import map, string_or_bytes, range
+from ebook_converter.polyglot.builtins import map, string_or_bytes, range
 
-from calibre.ebooks.oeb.base import barename, XPNSMAP, XPath, OPF, XHTML, OEB_DOCS
-from calibre.ebooks.oeb.polish.errors import MalformedMarkup
-from calibre.ebooks.oeb.polish.toc import node_from_loc
-from calibre.ebooks.oeb.polish.replace import LinkRebaser
-from polyglot.builtins import iteritems, unicode_type
-from polyglot.urllib import urlparse
+from ebook_converter.ebooks.oeb.base import barename, XPNSMAP, XPath, OPF, XHTML, OEB_DOCS
+from ebook_converter.ebooks.oeb.polish.errors import MalformedMarkup
+from ebook_converter.ebooks.oeb.polish.toc import node_from_loc
+from ebook_converter.ebooks.oeb.polish.replace import LinkRebaser
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.urllib import urlparse
 
 
 class AbortError(ValueError):

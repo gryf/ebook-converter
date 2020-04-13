@@ -10,8 +10,8 @@ import posixpath
 
 from lxml import etree
 
-from calibre.ebooks.oeb.base import rewrite_links, urlnormalize
-from polyglot.urllib import urldefrag, urlparse
+from ebook_converter.ebooks.oeb.base import rewrite_links, urlnormalize
+from ebook_converter.polyglot.urllib import urldefrag, urlparse
 
 
 class RenameFiles(object):  # {{{

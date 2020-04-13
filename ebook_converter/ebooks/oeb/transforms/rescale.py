@@ -6,7 +6,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-from calibre import fit_image
+from ebook_converter import fit_image
 
 
 class RescaleImages(object):
