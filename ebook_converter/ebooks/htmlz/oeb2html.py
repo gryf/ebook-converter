@@ -16,13 +16,13 @@ import re
 from functools import partial
 from lxml import html
 
-from calibre import prepare_string_for_xml
-from calibre.ebooks.oeb.base import (
+from ebook_converter import prepare_string_for_xml
+from ebook_converter.ebooks.oeb.base import (
     XHTML, XHTML_NS, SVG_NS, barename, namespace, OEB_IMAGES, XLINK, rewrite_links, urlnormalize)
-from calibre.ebooks.oeb.stylizer import Stylizer
-from calibre.utils.logging import default_log
-from polyglot.builtins import unicode_type, string_or_bytes, as_bytes
-from polyglot.urllib import urldefrag
+from ebook_converter.ebooks.oeb.stylizer import Stylizer
+from ebook_converter.utils.logging import default_log
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, as_bytes
+from ebook_converter.polyglot.urllib import urldefrag
 
 SELF_CLOSING_TAGS = {'area', 'base', 'basefont', 'br', 'hr', 'input', 'img', 'link', 'meta'}
 

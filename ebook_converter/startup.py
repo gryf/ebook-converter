@@ -200,10 +200,10 @@ if not _run_once:
 
     builtins.__dict__['lopen'] = local_open
 
-    from ebook_converter.utils.icu import title_case, lower as icu_lower, upper as icu_upper
+    from ebook_converter.utils.icu import lower as icu_lower, upper as icu_upper
     builtins.__dict__['icu_lower'] = icu_lower
     builtins.__dict__['icu_upper'] = icu_upper
-    builtins.__dict__['icu_title'] = title_case
+    builtins.__dict__['icu_title'] = lambda s: ' '.join([x.capitalize() for x in s.split(' ')])
 
     def connect_lambda(bound_signal, self, func, **kw):
         import weakref
