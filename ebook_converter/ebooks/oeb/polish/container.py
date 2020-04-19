@@ -11,6 +11,7 @@ import uuid
 from collections import defaultdict
 from io import BytesIO
 from itertools import count
+import urllib.parse
 
 from css_parser import getUrls, replaceUrls
 
@@ -49,7 +50,6 @@ from ebook_converter.utils.logging import default_log
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.zipfile import ZipFile
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
-from ebook_converter.polyglot.urllib import urlparse
 
 exists, join, relpath = os.path.exists, os.path.join, os.path.relpath
 
@@ -107,7 +107,7 @@ def name_to_href(name, root, base=None, quote=urlquote):
 def href_to_name(href, root, base=None):
     base = root if base is None else os.path.dirname(name_to_abspath(base, root))
     try:
-        purl = urlparse(href)
+        purl = urllib.parse.urlparse(href)
     except ValueError:
         return None
     if purl.scheme or not purl.path:

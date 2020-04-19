@@ -1,4 +1,5 @@
 import textwrap
+import urllib.parse
 
 from ebook_converter import guess_type
 from ebook_converter.utils.imghdr import identify
@@ -93,7 +94,6 @@ class CoverManager(object):
         return -1, -1
 
     def insert_cover(self):
-        from ebook_converter.ebooks.oeb.base import urldefrag
         g, m = self.oeb.guide, self.oeb.manifest
         item = None
         href = None
@@ -124,7 +124,7 @@ class CoverManager(object):
                         data=safe_xml_fromstring(tp))
         else:
             item = self.oeb.manifest.hrefs[
-                    urldefrag(self.oeb.guide['titlepage'].href)[0]]
+                    urllib.parse.urldefrag(self.oeb.guide['titlepage'].href)[0]]
         if item is not None:
             self.oeb.spine.insert(0, item, True)
             if 'cover' not in self.oeb.guide.refs:

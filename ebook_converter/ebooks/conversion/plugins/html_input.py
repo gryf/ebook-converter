@@ -1,5 +1,8 @@
-import re, tempfile, os
-from functools import partial
+import functools
+import os
+import re
+import tempfile
+import urllib.parse
 
 from ebook_converter.constants import islinux, isbsd
 from ebook_converter.customize.conversion import (InputFormatPlugin,
@@ -97,7 +100,7 @@ class HTMLInput(InputFormatPlugin):
         import uuid
         from ebook_converter.ebooks.conversion.plumber import create_oebbook
         from ebook_converter.ebooks.oeb.base import (DirContainer,
-            rewrite_links, urlnormalize, urldefrag, BINARY_MIME, OEB_STYLES,
+            rewrite_links, urlnormalize, BINARY_MIME, OEB_STYLES,
             xpath, urlquote)
         from ebook_converter import guess_type
         from ebook_converter.ebooks.oeb.transforms.metadata import \
@@ -163,7 +166,7 @@ class HTMLInput(InputFormatPlugin):
                 path = path.lower()
             self.added_resources[path] = href
         self.urlnormalize, self.DirContainer = urlnormalize, DirContainer
-        self.urldefrag = urldefrag
+        self.urldefrag = urllib.parse.urldefrag
         self.guess_type, self.BINARY_MIME = guess_type, BINARY_MIME
 
         self.log('Rewriting HTML links')
@@ -176,7 +179,8 @@ class HTMLInput(InputFormatPlugin):
                 item = oeb.manifest.hrefs[href]
             except KeyError:
                 item = oeb.manifest.hrefs[urlnormalize(href)]
-            rewrite_links(item.data, partial(self.resource_adder, base=dpath))
+            rewrite_links(item.data,
+                          functools.partial(self.resource_adder, base=dpath))
 
         for item in oeb.manifest.values():
             if item.media_type in self.OEB_STYLES:
@@ -186,7 +190,7 @@ class HTMLInput(InputFormatPlugin):
                         dpath = os.path.dirname(path)
                         break
                 css_parser.replaceUrls(item.data,
-                        partial(self.resource_adder, base=dpath))
+                        functools.partial(self.resource_adder, base=dpath))
 
         toc = self.oeb.toc
         self.oeb.auto_generated_toc = True
@@ -242,7 +246,6 @@ class HTMLInput(InputFormatPlugin):
         return link, frag
 
     def resource_adder(self, link_, base=None):
-        from ebook_converter.polyglot.urllib import quote
         link, frag = self.link_to_local_path(link_, base=base)
         if link is None:
             return link_
@@ -287,9 +290,9 @@ class HTMLInput(InputFormatPlugin):
             # file, therefore we quote it here.
             if isinstance(bhref, unicode_type):
                 bhref = bhref.encode('utf-8')
-            item.html_input_href = as_unicode(quote(bhref))
+            item.html_input_href = as_unicode(urllib.parse.quote(bhref))
             if guessed in self.OEB_STYLES:
-                item.override_css_fetch = partial(
+                item.override_css_fetch = functools.partial(
                         self.css_import_handler, os.path.dirname(link))
             item.data
             self.added_resources[link] = href

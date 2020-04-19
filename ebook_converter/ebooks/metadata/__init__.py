@@ -2,12 +2,15 @@
 Provides abstraction for metadata reading.writing from a variety of ebook
 formats.
 """
-import os, sys, re
+import os
+import re
+import sys
+import urllib.parse
 
 from ebook_converter import relpath, guess_type, prints, force_unicode
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, getcwd, iteritems, itervalues, as_unicode
-from ebook_converter.polyglot.urllib import quote, unquote, urlparse
+from ebook_converter.polyglot.urllib import unquote
 
 
 __license__ = 'GPL v3'
@@ -241,7 +244,7 @@ class Resource(object):
                 path = path.decode(sys.getfilesystemencoding())
             self.path = path
         else:
-            url = urlparse(href_or_path)
+            url = urllib.parse.urlparse(href_or_path)
             if url[0] not in ('', 'file'):
                 self._href = href_or_path
             else:
@@ -268,7 +271,7 @@ class Resource(object):
         if self.path is None:
             return self._href
         f = self.fragment.encode('utf-8') if isinstance(self.fragment, unicode_type) else self.fragment
-        frag = '#'+as_unicode(quote(f)) if self.fragment else ''
+        frag = '#'+as_unicode(urllib.parse.quote(f)) if self.fragment else ''
         if self.path == basedir:
             return ''+frag
         try:
@@ -277,7 +280,7 @@ class Resource(object):
             rpath = self.path
         if isinstance(rpath, unicode_type):
             rpath = rpath.encode('utf-8')
-        return as_unicode(quote(rpath.replace(os.sep, '/')))+frag
+        return as_unicode(urllib.parse.quote(rpath.replace(os.sep, '/')))+frag
 
     def set_basedir(self, path):
         self._basedir = path

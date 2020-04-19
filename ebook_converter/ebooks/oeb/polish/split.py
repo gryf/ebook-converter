@@ -1,12 +1,12 @@
 import copy, os, re
 from ebook_converter.polyglot.builtins import string_or_bytes
+import urllib.parse
 
 from ebook_converter.ebooks.oeb.base import barename, XPNSMAP, XPath, OPF, XHTML, OEB_DOCS
 from ebook_converter.ebooks.oeb.polish.errors import MalformedMarkup
 from ebook_converter.ebooks.oeb.polish.toc import node_from_loc
 from ebook_converter.ebooks.oeb.polish.replace import LinkRebaser
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
-from ebook_converter.polyglot.urllib import urlparse
 
 
 __license__ = 'GPL v3'
@@ -160,7 +160,7 @@ class SplitLinkReplacer(object):
         name = self.container.href_to_name(url, self.base)
         if name != self.top_name:
             return url
-        purl = urlparse(url)
+        purl = urllib.parse.urlparse(url)
         if purl.fragment and purl.fragment in self.bottom_anchors:
             url = self.container.name_to_href(self.bottom_name, self.base) + '#' + purl.fragment
             self.replaced = True
@@ -225,7 +225,7 @@ def split(container, name, loc_or_xpath, before=True, totals=None):
             else:
                 fname = container.href_to_name(url, name)
             if fname == name:
-                purl = urlparse(url)
+                purl = urllib.parse.urlparse(url)
                 if purl.fragment in anchors_in_top:
                     if r is root2:
                         a.set('href', '%s#%s' % (container.name_to_href(name, bottom_name), purl.fragment))
@@ -310,7 +310,7 @@ class MergeLinkReplacer(object):
         amap = self.anchor_map.get(name, None)
         if amap is None:
             return url
-        purl = urlparse(url)
+        purl = urllib.parse.urlparse(url)
         frag = purl.fragment or ''
         frag = amap.get(frag, frag)
         url = self.container.name_to_href(self.master, self.base) + '#' + frag

@@ -2,7 +2,11 @@
 CHM File decoding support
 """
 import os
+from lxml import html
 
+from ebook_converter.polyglot.urllib import unquote as _unquote
+from ebook_converter.ebooks.oeb.base import urlquote
+from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants import filesystem_encoding
@@ -109,10 +113,7 @@ class CHMInput(InputFormatPlugin):
         return oeb
 
     def _create_html_root(self, hhcpath, log, encoding):
-        from lxml import html
-        from ebook_converter.polyglot.urllib import unquote as _unquote
-        from ebook_converter.ebooks.oeb.base import urlquote
-        from ebook_converter.ebooks.chardet import xml_to_unicode
+
         hhcdata = self._read_file(hhcpath)
         hhcdata = hhcdata.decode(encoding)
         hhcdata = xml_to_unicode(hhcdata, verbose=True,

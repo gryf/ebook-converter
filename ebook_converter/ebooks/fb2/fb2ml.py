@@ -1,8 +1,11 @@
 """
 Transform OEB content into FB2 markup
 """
-import re, textwrap, uuid
 from datetime import datetime
+import re
+import textwrap
+import urllib.parse
+import uuid
 
 from lxml import etree
 
@@ -14,7 +17,6 @@ from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.ebooks.oeb.base import urlnormalize
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
 from ebook_converter.polyglot.binary import as_base64_unicode
-from ebook_converter.polyglot.urllib import urlparse
 
 
 __license__ = 'GPL 3'
@@ -508,7 +510,7 @@ class FB2MLizer(object):
                 tags.append('p')
         if tag == 'a' and elem_tree.attrib.get('href', None):
             # Handle only external links for now
-            if urlparse(elem_tree.attrib['href']).netloc:
+            if urllib.parse.urlparse(elem_tree.attrib['href']).netloc:
                 p_txt, p_tag = self.ensure_p()
                 fb2_out += p_txt
                 tags += p_tag

@@ -3,6 +3,7 @@ Container-/OPF-based input OEBBook reader.
 """
 import sys, os, uuid, copy, re, io
 from collections import defaultdict
+import urllib.parse
 
 from lxml import etree
 
@@ -23,7 +24,7 @@ from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants import __appname__, __version__
 from ebook_converter import guess_type, xml_replace_entities
 from ebook_converter.polyglot.builtins import unicode_type
-from ebook_converter.polyglot.urllib import unquote, urldefrag, urlparse
+from ebook_converter.polyglot.urllib import unquote
 
 
 __all__ = ['OEBReader']
@@ -203,12 +204,12 @@ class OEBReader(object):
                     for href in hrefs:
                         if isinstance(href, bytes):
                             href = href.decode('utf-8')
-                        href, _ = urldefrag(href)
+                        href, _ = urllib.parse.urldefrag(href)
                         if not href:
                             continue
                         try:
                             href = item.abshref(urlnormalize(href))
-                            scheme = urlparse(href).scheme
+                            scheme = urllib.parse.urlparse(href).scheme
                         except:
                             self.oeb.log.exception(
                                 'Skipping invalid href: %r'%href)
@@ -221,9 +222,9 @@ class OEBReader(object):
                     except:
                         urls = []
                     for url in urls:
-                        href, _ = urldefrag(url)
+                        href, _ = urllib.parse.urldefrag(url)
                         href = item.abshref(urlnormalize(href))
-                        scheme = urlparse(href).scheme
+                        scheme = urllib.parse.urlparse(href).scheme
                         if not scheme and href not in known:
                             new.add(href)
             unchecked.clear()
@@ -294,7 +295,7 @@ class OEBReader(object):
                     # TODO: handle fallback chains
                     continue
                 for href in selector(item.data):
-                    href, _ = urldefrag(href)
+                    href, _ = urllib.parse.urldefrag(href)
                     if not href:
                         continue
                     try:
@@ -350,7 +351,7 @@ class OEBReader(object):
         manifest = self.oeb.manifest
         for elem in xpath(opf, '/o2:package/o2:guide/o2:reference'):
             ref_href = elem.get('href')
-            path = urlnormalize(urldefrag(ref_href)[0])
+            path = urlnormalize(urllib.parse.urldefrag(ref_href)[0])
             if path not in manifest.hrefs:
                 corrected_href = None
                 for href in manifest.hrefs:
@@ -393,7 +394,7 @@ class OEBReader(object):
                 # This node is useless
                 continue
             href = item.abshref(urlnormalize(href[0])) if href and href[0] else ''
-            path, _ = urldefrag(href)
+            path, _ = urllib.parse.urldefrag(href)
             if path and path not in self.oeb.manifest.hrefs:
                 path = urlnormalize(path)
             if href and path not in self.oeb.manifest.hrefs:
@@ -468,7 +469,7 @@ class OEBReader(object):
             href = site.get('href')
             if not title or not href:
                 continue
-            path, _ = urldefrag(urlnormalize(href))
+            path, _ = urllib.parse.urldefrag(urlnormalize(href))
             if path not in self.oeb.manifest.hrefs:
                 self.logger.warn('TOC reference %r not found' % href)
                 continue
@@ -480,7 +481,7 @@ class OEBReader(object):
         if 'toc' not in self.oeb.guide:
             return False
         self.log.debug('Reading TOC from HTML...')
-        itempath, frag = urldefrag(self.oeb.guide['toc'].href)
+        itempath, frag = urllib.parse.urldefrag(self.oeb.guide['toc'].href)
         item = self.oeb.manifest.hrefs[itempath]
         html = item.data
         if frag:
@@ -496,7 +497,7 @@ class OEBReader(object):
         for anchor in xpath(html, './/h:a[@href]'):
             href = anchor.attrib['href']
             href = item.abshref(urlnormalize(href))
-            path, frag = urldefrag(href)
+            path, frag = urllib.parse.urldefrag(href)
             if path not in self.oeb.manifest.hrefs:
                 continue
             title = xml2text(anchor)

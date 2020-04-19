@@ -1,7 +1,17 @@
 """
 lxml based OPF parser.
 """
-import re, sys, unittest, functools, os, uuid, glob, io, json, copy
+import copy
+import functools
+import glob
+import io
+import json
+import os
+import re
+import sys
+import unittest
+import urllib.parse
+import uuid
 
 from lxml import etree
 
@@ -18,7 +28,7 @@ from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
 from ebook_converter.utils.config import tweaks
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, getcwd
-from ebook_converter.polyglot.urllib import unquote, urlparse
+from ebook_converter.polyglot.urllib import unquote
 
 
 __license__ = 'GPL v3'
@@ -76,7 +86,7 @@ class Resource(object):  # {{{
             self.path = path
         else:
             href_or_path = href_or_path
-            url = urlparse(href_or_path)
+            url = urllib.parse.urlparse(href_or_path)
             if url[0] not in ('', 'file'):
                 self._href = href_or_path
             else:

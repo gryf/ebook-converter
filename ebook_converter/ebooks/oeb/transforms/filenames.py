@@ -1,9 +1,9 @@
 import posixpath
+import urllib.parse
 
 from lxml import etree
 
 from ebook_converter.ebooks.oeb.base import rewrite_links, urlnormalize
-from ebook_converter.polyglot.urllib import urldefrag, urlparse
 
 
 __license__ = 'GPL v3'
@@ -38,7 +38,7 @@ class RenameFiles(object):  # {{{
         if self.oeb.guide:
             for ref in self.oeb.guide.values():
                 href = urlnormalize(ref.href)
-                href, frag = urldefrag(href)
+                href, frag = urllib.parse.urldefrag(href)
                 replacement = self.rename_map.get(href, None)
                 if replacement is not None:
                     nhref = replacement
@@ -52,7 +52,7 @@ class RenameFiles(object):  # {{{
     def fix_toc_entry(self, toc):
         if toc.href:
             href = urlnormalize(toc.href)
-            href, frag = urldefrag(href)
+            href, frag = urllib.parse.urldefrag(href)
             replacement = self.rename_map.get(href, None)
 
             if replacement is not None:
@@ -66,11 +66,11 @@ class RenameFiles(object):  # {{{
 
     def url_replacer(self, orig_url):
         url = urlnormalize(orig_url)
-        parts = urlparse(url)
+        parts = urllib.parse.urlparse(url)
         if parts.scheme:
             # Only rewrite local URLs
             return orig_url
-        path, frag = urldefrag(url)
+        path, frag = urllib.parse.urldefrag(url)
         if self.renamed_items_map:
             orig_item = self.renamed_items_map.get(self.current_item.href, self.current_item)
         else:

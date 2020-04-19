@@ -4,11 +4,12 @@ PyTextile
 A Humane Web Text Generator
 """
 import re
+import urllib.request
+import urllib.parse
 import uuid
 
 from ebook_converter.utils.smartypants import smartyPants
 from ebook_converter.polyglot.builtins import unicode_type
-from ebook_converter.polyglot.urllib import urlopen, urlparse
 
 
 # Last upstream version basis
@@ -85,7 +86,7 @@ def getimagesize(url):
 
     try:
         p = ImageFile.Parser()
-        f = urlopen(url)
+        f = urllib.request.urlopen(url)
         while True:
             s = f.read(1024)
             if not s:
@@ -777,11 +778,11 @@ class Textile(object):
         True
 
         """
-        (scheme, netloc) = urlparse(url)[0:2]
+        (scheme, netloc) = urllib.parse.urlparse(url)[0:2]
         return not scheme and not netloc
 
     def relURL(self, url):
-        scheme = urlparse(url)[0]
+        scheme = urllib.parse.urlparse(url)[0]
         if self.restricted and scheme and scheme not in self.url_schemes:
             return '#'
         return url

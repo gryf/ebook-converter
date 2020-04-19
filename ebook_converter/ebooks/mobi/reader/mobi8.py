@@ -1,7 +1,10 @@
-import struct, re, os
-from collections import namedtuple
-from itertools import repeat
-from uuid import uuid4
+import collections
+import itertools
+import os
+import re
+import struct
+import urllib.parse
+import uuid
 
 from lxml import etree
 
@@ -16,21 +19,20 @@ from ebook_converter.ebooks.mobi.utils import read_font_record
 from ebook_converter.ebooks.oeb.parse_utils import parse_html
 from ebook_converter.ebooks.oeb.base import XPath, XHTML, xml2text
 from ebook_converter.polyglot.builtins import unicode_type, getcwd, as_unicode
-from ebook_converter.polyglot.urllib import urldefrag
 
 
 __license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-Part = namedtuple('Part',
+Part = collections.namedtuple('Part',
     'num type filename start end aid')
 
-Elem = namedtuple('Elem',
+Elem = collections.namedtuple('Elem',
     'insert_pos toc_text file_number sequence_number start_pos '
     'length')
 
-FlowInfo = namedtuple('FlowInfo',
+FlowInfo = collections.namedtuple('FlowInfo',
         'type format dir fname')
 
 # locate beginning and ending positions of tag with specific aid attribute
@@ -81,7 +83,7 @@ class Mobi8Reader(object):
 
     def __call__(self):
         self.mobi6_reader.check_for_drm()
-        self.aid_anchor_suffix = uuid4().hex.encode('utf-8')
+        self.aid_anchor_suffix = uuid.uuid4().hex.encode('utf-8')
         bh = self.mobi6_reader.book_header
         if self.mobi6_reader.kf8_type == 'joint':
             offset = self.mobi6_reader.kf8_boundary + 2
@@ -127,7 +129,7 @@ class Mobi8Reader(object):
         if self.header.skelidx != NULL_INDEX:
             table = read_index(self.kf8_sections, self.header.skelidx,
                     self.header.codec)[0]
-            File = namedtuple('File',
+            File = collections.namedtuple('File',
                 'file_number name divtbl_count start_position length')
 
             for i, text in enumerate(table):
@@ -149,7 +151,7 @@ class Mobi8Reader(object):
         if self.header.othidx != NULL_INDEX:
             table, cncx = read_index(self.kf8_sections, self.header.othidx,
                     self.header.codec)
-            Item = namedtuple('Item',
+            Item = collections.namedtuple('Item',
                 'type title pos_fid')
 
             for i, ref_type in enumerate(table):
@@ -222,7 +224,7 @@ class Mobi8Reader(object):
             self.parts.append(skeleton)
             if divcnt < 1:
                 # Empty file
-                aidtext = unicode_type(uuid4())
+                aidtext = unicode_type(uuid.uuid4())
                 filename = aidtext + '.html'
             self.partinfo.append(Part(skelnum, 'text', filename, skelpos,
                 baseptr, aidtext))
@@ -293,7 +295,7 @@ class Mobi8Reader(object):
         for part in self.partinfo:
             if pos >= part.start and pos < part.end:
                 return part
-        return Part(*repeat(None, len(Part._fields)))
+        return Part(*itertools.repeat(None, len(Part._fields)))
 
     def get_id_tag_by_pos_fid(self, posfid, offset):
         # first convert kindle:pos:fid and offset info to position in file
@@ -475,7 +477,7 @@ class Mobi8Reader(object):
             for ref in guide:
                 if ref.type == 'toc':
                     href = ref.href()
-                    href, frag = urldefrag(href)
+                    href, frag = urllib.parse.urldefrag(href)
                     if os.path.exists(href.replace('/', os.sep)):
                         try:
                             toc = self.read_inline_toc(href, frag)
@@ -554,7 +556,7 @@ class Mobi8Reader(object):
             if reached and elem.tag == XHTML('a') and elem.get('href',
                     False):
                 href = elem.get('href')
-                href, frag = urldefrag(href)
+                href, frag = urllib.parse.urldefrag(href)
                 href = base_href + '/' + href
                 text = xml2text(elem).strip()
                 if (text, href, frag) in seen:

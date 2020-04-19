@@ -5,6 +5,7 @@ import os, re, logging, sys, numbers
 from collections import defaultdict
 from itertools import count
 from operator import attrgetter
+import urllib.parse
 
 from lxml import etree, html
 from ebook_converter import force_unicode
@@ -17,7 +18,7 @@ from ebook_converter.ebooks.oeb.parse_utils import barename, XHTML_NS, namespace
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes, itervalues, codepoint_to_chr
-from ebook_converter.polyglot.urllib import unquote as urlunquote, urldefrag, urljoin, urlparse, urlunparse
+from ebook_converter.polyglot.urllib import unquote as urlunquote
 
 
 __license__ = 'GPL v3'
@@ -185,13 +186,13 @@ def iterlinks(root, find_links_in_css=True):
                 if attrib in attribs:
                     value = el.get(attrib)
                     if codebase is not None:
-                        value = urljoin(codebase, value)
+                        value = urllib.parse.urljoin(codebase, value)
                     yield (el, attrib, value, 0)
             if 'archive' in attribs:
                 for match in _archive_re.finditer(el.get('archive')):
                     value = match.group(0)
                     if codebase is not None:
-                        value = urljoin(codebase, value)
+                        value = urllib.parse.urljoin(codebase, value)
                     yield (el, 'archive', value, match.start())
         else:
             for attr in attribs:
@@ -217,7 +218,7 @@ def make_links_absolute(root, base_url):
     came from)
     '''
     def link_repl(href):
-        return urljoin(base_url, href)
+        return urllib.parse.urljoin(base_url, href)
     rewrite_links(root, link_repl)
 
 
@@ -463,16 +464,16 @@ def urlnormalize(href):
     characters URL quoted.
     """
     try:
-        parts = urlparse(href)
+        parts = urllib.parse.urlparse(href)
     except ValueError as e:
         raise ValueError('Failed to parse the URL: %r with underlying error: %s' % (href, as_unicode(e)))
     if not parts.scheme or parts.scheme == 'file':
-        path, frag = urldefrag(href)
+        path, frag = urllib.parse.urldefrag(href)
         parts = ('', '', path, '', '', frag)
     parts = (part.replace('\\', '/') for part in parts)
     parts = (urlunquote(part) for part in parts)
     parts = (urlquote(part) for part in parts)
-    return urlunparse(parts)
+    return urllib.parse.urlunparse(parts)
 
 
 def extract(elem):
@@ -1135,7 +1136,7 @@ class Manifest(object):
             relative to this manifest item to a book-absolute reference.
             """
             try:
-                purl = urlparse(href)
+                purl = urllib.parse.urlparse(href)
             except ValueError:
                 return href
             scheme = purl.scheme
@@ -1143,8 +1144,8 @@ class Manifest(object):
                 return href
             purl = list(purl)
             purl[0] = ''
-            href = urlunparse(purl)
-            path, frag = urldefrag(href)
+            href = urllib.parse.urlunparse(purl)
+            path, frag = urllib.parse.urldefrag(href)
             if not path:
                 if frag:
                     return '#'.join((self.href, frag))
@@ -1423,7 +1424,7 @@ class Guide(object):
         @property
         def item(self):
             """The manifest item associated with this reference."""
-            path = urldefrag(self.href)[0]
+            path = uurllib.parse.rldefrag(self.href)[0]
             hrefs = self.oeb.manifest.hrefs
             return hrefs.get(path, None)
 
@@ -1596,7 +1597,7 @@ class TOC(object):
         """
         prev = None
         for node in list(self.nodes):
-            if prev and urldefrag(prev.href)[0] == urldefrag(node.href)[0]:
+            if prev and urllib.parse.urldefrag(prev.href)[0] == urllib.parse.urldefrag(node.href)[0]:
                 self.nodes.remove(node)
                 prev.nodes.append(node)
             else:
@@ -1988,7 +1989,7 @@ class OEBBook(object):
 def rel_href(base_href, href):
     """Convert the URL provided in :param:`href` to a URL relative to the URL
     in :param:`base_href`  """
-    if urlparse(href).scheme:
+    if urllib.parse.urlparse(href).scheme:
         return href
     if '/' not in base_href:
         return href
@@ -2004,7 +2005,7 @@ def rel_href(base_href, href):
             break
     if not base:
         return href
-    target, frag = urldefrag(href)
+    target, frag = urllib.parse.urldefrag(href)
     target = target.split('/')
     index = 0
     for index in range(min(len(base), len(target))):

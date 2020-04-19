@@ -1,9 +1,10 @@
 """
 OPF manifest trimming transform.
 """
+import urllib.parse
+
 from ebook_converter.ebooks.oeb.base import CSS_MIME, OEB_DOCS
 from ebook_converter.ebooks.oeb.base import urlnormalize, iterlinks
-from ebook_converter.polyglot.urllib import urldefrag
 
 
 __license__ = 'GPL v3'
@@ -32,7 +33,7 @@ class ManifestTrimmer(object):
                 elif item.value in oeb.manifest.ids:
                     used.add(oeb.manifest.ids[item.value])
         for ref in oeb.guide.values():
-            path, _ = urldefrag(ref.href)
+            path, _ = urllib.parse.urldefrag(ref.href)
             if path in oeb.manifest.hrefs:
                 used.add(oeb.manifest.hrefs[path])
         # TOC items are required to be in the spine

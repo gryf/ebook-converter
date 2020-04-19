@@ -3,10 +3,18 @@ __license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-import sys, os, re, time, random, warnings
+import math
+import os
 import pkg_resources
+import random
+import re
+import sys
+import time
+import urllib.parse
+import urllib.request
+import warnings
+
 from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, hasenv, native_string_type
-from math import floor
 from functools import partial
 
 if not hasenv('CALIBRE_SHOW_DEPRECATION_WARNINGS'):
@@ -276,8 +284,7 @@ def extract(path, dir):
 
 
 def get_proxies(debug=True):
-    from polyglot.urllib import getproxies
-    proxies = getproxies()
+    proxies = urllib.request.getproxies()
     for key, proxy in list(proxies.items()):
         if not proxy or '..' in proxy or key == 'auto':
             del proxies[key]
@@ -338,10 +345,9 @@ def get_proxy_info(proxy_scheme, proxy_string):
     is not available in the string. If an exception occurs parsing the string
     this method returns None.
     '''
-    from polyglot.urllib import urlparse
     try:
         proxy_url = '%s://%s'%(proxy_scheme, proxy_string)
-        urlinfo = urlparse(proxy_url)
+        urlinfo = urllib.parse.urlparse(proxy_url)
         ans = {
             'scheme': urlinfo.scheme,
             'hostname': urlinfo.hostname,
@@ -414,13 +420,13 @@ def fit_image(width, height, pwidth, pheight):
     scaled = height > pheight or width > pwidth
     if height > pheight:
         corrf = pheight / float(height)
-        width, height = floor(corrf*width), pheight
+        width, height = math.floor(corrf*width), pheight
     if width > pwidth:
         corrf = pwidth / float(width)
-        width, height = pwidth, floor(corrf*height)
+        width, height = pwidth, math.floor(corrf*height)
     if height > pheight:
         corrf = pheight / float(height)
-        width, height = floor(corrf*width), pheight
+        width, height = math.floor(corrf*width), pheight
 
     return scaled, int(width), int(height)
 

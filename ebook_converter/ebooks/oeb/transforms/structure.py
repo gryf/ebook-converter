@@ -1,4 +1,6 @@
-import re, uuid
+import re
+import uuid
+import urllib.parse
 
 from lxml import etree
 from collections import OrderedDict, Counter
@@ -6,7 +8,6 @@ from collections import OrderedDict, Counter
 from ebook_converter.ebooks.oeb.base import XPNSMAP, TOC, XHTML, xml2text, barename
 from ebook_converter.ebooks import ConversionError
 from ebook_converter.polyglot.builtins import itervalues, unicode_type
-from ebook_converter.polyglot.urllib import urlparse
 
 
 __license__ = 'GPL v3'
@@ -209,7 +210,7 @@ class DetectStructure(object):
             for a in XPath('//h:a[@href]')(item.data):
                 href = a.get('href')
                 try:
-                    purl = urlparse(href)
+                    purl = urllib.parse.urlparse(href)
                 except ValueError:
                     self.log.warning('Ignoring malformed URL:', href)
                     continue

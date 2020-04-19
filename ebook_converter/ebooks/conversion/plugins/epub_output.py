@@ -1,4 +1,7 @@
-import os, shutil, re
+import os
+import re
+import shutil
+import urllib.parse
 
 from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
@@ -514,7 +517,7 @@ class EPUBOutput(OutputFormatPlugin):
         '''
         Perform toc link transforms to alleviate slow loading.
         '''
-        from ebook_converter.ebooks.oeb.base import urldefrag, XPath
+        from ebook_converter.ebooks.oeb.base import XPath
         from ebook_converter.ebooks.oeb.polish.toc import item_at_top
 
         def frag_is_at_top(root, frag):
@@ -527,7 +530,7 @@ class EPUBOutput(OutputFormatPlugin):
 
         def simplify_toc_entry(toc):
             if toc.href:
-                href, frag = urldefrag(toc.href)
+                href, frag = urllib.parse.urldefrag(toc.href)
                 if frag:
                     for x in self.oeb.spine:
                         if x.href == href:

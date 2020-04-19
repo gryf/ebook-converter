@@ -1,5 +1,9 @@
-import os, glob, re, functools
-from collections import Counter
+import collections
+import functools
+import glob
+import os
+import re
+import urllib.parse
 
 from lxml import etree
 from lxml.builder import ElementMaker
@@ -9,7 +13,7 @@ from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.polyglot.builtins import unicode_type, getcwd
-from ebook_converter.polyglot.urllib import unquote, urlparse
+from ebook_converter.polyglot.urllib import unquote
 
 
 __license__ = 'GPL v3'
@@ -30,7 +34,7 @@ def parse_html_toc(data):
         data = xml_to_unicode(data, strip_encoding_pats=True, resolve_entities=True)[0]
     root = parse(clean_xml_chars(data), maybe_xhtml=True, keep_doctype=False, sanitize_names=True)
     for a in root.xpath('//*[@href and local-name()="a"]'):
-        purl = urlparse(unquote(a.get('href')))
+        purl = urllib.parse.urlparse(unquote(a.get('href')))
         href, fragment = purl[2], purl[5]
         if not fragment:
             fragment = None
@@ -142,7 +146,7 @@ class TOC(list):
 
         if toc is not None:
             if toc.lower() not in ('ncx', 'ncxtoc'):
-                toc = urlparse(unquote(toc))[2]
+                toc = urllib.parse.urlparse(unquote(toc))[2]
                 toc = toc.replace('/', os.sep)
                 if not os.path.isabs(toc):
                     toc = os.path.join(self.base_path, toc)
@@ -209,7 +213,7 @@ class TOC(list):
                 if content and text:
                     content = content[0]
                     # if get_attr(content, attr='src'):
-                    purl = urlparse(content.get('src'))
+                    purl = urllib.parse.urlparse(content.get('src'))
                     href, fragment = unquote(purl[2]), unquote(purl[5])
                     nd = dest.add_item(href, fragment, text)
                     nd.play_order = play_order
@@ -253,7 +257,7 @@ class TOC(list):
         navmap = E.navMap()
         root.append(navmap)
         root.set('{http://www.w3.org/XML/1998/namespace}lang', 'en')
-        c = Counter()
+        c = collections.Counter()
 
         def navpoint(parent, np):
             text = np.text

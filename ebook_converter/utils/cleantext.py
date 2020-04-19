@@ -1,7 +1,7 @@
 import re
+import html.entities
 
 from ebook_converter.polyglot.builtins import codepoint_to_chr
-from ebook_converter.polyglot.html_entities import name2codepoint
 from ebook_converter.constants import plugins, preferred_encoding
 
 
@@ -77,7 +77,8 @@ def unescape(text, rm=False, rchar=''):
         else:
             # named entity
             try:
-                text = codepoint_to_chr(name2codepoint[text[1:-1]])
+                text = codepoint_to_chr(html.entities
+                                        .name2codepoint[text[1:-1]])
             except KeyError:
                 pass
         if rm:

@@ -3,6 +3,7 @@ from collections import Counter, OrderedDict
 from functools import partial
 from operator import itemgetter
 import pkg_resources
+import urllib.parse
 
 from lxml import etree
 from lxml.builder import ElementMaker
@@ -16,7 +17,6 @@ from ebook_converter.ebooks.oeb.polish.opf import set_guide_item, get_book_langu
 from ebook_converter.ebooks.oeb.polish.pretty import pretty_html_tree
 from ebook_converter.utils.localization import get_lang, canonicalize_lang, lang_as_iso639_1
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
-from ebook_converter.polyglot.urllib import urlparse
 
 
 __license__ = 'GPL v3'
@@ -150,7 +150,7 @@ def add_from_navpoint(container, navpoint, parent, ncx_name):
         href = content.get('src', None)
         if href:
             dest = container.href_to_name(href, base=ncx_name)
-            frag = urlparse(href).fragment or None
+            frag = urllib.parse.urlparse(href).fragment or None
     return parent.add(text or None, dest or None, frag or None)
 
 
@@ -183,7 +183,7 @@ def parse_ncx(container, ncx_name):
                 href = pt.xpath('descendant::*[calibre:lower-case(local-name()) = "content"]/@src')
                 if href:
                     dest = container.href_to_name(href[0], base=ncx_name)
-                    frag = urlparse(href[0]).fragment or None
+                    frag = urllib.parse.urlparse(href[0]).fragment or None
                     toc_root.page_list.append({'dest': dest, 'pagenum': pagenum, 'frag': frag})
     return toc_root
 
@@ -195,7 +195,7 @@ def add_from_li(container, li, parent, nav_name):
         href = x.get('href')
         if href:
             dest = nav_name if href.startswith('#') else container.href_to_name(href, base=nav_name)
-            frag = urlparse(href).fragment or None
+            frag = urllib.parse.urlparse(href).fragment or None
         break
     return parent.add(text or None, dest or None, frag or None)
 

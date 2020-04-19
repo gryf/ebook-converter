@@ -3,6 +3,7 @@ Transform OEB content into a single (more or less) HTML file.
 """
 import os
 import re
+import urllib.parse
 
 from functools import partial
 from lxml import html
@@ -13,7 +14,6 @@ from ebook_converter.ebooks.oeb.base import (
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils.logging import default_log
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, as_bytes
-from ebook_converter.polyglot.urllib import urldefrag
 
 
 __license__ = 'GPL 3'
@@ -101,7 +101,7 @@ class OEB2HTML(object):
                     for attr in attribs:
                         if attr in link_attrs:
                             href = item.abshref(attribs[attr])
-                            href, id = urldefrag(href)
+                            href, id = urllib.parse.urldefrag(href)
                             if href in self.base_hrefs:
                                 self.get_link_id(href, id)
 

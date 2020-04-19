@@ -5,6 +5,7 @@ assumes a prior call to the flatcss transform.
 """
 import os, functools, collections, re, copy
 from collections import OrderedDict
+import urllib.parse
 
 from lxml.etree import XPath as _XPath
 from lxml import etree
@@ -12,7 +13,7 @@ from lxml import etree
 from ebook_converter import as_unicode, force_unicode
 from ebook_converter.ebooks.epub import rules
 from ebook_converter.ebooks.oeb.base import (OEB_STYLES, XPNSMAP as NAMESPACES,
-        urldefrag, rewrite_links, XHTML, urlnormalize)
+        rewrite_links, XHTML, urlnormalize)
 from ebook_converter.ebooks.oeb.polish.split import do_split
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
 from ebook_converter.polyglot.urllib import unquote
@@ -162,7 +163,7 @@ class Split(object):
                 rewrite_links(item.data, self.rewrite_links)
 
     def rewrite_links(self, url):
-        href, frag = urldefrag(url)
+        href, frag = urllib.parse.urldefrag(url)
         try:
             href = self.current_item.abshref(href)
         except ValueError:
@@ -453,7 +454,7 @@ class FlowSplitter(object):
 
         if self.oeb.guide:
             for ref in self.oeb.guide.values():
-                href, frag = urldefrag(ref.href)
+                href, frag = urllib.parse.urldefrag(ref.href)
                 if href == self.item.href:
                     nhref = self.anchor_map[frag if frag else None]
                     if frag:
@@ -462,7 +463,7 @@ class FlowSplitter(object):
 
         def fix_toc_entry(toc):
             if toc.href:
-                href, frag = urldefrag(toc.href)
+                href, frag = urllib.parse.urldefrag(toc.href)
                 if href == self.item.href:
                     nhref = self.anchor_map[frag if frag else None]
                     if frag:
@@ -476,7 +477,7 @@ class FlowSplitter(object):
 
         if self.oeb.pages:
             for page in self.oeb.pages:
-                href, frag = urldefrag(page.href)
+                href, frag = urllib.parse.urldefrag(page.href)
                 if href == self.item.href:
                     nhref = self.anchor_map[frag if frag else None]
                     if frag:

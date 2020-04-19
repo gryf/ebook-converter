@@ -1,10 +1,16 @@
-import os, errno, sys
-from threading import Thread
+import errno
+import functools
+import os
+import sys
+import threading
 
 from ebook_converter import force_unicode
-from ebook_converter.constants import iswindows, get_windows_username, islinux, filesystem_encoding, ispy3
+from ebook_converter.constants import filesystem_encoding
+from ebook_converter.constants import get_windows_username
+from ebook_converter.constants import islinux
+from ebook_converter.constants import ispy3
+from ebook_converter.constants import iswindows
 from ebook_converter.utils.filenames import ascii_filename
-from ebook_converter.polyglot.functools import lru_cache
 
 
 __license__ = 'GPL v3'
@@ -24,7 +30,7 @@ def eintr_retry_call(func, *args, **kwargs):
             raise
 
 
-@lru_cache()
+@functools.lru_cache()
 def socket_address(which):
     if iswindows:
         ans = r'\\.\pipe\Calibre' + which
@@ -58,12 +64,12 @@ def viewer_socket_address():
     return socket_address('Viewer' if iswindows else 'viewer')
 
 
-class RC(Thread):
+class RC(threading.Thread):
 
     def __init__(self, print_error=True, socket_address=None):
         self.print_error = print_error
         self.socket_address = socket_address or gui_socket_address()
-        Thread.__init__(self)
+        threading.Thread.__init__(self)
         self.conn = None
         self.daemon = True
 

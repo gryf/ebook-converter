@@ -12,6 +12,7 @@ import os
 import re
 import sys
 import tempfile
+import urllib.parse
 from collections import deque
 from functools import partial
 from itertools import chain
@@ -37,7 +38,7 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import (
 )
 from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.polyglot.builtins import getcwd, itervalues, string_or_bytes, unicode_type
-from ebook_converter.polyglot.urllib import unquote, urlparse
+from ebook_converter.polyglot.urllib import unquote
 
 from PIL import Image as PILImage
 
@@ -51,7 +52,7 @@ def update_css(ncss, ocss):
 
 
 def munge_paths(basepath, url):
-    purl = urlparse(unquote(url),)
+    purl = urllib.parse.urlparse(unquote(url),)
     path, fragment = purl[2], purl[5]
     if path:
         path = path.replace('/', os.sep)
@@ -1471,7 +1472,8 @@ class HTMLConverter(object):
                 pass
             elif tagname == 'a' and self.link_levels >= 0:
                 if tag.has_attr('href') and not self.link_exclude.match(tag['href']):
-                    if urlparse(tag['href'])[0] not in ('', 'file'):
+                    if urllib.parse.urlparse(tag['href'])[0] not in ('',
+                                                                     'file'):
                         self.process_children(tag, tag_css, tag_pseudo_css)
                     else:
                         path = munge_paths(self.target_prefix, tag['href'])[0]
@@ -1513,7 +1515,7 @@ class HTMLConverter(object):
                         dropcaps = tag.get('class') in ('libprs500_dropcaps', ['libprs500_dropcaps'])
                         self.process_image(path, tag_css, width, height,
                                            dropcaps=dropcaps, rescale=True)
-                    elif not urlparse(tag['src'])[0]:
+                    elif not urllib.parse.urlparse(tag['src'])[0]:
                         self.log.warn('Could not find image: '+tag['src'])
                 else:
                     self.log.debug("Failed to process: %s"%unicode_type(tag))

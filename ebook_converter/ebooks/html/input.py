@@ -1,14 +1,17 @@
 """
 Input plugin for HTML or OPF ebooks.
 """
-import os, re, sys,  errno as gerrno
+import errno
+import os
+import re
+import sys
+import urllib.parse
 
 from ebook_converter.ebooks.oeb.base import urlunquote
 from ebook_converter.ebooks.chardet import detect_xml_encoding
 from ebook_converter.constants import iswindows
 from ebook_converter import unicode_path, as_unicode, replace_entities
-from ebook_converter.polyglot.builtins import is_py3, unicode_type
-from ebook_converter.polyglot.urllib import urlparse, urlunparse
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -29,7 +32,7 @@ class Link(object):
         if iswindows and path.startswith('/'):
             path = path[1:]
             isabs = True
-        path = urlunparse(('', '', path, url.params, url.query, ''))
+        path = urllib.parse.urlunparse(('', '', path, url.params, url.query, ''))
         path = urlunquote(path)
         if isabs or os.path.isabs(path):
             return path
@@ -43,7 +46,7 @@ class Link(object):
         '''
         assert isinstance(url, unicode_type) and isinstance(base, unicode_type)
         self.url         = url
-        self.parsed_url  = urlparse(self.url)
+        self.parsed_url  = urllib.parse.urlparse(self.url)
         self.is_local    = self.parsed_url.scheme in ('', 'file')
         self.is_internal = self.is_local and not bool(self.parsed_url.path)
         self.path        = None
@@ -62,16 +65,13 @@ class Link(object):
     def __str__(self):
         return 'Link: %s --> %s'%(self.url, self.path)
 
-    if not is_py3:
-        __unicode__ = __str__
-
 
 class IgnoreFile(Exception):
 
-    def __init__(self, msg, errno):
+    def __init__(self, msg, err_no):
         Exception.__init__(self, msg)
-        self.doesnt_exist = errno == gerrno.ENOENT
-        self.errno = errno
+        self.errno = err_no
+        self.doesnt_exist = err_no == errno.ENOENT
 
 
 class HTMLFile(object):

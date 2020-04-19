@@ -1,9 +1,10 @@
-import posixpath, re
-from uuid import uuid4
+import posixpath
+import re
+import urllib.parse
+import uuid
 
 from ebook_converter.utils.filenames import ascii_text
 from ebook_converter.polyglot.builtins import unicode_type
-from ebook_converter.polyglot.urllib import urlparse
 
 
 __license__ = 'GPL v3'
@@ -67,7 +68,7 @@ class LinksManager(object):
         self.namespace = namespace
         self.log = log
         self.document_relationships = document_relationships
-        self.top_anchor = unicode_type(uuid4().hex)
+        self.top_anchor = unicode_type(uuid.uuid4().hex)
         self.anchor_map = {}
         self.used_bookmark_names = set()
         self.bmark_id = 0
@@ -100,7 +101,7 @@ class LinksManager(object):
 
     def serialize_hyperlink(self, parent, link):
         item, url, tooltip = link
-        purl = urlparse(url)
+        purl = urllib.parse.urlparse(url)
         href = purl.path
 
         def make_link(parent, anchor=None, id=None, tooltip=None):
@@ -133,7 +134,7 @@ class LinksManager(object):
     def process_toc_node(self, toc, level=0):
         href = toc.href
         if href:
-            purl = urlparse(href)
+            purl = urllib.parse.urlparse(href)
             href = purl.path
             if href in self.document_hrefs:
                 key = (href, purl.fragment or self.top_anchor)

@@ -1,7 +1,8 @@
+import collections
+import io
 import re
 import unicodedata
-from collections import defaultdict
-from io import BytesIO
+import urllib.parse
 
 from ebook_converter.ebooks.mobi.mobiml import MBP_NS
 from ebook_converter.ebooks.mobi.utils import is_guide_ref_start
@@ -9,7 +10,6 @@ from ebook_converter.ebooks.oeb.base import (
     OEB_DOCS, XHTML, XHTML_NS, XML_NS, namespace, prefixname, urlnormalize
 )
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
-from ebook_converter.polyglot.urllib import urldefrag
 
 
 __license__ = 'GPL v3'
@@ -17,12 +17,12 @@ __copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
 
-class Buf(BytesIO):
+class Buf(io.BytesIO):
 
     def write(self, x):
         if isinstance(x, unicode_type):
             x = x.encode('utf-8')
-        BytesIO.write(self, x)
+        io.BytesIO.write(self, x)
 
 
 class Serializer(object):
@@ -63,7 +63,7 @@ class Serializer(object):
         # Mapping of hrefs (urlnormalized) to a list of offsets into the buffer
         # where filepos="..." elements are written corresponding to links that
         # point to the href. This is used at the end to fill in the correct values.
-        self.href_offsets = defaultdict(list)
+        self.href_offsets = collections.defaultdict(list)
 
         # List of offsets in the buffer of non linear items in the spine. These
         # become uncrossable breaks in the MOBI
@@ -81,7 +81,7 @@ class Serializer(object):
             item.is_article_start = item.is_article_end = False
 
         def spine_item(tocitem):
-            href = urldefrag(tocitem.href)[0]
+            href = urllib.parse.urldefrag(tocitem.href)[0]
             for item in self.oeb.spine:
                 if item.href == href:
                     return item
@@ -157,7 +157,7 @@ class Serializer(object):
         hrefs = self.oeb.manifest.hrefs
         buf.write(b'<guide>')
         for ref in self.oeb.guide.values():
-            path = urldefrag(ref.href)[0]
+            path = urllib.parse.urldefrag(ref.href)[0]
             if path not in hrefs or hrefs[path].media_type not in OEB_DOCS:
                 continue
 
@@ -188,7 +188,7 @@ class Serializer(object):
         '''
         hrefs = self.oeb.manifest.hrefs
         try:
-            path, frag = urldefrag(urlnormalize(href))
+            path, frag = urllib.parse.urldefrag(urlnormalize(href))
         except ValueError:
             # Unparseable URL
             return False
@@ -382,7 +382,7 @@ class Serializer(object):
             if href not in id_offsets:
                 self.logger.warn('Hyperlink target %r not found' % href)
                 # Link to the top of the document, better than just ignoring
-                href, _ = urldefrag(href)
+                href, _ = urllib.parse.urldefrag(href)
             if href in self.id_offsets:
                 ioff = self.id_offsets[href]
                 if is_start:

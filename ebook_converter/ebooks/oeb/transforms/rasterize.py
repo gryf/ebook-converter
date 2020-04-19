@@ -1,7 +1,9 @@
 """
 SVG rasterization transform.
 """
-import os, re
+import os
+import re
+import urllib.parse
 
 # from PyQt5.Qt import (
     # Qt, QByteArray, QBuffer, QIODevice, QColor, QImage, QPainter, QSvgRenderer)
@@ -14,7 +16,6 @@ from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils.imghdr import what
 from ebook_converter.polyglot.builtins import unicode_type
-from ebook_converter.polyglot.urllib import urldefrag
 
 
 __license__ = 'GPL v3'
@@ -114,7 +115,7 @@ class SVGRasterizer(object):
         hrefs = self.oeb.manifest.hrefs
         for elem in xpath(svg, '//svg:*[@xl:href]'):
             href = urlnormalize(elem.attrib[XLINK('href')])
-            path = urldefrag(href)[0]
+            path = urllib.parse.urldefrag(href)[0]
             if not path:
                 continue
             abshref = item.abshref(path)

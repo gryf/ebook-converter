@@ -1,12 +1,17 @@
-import os, re, shutil
-from os.path import dirname, abspath, relpath as _relpath, exists, basename
+import os
 import pkg_resources
+import re
+import shutil
 
-from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
+from lxml import etree
+
 from ebook_converter import CurrentDir
-from ebook_converter.ptempfile import PersistentTemporaryDirectory
+from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
+from ebook_converter.ebooks.oeb.base import element
 from ebook_converter.polyglot.builtins import unicode_type
-
+from ebook_converter.polyglot.urllib import unquote
+from ebook_converter.ptempfile import PersistentTemporaryDirectory
+from ebook_converter.utils.cleantext import clean_xml_chars
 
 __license__ = 'GPL 3'
 __copyright__ = '2010, Fabian Grassl <fg@jusmeum.de>'
@@ -14,7 +19,7 @@ __docformat__ = 'restructuredtext en'
 
 
 def relpath(*args):
-    return _relpath(*args).replace(os.sep, '/')
+    return os.path.relpath(*args).replace(os.sep, '/')
 
 
 class HTMLOutput(OutputFormatPlugin):
@@ -47,11 +52,7 @@ class HTMLOutput(OutputFormatPlugin):
         '''
         Generate table of contents
         '''
-        from lxml import etree
-        from ebook_converter.polyglot.urllib import unquote
 
-        from ebook_converter.ebooks.oeb.base import element
-        from ebook_converter.utils.cleantext import clean_xml_chars
         with CurrentDir(output_dir):
             def build_node(current_node, parent=None):
                 if parent is None:
@@ -60,7 +61,8 @@ class HTMLOutput(OutputFormatPlugin):
                     parent = element(parent, ('ul'))
                 for node in current_node.nodes:
                     point = element(parent, 'li')
-                    href = relpath(abspath(unquote(node.href)), dirname(ref_url))
+                    href = relpath(os.path.abspath(unquote(node.href)),
+                                   os.path.dirname(ref_url))
                     if isinstance(href, bytes):
                         href = href.decode('utf-8')
                     link = element(point, 'a', href=clean_xml_chars(href))
@@ -131,10 +133,10 @@ class HTMLOutput(OutputFormatPlugin):
 
         tempdir = os.path.realpath(PersistentTemporaryDirectory())
         output_file = os.path.join(tempdir,
-                basename(re.sub(r'\.zip', '', output_path)+'.html'))
+                os.path.basename(re.sub(r'\.zip', '', output_path)+'.html'))
         output_dir = re.sub(r'\.html', '', output_file)+'_files'
 
-        if not exists(output_dir):
+        if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
         css_path = output_dir+os.sep+'calibreHtmlOutBasicCss.css'
@@ -145,9 +147,10 @@ class HTMLOutput(OutputFormatPlugin):
             html_toc = self.generate_html_toc(oeb_book, output_file, output_dir)
             templite = Templite(template_html_index_data)
             nextLink = oeb_book.spine[0].href
-            nextLink = relpath(output_dir+os.sep+nextLink, dirname(output_file))
-            cssLink = relpath(abspath(css_path), dirname(output_file))
-            tocUrl = relpath(output_file, dirname(output_file))
+            nextLink = relpath(output_dir+os.sep+nextLink,
+                               os.path.dirname(output_file))
+            cssLink = relpath(os.path.abspath(css_path), os.path.dirname(output_file))
+            tocUrl = relpath(output_file, os.path.dirname(output_file))
             t = templite.render(has_toc=bool(oeb_book.toc.count()),
                     toc=html_toc, meta=meta, nextLink=nextLink,
                     tocUrl=tocUrl, cssLink=cssLink,
@@ -158,9 +161,9 @@ class HTMLOutput(OutputFormatPlugin):
 
         with CurrentDir(output_dir):
             for item in oeb_book.manifest:
-                path = abspath(unquote(item.href))
-                dir = dirname(path)
-                if not exists(dir):
+                path = os.path.abspath(unquote(item.href))
+                dir = os.path.dirname(path)
+                if not os.path.exists(dir):
                     os.makedirs(dir)
                 if item.spine_position is not None:
                     with open(path, 'wb') as f:
@@ -171,8 +174,8 @@ class HTMLOutput(OutputFormatPlugin):
                     item.unload_data_from_memory(memory=path)
 
             for item in oeb_book.spine:
-                path = abspath(unquote(item.href))
-                dir = dirname(path)
+                path = os.path.abspath(unquote(item.href))
+                dir = os.path.dirname(path)
                 root = item.data.getroottree()
 
                 # get & clean HTML <HEAD>-data
@@ -191,18 +194,18 @@ class HTMLOutput(OutputFormatPlugin):
                 # generate link to next page
                 if item.spine_position+1 < len(oeb_book.spine):
                     nextLink = oeb_book.spine[item.spine_position+1].href
-                    nextLink = relpath(abspath(nextLink), dir)
+                    nextLink = relpath(os.path.abspath(nextLink), dir)
                 else:
                     nextLink = None
 
                 # generate link to previous page
                 if item.spine_position > 0:
                     prevLink = oeb_book.spine[item.spine_position-1].href
-                    prevLink = relpath(abspath(prevLink), dir)
+                    prevLink = relpath(os.path.abspath(prevLink), dir)
                 else:
                     prevLink = None
 
-                cssLink = relpath(abspath(css_path), dir)
+                cssLink = relpath(os.path.abspath(css_path), dir)
                 tocUrl = relpath(output_file, dir)
                 firstContentPageLink = oeb_book.spine[0].href
 
@@ -222,8 +225,8 @@ class HTMLOutput(OutputFormatPlugin):
                 item.unload_data_from_memory(memory=path)
 
         zfile = zipfile.ZipFile(output_path, "w")
-        zfile.add_dir(output_dir, basename(output_dir))
-        zfile.write(output_file, basename(output_file), zipfile.ZIP_DEFLATED)
+        zfile.add_dir(output_dir, os.path.basename(output_dir))
+        zfile.write(output_file, os.path.basename(output_file), zipfile.ZIP_DEFLATED)
 
         if opts.extract_to:
             if os.path.exists(opts.extract_to):

@@ -2,10 +2,11 @@ import sys, os, re
 from xml.sax.saxutils import escape
 from string import Formatter
 import pkg_resources
+import urllib.parse
 
 from ebook_converter import guess_type, strftime
 from ebook_converter.constants import iswindows
-from ebook_converter.ebooks.oeb.base import XPath, XHTML_NS, XHTML, xml2text, urldefrag, urlnormalize
+from ebook_converter.ebooks.oeb.base import XPath, XHTML_NS, XHTML, xml2text, urlnormalize
 from ebook_converter.library.comments import comments_to_html, markdown
 from ebook_converter.utils.date import is_date_undefined, as_local_time
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
@@ -73,7 +74,7 @@ class RemoveFirstImage(Base):
             self.log.warn('Could not find first image to remove')
         if deleted_item is not None:
             for item in list(self.oeb.toc):
-                href = urldefrag(item.href)[0]
+                href = urllib.parse.urldefrag(item.href)[0]
                 if href == deleted_item.href:
                     self.oeb.toc.remove(item)
             self.oeb.guide.remove_by_href(deleted_item.href)

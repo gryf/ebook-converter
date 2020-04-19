@@ -2,13 +2,13 @@ import codecs, shutil, os, posixpath
 from ebook_converter.polyglot.builtins import iteritems, itervalues
 from functools import partial
 from collections import Counter, defaultdict
+import urllib.parse
 
 from ebook_converter import sanitize_file_name
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
 from ebook_converter.ebooks.oeb.base import css_text
 from ebook_converter.ebooks.oeb.polish.css import iter_declarations, remove_property_value
 from ebook_converter.ebooks.oeb.polish.utils import extract
-from ebook_converter.polyglot.urllib import urlparse, urlunparse
 
 
 __license__ = 'GPL v3'
@@ -38,7 +38,7 @@ class LinkReplacer(object):
         nname = self.link_map.get(name, None)
         if not nname:
             return url
-        purl = urlparse(url)
+        purl = urllib.parse.urlparse(url)
         href = self.container.name_to_href(nname, self.base)
         if purl.fragment:
             nfrag = self.frag_map(name, purl.fragment)
@@ -68,12 +68,12 @@ class IdReplacer(object):
         id_map = self.id_map.get(name)
         if id_map is None:
             return url
-        purl = urlparse(url)
+        purl = urllib.parse.urlparse(url)
         nfrag = id_map.get(purl.fragment)
         if nfrag is None:
             return url
         purl = purl._replace(fragment=nfrag)
-        href = urlunparse(purl)
+        href = urllib.parse.urlunparse(purl)
         if href != url:
             self.replaced = True
         return href
@@ -89,7 +89,7 @@ class LinkRebaser(object):
     def __call__(self, url):
         if url and url.startswith('#'):
             return url
-        purl = urlparse(url)
+        purl = urllib.parse.urlparse(url)
         frag = purl.fragment
         name = self.container.href_to_name(url, self.old_name)
         if not name:
