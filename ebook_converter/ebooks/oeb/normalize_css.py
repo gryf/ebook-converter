@@ -5,7 +5,7 @@ from css_parser.css import PropertyValue
 from css_parser import profile as cssprofiles, CSSParser
 from ebook_converter.tinycss.fonts3 import parse_font, serialize_font_family
 from ebook_converter.ebooks.oeb.base import css_text
-from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, unicode_type, zip
+from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, unicode_type
 
 
 __license__ = 'GPL v3'

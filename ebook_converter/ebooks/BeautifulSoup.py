@@ -1,24 +1,20 @@
 # License: GPLv3 Copyright: 2019, Kovid Goyal <kovid at kovidgoyal.net>
 import bs4
-from bs4 import (  # noqa
-    CData, Comment, Declaration, NavigableString, ProcessingInstruction,
-    SoupStrainer, Tag, __version__
-)
+from html5_parser import soup as html5_soup
 
-from ebook_converter.polyglot.builtins import unicode_type
+from ebook_converter.ebooks import chardet
+from ebook_converter.utils import cleantext
 
 
 def parse_html(markup):
-    from ebook_converter.ebooks.chardet import strip_encoding_declarations, xml_to_unicode, substitute_entites
-    from ebook_converter.utils.cleantext import clean_xml_chars
-    if isinstance(markup, unicode_type):
-        markup = strip_encoding_declarations(markup)
-        markup = substitute_entites(markup)
+    if isinstance(markup, str):
+        markup = chardet.strip_encoding_declarations(markup)
+        markup = chardet.substitute_entites(markup)
     else:
-        markup = xml_to_unicode(markup, strip_encoding_pats=True, resolve_entities=True)[0]
-    markup = clean_xml_chars(markup)
-    from html5_parser.soup import parse
-    return parse(markup, return_root=False)
+        markup = chardet.xml_to_unicode(markup, strip_encoding_pats=True,
+                                        resolve_entities=True)[0]
+    markup = cleantext.clean_xml_chars(markup)
+    return html5_soup.parse(markup, return_root=False)
 
 
 def prettify(soup):
@@ -28,9 +24,9 @@ def prettify(soup):
     return ans
 
 
-def BeautifulSoup(markup='', *a, **kw):
+def html5_parser(markup='', *a, **kw):
     return parse_html(markup)
 
 
-def BeautifulStoneSoup(markup='', *a, **kw):
+def beautiful_soup_parser(markup='', *a, **kw):
     return bs4.BeautifulSoup(markup, 'xml')

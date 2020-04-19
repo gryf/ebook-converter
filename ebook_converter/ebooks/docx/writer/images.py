@@ -2,7 +2,7 @@ import os
 import posixpath
 from collections import namedtuple
 from functools import partial
-from ebook_converter.polyglot.builtins import iteritems, itervalues, map, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
 
 from lxml import etree
 

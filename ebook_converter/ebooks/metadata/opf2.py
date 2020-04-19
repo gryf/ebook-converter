@@ -17,7 +17,7 @@ from ebook_converter import prints, guess_type
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
 from ebook_converter.utils.config import tweaks
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, getcwd, map
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, getcwd
 from ebook_converter.polyglot.urllib import unquote, urlparse
 
 

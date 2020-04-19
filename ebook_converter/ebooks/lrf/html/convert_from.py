@@ -17,15 +17,15 @@ from functools import partial
 from itertools import chain
 from math import ceil, floor
 
+import bs4
+
 from ebook_converter import (
     __appname__, entity_to_unicode, fit_image, force_unicode, preferred_encoding
 )
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.devices.interface import DevicePlugin as Device
 from ebook_converter.ebooks import ConversionError
-from ebook_converter.ebooks.BeautifulSoup import (
-    BeautifulSoup, Comment, Declaration, NavigableString, ProcessingInstruction, Tag
-)
+from ebook_converter.ebooks.BeautifulSoup import html5_parser
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ebooks.lrf import Book
 from ebook_converter.ebooks.lrf.html.color_map import lrs_color
@@ -86,7 +86,7 @@ def tag_regex(tagname):
 class HTMLConverter(object):
     SELECTOR_PAT   = re.compile(r"([A-Za-z0-9\-\_\:\.]+[A-Za-z0-9\-\_\:\.\s\,]*)\s*\{([^\}]*)\}")
     PAGE_BREAK_PAT = re.compile(r'page-break-(?:after|before)\s*:\s*(\w+)', re.IGNORECASE)
-    IGNORED_TAGS   = (Comment, Declaration, ProcessingInstruction)
+    IGNORED_TAGS   = (bs4.Comment, bs4.Declaration, bs4.ProcessingInstruction)
 
     MARKUP_MASSAGE   = [
                         # Close <a /> tags
@@ -337,7 +337,7 @@ class HTMLConverter(object):
             raw = xml_to_unicode(raw, replace_entities=True)[0]
         for pat, repl in nmassage:
             raw = pat.sub(repl, raw)
-        soup = BeautifulSoup(raw)
+        soup = html5_parser(raw)
         if not self.baen and self.is_baen(soup):
             self.baen = True
             self.log.info(_('\tBaen file detected. Re-parsing...'))
@@ -585,9 +585,9 @@ class HTMLConverter(object):
                 break
             if isinstance(c, HTMLConverter.IGNORED_TAGS):
                 continue
-            if isinstance(c, NavigableString):
+            if isinstance(c, bs4.NavigableString):
                 text += unicode_type(c)
-            elif isinstance(c, Tag):
+            elif isinstance(c, bs4.Tag):
                 if c.name.lower() == 'img' and c.has_attr('alt'):
                     alt_text += c['alt']
                     continue
@@ -720,9 +720,9 @@ class HTMLConverter(object):
         for c in copy.copy(ptag.contents):
             if isinstance(c, HTMLConverter.IGNORED_TAGS):
                 continue
-            elif isinstance(c, Tag):
+            elif isinstance(c, bs4.Tag):
                 self.parse_tag(c, pcss)
-            elif isinstance(c, NavigableString):
+            elif isinstance(c, bs4.NavigableString):
                 self.add_text(c, pcss, ppcss)
         if not self.in_table:
             try:
@@ -1551,11 +1551,11 @@ class HTMLConverter(object):
 
                 if tag.contents:
                     c = tag.contents[0]
-                    if isinstance(c, NavigableString):
+                    if isinstance(c, bs4.NavigableString):
                         c = unicode_type(c).replace('\r\n', '\n').replace('\r', '\n')
                         if c.startswith('\n'):
                             c = c[1:]
-                            tag.contents[0] = NavigableString(c)
+                            tag.contents[0] = bs4.NavigableString(c)
                             tag.contents[0].setup(tag)
                 self.process_children(tag, tag_css, tag_pseudo_css)
                 self.end_current_block()
@@ -1823,7 +1823,7 @@ def process_file(path, options, logger):
     for prop in ('author', 'author_sort', 'title', 'title_sort', 'publisher', 'freetext'):
         val = getattr(options, prop, None)
         if val and not isinstance(val, unicode_type):
-            soup = BeautifulSoup(val)
+            soup = html5_parser(val)
             setattr(options, prop, unicode_type(soup))
 
     title = (options.title, options.title_sort)

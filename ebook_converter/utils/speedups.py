@@ -1,6 +1,6 @@
 import os
 
-from ebook_converter.polyglot.builtins import range, unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 class ReadOnlyFileBuffer(object):

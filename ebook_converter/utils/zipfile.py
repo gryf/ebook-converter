@@ -10,7 +10,7 @@ from tempfile import SpooledTemporaryFile
 from ebook_converter import sanitize_file_name
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.ebooks.chardet import detect
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, getcwd, map, as_bytes
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, getcwd, as_bytes
 
 try:
     import zlib  # We may need its compression method

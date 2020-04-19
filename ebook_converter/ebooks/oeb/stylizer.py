@@ -15,7 +15,7 @@ from ebook_converter.ebooks import unit_convert
 from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS, CSS_MIME, OEB_STYLES, xpath, urlnormalize
 from ebook_converter.ebooks.oeb.normalize_css import DEFAULTS, normalizers
 from ebook_converter.css_selectors import Select, SelectorError, INAPPROPRIATE_PSEUDO_CLASSES
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, filter
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 from ebook_converter.tinycss.media3 import CSSMedia3Parser
 
 

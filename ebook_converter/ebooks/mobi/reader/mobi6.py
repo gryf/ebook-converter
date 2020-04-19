@@ -16,7 +16,7 @@ from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.reader.headers import BookHeader
 from ebook_converter.utils.img import save_cover_data_to, gif_data_to_png_data, AnimatedGIF
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, range, map
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 
 __license__ = 'GPL v3'

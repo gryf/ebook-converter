@@ -1,5 +1,5 @@
 import os
-from ebook_converter.polyglot.builtins import itervalues, range
+from ebook_converter.polyglot.builtins import itervalues
 
 
 __license__ = 'GPL v3'

@@ -6,7 +6,7 @@ from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont, NoGlyphs
 from ebook_converter.utils.fonts.sfnt.cff.dict_data import TopDict, PrivateDict
 from ebook_converter.utils.fonts.sfnt.cff.constants import (cff_standard_strings,
         STANDARD_CHARSETS)
-from ebook_converter.polyglot.builtins import iteritems, itervalues, range
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 __license__ = 'GPL v3'

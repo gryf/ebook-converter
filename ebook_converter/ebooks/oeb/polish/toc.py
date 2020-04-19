@@ -15,7 +15,7 @@ from ebook_converter.ebooks.oeb.polish.utils import guess_type, extract
 from ebook_converter.ebooks.oeb.polish.opf import set_guide_item, get_book_language
 from ebook_converter.ebooks.oeb.polish.pretty import pretty_html_tree
 from ebook_converter.utils.localization import get_lang, canonicalize_lang, lang_as_iso639_1
-from ebook_converter.polyglot.builtins import iteritems, map, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 from ebook_converter.polyglot.urllib import urlparse
 
 

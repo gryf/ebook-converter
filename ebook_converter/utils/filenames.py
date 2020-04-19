@@ -13,7 +13,7 @@ from ebook_converter.constants import (
     filesystem_encoding, iswindows, plugins, preferred_encoding, isosx, ispy3
 )
 from ebook_converter.utils.localization import get_udc
-from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, range
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
 
 
 def ascii_text(orig):

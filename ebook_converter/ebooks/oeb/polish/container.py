@@ -48,7 +48,7 @@ from ebook_converter.utils.ipc.simple_worker import WorkerError, fork_job
 from ebook_converter.utils.logging import default_log
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.zipfile import ZipFile
-from ebook_converter.polyglot.builtins import iteritems, map, unicode_type, zip
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 from ebook_converter.polyglot.urllib import urlparse
 
 exists, join, relpath = os.path.exists, os.path.join, os.path.relpath

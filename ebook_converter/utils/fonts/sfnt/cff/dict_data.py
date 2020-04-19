@@ -1,5 +1,5 @@
 from struct import pack, unpack_from
-from ebook_converter.polyglot.builtins import range, unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'

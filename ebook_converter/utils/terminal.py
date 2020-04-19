@@ -7,7 +7,7 @@ except ValueError:
     iswindows = False
 
 from ebook_converter.constants import ispy3
-from ebook_converter.polyglot.builtins import iteritems, range, zip, native_string_type
+from ebook_converter.polyglot.builtins import iteritems, native_string_type
 
 
 __license__ = 'GPL v3'

@@ -16,7 +16,7 @@ from ebook_converter.ebooks.oeb.base import (XHTML, XHTML_NS, CSS_MIME, OEB_STYL
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils.filenames import ascii_filename, ascii_text
 from ebook_converter.utils.icu import numeric_sort_key
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes, map
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes
 
 
 __license__ = 'GPL v3'

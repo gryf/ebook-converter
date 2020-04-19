@@ -2,7 +2,6 @@ import io
 from struct import pack
 
 from ebook_converter.ebooks.compression import cPalmdoc
-from ebook_converter.polyglot.builtins import range
 
 
 __license__ = 'GPL v3'

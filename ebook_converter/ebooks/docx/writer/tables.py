@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from ebook_converter.ebooks.docx.writer.utils import convert_color
 from ebook_converter.ebooks.docx.writer.styles import read_css_block_borders as rcbb, border_edges
-from ebook_converter.polyglot.builtins import iteritems, range, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 
 __license__ = 'GPL v3'

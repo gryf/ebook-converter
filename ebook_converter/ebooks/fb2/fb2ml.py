@@ -12,7 +12,7 @@ from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.ebooks.oeb.base import urlnormalize
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, range, filter
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
 from ebook_converter.polyglot.binary import as_base64_unicode
 from ebook_converter.polyglot.urllib import urlparse
 

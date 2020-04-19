@@ -2,7 +2,7 @@ from lxml.html.builder import TABLE, TR, TD
 
 from ebook_converter.ebooks.docx.block_styles import inherit, read_shd as rs, read_border, binary_property, border_props, ParagraphStyle, border_to_css
 from ebook_converter.ebooks.docx.char_styles import RunStyle
-from ebook_converter.polyglot.builtins import filter, iteritems, itervalues, range, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
 
 
 __license__ = 'GPL v3'

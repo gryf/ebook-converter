@@ -1,5 +1,5 @@
 import textwrap
-from ebook_converter.polyglot.builtins import iteritems, map
+from ebook_converter.polyglot.builtins import iteritems
 
 # from lxml.etree import Element
 

@@ -7,7 +7,7 @@ from ebook_converter.customize.conversion import (InputFormatPlugin,
 from ebook_converter.utils.localization import get_lang
 from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import unicode_type, zip, getcwd, as_unicode
+from ebook_converter.polyglot.builtins import unicode_type, getcwd, as_unicode
 
 
 __license__ = 'GPL v3'

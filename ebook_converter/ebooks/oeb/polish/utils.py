@@ -2,7 +2,6 @@ import re, os
 from bisect import bisect
 
 from ebook_converter import guess_type as _guess_type, replace_entities
-from ebook_converter.polyglot.builtins import filter
 
 
 __license__ = 'GPL v3'

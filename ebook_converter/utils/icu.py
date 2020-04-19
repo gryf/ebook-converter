@@ -5,7 +5,6 @@ import unicodedata
 # Setup code {{{
 from ebook_converter.constants import plugins
 from ebook_converter.polyglot.builtins import unicode_type, cmp
-from ebook_converter.polyglot.builtins import filter
 from ebook_converter.utils.config_base import tweaks
 
 

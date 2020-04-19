@@ -22,7 +22,7 @@ from ebook_converter.utils.localization import get_lang
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants import __appname__, __version__
 from ebook_converter import guess_type, xml_replace_entities
-from ebook_converter.polyglot.builtins import unicode_type, zip
+from ebook_converter.polyglot.builtins import unicode_type
 from ebook_converter.polyglot.urllib import unquote, urldefrag, urlparse
 
 

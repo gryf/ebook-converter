@@ -6,7 +6,6 @@ __docformat__ = 'restructuredtext en'
 import sys, os
 
 from ebook_converter import config_dir
-from ebook_converter.polyglot.builtins import builtins
 
 
 user_dir = os.path.join(config_dir, 'resources')

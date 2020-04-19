@@ -3,8 +3,6 @@ Code to manage ebook library
 """
 import os
 
-from ebook_converter.polyglot.builtins import range
-
 
 __license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'

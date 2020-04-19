@@ -5,7 +5,7 @@ from collections import OrderedDict, defaultdict
 
 from ebook_converter.ebooks.mobi.utils import (encint, encode_number_as_hex,
         encode_tbs, align_block, RECORD_SIZE, CNCX as CNCX_)
-from ebook_converter.polyglot.builtins import filter, iteritems, itervalues, map, range
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 __license__ = 'GPL v3'

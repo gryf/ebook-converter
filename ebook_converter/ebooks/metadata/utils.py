@@ -7,7 +7,6 @@ from ebook_converter.spell import parse_lang_code
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
-from ebook_converter.polyglot.builtins import filter, map
 
 
 OPFVersion = namedtuple('OPFVersion', 'major minor patch')

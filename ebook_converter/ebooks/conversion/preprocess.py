@@ -2,7 +2,7 @@ import functools, re, json
 from math import ceil
 
 from ebook_converter import entity_to_unicode, as_unicode
-from ebook_converter.polyglot.builtins import unicode_type, range
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'

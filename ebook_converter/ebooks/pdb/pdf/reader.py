@@ -3,7 +3,6 @@ Read content from palmdoc pdb file.
 """
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ptempfile import PersistentTemporaryFile
-from ebook_converter.polyglot.builtins import range
 
 
 __license__ = 'GPL v3'

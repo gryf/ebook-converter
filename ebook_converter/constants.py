@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # vim:fileencoding=utf-8
 # License: GPLv3 Copyright: 2015, Kovid Goyal <kovid at kovidgoyal.net>
-from ebook_converter.polyglot.builtins import map, unicode_type, environ_item, hasenv, getenv, as_unicode, native_string_type
+from ebook_converter.polyglot.builtins import unicode_type, environ_item, hasenv, getenv, as_unicode, native_string_type
 import sys, locale, codecs, os, importlib, collections
 
 __appname__   = 'calibre'

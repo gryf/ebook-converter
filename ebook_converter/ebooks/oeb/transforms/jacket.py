@@ -10,7 +10,7 @@ from ebook_converter.library.comments import comments_to_html, markdown
 from ebook_converter.utils.date import is_date_undefined, as_local_time
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
 from ebook_converter.ebooks.metadata import fmt_sidx, rating_to_stars
-from ebook_converter.polyglot.builtins import unicode_type, map
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'

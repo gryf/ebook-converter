@@ -8,7 +8,7 @@ from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 
 from ebook_converter.ebooks.conversion.preprocess import DocAnalysis
 from ebook_converter.utils.cleantext import clean_ascii_chars
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, map, range, long_type
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, long_type
 
 
 __license__ = 'GPL v3'

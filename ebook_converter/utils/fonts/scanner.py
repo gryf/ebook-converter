@@ -6,7 +6,7 @@ from ebook_converter import walk, prints, as_unicode
 from ebook_converter.constants import (config_dir, iswindows, isosx, plugins, DEBUG,
         isworker, filesystem_encoding)
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
-from ebook_converter.polyglot.builtins import itervalues, unicode_type, filter
+from ebook_converter.polyglot.builtins import itervalues, unicode_type
 
 
 __license__ = 'GPL v3'

@@ -3,7 +3,6 @@ from struct import unpack_from, pack, calcsize
 from ebook_converter.utils.fonts.sfnt import UnknownTable, DateTimeProperty, FixedProperty
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
 from ebook_converter.utils.fonts.sfnt.loca import read_array
-from ebook_converter.polyglot.builtins import zip
 
 
 __license__ = 'GPL v3'

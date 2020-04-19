@@ -10,7 +10,7 @@ from ebook_converter.ebooks.mobi.writer2 import (PALMDOC, UNCOMPRESSED)
 from ebook_converter.ebooks.mobi.utils import (encint, encode_trailing_data,
         align_block, detect_periodical, RECORD_SIZE, create_text_record)
 from ebook_converter.ebooks.mobi.writer2.indexer import Indexer
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, range
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 
 __license__ = 'GPL v3'

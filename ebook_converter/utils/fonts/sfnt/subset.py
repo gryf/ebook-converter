@@ -6,7 +6,7 @@ from functools import partial
 from ebook_converter.utils.icu import safe_chr, ord_string
 from ebook_converter.utils.fonts.sfnt.container import Sfnt
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont, NoGlyphs
-from ebook_converter.polyglot.builtins import unicode_type, range, iteritems, itervalues, map
+from ebook_converter.polyglot.builtins import unicode_type, iteritems, itervalues
 
 
 __license__ = 'GPL v3'

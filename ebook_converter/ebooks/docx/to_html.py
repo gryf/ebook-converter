@@ -21,7 +21,7 @@ from ebook_converter.ebooks.docx.fields import Fields
 from ebook_converter.ebooks.docx.settings import Settings
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
-from ebook_converter.polyglot.builtins import iteritems, itervalues, filter, getcwd, map, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, itervalues, getcwd, unicode_type
 
 
 __license__ = 'GPL v3'

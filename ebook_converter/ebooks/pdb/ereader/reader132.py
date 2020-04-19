@@ -11,7 +11,7 @@ from ebook_converter.ebooks import DRMError
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.ebooks.pdb.ereader import EreaderError
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
-from ebook_converter.polyglot.builtins import unicode_type, range
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'

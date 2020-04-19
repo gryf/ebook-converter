@@ -2,7 +2,7 @@ from struct import unpack_from, calcsize
 from collections import OrderedDict, namedtuple
 
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
-from ebook_converter.polyglot.builtins import range, iteritems
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'

@@ -2,7 +2,7 @@ import struct
 from io import BytesIO
 from collections import defaultdict
 
-from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, range, as_bytes
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, as_bytes
 
 
 __license__ = 'GPL v3'

@@ -5,7 +5,6 @@ darkninja and igorsk.
 import struct
 
 from ebook_converter.ebooks.mobi import MobiError
-from ebook_converter.polyglot.builtins import map
 
 
 __license__ = 'GPL v3'

@@ -3,7 +3,6 @@ from uuid import uuid4
 
 from ebook_converter.ebooks.oeb.base import OEB_STYLES
 from ebook_converter.ebooks.oeb.transforms.subset import find_font_face_rules
-from ebook_converter.polyglot.builtins import range
 
 
 __license__ = 'GPL v3'

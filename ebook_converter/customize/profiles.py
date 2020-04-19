@@ -1,5 +1,5 @@
 from ebook_converter.customize import Plugin as _Plugin
-from ebook_converter.polyglot.builtins import zip
+
 
 __license__ = 'GPL 3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'

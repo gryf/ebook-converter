@@ -6,7 +6,7 @@ from ebook_converter import xml_replace_entities, force_unicode
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
-from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, string_or_bytes, map
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, string_or_bytes
 
 
 __license__ = 'GPL v3'

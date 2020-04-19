@@ -4,7 +4,6 @@ from collections import OrderedDict
 from ebook_converter.utils.fonts.utils import read_bmp_prefix
 from ebook_converter.utils.fonts.sfnt import UnknownTable, max_power_of_two
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
-from ebook_converter.polyglot.builtins import range
 
 
 __license__ = 'GPL v3'

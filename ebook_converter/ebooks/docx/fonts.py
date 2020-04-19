@@ -6,7 +6,7 @@ from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.fonts.scanner import font_scanner, NoFonts
 from ebook_converter.utils.fonts.utils import panose_to_css_generic_family, is_truetype_font
 from ebook_converter.utils.icu import ord_string
-from ebook_converter.polyglot.builtins import codepoint_to_chr, iteritems, range
+from ebook_converter.polyglot.builtins import codepoint_to_chr, iteritems
 
 
 __license__ = 'GPL v3'

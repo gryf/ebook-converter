@@ -14,7 +14,7 @@ from ebook_converter.ebooks.epub import rules
 from ebook_converter.ebooks.oeb.base import (OEB_STYLES, XPNSMAP as NAMESPACES,
         urldefrag, rewrite_links, XHTML, urlnormalize)
 from ebook_converter.ebooks.oeb.polish.split import do_split
-from ebook_converter.polyglot.builtins import iteritems, range, map, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 from ebook_converter.polyglot.urllib import unquote
 from ebook_converter.css_selectors import Select, SelectorError
 

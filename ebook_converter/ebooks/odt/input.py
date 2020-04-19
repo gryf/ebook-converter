@@ -15,7 +15,7 @@ from odf.namespaces import TEXTNS as odTEXTNS
 from ebook_converter import CurrentDir, walk
 from ebook_converter.ebooks.oeb.base import _css_logger
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, filter, getcwd, as_bytes
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, getcwd, as_bytes
 
 
 __license__ = 'GPL v3'

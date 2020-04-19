@@ -2,7 +2,7 @@ import json
 import re
 from collections import defaultdict, namedtuple
 from functools import wraps
-from ebook_converter.polyglot.builtins import iteritems, map, filter
+from ebook_converter.polyglot.builtins import iteritems
 
 from lxml import etree
 

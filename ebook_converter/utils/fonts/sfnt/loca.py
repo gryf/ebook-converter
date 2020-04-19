@@ -3,7 +3,7 @@ from operator import itemgetter
 from itertools import repeat
 
 from ebook_converter.utils.fonts.sfnt import UnknownTable
-from ebook_converter.polyglot.builtins import iteritems, range
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'

@@ -13,7 +13,7 @@ from ebook_converter.utils.zipfile import ZipFile
 from ebook_converter import (extract, walk, isbytestring, filesystem_encoding,
         get_types_map)
 from ebook_converter.constants import __version__
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, map
+from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
 
 
 __license__ = 'GPL 3'

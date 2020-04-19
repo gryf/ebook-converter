@@ -8,7 +8,6 @@ from ebook_converter import prepare_string_for_xml
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.metadata import MetaInformation
 from ebook_converter.ebooks.txt.processor import opf_writer, HTML_TEMPLATE
-from ebook_converter.polyglot.builtins import range, map
 
 
 __license__ = 'GPL v3'

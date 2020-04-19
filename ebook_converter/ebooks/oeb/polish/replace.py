@@ -1,5 +1,5 @@
 import codecs, shutil, os, posixpath
-from ebook_converter.polyglot.builtins import iteritems, itervalues, map
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 from functools import partial
 from collections import Counter, defaultdict
 

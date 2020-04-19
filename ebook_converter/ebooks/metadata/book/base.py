@@ -7,7 +7,7 @@ from ebook_converter.ebooks.metadata.book import (SC_COPYABLE_FIELDS,
         TOP_LEVEL_IDENTIFIERS, ALL_METADATA_FIELDS)
 from ebook_converter.library.field_metadata import FieldMetadata
 from ebook_converter.utils.icu import sort_key
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, filter, map
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 
 __license__ = 'GPL v3'

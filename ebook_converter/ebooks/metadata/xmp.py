@@ -12,7 +12,7 @@ from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.ebooks.metadata.opf2 import dump_dict
 from ebook_converter.utils.date import parse_date, isoformat, now
 from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
-from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, filter
+from ebook_converter.polyglot.builtins import iteritems, string_or_bytes
 
 
 __license__ = 'GPL v3'

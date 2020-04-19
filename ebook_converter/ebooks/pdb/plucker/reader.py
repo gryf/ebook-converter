@@ -9,7 +9,7 @@ from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.compression.palmdoc import decompress_doc
 from ebook_converter.utils.imghdr import identify
 from ebook_converter.utils.img import save_cover_data_to, Canvas, image_from_data
-from ebook_converter.polyglot.builtins import codepoint_to_chr, range
+from ebook_converter.polyglot.builtins import codepoint_to_chr
 
 
 __license__ = 'GPL v3'

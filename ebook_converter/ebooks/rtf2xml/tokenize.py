@@ -15,7 +15,7 @@ import os, re
 from ebook_converter.ebooks.rtf2xml import copy
 from ebook_converter.utils.mreplace import MReplace
 from ebook_converter.ptempfile import better_mktemp
-from ebook_converter.polyglot.builtins import codepoint_to_chr, range, filter, map
+from ebook_converter.polyglot.builtins import codepoint_to_chr
 from . import open_for_read, open_for_write
 
 

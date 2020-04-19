@@ -2,7 +2,7 @@ import os, glob, re, textwrap
 import pkg_resources
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
-from ebook_converter.polyglot.builtins import iteritems, filter, getcwd, as_bytes
+from ebook_converter.polyglot.builtins import iteritems, getcwd, as_bytes
 
 __license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'

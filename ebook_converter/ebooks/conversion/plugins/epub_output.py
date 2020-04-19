@@ -4,7 +4,7 @@ from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter import CurrentDir
-from ebook_converter.polyglot.builtins import unicode_type, filter, map, zip, range, as_bytes
+from ebook_converter.polyglot.builtins import unicode_type, as_bytes
 
 
 __license__ = 'GPL v3'

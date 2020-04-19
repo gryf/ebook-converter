@@ -5,7 +5,7 @@ from lxml.etree import tostring
 
 from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.oeb.polish.toc import elem_to_toc_text
-from ebook_converter.polyglot.builtins import iteritems, range
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'

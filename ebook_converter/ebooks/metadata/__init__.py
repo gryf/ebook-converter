@@ -6,7 +6,7 @@ import os, sys, re
 
 from ebook_converter import relpath, guess_type, prints, force_unicode
 from ebook_converter.utils.config_base import tweaks
-from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, range, map, zip, getcwd, iteritems, itervalues, as_unicode
+from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, getcwd, iteritems, itervalues, as_unicode
 from ebook_converter.polyglot.urllib import quote, unquote, urlparse
 
 

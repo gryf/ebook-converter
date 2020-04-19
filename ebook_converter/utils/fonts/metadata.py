@@ -3,7 +3,7 @@ from struct import calcsize, unpack, unpack_from
 from collections import namedtuple
 
 from ebook_converter.utils.fonts.utils import get_font_names2, get_font_characteristics
-from ebook_converter.polyglot.builtins import range, unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'

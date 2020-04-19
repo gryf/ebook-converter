@@ -3,7 +3,7 @@ from contextlib import closing
 
 from ebook_converter.customize import FileTypePlugin
 from ebook_converter.utils.localization import canonicalize_lang
-from ebook_converter.polyglot.builtins import filter, unicode_type
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'

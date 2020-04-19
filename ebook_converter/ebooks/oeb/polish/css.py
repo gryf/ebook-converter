@@ -10,7 +10,7 @@ from ebook_converter.ebooks.oeb.normalize_css import normalize_filter_css, norma
 from ebook_converter.ebooks.oeb.polish.pretty import pretty_script_or_style, pretty_xml_tree, serialize
 from ebook_converter.utils.icu import numeric_sort_key
 from ebook_converter.css_selectors import Select, SelectorError
-from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, filter
+from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
 
 
 __license__ = 'GPL v3'

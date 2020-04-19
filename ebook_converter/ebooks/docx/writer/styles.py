@@ -7,7 +7,7 @@ from lxml import etree
 from ebook_converter.ebooks import parse_css_length
 from ebook_converter.ebooks.docx.writer.utils import convert_color, int_or_zero
 from ebook_converter.utils.localization import lang_as_iso639_1
-from ebook_converter.polyglot.builtins import iteritems, filter, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 from ebook_converter.tinycss.css21 import CSS21Parser
 
 

@@ -11,7 +11,7 @@ from ebook_converter.ebooks.pdf.render.common import PAPER_SIZES
 from ebook_converter.utils.date import utcnow
 from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
 from ebook_converter.utils.zipfile import ZipFile
-from ebook_converter.polyglot.builtins import iteritems, map, unicode_type, native_string_type
+from ebook_converter.polyglot.builtins import iteritems, unicode_type, native_string_type
 
 
 __license__ = 'GPL v3'

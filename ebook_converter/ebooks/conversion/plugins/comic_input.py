@@ -6,7 +6,7 @@ import shutil, textwrap, codecs, os
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter import CurrentDir
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
-from ebook_converter.polyglot.builtins import getcwd, map
+from ebook_converter.polyglot.builtins import getcwd
 
 
 __license__ = 'GPL v3'

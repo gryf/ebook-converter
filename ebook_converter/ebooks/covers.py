@@ -2,7 +2,7 @@ import re, random, unicodedata, numbers
 from collections import namedtuple
 from contextlib import contextmanager
 from math import ceil, sqrt, cos, sin, atan2
-from ebook_converter.polyglot.builtins import iteritems, itervalues, map, zip, string_or_bytes
+from ebook_converter.polyglot.builtins import iteritems, itervalues, string_or_bytes
 from itertools import chain
 
 from PyQt5.Qt import (

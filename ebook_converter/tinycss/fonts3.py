@@ -1,6 +1,5 @@
 import re
 
-from ebook_converter.polyglot.builtins import map
 from ebook_converter.tinycss.css21 import CSS21Parser, ParseError
 from ebook_converter.tinycss.tokenizer import tokenize_grouped
 

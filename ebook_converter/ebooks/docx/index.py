@@ -3,7 +3,7 @@ from operator import itemgetter
 from lxml import etree
 
 from ebook_converter.utils.icu import partition_by_first_letter, sort_key
-from ebook_converter.polyglot.builtins import iteritems, filter
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'

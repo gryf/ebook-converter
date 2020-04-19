@@ -1,5 +1,5 @@
 import copy, os, re
-from ebook_converter.polyglot.builtins import map, string_or_bytes, range
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 from ebook_converter.ebooks.oeb.base import barename, XPNSMAP, XPath, OPF, XHTML, OEB_DOCS
 from ebook_converter.ebooks.oeb.polish.errors import MalformedMarkup

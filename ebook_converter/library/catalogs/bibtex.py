@@ -6,7 +6,7 @@ from ebook_converter.customize import CatalogPlugin
 from ebook_converter.library.catalogs import FIELDS, TEMPLATE_ALLOWED_FIELDS
 from ebook_converter.customize.conversion import DummyReporter
 from ebook_converter.ebooks.metadata import format_isbn
-from ebook_converter.polyglot.builtins import filter, string_or_bytes, unicode_type
+from ebook_converter.polyglot.builtins import string_or_bytes, unicode_type
 
 
 __license__ = 'GPL v3'

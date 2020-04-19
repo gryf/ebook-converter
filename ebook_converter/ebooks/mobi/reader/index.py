@@ -3,7 +3,7 @@ from collections import OrderedDict, namedtuple
 
 from ebook_converter.ebooks.mobi.utils import (decint, count_set_bits,
         decode_string)
-from ebook_converter.polyglot.builtins import iteritems, range, zip
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'

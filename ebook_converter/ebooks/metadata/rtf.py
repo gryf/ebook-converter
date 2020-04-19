@@ -6,7 +6,7 @@ import re
 
 from ebook_converter import force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation
-from ebook_converter.polyglot.builtins import codepoint_to_chr, string_or_bytes, unicode_type, int_to_byte, filter
+from ebook_converter.polyglot.builtins import codepoint_to_chr, string_or_bytes, unicode_type, int_to_byte
 
 title_pat    = re.compile(br'\{\\info.*?\{\\title(.*?)(?<!\\)\}', re.DOTALL)
 author_pat   = re.compile(br'\{\\info.*?\{\\author(.*?)(?<!\\)\}', re.DOTALL)

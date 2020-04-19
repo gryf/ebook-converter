@@ -15,7 +15,7 @@ from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.utils import read_font_record
 from ebook_converter.ebooks.oeb.parse_utils import parse_html
 from ebook_converter.ebooks.oeb.base import XPath, XHTML, xml2text
-from ebook_converter.polyglot.builtins import range, zip, unicode_type, getcwd, as_unicode
+from ebook_converter.polyglot.builtins import unicode_type, getcwd, as_unicode
 from ebook_converter.polyglot.urllib import urldefrag
 
 

@@ -5,7 +5,7 @@ Provides platform independent temporary files that persist even after
 being closed.
 """
 import tempfile, os, atexit
-from ebook_converter.polyglot.builtins import map, getenv
+from ebook_converter.polyglot.builtins import getenv
 
 from ebook_converter.constants import (__version__, __appname__, filesystem_encoding,
         iswindows, get_windows_temp_path, isosx, ispy3)

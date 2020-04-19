@@ -4,7 +4,7 @@ from ebook_converter.ebooks.lrf.fonts import get_font
 from ebook_converter.ebooks.lrf.pylrs.pylrs import TextBlock, Text, CR, Span, \
                                              CharButton, Plot, Paragraph, \
                                              LrsTextTag
-from ebook_converter.polyglot.builtins import string_or_bytes, range, native_string_type
+from ebook_converter.polyglot.builtins import string_or_bytes, native_string_type
 
 
 __license__ = 'GPL v3'

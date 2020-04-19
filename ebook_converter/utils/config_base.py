@@ -10,7 +10,7 @@ import pkg_resources
 
 from ebook_converter.utils.lock import ExclusiveFile
 from ebook_converter.constants import config_dir, CONFIG_DIR_MODE, ispy3, preferred_encoding, filesystem_encoding, iswindows
-from ebook_converter.polyglot.builtins import unicode_type, iteritems, map
+from ebook_converter.polyglot.builtins import unicode_type, iteritems
 
 plugin_dir = os.path.join(config_dir, 'plugins')
 

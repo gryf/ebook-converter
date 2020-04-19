@@ -1,7 +1,7 @@
 import re, os
 
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
-from ebook_converter.polyglot.builtins import unicode_type, range
+from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'

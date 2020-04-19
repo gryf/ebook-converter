@@ -1,11 +1,10 @@
 import re
 
+import bs4
+
 from ebook_converter import prepare_string_for_xml
 from ebook_converter.constants import preferred_encoding
-from ebook_converter.ebooks.BeautifulSoup import (
-    BeautifulSoup, CData, Comment, Declaration, NavigableString,
-    ProcessingInstruction
-)
+from ebook_converter.ebooks.BeautifulSoup import html5_parser
 from ebook_converter.utils.html2text import html2text
 from ebook_converter.polyglot.builtins import unicode_type
 
@@ -83,8 +82,8 @@ def comments_to_html(comments):
     # Convert two hyphens to emdash
     comments = comments.replace('--', '&mdash;')
 
-    soup = BeautifulSoup('<div>' + comments + '</div>').find('div')
-    result = BeautifulSoup('<div>')
+    soup = html5_parser('<div>' + comments + '</div>').find('div')
+    result = html5_parser('<div>')
     container = result.find('div')
     rtc = 0
     open_pTag = False
@@ -92,9 +91,10 @@ def comments_to_html(comments):
     all_tokens = list(soup.contents)
     inline_tags = ('br', 'b', 'i', 'em', 'strong', 'span', 'font', 'a', 'hr')
     for token in all_tokens:
-        if isinstance(token,  (CData, Comment, Declaration, ProcessingInstruction)):
+        if isinstance(token, (bs4.CData, bs4.Comment, bs4.Declaration,
+                              bs4.ProcessingInstruction)):
             continue
-        if isinstance(token, NavigableString):
+        if isinstance(token, bs4.NavigableString):
             if not open_pTag:
                 pTag = result.new_tag('p')
                 open_pTag = True

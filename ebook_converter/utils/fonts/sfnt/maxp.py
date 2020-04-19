@@ -2,7 +2,6 @@ from struct import unpack_from, pack
 
 from ebook_converter.utils.fonts.sfnt import UnknownTable, FixedProperty
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
-from ebook_converter.polyglot.builtins import zip
 
 
 __license__ = 'GPL v3'
