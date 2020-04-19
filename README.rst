@@ -71,6 +71,7 @@ Currently, following formats are supported:
 - mobi
 - docx
 - htmlz (zipped HTML file with additional assets, like images)
+- txt
 
 
 Installation

@@ -12,7 +12,7 @@ Transform OEB content into plain text
 import re
 
 from lxml import etree
-from polyglot.builtins import string_or_bytes
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 BLOCK_TAGS = [
@@ -65,9 +65,9 @@ class TXTMLizer(object):
         return self.mlize_spine()
 
     def mlize_spine(self):
-        from calibre.ebooks.oeb.base import XHTML
-        from calibre.ebooks.oeb.stylizer import Stylizer
-        from calibre.utils.xml_parse import safe_xml_fromstring
+        from ebook_converter.ebooks.oeb.base import XHTML
+        from ebook_converter.ebooks.oeb.stylizer import Stylizer
+        from ebook_converter.utils.xml_parse import safe_xml_fromstring
         output = [u'']
         output.append(self.get_toc())
         for item in self.oeb_book.spine:
@@ -191,7 +191,7 @@ class TXTMLizer(object):
         @stylizer: The style information attached to the element.
         @page: OEB page used to determine absolute urls.
         '''
-        from calibre.ebooks.oeb.base import XHTML_NS, barename, namespace
+        from ebook_converter.ebooks.oeb.base import XHTML_NS, barename, namespace
 
         if not isinstance(elem.tag, string_or_bytes) \
            or namespace(elem.tag) != XHTML_NS:

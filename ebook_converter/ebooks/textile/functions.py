@@ -64,9 +64,9 @@ POSSIBILITY OF SUCH DAMAGE.
 import re
 import uuid
 
-from calibre.utils.smartypants import smartyPants
-from polyglot.builtins import unicode_type
-from polyglot.urllib import urlopen, urlparse
+from ebook_converter.utils.smartypants import smartyPants
+from ebook_converter.polyglot.builtins import unicode_type
+from ebook_converter.polyglot.urllib import urlopen, urlparse
 
 
 def _normalize_newlines(string):

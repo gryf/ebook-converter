@@ -12,12 +12,12 @@ import re
 
 from functools import partial
 
-from calibre.ebooks.htmlz.oeb2html import OEB2HTML
-from calibre.ebooks.oeb.base import XHTML, XHTML_NS, barename, namespace, rewrite_links
-from calibre.ebooks.oeb.stylizer import Stylizer
-from calibre.ebooks import unit_convert
-from calibre.ebooks.textile.unsmarten import unsmarten
-from polyglot.builtins import string_or_bytes
+from ebook_converter.ebooks.htmlz.oeb2html import OEB2HTML
+from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS, barename, namespace, rewrite_links
+from ebook_converter.ebooks.oeb.stylizer import Stylizer
+from ebook_converter.ebooks import unit_convert
+from ebook_converter.ebooks.textile.unsmarten import unsmarten
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 class TextileMLizer(OEB2HTML):
