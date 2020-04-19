@@ -8,7 +8,7 @@ from ebook_converter.ebooks.mobi import MobiError
 from ebook_converter.polyglot.builtins import map
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

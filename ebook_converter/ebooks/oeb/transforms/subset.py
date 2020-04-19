@@ -6,7 +6,7 @@ from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_typ
 from ebook_converter.tinycss.fonts3 import parse_font_family
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

@@ -21,7 +21,7 @@ from ebook_converter.constants import DEBUG, numeric_version
 from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 builtin_names = frozenset(p.name for p in builtin_plugins)

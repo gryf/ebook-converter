@@ -9,7 +9,7 @@ from ebook_converter.polyglot.builtins import filter
 from ebook_converter.utils.config_base import tweaks
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

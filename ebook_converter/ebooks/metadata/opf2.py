@@ -21,7 +21,7 @@ from ebook_converter.polyglot.builtins import iteritems, unicode_type, getcwd, m
 from ebook_converter.polyglot.urllib import unquote, urlparse
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
 __docformat__ = 'restructuredtext en'
 

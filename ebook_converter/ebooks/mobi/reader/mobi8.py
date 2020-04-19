@@ -19,7 +19,7 @@ from ebook_converter.polyglot.builtins import range, zip, unicode_type, getcwd, 
 from ebook_converter.polyglot.urllib import urldefrag
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

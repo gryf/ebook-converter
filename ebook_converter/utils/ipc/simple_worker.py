@@ -12,7 +12,7 @@ from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, env
 from ebook_converter.polyglot.binary import as_hex_unicode, from_hex_bytes
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

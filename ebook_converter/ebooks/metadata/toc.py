@@ -12,7 +12,7 @@ from ebook_converter.polyglot.builtins import unicode_type, getcwd
 from ebook_converter.polyglot.urllib import unquote, urlparse
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid at kovidgoyal.net>'
 
 NCX_NS = "http://www.daisy.org/z3986/2005/ncx/"

@@ -10,7 +10,7 @@ from ebook_converter.utils.imghdr import what
 from ebook_converter.polyglot.builtins import unicode_type, zip, getcwd, as_unicode
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

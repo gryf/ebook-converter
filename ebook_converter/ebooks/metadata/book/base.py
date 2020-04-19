@@ -10,7 +10,7 @@ from ebook_converter.utils.icu import sort_key
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, filter, map
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

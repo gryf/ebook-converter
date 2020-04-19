@@ -8,7 +8,7 @@ from ebook_converter.polyglot.builtins import unicode_type
 
 
 __all__ = ['HTMLTOCAdder']
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 DEFAULT_TITLE = __('Table of Contents')

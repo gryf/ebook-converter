@@ -13,7 +13,7 @@ from ebook_converter.utils.ipc.simple_worker import fork_job, WorkerError
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 

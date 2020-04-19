@@ -18,7 +18,7 @@ from ebook_converter.polyglot.builtins import unicode_type
 from ebook_converter.polyglot.binary import as_base64_unicode
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = ('2011, Roman Mukhin <ramses_ru at hotmail.com>, '
                  '2008, Anatoly Shipitsin <norguhtar at gmail.com>')
 

@@ -19,7 +19,7 @@ from ebook_converter.utils.icu import numeric_sort_key
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes, map
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 COLLAPSE = re.compile(r'[ \t\r\n\v]+')

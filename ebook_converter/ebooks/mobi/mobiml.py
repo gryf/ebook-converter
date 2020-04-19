@@ -14,7 +14,7 @@ from ebook_converter.utils.imghdr import identify
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.cam>'
 
 MBP_NS = 'http://mobipocket.com/ns/mbp'

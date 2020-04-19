@@ -7,7 +7,7 @@ from ebook_converter import CurrentDir
 from ebook_converter.polyglot.builtins import unicode_type, filter, map, zip, range, as_bytes
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

@@ -7,7 +7,7 @@ from ebook_converter.polyglot.builtins import unicode_type
 from ebook_converter.polyglot.urllib import unquote
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

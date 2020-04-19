@@ -9,7 +9,7 @@ from ebook_converter import guess_type
 from ebook_converter.polyglot.builtins import iteritems, getcwd
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Anatoly Shipitsin <norguhtar at gmail.com>'
 
 FB2NS  = 'http://www.gribuser.ru/xml/fictionbook/2.0'

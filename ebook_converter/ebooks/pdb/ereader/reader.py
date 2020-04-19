@@ -7,7 +7,7 @@ from ebook_converter.ebooks.pdb.ereader.reader132 import Reader132
 from ebook_converter.ebooks.pdb.ereader.reader202 import Reader202
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2009, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 

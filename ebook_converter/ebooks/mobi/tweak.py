@@ -13,7 +13,7 @@ from ebook_converter.customize.ui import (plugin_for_input_format,
 from ebook_converter.utils.ipc.simple_worker import fork_job
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

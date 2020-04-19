@@ -5,7 +5,7 @@ from ebook_converter import entity_to_unicode, as_unicode
 from ebook_converter.polyglot.builtins import unicode_type, range
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

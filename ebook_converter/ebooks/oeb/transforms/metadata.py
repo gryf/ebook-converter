@@ -4,7 +4,7 @@ from ebook_converter import guess_type
 from ebook_converter.polyglot.builtins import iteritems
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

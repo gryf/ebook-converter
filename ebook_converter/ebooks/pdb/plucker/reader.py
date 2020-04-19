@@ -12,7 +12,7 @@ from ebook_converter.utils.img import save_cover_data_to, Canvas, image_from_dat
 from ebook_converter.polyglot.builtins import codepoint_to_chr, range
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '20011, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 

@@ -6,7 +6,7 @@ import re, os
 from ebook_converter.ebooks.metadata import MetaInformation
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2009, John Schember <john@nachtimwald.com>'
 
 

@@ -12,7 +12,7 @@ from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
 from ebook_converter.polyglot.urllib import urldefrag
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

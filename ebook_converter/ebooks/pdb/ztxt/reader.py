@@ -9,7 +9,7 @@ from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.pdb.ztxt import zTXTError
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2009, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 

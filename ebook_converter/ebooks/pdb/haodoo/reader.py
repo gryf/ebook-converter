@@ -11,7 +11,7 @@ from ebook_converter.ebooks.txt.processor import opf_writer, HTML_TEMPLATE
 from ebook_converter.polyglot.builtins import range, map
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kan-Ru Chen <kanru@kanru.info>'
 __docformat__ = 'restructuredtext en'
 

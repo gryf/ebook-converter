@@ -6,7 +6,7 @@ from ebook_converter.ebooks.oeb.base import urlnormalize, iterlinks
 from ebook_converter.polyglot.urllib import urldefrag
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 

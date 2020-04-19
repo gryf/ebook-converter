@@ -11,7 +11,7 @@ from ebook_converter.utils.config_base import tweaks
 from ebook_converter.polyglot.builtins import unicode_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

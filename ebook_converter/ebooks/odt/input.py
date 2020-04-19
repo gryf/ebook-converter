@@ -18,7 +18,7 @@ from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, filter, getcwd, as_bytes
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
 __docformat__ = 'restructuredtext en'
 

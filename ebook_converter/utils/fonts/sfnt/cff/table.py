@@ -9,7 +9,7 @@ from ebook_converter.utils.fonts.sfnt.cff.constants import (cff_standard_strings
 from ebook_converter.polyglot.builtins import iteritems, itervalues, range
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

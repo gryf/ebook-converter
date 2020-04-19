@@ -10,7 +10,7 @@ from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, ra
 from ebook_converter.polyglot.urllib import quote, unquote, urlparse
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
 __docformat__ = 'restructuredtext en'
 

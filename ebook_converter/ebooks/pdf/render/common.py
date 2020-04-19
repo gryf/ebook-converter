@@ -8,7 +8,7 @@ from ebook_converter.polyglot.builtins import iteritems, unicode_type, codepoint
 from ebook_converter.polyglot.binary import as_hex_bytes
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

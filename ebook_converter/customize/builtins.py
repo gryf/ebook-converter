@@ -8,7 +8,7 @@ from ebook_converter.ebooks.metadata.archive import ArchiveExtract, KPFExtract, 
 from ebook_converter.ebooks.html.to_zip import HTML2ZIP
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 plugins = []

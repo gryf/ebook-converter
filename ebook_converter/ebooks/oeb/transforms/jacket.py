@@ -13,7 +13,7 @@ from ebook_converter.ebooks.metadata import fmt_sidx, rating_to_stars
 from ebook_converter.polyglot.builtins import unicode_type, map
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

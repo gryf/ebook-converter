@@ -7,7 +7,7 @@ from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.polyglot.builtins import getcwd
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2009, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 

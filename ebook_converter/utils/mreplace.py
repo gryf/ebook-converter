@@ -6,7 +6,7 @@ except ImportError:
     from UserDict import UserDict
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2010, sengian <sengian1 @ gmail.com>'
 __docformat__ = 'restructuredtext en'
 

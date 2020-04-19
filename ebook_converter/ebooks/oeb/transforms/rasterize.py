@@ -17,7 +17,7 @@ from ebook_converter.polyglot.builtins import unicode_type
 from ebook_converter.polyglot.urllib import urldefrag
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 IMAGE_TAGS = {XHTML('img'), XHTML('object')}

@@ -9,7 +9,7 @@ from ebook_converter.ebooks.metadata import authors_to_sort_string
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

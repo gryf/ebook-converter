@@ -5,7 +5,7 @@ from ebook_converter.ebooks.oeb.base import barename, XPath
 from ebook_converter.polyglot.builtins import iteritems
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

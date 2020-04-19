@@ -6,7 +6,7 @@ from PIL import ImageFont
 from ebook_converter.utils.fonts.scanner import font_scanner
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 LIBERATION_FONT_MAP = {'Swis721 BT Roman': 'Liberation Sans Regular',

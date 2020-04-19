@@ -9,7 +9,7 @@ from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.polyglot.builtins import string_or_bytes
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 CASE_MANGLER_CSS = """

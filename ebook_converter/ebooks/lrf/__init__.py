@@ -10,7 +10,7 @@ from ebook_converter.ebooks.lrf.fonts import FONT_FILE_MAP
 from ebook_converter.ebooks import ConversionError
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = "epytext"
 

@@ -2,7 +2,7 @@ from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.polyglot.builtins import getcwd
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2011, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 

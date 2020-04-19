@@ -11,7 +11,7 @@ from ebook_converter.utils.cleantext import clean_ascii_chars
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, map, range, long_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2009, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 

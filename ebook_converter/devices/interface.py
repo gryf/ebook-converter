@@ -6,7 +6,7 @@ from ebook_converter.constants import iswindows
 from ebook_converter.customize import Plugin
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 

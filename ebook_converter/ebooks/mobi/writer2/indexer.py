@@ -8,7 +8,7 @@ from ebook_converter.ebooks.mobi.utils import (encint, encode_number_as_hex,
 from ebook_converter.polyglot.builtins import filter, iteritems, itervalues, map, range
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

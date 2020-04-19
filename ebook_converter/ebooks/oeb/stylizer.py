@@ -19,7 +19,7 @@ from ebook_converter.polyglot.builtins import iteritems, unicode_type, filter
 from ebook_converter.tinycss.media3 import CSSMedia3Parser
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 css_parser_log.setLevel(logging.WARN)

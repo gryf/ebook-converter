@@ -6,7 +6,7 @@ from ebook_converter.utils.fonts.utils import get_font_names2, get_font_characte
 from ebook_converter.polyglot.builtins import range, unicode_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

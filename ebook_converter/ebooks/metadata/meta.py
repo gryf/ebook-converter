@@ -9,7 +9,7 @@ from ebook_converter.ebooks.metadata import MetaInformation, string_to_authors
 from ebook_converter.polyglot.builtins import getcwd, unicode_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 # The priorities for loading metadata from different file types

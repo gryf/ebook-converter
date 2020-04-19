@@ -16,7 +16,7 @@ from ebook_converter.utils.date import parse_date, is_date_undefined
 from ebook_converter.polyglot.builtins import iteritems
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 

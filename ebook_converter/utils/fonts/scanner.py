@@ -9,7 +9,7 @@ from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
 from ebook_converter.polyglot.builtins import itervalues, unicode_type, filter
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

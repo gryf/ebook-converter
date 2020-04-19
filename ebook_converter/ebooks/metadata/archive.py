@@ -6,7 +6,7 @@ from ebook_converter.utils.localization import canonicalize_lang
 from ebook_converter.polyglot.builtins import filter, unicode_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

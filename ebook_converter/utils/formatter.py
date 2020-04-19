@@ -11,7 +11,7 @@ from ebook_converter.utils.formatter_functions import formatter_functions
 from ebook_converter.polyglot.builtins import unicode_type, error_message
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

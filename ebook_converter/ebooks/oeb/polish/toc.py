@@ -19,7 +19,7 @@ from ebook_converter.polyglot.builtins import iteritems, map, unicode_type
 from ebook_converter.polyglot.urllib import urlparse
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

@@ -4,7 +4,7 @@ Convert an ODT file into a Open Ebook
 from ebook_converter.customize.conversion import InputFormatPlugin
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
 __docformat__ = 'restructuredtext en'
 

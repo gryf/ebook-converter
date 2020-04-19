@@ -17,7 +17,7 @@ from ebook_converter.utils.localization import calibre_langcode_to_name, canonic
 from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

@@ -5,7 +5,7 @@ from collections import defaultdict
 from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, range, as_bytes
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 

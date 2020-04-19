@@ -20,7 +20,7 @@ from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or
 from ebook_converter.polyglot.urllib import unquote as urlunquote, urldefrag, urljoin, urlparse, urlunparse
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 __docformat__ = 'restructuredtext en'
 

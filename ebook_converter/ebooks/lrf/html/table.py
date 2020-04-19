@@ -7,7 +7,7 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import TextBlock, Text, CR, Span, \
 from ebook_converter.polyglot.builtins import string_or_bytes, range, native_string_type
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 

@@ -6,7 +6,7 @@ from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.polyglot.builtins import range
 
 
-__license__   = 'GPL v3'
+__license__ = 'GPL v3'
 __copyright__ = '2010, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 
