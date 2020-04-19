@@ -1,24 +1,20 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Try to read invalid zip files with missing or damaged central directories.
 These are apparently produced in large numbers by the fruitcakes over at B&N.
 
 Tries to only use the local headers to extract data from the damaged zip file.
-'''
-
+"""
 import os, sys, zlib, shutil
 from struct import calcsize, unpack, pack
 from collections import namedtuple, OrderedDict
 from tempfile import SpooledTemporaryFile
 
 from ebook_converter.polyglot.builtins import itervalues, getcwd
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 HEADER_SIG = 0x04034b50
 HEADER_BYTE_SIG = pack(b'<L', HEADER_SIG)

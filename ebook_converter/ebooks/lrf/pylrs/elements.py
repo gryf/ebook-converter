@@ -1,7 +1,6 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-""" elements.py -- replacements and helpers for ElementTree """
-
+"""
+elements.py -- replacements and helpers for ElementTree
+"""
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
 
 

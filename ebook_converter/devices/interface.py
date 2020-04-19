@@ -1,13 +1,13 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 import os
 from collections import namedtuple
 
 from ebook_converter import prints
 from ebook_converter.constants import iswindows
 from ebook_converter.customize import Plugin
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 class DevicePlugin(Plugin):

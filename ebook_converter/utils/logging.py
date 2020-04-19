@@ -1,21 +1,22 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-__license__ = 'GPL 3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-'A simplified logging system'
-
-DEBUG = 0
-INFO  = 1
-WARN  = 2
-ERROR = 3
-
+"""
+A simplified logging system
+"""
 import sys, traceback, io
 from functools import partial
 from threading import Lock
 
 from ebook_converter import isbytestring, force_unicode, as_unicode, prints
 from ebook_converter.polyglot.builtins import unicode_type, iteritems
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
+
+DEBUG = 0
+INFO  = 1
+WARN  = 2
+ERROR = 3
 
 
 class Stream(object):

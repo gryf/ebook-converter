@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import os, time, traceback, importlib
 from multiprocessing.connection import Client
 from threading import Thread
@@ -18,6 +10,11 @@ from ebook_converter.utils.serialize import msgpack_loads, msgpack_dumps
 from ebook_converter.utils.monotonic import monotonic
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, environ_item
 from ebook_converter.polyglot.binary import as_hex_unicode, from_hex_bytes
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 
 class WorkerError(Exception):

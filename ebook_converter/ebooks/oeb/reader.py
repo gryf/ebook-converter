@@ -1,11 +1,6 @@
 """
 Container-/OPF-based input OEBBook reader.
 """
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
-
 import sys, os, uuid, copy, re, io
 from collections import defaultdict
 
@@ -30,7 +25,10 @@ from ebook_converter import guess_type, xml_replace_entities
 from ebook_converter.polyglot.builtins import unicode_type, zip
 from ebook_converter.polyglot.urllib import unquote, urldefrag, urlparse
 
+
 __all__ = ['OEBReader']
+__license__   = 'GPL v3'
+__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 
 class OEBReader(object):

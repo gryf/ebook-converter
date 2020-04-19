@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import re
 from collections import Counter
 
@@ -19,6 +12,10 @@ from ebook_converter.ebooks.oeb.stylizer import Stylizer as Sz, Style as St
 from ebook_converter.ebooks.oeb.base import XPath, barename
 from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def lang_for_tag(tag):

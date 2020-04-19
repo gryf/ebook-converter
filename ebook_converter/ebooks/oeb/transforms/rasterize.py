@@ -1,15 +1,11 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-'''
+"""
 SVG rasterization transform.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
-
+"""
 import os, re
 
 # from PyQt5.Qt import (
     # Qt, QByteArray, QBuffer, QIODevice, QColor, QImage, QPainter, QSvgRenderer)
+
 from ebook_converter.ebooks.oeb.base import XHTML, XLINK
 from ebook_converter.ebooks.oeb.base import SVG_MIME, PNG_MIME
 from ebook_converter.ebooks.oeb.base import xml2str, xpath
@@ -19,6 +15,10 @@ from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils.imghdr import what
 from ebook_converter.polyglot.builtins import unicode_type
 from ebook_converter.polyglot.urllib import urldefrag
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 IMAGE_TAGS = {XHTML('img'), XHTML('object')}
 KEEP_ATTRS = {'class', 'style', 'width', 'height', 'align'}

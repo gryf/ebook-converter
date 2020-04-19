@@ -1,9 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-# License: GPLv3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from collections import namedtuple
 
 from ebook_converter.ebooks.chardet import xml_to_unicode
@@ -14,6 +8,7 @@ from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.polyglot.builtins import filter, map
+
 
 OPFVersion = namedtuple('OPFVersion', 'major minor patch')
 

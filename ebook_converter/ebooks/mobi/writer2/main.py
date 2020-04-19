@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import io, random, time
 from struct import pack
 
@@ -19,6 +11,11 @@ from ebook_converter.ebooks.mobi.utils import (encint, encode_trailing_data,
         align_block, detect_periodical, RECORD_SIZE, create_text_record)
 from ebook_converter.ebooks.mobi.writer2.indexer import Indexer
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, range
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 # Disabled as I dont care about uncrossable breaks
 WRITE_UNCROSSABLE_BREAKS = False

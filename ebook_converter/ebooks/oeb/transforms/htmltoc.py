@@ -1,17 +1,15 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-'''
+"""
 HTML-TOC-adding transform.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
-
+"""
 from ebook_converter.ebooks.oeb.base import XML, XHTML, XHTML_NS
 from ebook_converter.ebooks.oeb.base import XHTML_MIME, CSS_MIME
 from ebook_converter.ebooks.oeb.base import element, XPath
 from ebook_converter.polyglot.builtins import unicode_type
 
+
 __all__ = ['HTMLTOCAdder']
+__license__   = 'GPL v3'
+__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 DEFAULT_TITLE = __('Table of Contents')
 

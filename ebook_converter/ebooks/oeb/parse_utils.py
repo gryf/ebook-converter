@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import re
 
 from lxml import etree, html
@@ -15,6 +7,11 @@ from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
 from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, string_or_bytes, map
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 RECOVER_PARSER = etree.XMLParser(recover=True, no_network=True, resolve_entities=False)
 XHTML_NS     = 'http://www.w3.org/1999/xhtml'

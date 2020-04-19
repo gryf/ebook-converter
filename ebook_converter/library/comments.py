@@ -1,9 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-# License: GPLv3 Copyright: 2010, Kovid Goyal <kovid at kovidgoyal.net>
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import re
 
 from ebook_converter import prepare_string_for_xml
@@ -14,6 +8,7 @@ from ebook_converter.ebooks.BeautifulSoup import (
 )
 from ebook_converter.utils.html2text import html2text
 from ebook_converter.polyglot.builtins import unicode_type
+
 
 # Hackish - ignoring sentences ending or beginning in numbers to avoid
 # confusion with decimal points.

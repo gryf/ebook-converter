@@ -1,14 +1,7 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
-Read content from ereader pdb file with a 116 and 202 byte header created by Makebook.
-'''
-__license__   = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
+"""
+Read content from ereader pdb file with a 116 and 202 byte header created by
+Makebook.
+"""
 import os
 import struct
 
@@ -17,6 +10,11 @@ from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.pdb.ereader import EreaderError
 from ebook_converter.polyglot.builtins import unicode_type, range
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2009, John Schember <john@nachtimwald.com>'
+__docformat__ = 'restructuredtext en'
 
 
 class HeaderRecord(object):

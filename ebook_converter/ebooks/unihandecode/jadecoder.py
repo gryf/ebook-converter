@@ -1,11 +1,4 @@
-# coding:utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '2010, Hiroshi Miura <miurahr@linux.com>'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Decode unicode text to an ASCII representation of the text for Japanese.
  Translate unicode string to ASCII roman string.
 
@@ -17,13 +10,18 @@ and  perl module Text::Unidecode
 This functionality is owned by Kakasi Japanese processing engine.
 
 Copyright (c) 2010 Hiroshi Miura
-'''
-
+"""
 import re
+
 from ebook_converter.ebooks.unihandecode.unidecoder import Unidecoder
 from ebook_converter.ebooks.unihandecode.unicodepoints import CODEPOINTS
 from ebook_converter.ebooks.unihandecode.jacodepoints import CODEPOINTS as JACODES
 from ebook_converter.ebooks.unihandecode.pykakasi.kakasi import kakasi
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2010, Hiroshi Miura <miurahr@linux.com>'
+__docformat__ = 'restructuredtext en'
 
 
 class Jadecoder(Unidecoder):

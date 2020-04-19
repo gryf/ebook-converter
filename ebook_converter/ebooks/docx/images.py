@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import os
 
 from lxml.html.builder import IMG, HR
@@ -15,6 +8,10 @@ from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.img import resize_to_fit, image_to_data
 from ebook_converter.utils.imghdr import what
 from ebook_converter.polyglot.builtins import iteritems, itervalues
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 class LinkedImageNotFound(ValueError):

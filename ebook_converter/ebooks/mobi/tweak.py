@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import os, glob
 
 from ebook_converter import CurrentDir
@@ -19,6 +11,11 @@ from ebook_converter.ebooks.conversion.plumber import Plumber, create_oebbook
 from ebook_converter.customize.ui import (plugin_for_input_format,
         plugin_for_output_format)
 from ebook_converter.utils.ipc.simple_worker import fork_job
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 
 class BadFormat(ValueError):

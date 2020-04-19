@@ -1,11 +1,8 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
+from ebook_converter.tinycss.color3 import parse_color_string
+
 
 __license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
-from ebook_converter.tinycss.color3 import parse_color_string
 
 
 def int_or_zero(raw):

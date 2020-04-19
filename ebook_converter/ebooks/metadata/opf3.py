@@ -1,9 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-# License: GPLv3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import json
 import re
 from collections import defaultdict, namedtuple
@@ -30,6 +24,7 @@ from ebook_converter.utils.date import (
 )
 from ebook_converter.utils.iso8601 import parse_iso8601
 from ebook_converter.utils.localization import canonicalize_lang
+
 
 # Utils {{{
 _xpath_cache = {}

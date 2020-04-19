@@ -1,15 +1,12 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
 from collections import namedtuple
 
 from ebook_converter.ebooks.docx.writer.utils import convert_color
 from ebook_converter.ebooks.docx.writer.styles import read_css_block_borders as rcbb, border_edges
 from ebook_converter.polyglot.builtins import iteritems, range, unicode_type
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 class Dummy(object):

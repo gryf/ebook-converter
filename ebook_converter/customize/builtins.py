@@ -1,16 +1,15 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import os, glob, re
+
 from ebook_converter import guess_type
 from ebook_converter.customize import (FileTypePlugin, MetadataReaderPlugin,
     MetadataWriterPlugin, PreferencesPlugin, InterfaceActionBase, StoreBase)
 from ebook_converter.constants import numeric_version
 from ebook_converter.ebooks.metadata.archive import ArchiveExtract, KPFExtract, get_comic_metadata
 from ebook_converter.ebooks.html.to_zip import HTML2ZIP
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 plugins = []
 
@@ -1945,7 +1944,6 @@ if __name__ == '__main__':
     try:
         subprocess.check_call(['python', '-c', textwrap.dedent(
         '''
-        from __future__ import print_function
         import time, sys, init_calibre
         st = time.time()
         import ebook_converter.customize.builtins

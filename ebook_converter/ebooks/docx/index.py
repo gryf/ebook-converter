@@ -1,16 +1,13 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
-
 from operator import itemgetter
 
 from lxml import etree
 
 from ebook_converter.utils.icu import partition_by_first_letter, sort_key
 from ebook_converter.polyglot.builtins import iteritems, filter
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def get_applicable_xe_fields(index, xe_fields, XPath, expand):

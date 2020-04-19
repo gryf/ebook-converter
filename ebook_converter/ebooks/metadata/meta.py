@@ -1,8 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import os, re, collections
 
 from ebook_converter.utils.config import prefs
@@ -12,6 +7,10 @@ from ebook_converter import isbytestring
 from ebook_converter.customize.ui import get_file_type_metadata, set_file_type_metadata
 from ebook_converter.ebooks.metadata import MetaInformation, string_to_authors
 from ebook_converter.polyglot.builtins import getcwd, unicode_type
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 # The priorities for loading metadata from different file types
 # Higher values should be used to update metadata from lower values

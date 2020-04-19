@@ -1,16 +1,13 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '2011, Anthon van der Neut <anthon@mnt.org>'
-__docformat__ = 'restructuredtext en'
-
 import os
 from io import BytesIO
 
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.polyglot.builtins import getcwd
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2011, Anthon van der Neut <anthon@mnt.org>'
+__docformat__ = 'restructuredtext en'
 
 
 class DJVUInput(InputFormatPlugin):

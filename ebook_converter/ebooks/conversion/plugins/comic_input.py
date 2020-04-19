@@ -1,19 +1,17 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Based on ideas from comiclrf created by FangornUK.
-'''
-
+"""
 import shutil, textwrap, codecs, os
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter import CurrentDir
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.polyglot.builtins import getcwd, map
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
+__docformat__ = 'restructuredtext en'
 
 
 class ComicInput(InputFormatPlugin):

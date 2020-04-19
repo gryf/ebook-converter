@@ -1,11 +1,8 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
+"""
+PEP 302 based plugin loading mechanism, works around the bug in zipimport in
+python 2.x that prevents importing from zip files in locations whose paths
+have non ASCII characters
+"""
 import os, zipfile, posixpath, importlib, threading, re, imp, sys
 from collections import OrderedDict
 from functools import partial
@@ -17,9 +14,10 @@ from ebook_converter.customize import (Plugin, numeric_version, platform,
 from ebook_converter.polyglot.builtins import (itervalues, map, string_or_bytes,
         unicode_type, reload)
 
-# PEP 302 based plugin loading mechanism, works around the bug in zipimport in
-# python 2.x that prevents importing from zip files in locations whose paths
-# have non ASCII characters
+
+__license__   = 'GPL v3'
+__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 
 def get_resources(zfp, name_or_list_of_names):

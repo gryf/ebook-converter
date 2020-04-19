@@ -1,14 +1,11 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
-
 from lxml import etree
 
 from ebook_converter.ebooks.oeb.polish.container import OPF_NAMESPACES
 from ebook_converter.utils.localization import canonicalize_lang
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def get_book_language(container):

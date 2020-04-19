@@ -1,7 +1,11 @@
-# vim:fileencoding=utf-8
-# License: GPLv3 Copyright: 2008, Kovid Goyal <kovid at kovidgoyal.net>
-from __future__ import absolute_import, division, print_function, unicode_literals
+"""
+Code to convert HTML ebooks into LRF ebooks.
 
+I am indebted to esperanc for the initial CSS->Xylog Style conversion code
+and to Falstaff for pylrs.
+
+License: GPLv3 Copyright: 2008, Kovid Goyal <kovid at kovidgoyal.net>
+"""
 import copy
 import glob
 import os
@@ -34,13 +38,6 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import (
 from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.polyglot.builtins import getcwd, itervalues, string_or_bytes, unicode_type
 from ebook_converter.polyglot.urllib import unquote, urlparse
-
-"""
-Code to convert HTML ebooks into LRF ebooks.
-
-I am indebted to esperanc for the initial CSS->Xylog Style conversion code
-and to Falstaff for pylrs.
-"""
 
 from PIL import Image as PILImage
 

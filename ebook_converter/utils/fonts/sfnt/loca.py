@@ -1,17 +1,14 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import array, sys
 from operator import itemgetter
 from itertools import repeat
 
 from ebook_converter.utils.fonts.sfnt import UnknownTable
 from ebook_converter.polyglot.builtins import iteritems, range
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 
 def four_byte_type_code():

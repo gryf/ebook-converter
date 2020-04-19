@@ -1,13 +1,10 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 from collections import OrderedDict
 from ebook_converter.ebooks.docx.block_styles import (  # noqa
     inherit, simple_color, LINE_STYLES, simple_float, binary_property, read_shd)
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 # Read from XML {{{
 

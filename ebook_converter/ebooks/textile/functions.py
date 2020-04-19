@@ -1,17 +1,19 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 """
 PyTextile
 
 A Humane Web Text Generator
 """
+import re
+import uuid
+
+from ebook_converter.utils.smartypants import smartyPants
+from ebook_converter.polyglot.builtins import unicode_type
+from ebook_converter.polyglot.urllib import urlopen, urlparse
+
 
 # Last upstream version basis
 # __version__ = '2.1.4'
 # __date__ = '2009/12/04'
-
 __copyright__ = """
 Copyright (c) 2011, Leigh Parry <leighparry@blueyonder.co.uk>
 Copyright (c) 2011, John Schember <john@nachtimwald.com>
@@ -27,9 +29,7 @@ Thanks to Carlo Zottmann <carlo@g-blog.net> for refactoring
 Textile's procedural code into a class framework
 
 Additions and fixes Copyright (c) 2006 Alex Shiels http://thresholdstate.com/
-
 """
-
 __license__ = """
 L I C E N S E
 =============
@@ -58,15 +58,7 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-
 """
-
-import re
-import uuid
-
-from ebook_converter.utils.smartypants import smartyPants
-from ebook_converter.polyglot.builtins import unicode_type
-from ebook_converter.polyglot.urllib import urlopen, urlparse
 
 
 def _normalize_newlines(string):

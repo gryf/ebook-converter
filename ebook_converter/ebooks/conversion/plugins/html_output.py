@@ -1,9 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '2010, Fabian Grassl <fg@jusmeum.de>'
-__docformat__ = 'restructuredtext en'
-
 import os, re, shutil
 from os.path import dirname, abspath, relpath as _relpath, exists, basename
 import pkg_resources
@@ -12,6 +6,11 @@ from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecom
 from ebook_converter import CurrentDir
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.polyglot.builtins import unicode_type
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2010, Fabian Grassl <fg@jusmeum.de>'
+__docformat__ = 'restructuredtext en'
 
 
 def relpath(*args):

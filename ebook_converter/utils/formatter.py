@@ -1,20 +1,19 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-'''
+"""
 Created on 23 Sep 2010
 
 @author: charles
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
+"""
 import re, string, traceback, numbers
 
 from ebook_converter import prints
 from ebook_converter.constants import DEBUG
 from ebook_converter.utils.formatter_functions import formatter_functions
 from ebook_converter.polyglot.builtins import unicode_type, error_message
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 
 class _Parser(object):

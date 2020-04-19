@@ -1,12 +1,6 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-'''
+"""
 Basic support for manipulating OEB 1.x/2.0 content and metadata.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
-__docformat__ = 'restructuredtext en'
-
+"""
 import os, re, logging, sys, numbers
 from collections import defaultdict
 from itertools import count
@@ -24,6 +18,11 @@ from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes, range, itervalues, filter, codepoint_to_chr
 from ebook_converter.polyglot.urllib import unquote as urlunquote, urldefrag, urljoin, urlparse, urlunparse
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
+__docformat__ = 'restructuredtext en'
 
 XML_NS       = 'http://www.w3.org/XML/1998/namespace'
 OEB_DOC_NS   = 'http://openebook.org/namespaces/oeb-document/1.0/'

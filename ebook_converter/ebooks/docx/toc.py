@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 from collections import namedtuple
 from itertools import count
 
@@ -13,6 +6,10 @@ from lxml.etree import tostring
 from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.oeb.polish.toc import elem_to_toc_text
 from ebook_converter.polyglot.builtins import iteritems, range
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def from_headings(body, log, namespace, num_levels=3):

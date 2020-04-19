@@ -1,14 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
+"""
 Read content from ereader pdb file with a 132 byte header created by Dropbook.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
+"""
 import os
 import re
 import struct
@@ -20,6 +12,11 @@ from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.ebooks.pdb.ereader import EreaderError
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.polyglot.builtins import unicode_type, range
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2009, John Schember <john@nachtimwald.com>'
+__docformat__ = 'restructuredtext en'
 
 
 class HeaderRecord(object):

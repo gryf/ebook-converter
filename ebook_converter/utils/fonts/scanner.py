@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import os
 from collections import defaultdict
 from threading import Thread
@@ -15,6 +7,11 @@ from ebook_converter.constants import (config_dir, iswindows, isosx, plugins, DE
         isworker, filesystem_encoding)
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
 from ebook_converter.polyglot.builtins import itervalues, unicode_type, filter
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 
 class NoFonts(ValueError):

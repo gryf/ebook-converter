@@ -1,16 +1,13 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import posixpath, re
 from uuid import uuid4
 
 from ebook_converter.utils.filenames import ascii_text
 from ebook_converter.polyglot.builtins import unicode_type
 from ebook_converter.polyglot.urllib import urlparse
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def start_text(tag, prefix_len=0, top_level=True):

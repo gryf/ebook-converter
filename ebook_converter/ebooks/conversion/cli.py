@@ -1,13 +1,6 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Command line interface to conversion sub-system
-'''
-
+"""
 import sys, os, numbers
 from optparse import OptionGroup, Option
 from collections import OrderedDict
@@ -19,6 +12,11 @@ from ebook_converter import patheq
 from ebook_converter.ebooks.conversion import ConversionUserFeedBack
 from ebook_converter.utils.localization import localize_user_manual_link
 from ebook_converter.polyglot.builtins import iteritems
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 USAGE = '%prog ' + _('''\
 input_file output_file [options]

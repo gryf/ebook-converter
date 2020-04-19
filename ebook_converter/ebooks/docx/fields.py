@@ -1,14 +1,11 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import re
 
 from ebook_converter.ebooks.docx.index import process_index, polish_index_markup
 from ebook_converter.polyglot.builtins import iteritems, native_string_type
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 class Field(object):

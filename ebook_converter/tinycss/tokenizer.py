@@ -1,4 +1,3 @@
-# coding: utf8
 """
     tinycss.tokenizer
     -----------------
@@ -11,9 +10,6 @@
     :copyright: (c) 2012 by Simon Sapin.
     :license: BSD, see LICENSE for more details.
 """
-
-from __future__ import unicode_literals
-
 from ebook_converter.tinycss import token_data
 
 

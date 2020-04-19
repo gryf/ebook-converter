@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import copy, os, re
 from ebook_converter.polyglot.builtins import map, string_or_bytes, range
 
@@ -14,6 +7,10 @@ from ebook_converter.ebooks.oeb.polish.toc import node_from_loc
 from ebook_converter.ebooks.oeb.polish.replace import LinkRebaser
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
 from ebook_converter.polyglot.urllib import urlparse
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 class AbortError(ValueError):

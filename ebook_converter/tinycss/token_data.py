@@ -1,4 +1,3 @@
-# coding: utf8
 """
     tinycss.token_data
     ------------------
@@ -8,9 +7,6 @@
     :copyright: (c) 2012 by Simon Sapin.
     :license: BSD, see LICENSE for more details.
 """
-
-from __future__ import unicode_literals
-
 import re
 import sys
 import operator

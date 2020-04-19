@@ -1,14 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Transform OEB content into FB2 markup
-'''
-
+"""
 import re, textwrap, uuid
 from datetime import datetime
 
@@ -23,6 +15,11 @@ from ebook_converter.ebooks.oeb.base import urlnormalize
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, range, filter
 from ebook_converter.polyglot.binary import as_base64_unicode
 from ebook_converter.polyglot.urllib import urlparse
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2009, John Schember <john@nachtimwald.com>'
+__docformat__ = 'restructuredtext en'
 
 
 class FB2MLizer(object):

@@ -1,13 +1,6 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
-
 """
-Provides abstraction for metadata reading.writing from a variety of ebook formats.
+Provides abstraction for metadata reading.writing from a variety of ebook
+formats.
 """
 import os, sys, re
 
@@ -15,6 +8,11 @@ from ebook_converter import relpath, guess_type, prints, force_unicode
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, range, map, zip, getcwd, iteritems, itervalues, as_unicode
 from ebook_converter.polyglot.urllib import quote, unquote, urlparse
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
+__docformat__ = 'restructuredtext en'
 
 
 try:

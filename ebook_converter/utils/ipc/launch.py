@@ -1,23 +1,25 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import subprocess, os, sys, time
 from functools import partial
 
-from ebook_converter.constants import iswindows, isosx, isfrozen, filesystem_encoding, ispy3
+from ebook_converter.constants import isosx, isfrozen, filesystem_encoding, ispy3
 from ebook_converter.utils.config import prefs
 from ebook_converter.ptempfile import PersistentTemporaryFile, base_dir
 from ebook_converter.utils.serialize import msgpack_dumps
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes, environ_item, native_string_type, getcwd
 from ebook_converter.polyglot.binary import as_hex_unicode
+try:
+    import win32process
+    iswindows = True
+except ImportError:
+    iswindows = False
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
+
 
 if iswindows:
-    import win32process
     try:
         windows_null_file = open(os.devnull, 'wb')
     except:

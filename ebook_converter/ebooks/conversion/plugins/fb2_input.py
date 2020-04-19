@@ -1,7 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Anatoly Shipitsin <norguhtar at gmail.com>'
 """
 Convert .fb2 files to .lrf
 """
@@ -11,6 +7,10 @@ import pkg_resources
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter import guess_type
 from ebook_converter.polyglot.builtins import iteritems, getcwd
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Anatoly Shipitsin <norguhtar at gmail.com>'
 
 FB2NS  = 'http://www.gribuser.ru/xml/fictionbook/2.0'
 FB21NS = 'http://www.gribuser.ru/xml/fictionbook/2.1'

@@ -1,14 +1,14 @@
 # multiple replace from dictionnary : http://code.activestate.com/recipes/81330/
-from __future__ import unicode_literals
-__license__   = 'GPL v3'
-__copyright__ = '2010, sengian <sengian1 @ gmail.com>'
-__docformat__ = 'restructuredtext en'
-
 import re
 try:
     from collections import UserDict
 except ImportError:
     from UserDict import UserDict
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2010, sengian <sengian1 @ gmail.com>'
+__docformat__ = 'restructuredtext en'
 
 
 class MReplace(UserDict):

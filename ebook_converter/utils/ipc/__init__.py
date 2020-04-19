@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import os, errno, sys
 from threading import Thread
 
@@ -13,6 +5,11 @@ from ebook_converter import force_unicode
 from ebook_converter.constants import iswindows, get_windows_username, islinux, filesystem_encoding, ispy3
 from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.polyglot.functools import lru_cache
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 VADDRESS = None
 

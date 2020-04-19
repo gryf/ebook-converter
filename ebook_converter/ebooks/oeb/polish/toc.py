@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import re
 from collections import Counter, OrderedDict
 from functools import partial
@@ -25,6 +17,11 @@ from ebook_converter.ebooks.oeb.polish.pretty import pretty_html_tree
 from ebook_converter.utils.localization import get_lang, canonicalize_lang, lang_as_iso639_1
 from ebook_converter.polyglot.builtins import iteritems, map, unicode_type
 from ebook_converter.polyglot.urllib import urlparse
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 ns = etree.FunctionNamespace('calibre_xpath_extensions')
 ns.prefix = 'calibre'

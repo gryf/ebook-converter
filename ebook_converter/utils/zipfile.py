@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
 """
 Read and write ZIP files. Modified by Kovid Goyal to support replacing files in
 a zip archive, detecting filename encoding, updating zip files, etc.
@@ -19,6 +18,7 @@ try:
 except ImportError:
     zlib = None
     crc32 = binascii.crc32
+
 
 __all__ = ["BadZipfile", "error", "ZIP_STORED", "ZIP_DEFLATED", "is_zipfile",
            "ZipInfo", "ZipFile", "PyZipFile", "LargeZipFile"]

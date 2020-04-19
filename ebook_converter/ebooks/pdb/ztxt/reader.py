@@ -1,21 +1,17 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
+"""
 Read content from ztxt pdb file.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
+"""
 import struct
 import zlib
 import io
 
-
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.pdb.ztxt import zTXTError
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2009, John Schember <john@nachtimwald.com>'
+__docformat__ = 'restructuredtext en'
 
 SUPPORTED_VERSION = (1, 40)
 

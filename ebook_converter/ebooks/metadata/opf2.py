@@ -1,13 +1,6 @@
-#!/usr/bin/env  python2
-from __future__ import print_function, unicode_literals, absolute_import, division
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 lxml based OPF parser.
-'''
-
+"""
 import re, sys, unittest, functools, os, uuid, glob, io, json, copy
 
 from lxml import etree
@@ -26,6 +19,11 @@ from ebook_converter.utils.config import tweaks
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, getcwd, map
 from ebook_converter.polyglot.urllib import unquote, urlparse
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
+__docformat__ = 'restructuredtext en'
 
 pretty_print_opf = False
 

@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
-
 from collections import defaultdict
 from functools import partial
 
@@ -18,6 +11,10 @@ from ebook_converter.ebooks.oeb.polish.pretty import pretty_script_or_style, pre
 from ebook_converter.utils.icu import numeric_sort_key
 from ebook_converter.css_selectors import Select, SelectorError
 from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, filter
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def filter_used_rules(rules, log, select):

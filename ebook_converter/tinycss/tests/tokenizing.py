@@ -1,12 +1,9 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
+from tinycss.tests import BaseTest, jsonify
+from tinycss.tokenizer import python_tokenize_flat, c_tokenize_flat, regroup
+
 
 __license__ = 'GPL v3'
 __copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
-
-from tinycss.tests import BaseTest, jsonify
-from tinycss.tokenizer import python_tokenize_flat, c_tokenize_flat, regroup
 
 if c_tokenize_flat is None:
     tokenizers = (python_tokenize_flat,)

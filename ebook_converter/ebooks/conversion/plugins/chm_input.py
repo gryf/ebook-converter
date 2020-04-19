@@ -1,16 +1,16 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-''' CHM File decoding support '''
-__license__ = 'GPL v3'
-__copyright__  = '2008, Kovid Goyal <kovid at kovidgoyal.net>,' \
-                 ' and Alex Bramley <a.bramley at gmail.com>.'
-
+"""
+CHM File decoding support
+"""
 import os
 
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.polyglot.builtins import unicode_type, as_bytes
+
+__license__ = 'GPL v3'
+__copyright__ = ('2008, Kovid Goyal <kovid at kovidgoyal.net>, '
+                 'and Alex Bramley <a.bramley at gmail.com>.')
 
 
 class CHMInput(InputFormatPlugin):

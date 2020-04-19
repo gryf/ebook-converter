@@ -1,18 +1,14 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 """
 Original Perl version by: John Gruber https://daringfireball.net/ 10 May 2008
 Python version by Stuart Colville http://muffinresearch.co.uk
 Modifications to make it work with non-ascii chars by Kovid Goyal
 License: http://www.opensource.org/licenses/mit-license.php
 """
-
 import re
 
 from ebook_converter.utils.icu import capitalize, upper
 from ebook_converter.polyglot.builtins import unicode_type
+
 
 __all__ = ['titlecase']
 __version__ = '0.5'

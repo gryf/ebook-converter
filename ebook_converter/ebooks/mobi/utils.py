@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import struct, string, zlib, os
 from collections import OrderedDict
 from io import BytesIO
@@ -15,6 +7,11 @@ from ebook_converter.utils.imghdr import what
 from ebook_converter.ebooks import normalize
 from ebook_converter.polyglot.builtins import unicode_type, range, as_bytes, map
 from ebook_converter.tinycss.color3 import parse_color_string
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 IMAGE_MAX_SIZE = 10 * 1024 * 1024
 RECORD_SIZE = 0x1000  # 4096 (Text record size (uncompressed))

@@ -1,12 +1,6 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
+"""
 Transform XHTML/OPS-ish content into Mobipocket HTML 3.2.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.cam>'
-
+"""
 import copy
 import re
 import numbers
@@ -18,6 +12,10 @@ from ebook_converter.ebooks.oeb.transforms.flatcss import KeyMapper
 from ebook_converter.ebooks.mobi.utils import convert_color_for_font_tag
 from ebook_converter.utils.imghdr import identify
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.cam>'
 
 MBP_NS = 'http://mobipocket.com/ns/mbp'
 

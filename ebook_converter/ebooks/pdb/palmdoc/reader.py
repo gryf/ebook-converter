@@ -1,18 +1,16 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 '''
 Read content from palmdoc pdb file.
 '''
 
+import io
+import struct
+
+from ebook_converter.ebooks.pdb.formatreader import FormatReader
+
+
 __license__   = 'GPL v3'
 __copyright__ = '2009, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
-
-import struct, io
-
-
-from ebook_converter.ebooks.pdb.formatreader import FormatReader
 
 
 class HeaderRecord(object):

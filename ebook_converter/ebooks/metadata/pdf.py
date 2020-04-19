@@ -1,9 +1,6 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-'''Read meta information from PDF files'''
-
+"""
+Read meta information from PDF files
+"""
 import os, subprocess, shutil, re
 from functools import partial
 
@@ -14,6 +11,10 @@ from ebook_converter.ebooks.metadata import (
     MetaInformation, string_to_authors, check_isbn, check_doi)
 from ebook_converter.utils.ipc.simple_worker import fork_job, WorkerError
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def get_tools():

@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import textwrap
 from ebook_converter.polyglot.builtins import iteritems, map
 
@@ -17,6 +10,9 @@ from ebook_converter.ebooks.oeb.polish.container import OPF_NAMESPACES
 from ebook_converter.ebooks.oeb.polish.utils import guess_type
 from ebook_converter.utils.icu import sort_key
 
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 def isspace(x):
     return not x.strip('\u0009\u000a\u000c\u000d\u0020')

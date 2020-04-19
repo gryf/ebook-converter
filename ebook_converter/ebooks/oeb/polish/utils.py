@@ -1,15 +1,12 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import re, os
 from bisect import bisect
 
 from ebook_converter import guess_type as _guess_type, replace_entities
 from ebook_converter.polyglot.builtins import filter
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def guess_type(x):

@@ -1,11 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '2010, Hiroshi Miura <miurahr@linux.com>'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Decode unicode text to an ASCII representation of the text in Chinese.
 Transliterate unicode characters to ASCII based on chinese pronounce.
 
@@ -58,12 +51,17 @@ purpose.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-'''
-
+"""
 import re
+
 from ebook_converter.ebooks.unihandecode.unicodepoints import CODEPOINTS
 from ebook_converter.ebooks.unihandecode.zhcodepoints import CODEPOINTS as HANCODES
 from ebook_converter.polyglot.builtins import unicode_type
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2010, Hiroshi Miura <miurahr@linux.com>'
+__docformat__ = 'restructuredtext en'
 
 
 class Unidecoder(object):

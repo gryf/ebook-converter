@@ -1,9 +1,3 @@
-#!/usr/bin/env  python2
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2010, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import os, glob, re, functools
 from collections import Counter
 
@@ -16,6 +10,10 @@ from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.polyglot.builtins import unicode_type, getcwd
 from ebook_converter.polyglot.urllib import unquote, urlparse
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2010, Kovid Goyal <kovid at kovidgoyal.net>'
 
 NCX_NS = "http://www.daisy.org/z3986/2005/ncx/"
 CALIBRE_NS = "http://calibre.kovidgoyal.net/2009/metadata"

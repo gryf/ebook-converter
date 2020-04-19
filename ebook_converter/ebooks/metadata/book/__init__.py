@@ -1,16 +1,9 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 __license__   = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-'''
-All fields must have a NULL value represented as None for simple types,
-an empty list/dictionary for complex types and (None, None) for cover_data
-'''
-
+# All fields must have a NULL value represented as None for simple types,
+# an empty list/dictionary for complex types and (None, None) for cover_data
 SOCIAL_METADATA_FIELDS = frozenset((
     'tags',             # Ordered list
     'rating',           # A floating point number between 0 and 10
@@ -22,10 +15,7 @@ SOCIAL_METADATA_FIELDS = frozenset((
     'identifiers',
 ))
 
-'''
-The list of names that convert to identifiers when in get and set.
-'''
-
+# The list of names that convert to identifiers when in get and set.
 TOP_LEVEL_IDENTIFIERS = frozenset((
     'isbn',
 ))
@@ -128,5 +118,5 @@ SERIALIZABLE_FIELDS =      SOCIAL_METADATA_FIELDS.union(
                            CALIBRE_METADATA_FIELDS).union(
                            DEVICE_METADATA_FIELDS) - \
                            frozenset(('device_collections', 'formats',
-                               'cover_data'))
+                                      'cover_data'))
 # these are rebuilt when needed

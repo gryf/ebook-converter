@@ -1,16 +1,13 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 from struct import unpack_from, calcsize
 from collections import OrderedDict, namedtuple
 
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
 from ebook_converter.polyglot.builtins import range, iteritems
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 
 class Unpackable(object):

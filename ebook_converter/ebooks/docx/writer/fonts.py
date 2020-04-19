@@ -1,16 +1,13 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
 from collections import defaultdict
 from uuid import uuid4
 
 from ebook_converter.ebooks.oeb.base import OEB_STYLES
 from ebook_converter.ebooks.oeb.transforms.subset import find_font_face_rules
 from ebook_converter.polyglot.builtins import range
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def obfuscate_font_data(data, key):

@@ -1,11 +1,3 @@
-#!/usr/bin/python2
-# vim:fileencoding=utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__author__ = "Chad Miller <smartypantspy@chad.org>, Kovid Goyal <kovid at kovidgoyal.net>"
-__description__ = "Smart-quotes, smart-ellipses, and smart-dashes for weblog entries in pyblosxom"
-
 r"""
 ==============
 smartypants.py
@@ -66,7 +58,8 @@ sequence into a decimal-encoded HTML entity:
 
 (FIXME:  table here.)
 
-.. comment    It sucks that there's a disconnect between the visual layout and table markup when special characters are involved.
+.. comment    It sucks that there's a disconnect between the visual layout and
+.. comment    table markup when special characters are involved.
 .. comment ======  =====  =========
 .. comment Escape  Value  Character
 .. comment ======  =====  =========
@@ -377,8 +370,11 @@ smartypants.py license::
 .. _Movable Type: http://www.movabletype.org/
 
 """
-
 import re
+
+
+__author__ = "Chad Miller <smartypantspy@chad.org>, Kovid Goyal <kovid at kovidgoyal.net>"
+__description__ = "Smart-quotes, smart-ellipses, and smart-dashes for weblog entries in pyblosxom"
 
 # style added by Kovid
 tags_to_skip_regex = re.compile(r"<(/)?(style|pre|code|kbd|script|math)[^>]*>", re.I)

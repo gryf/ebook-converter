@@ -1,8 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-# License: GPLv3 Copyright: 2012, Kovid Goyal <kovid at kovidgoyal.net>
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from collections import OrderedDict
 from io import BytesIO
 from struct import calcsize, pack
@@ -20,6 +15,7 @@ from ebook_converter.utils.fonts.sfnt.kern import KernTable
 from ebook_converter.utils.fonts.sfnt.loca import LocaTable
 from ebook_converter.utils.fonts.sfnt.maxp import MaxpTable
 from ebook_converter.utils.fonts.utils import checksum_of_block, get_tables, verify_checksums
+
 
 # OpenType spec: http://www.microsoft.com/typography/otspec/otff.htm
 

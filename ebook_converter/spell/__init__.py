@@ -1,15 +1,12 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
-
 from collections import namedtuple
 import json
 import pkg_resources
 
 from ebook_converter.utils.localization import canonicalize_lang
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 DictionaryLocale = namedtuple('DictionaryLocale', 'langcode countrycode')
 

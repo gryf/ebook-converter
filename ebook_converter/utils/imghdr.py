@@ -1,15 +1,13 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-# License: GPLv3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
-from __future__ import absolute_import, division, print_function, unicode_literals
-
+"""
+Recognize image file formats and sizes based on their first few bytes.
+"""
 from struct import unpack, error
 import os
+
 from ebook_converter.utils.speedups import ReadOnlyFileBuffer
 from ebook_converter.constants import ispy3
 from ebook_converter.polyglot.builtins import string_or_bytes, unicode_type
 
-""" Recognize image file formats and sizes based on their first few bytes."""
 
 HSIZE = 120
 

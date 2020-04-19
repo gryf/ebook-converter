@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import traceback
 from collections import OrderedDict
 from operator import itemgetter
@@ -15,6 +7,11 @@ from ebook_converter.utils.icu import safe_chr, ord_string
 from ebook_converter.utils.fonts.sfnt.container import Sfnt
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont, NoGlyphs
 from ebook_converter.polyglot.builtins import unicode_type, range, iteritems, itervalues, map
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 # TrueType outlines {{{
 

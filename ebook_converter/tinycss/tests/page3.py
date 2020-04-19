@@ -1,12 +1,10 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
+from tinycss.page3 import CSSPage3Parser
+from tinycss.tests import BaseTest
+
 
 __license__ = 'GPL v3'
 __copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
-from tinycss.page3 import CSSPage3Parser
-from tinycss.tests import BaseTest
 
 class TestPage3(BaseTest):
 

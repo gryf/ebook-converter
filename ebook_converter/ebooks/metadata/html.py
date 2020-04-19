@@ -1,13 +1,6 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-'''
+"""
 Try to read metadata from an HTML file.
-'''
-
+"""
 import re
 import unittest
 
@@ -21,6 +14,10 @@ from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter import replace_entities, isbytestring
 from ebook_converter.utils.date import parse_date, is_date_undefined
 from ebook_converter.polyglot.builtins import iteritems
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def get_metadata(stream):

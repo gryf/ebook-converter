@@ -1,11 +1,9 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
+import unittest, os, argparse
+
 
 __license__ = 'GPL v3'
 __copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
-import unittest, os, argparse
 
 def find_tests():
     from calibre.utils.run_tests import find_tests_in_dir

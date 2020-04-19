@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import re, itertools
 from collections import OrderedDict, defaultdict
 from functools import wraps
@@ -17,6 +10,10 @@ from ebook_converter.css_selectors.parser import parse, ascii_lower, Element, Fu
 from ebook_converter.css_selectors.ordered_set import OrderedSet
 
 from ebook_converter.polyglot.builtins import iteritems, itervalues
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 
 PARSE_CACHE_SIZE = 200
 parse_cache = OrderedDict()

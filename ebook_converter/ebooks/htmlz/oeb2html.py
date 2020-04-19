@@ -1,15 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-
-__license__ = 'GPL 3'
-__copyright__ = '2011, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Transform OEB content into a single (more or less) HTML file.
-'''
-
+"""
 import os
 import re
 
@@ -23,6 +14,11 @@ from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils.logging import default_log
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, as_bytes
 from ebook_converter.polyglot.urllib import urldefrag
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2011, John Schember <john@nachtimwald.com>'
+__docformat__ = 'restructuredtext en'
 
 SELF_CLOSING_TAGS = {'area', 'base', 'basefont', 'br', 'hr', 'input', 'img', 'link', 'meta'}
 

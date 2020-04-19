@@ -1,15 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
+"""
 Read content from Haodoo.net pdb file.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kan-Ru Chen <kanru@kanru.info>'
-__docformat__ = 'restructuredtext en'
-
-
+"""
 import struct
 import os
 
@@ -18,6 +9,11 @@ from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.metadata import MetaInformation
 from ebook_converter.ebooks.txt.processor import opf_writer, HTML_TEMPLATE
 from ebook_converter.polyglot.builtins import range, map
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kan-Ru Chen <kanru@kanru.info>'
+__docformat__ = 'restructuredtext en'
 
 BPDB_IDENT = b'BOOKMTIT'
 UPDB_IDENT = b'BOOKMTIU'

@@ -1,6 +1,3 @@
-#!/usr/bin/python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-#
 # Copyright (C) 2006 Søren Roug, European Environment Agency
 #
 # This is free software.  You may redistribute it under the terms
@@ -18,8 +15,6 @@
 #
 # Contributor(s):
 #
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import io
 import json
 import os
@@ -38,6 +33,7 @@ from odf.draw import Frame as odFrame, Image as odImage
 from odf.namespaces import DCNS, METANS, OFFICENS
 from odf.opendocument import load as odLoad
 from ebook_converter.polyglot.builtins import as_unicode
+
 
 fields = {
     'title':            (DCNS, 'title'),

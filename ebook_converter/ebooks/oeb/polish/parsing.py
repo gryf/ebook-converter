@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import re
 
 from lxml.etree import Element as LxmlElement
@@ -15,6 +8,10 @@ from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.polyglot.builtins import unicode_type
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 XHTML_NS     = 'http://www.w3.org/1999/xhtml'
 

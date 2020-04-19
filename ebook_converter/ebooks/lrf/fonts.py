@@ -1,16 +1,13 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-
+"""
+Default fonts used in the PRS500
+"""
 from PIL import ImageFont
 
 from ebook_converter.utils.fonts.scanner import font_scanner
 
-'''
-Default fonts used in the PRS500
-'''
 
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 LIBERATION_FONT_MAP = {'Swis721 BT Roman': 'Liberation Sans Regular',
                        'Dutch801 Rm BT Roman': 'Liberation Serif Regular',

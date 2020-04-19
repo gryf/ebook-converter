@@ -1,13 +1,6 @@
-# -*- encoding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
+"""
 CSS property propagation class.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
-
+"""
 import os, re, logging, copy, unicodedata, numbers
 import pkg_resources
 from operator import itemgetter
@@ -24,6 +17,10 @@ from ebook_converter.ebooks.oeb.normalize_css import DEFAULTS, normalizers
 from ebook_converter.css_selectors import Select, SelectorError, INAPPROPRIATE_PSEUDO_CLASSES
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, filter
 from ebook_converter.tinycss.media3 import CSSMedia3Parser
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 css_parser_log.setLevel(logging.WARN)
 

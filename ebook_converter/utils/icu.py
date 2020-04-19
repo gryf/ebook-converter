@@ -1,24 +1,19 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
+import codecs
+import sys
+import unicodedata
+
+# Setup code {{{
+from ebook_converter.constants import plugins
+from ebook_converter.polyglot.builtins import unicode_type, cmp
+from ebook_converter.polyglot.builtins import filter
+from ebook_converter.utils.config_base import tweaks
+
 
 __license__   = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-import sys
-import unicodedata
-from ebook_converter.polyglot.builtins import filter
-
 is_narrow_build = sys.maxunicode < 0x10ffff
-
-# Setup code {{{
-import codecs
-
-from ebook_converter.constants import plugins
-from ebook_converter.utils.config_base import tweaks
-from ebook_converter.polyglot.builtins import unicode_type, cmp
-
 _locale = _collator = _primary_collator = _sort_collator = _numeric_collator = _case_sensitive_collator = None
 cmp
 

@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import numbers
 from collections import Counter, defaultdict
 from operator import attrgetter
@@ -16,6 +9,10 @@ from ebook_converter.ebooks.docx.writer.utils import convert_color, int_or_zero
 from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.polyglot.builtins import iteritems, filter, unicode_type
 from ebook_converter.tinycss.css21 import CSS21Parser
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 
 css_parser = CSS21Parser()
 

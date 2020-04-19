@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import re, codecs, os, numbers
 from collections import namedtuple
 
@@ -15,6 +7,11 @@ from ebook_converter.library.catalogs import FIELDS, TEMPLATE_ALLOWED_FIELDS
 from ebook_converter.customize.conversion import DummyReporter
 from ebook_converter.ebooks.metadata import format_isbn
 from ebook_converter.polyglot.builtins import filter, string_or_bytes, unicode_type
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 
 class BIBTEX(CatalogPlugin):

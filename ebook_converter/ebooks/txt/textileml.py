@@ -1,13 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '2011, Leigh Parry <leighparry@blueyonder.co.uk>'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Transform OEB content into Textile formatted plain text
-'''
+"""
 import re
 
 from functools import partial
@@ -18,6 +11,11 @@ from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.ebooks import unit_convert
 from ebook_converter.ebooks.textile.unsmarten import unsmarten
 from ebook_converter.polyglot.builtins import string_or_bytes
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2011, Leigh Parry <leighparry@blueyonder.co.uk>'
+__docformat__ = 'restructuredtext en'
 
 
 class TextileMLizer(OEB2HTML):

@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import io
 import os
 import tempfile
@@ -12,6 +5,11 @@ import tempfile
 from tinycss.css21 import CSS21Parser
 from tinycss.tests.tokenizing import jsonify
 from tinycss.tests import BaseTest
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
+
 
 class CoreParser(CSS21Parser):
     """A parser that always accepts unparsed at-rules."""

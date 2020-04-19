@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import numbers
 from functools import wraps
 
@@ -13,6 +6,10 @@ from css_parser import profile as cssprofiles, CSSParser
 from ebook_converter.tinycss.fonts3 import parse_font, serialize_font_family
 from ebook_converter.ebooks.oeb.base import css_text
 from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, unicode_type, zip
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 DEFAULTS = {'azimuth': 'center', 'background-attachment': 'scroll',  # {{{
             'background-color': 'transparent', 'background-image': 'none',

@@ -1,14 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '''2011, John Schember <john@nachtimwald.com>
-2011, Leigh Parry <leighparry@blueyonder.co.uk>'''
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Transform OEB content into Textile formatted plain text
-'''
+"""
 import re
 
 from functools import partial
@@ -17,6 +9,12 @@ from ebook_converter.ebooks.htmlz.oeb2html import OEB2HTML
 from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS, barename, namespace, rewrite_links
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
+
+
+__license__ = 'GPL 3'
+__copyright__ = ('2011, John Schember <john@nachtimwald.com> 2011, '
+                 'Leigh Parry <leighparry@blueyonder.co.uk>')
+__docformat__ = 'restructuredtext en'
 
 
 class MarkdownMLizer(OEB2HTML):

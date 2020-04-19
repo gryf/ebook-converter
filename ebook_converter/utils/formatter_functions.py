@@ -1,17 +1,8 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-
-'''
+"""
 Created on 13 Jan 2011
 
 @author: charles
-'''
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
+"""
 import inspect, re, traceback, numbers
 from math import trunc
 
@@ -24,6 +15,11 @@ from ebook_converter.utils.icu import capitalize, strcmp, sort_key
 from ebook_converter.utils.date import parse_date, format_date, now, UNDEFINED_DATE
 from ebook_converter.utils.localization import calibre_langcode_to_name, canonicalize_lang
 from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 
 class FormatterFunctions(object):

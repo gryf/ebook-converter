@@ -1,13 +1,6 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Manage application-wide preferences.
-'''
-
+"""
 import optparse
 import os
 from copy import deepcopy
@@ -22,6 +15,11 @@ from ebook_converter.utils.config_base import (
 )
 from ebook_converter.utils.lock import ExclusiveFile
 from ebook_converter.polyglot.builtins import string_or_bytes, native_string_type
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
+__docformat__ = 'restructuredtext en'
 
 
 # optparse uses gettext.gettext instead of _ from builtins, so we

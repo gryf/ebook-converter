@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 import os
 
@@ -17,7 +10,15 @@ from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils.imghdr import what
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
-PLACEHOLDER_GIF = b'GIF89a\x01\x00\x01\x00\xf0\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00!\xfe calibre-placeholder-gif-for-azw3\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'  # noqa
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
+
+PLACEHOLDER_GIF = (b'GIF89a\x01\x00\x01\x00\xf0\x00\x00\x00\x00\x00\xff\xff'
+                   b'\xff!\xf9\x04\x01\x00\x00\x00\x00!\xfe calibre-placeho'
+                   b'lder-gif-for-azw3\x00,\x00\x00\x00\x00\x01\x00\x01\x00'
+                   b'\x00\x02\x02D\x01\x00;')
 
 
 class Resources(object):

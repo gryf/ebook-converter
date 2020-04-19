@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
+"""
 Read the header data from a pdb file.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
+"""
 
 import re
 import struct
 import time
 from ebook_converter.polyglot.builtins import long_type
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2009, John Schember <john@nachtimwald.com>'
+__docformat__ = 'restructuredtext en'
 
 
 class PdbHeaderReader(object):

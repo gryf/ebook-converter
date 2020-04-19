@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 # Copyright (c) 2007 Mike Higgins (Falstaff)
 # Modifications from the original:
 #    Copyright (C) 2007 Kovid Goyal <kovid@kovidgoyal.net>
@@ -37,7 +35,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 #   Other unsupported tags: PageDiv, SoundStop, Wait, pos,
 #                           Plot, Image (outside of ImageBlock),
 #                           EmpLine, EmpDots
-
 import os, re, codecs, operator, io
 from xml.sax.saxutils import escape
 from datetime import date

@@ -1,20 +1,17 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Convert OEB ebook format to PDF.
-'''
-
+"""
 import glob, os
 
 from ebook_converter.customize.conversion import (OutputFormatPlugin,
     OptionRecommendation)
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.polyglot.builtins import iteritems, unicode_type
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 UNITS = ('millimeter', 'centimeter', 'point', 'inch' , 'pica' , 'didot',
         'cicero', 'devicepixel')

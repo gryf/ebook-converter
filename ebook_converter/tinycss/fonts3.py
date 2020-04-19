@@ -1,15 +1,12 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
-
-
 import re
+
 from ebook_converter.polyglot.builtins import map
 from ebook_converter.tinycss.css21 import CSS21Parser, ParseError
 from ebook_converter.tinycss.tokenizer import tokenize_grouped
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def parse_font_family_tokens(tokens):

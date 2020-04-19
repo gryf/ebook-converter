@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import os, sys, shutil
 
 from lxml import etree
@@ -19,6 +12,10 @@ from ebook_converter.utils.localization import canonicalize_lang
 from ebook_converter.utils.logging import default_log
 from ebook_converter.utils.zipfile import ZipFile
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def fromstring(raw, parser=None):

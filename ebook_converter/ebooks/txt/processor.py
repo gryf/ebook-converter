@@ -1,15 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
-
-'''
+"""
 Read content from txt file.
-'''
-
+"""
 import os, re
 
 from ebook_converter import prepare_string_for_xml, isbytestring
@@ -18,6 +9,11 @@ from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.ebooks.conversion.preprocess import DocAnalysis
 from ebook_converter.utils.cleantext import clean_ascii_chars
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, map, range, long_type
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2009, John Schember <john@nachtimwald.com>'
+__docformat__ = 'restructuredtext en'
 
 HTML_TEMPLATE = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>%s </title></head><body>\n%s\n</body></html>'
 

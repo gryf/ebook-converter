@@ -1,12 +1,10 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
+from tinycss.decoding import decode
+from tinycss.tests import BaseTest
+
 
 __license__ = 'GPL v3'
 __copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
-from tinycss.decoding import decode
-from tinycss.tests import BaseTest
 
 def params(css, encoding, use_bom=False, expect_error=False, **kwargs):
     """Nicer syntax to make a tuple."""

@@ -1,18 +1,14 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
+"""
 Read content from palmdoc pdb file.
-'''
+"""
+from ebook_converter.ebooks.pdb.formatreader import FormatReader
+from ebook_converter.ptempfile import PersistentTemporaryFile
+from ebook_converter.polyglot.builtins import range
+
 
 __license__   = 'GPL v3'
 __copyright__ = '2010, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
-
-
-from ebook_converter.ebooks.pdb.formatreader import FormatReader
-from ebook_converter.ptempfile import PersistentTemporaryFile
-from ebook_converter.polyglot.builtins import range
 
 
 class Reader(FormatReader):

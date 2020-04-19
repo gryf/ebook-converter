@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import codecs, zlib, numbers
 from io import BytesIO
 from datetime import datetime
@@ -14,6 +6,11 @@ from ebook_converter.constants import ispy3
 from ebook_converter.utils.logging import default_log
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, codepoint_to_chr
 from ebook_converter.polyglot.binary import as_hex_bytes
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 pdf_float = lambda x: f"{x:.1f}"
 

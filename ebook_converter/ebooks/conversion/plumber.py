@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL 3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import os, re, sys, shutil, pprint, json
 from functools import partial
 
@@ -21,6 +14,11 @@ from ebook_converter import (extract, walk, isbytestring, filesystem_encoding,
         get_types_map)
 from ebook_converter.constants import __version__
 from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, map
+
+
+__license__ = 'GPL 3'
+__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 DEBUG_README=b'''
 This debug directory contains snapshots of the e-book as it passes through the

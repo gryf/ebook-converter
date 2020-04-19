@@ -1,14 +1,8 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Splitting of the XHTML flows. Splitting can happen on page boundaries or can be
 forced at "likely" locations to conform to size limitations. This transform
 assumes a prior call to the flatcss transform.
-'''
-
+"""
 import os, functools, collections, re, copy
 from collections import OrderedDict
 
@@ -24,6 +18,10 @@ from ebook_converter.polyglot.builtins import iteritems, range, map, unicode_typ
 from ebook_converter.polyglot.urllib import unquote
 from ebook_converter.css_selectors import Select, SelectorError
 
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
+__docformat__ = 'restructuredtext en'
 XPath = functools.partial(_XPath, namespaces=NAMESPACES)
 
 SPLIT_POINT_ATTR = 'csp'

@@ -1,17 +1,4 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
-import os, sys
-
-from ebook_converter.polyglot.builtins import reraise
-
-from ebook_converter.constants import iswindows, plugins, ispy3
-
-'''
+"""
 This module defines a share_open() function which is a replacement for
 python's builtin open() function.
 
@@ -26,7 +13,15 @@ delete a file that is open, you cannot open a new file with the same filename
 until all open file handles are closed. You also cannot delete the containing
 directory until all file handles are closed. To get around this, rename the
 file before deleting it.
-'''
+"""
+import os, sys
+
+from ebook_converter.polyglot.builtins import reraise
+from ebook_converter.constants import iswindows, plugins, ispy3
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 
 # speedup, err = plugins['speedup']
 

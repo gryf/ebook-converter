@@ -1,7 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 import math, sys, re, numbers
 
 from ebook_converter.ebooks.lrf.fonts import get_font
@@ -9,6 +5,10 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import TextBlock, Text, CR, Span, \
                                              CharButton, Plot, Paragraph, \
                                              LrsTextTag
 from ebook_converter.polyglot.builtins import string_or_bytes, range, native_string_type
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def ceil(num):

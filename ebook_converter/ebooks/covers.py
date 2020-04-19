@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import re, random, unicodedata, numbers
 from collections import namedtuple
 from contextlib import contextmanager
@@ -26,6 +19,10 @@ from ebook_converter.ebooks.metadata.book.formatter import SafeFormat
 from ebook_converter.gui2 import ensure_app, config, load_builtin_fonts, pixmap_to_data
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
 from ebook_converter.utils.config import JSONConfig
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 # Default settings {{{
 cprefs = JSONConfig('cover_generation')

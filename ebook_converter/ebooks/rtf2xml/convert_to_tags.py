@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, absolute_import, print_function, division
 import os, sys
 
 from ebook_converter.ebooks.rtf2xml import copy, check_encoding

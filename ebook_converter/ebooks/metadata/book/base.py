@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import copy, traceback
 
 from ebook_converter import prints
@@ -16,6 +8,11 @@ from ebook_converter.ebooks.metadata.book import (SC_COPYABLE_FIELDS,
 from ebook_converter.library.field_metadata import FieldMetadata
 from ebook_converter.utils.icu import sort_key
 from ebook_converter.polyglot.builtins import iteritems, unicode_type, filter, map
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 # Special sets used to optimize the performance of getting and setting
 # attributes on Metadata objects

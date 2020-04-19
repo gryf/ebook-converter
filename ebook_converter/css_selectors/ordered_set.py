@@ -1,12 +1,10 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
+import collections
+
+from ebook_converter.polyglot.builtins import string_or_bytes
+
 
 __license__ = 'GPL v3'
 __copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
-import collections
-from ebook_converter.polyglot.builtins import string_or_bytes
 
 SLICE_ALL = slice(None)
 

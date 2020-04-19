@@ -1,7 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import os, shutil, traceback, functools, sys
 from collections import defaultdict
 from itertools import chain
@@ -23,6 +19,10 @@ from ebook_converter.utils.config import (make_config_dir, Config, ConfigProxy,
 # from ebook_converter.ebooks.metadata.sources.base import Source
 from ebook_converter.constants import DEBUG, numeric_version
 from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 builtin_names = frozenset(p.name for p in builtin_plugins)
 BLACKLISTED_PLUGINS = frozenset({'Marvin XD', 'iOS reader applications'})

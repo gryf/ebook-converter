@@ -1,4 +1,3 @@
-# coding: utf8
 """
     tinycss.parsing
     ---------------
@@ -8,11 +7,8 @@
     :copyright: (c) 2012 by Simon Sapin.
     :license: BSD, see LICENSE for more details.
 """
-
-from __future__ import unicode_literals
-
-
 # TODO: unit tests
+
 
 def split_on_comma(tokens):
     """Split a list of tokens on commas, ie ``,`` DELIM tokens.

@@ -1,10 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import os, re
 from collections import namedtuple
 
@@ -14,6 +7,10 @@ from ebook_converter.utils.fonts.scanner import font_scanner, NoFonts
 from ebook_converter.utils.fonts.utils import panose_to_css_generic_family, is_truetype_font
 from ebook_converter.utils.icu import ord_string
 from ebook_converter.polyglot.builtins import codepoint_to_chr, iteritems, range
+
+
+__license__ = 'GPL v3'
+__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 Embed = namedtuple('Embed', 'name key subsetted')
 

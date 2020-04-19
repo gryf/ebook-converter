@@ -1,12 +1,6 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2011, Roman Mukhin <ramses_ru at hotmail.com>, '\
-                '2008, Anatoly Shipitsin <norguhtar at gmail.com>'
-'''Read meta information from fb2 files'''
-
+"""
+Read meta information from fb2 files
+"""
 import os, random
 from functools import partial
 from string import ascii_letters, digits
@@ -22,6 +16,11 @@ from ebook_converter.ebooks.metadata import MetaInformation, check_isbn
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.polyglot.builtins import unicode_type
 from ebook_converter.polyglot.binary import as_base64_unicode
+
+
+__license__   = 'GPL v3'
+__copyright__ = ('2011, Roman Mukhin <ramses_ru at hotmail.com>, '
+                 '2008, Anatoly Shipitsin <norguhtar at gmail.com>')
 
 
 NAMESPACES = {

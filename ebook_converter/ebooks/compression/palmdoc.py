@@ -1,20 +1,12 @@
-#!/usr/bin/env  python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-
 import io
 from struct import pack
 
-from ebook_converter.constants import plugins
 from ebook_converter.ebooks.compression import cPalmdoc
 from ebook_converter.polyglot.builtins import range
-#cPalmdoc = plugins['cPalmdoc'][0]
-#if not cPalmdoc:
-#    raise RuntimeError(('Failed to load required cPalmdoc module: '
-#            '%s')%plugins['cPalmdoc'][1])
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def decompress_doc(data):

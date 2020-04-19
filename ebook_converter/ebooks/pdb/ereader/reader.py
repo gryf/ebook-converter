@@ -1,18 +1,15 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
+"""
 Read content from ereader pdb file.
-'''
-
-__license__   = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
+"""
 from ebook_converter.ebooks.pdb.ereader import EreaderError
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.pdb.ereader.reader132 import Reader132
 from ebook_converter.ebooks.pdb.ereader.reader202 import Reader202
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2009, John Schember <john@nachtimwald.com>'
+__docformat__ = 'restructuredtext en'
 
 
 class Reader(FormatReader):

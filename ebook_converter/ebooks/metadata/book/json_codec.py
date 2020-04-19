@@ -1,11 +1,8 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-'''
+"""
 Created on 4 Jun 2010
 
 @author: charles
-'''
-
+"""
 import json, traceback
 from datetime import datetime, time
 
@@ -15,6 +12,7 @@ from ebook_converter.library.field_metadata import FieldMetadata
 from ebook_converter import isbytestring
 from ebook_converter.polyglot.builtins import iteritems, itervalues, as_bytes
 from ebook_converter.polyglot.binary import as_base64_unicode, from_base64_bytes
+
 
 # Translate datetimes to and from strings. The string form is the datetime in
 # UTC. The returned date is also UTC

@@ -1,9 +1,6 @@
-#!/usr/bin/env python2
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 """
-    pylrf.py -- very low level interface to create lrf files.  See pylrs for
-    higher level interface that can use this module to render books to lrf.
+pylrf.py -- very low level interface to create lrf files.  See pylrs for
+higher level interface that can use this module to render books to lrf.
 """
 import struct
 import zlib

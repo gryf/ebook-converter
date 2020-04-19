@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-
-__license__   = 'GPL v3'
-__copyright__ = '20011, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
 import os
 import struct
 import zlib
@@ -18,6 +10,11 @@ from ebook_converter.ebooks.compression.palmdoc import decompress_doc
 from ebook_converter.utils.imghdr import identify
 from ebook_converter.utils.img import save_cover_data_to, Canvas, image_from_data
 from ebook_converter.polyglot.builtins import codepoint_to_chr, range
+
+
+__license__   = 'GPL v3'
+__copyright__ = '20011, John Schember <john@nachtimwald.com>'
+__docformat__ = 'restructuredtext en'
 
 DATATYPE_PHTML = 0
 DATATYPE_PHTML_COMPRESSED = 1

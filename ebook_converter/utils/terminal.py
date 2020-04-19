@@ -1,19 +1,25 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:fdm=marker:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
+import os, sys, re
+
+try:
+    import ctypes.wintypes
+    iswindows = True
+except ValueError:
+    iswindows = False
+
+from ebook_converter.constants import ispy3
+from ebook_converter.polyglot.builtins import iteritems, range, zip, native_string_type
+
 
 __license__   = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-import os, sys, re
 
-from ebook_converter.constants import iswindows, ispy3
-from ebook_converter.polyglot.builtins import iteritems, range, zip, native_string_type
+def fmt(code):
+    return '\033[%dm' % code
+
 
 if iswindows:
-    import ctypes.wintypes
-
     class CONSOLE_SCREEN_BUFFER_INFO(ctypes.Structure):
         _fields_ = [
             ('dwSize', ctypes.wintypes._COORD),
@@ -22,10 +28,6 @@ if iswindows:
             ('srWindow', ctypes.wintypes._SMALL_RECT),
             ('dwMaximumWindowSize', ctypes.wintypes._COORD)
         ]
-
-
-def fmt(code):
-    return '\033[%dm' % code
 
 
 RATTRIBUTES = dict(

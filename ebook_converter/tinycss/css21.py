@@ -1,4 +1,3 @@
-# coding: utf8
 """
     tinycss.css21
     -------------
@@ -9,8 +8,6 @@
     :copyright: (c) 2012 by Simon Sapin.
     :license: BSD, see LICENSE for more details.
 """
-
-from __future__ import unicode_literals
 from itertools import chain, islice
 
 from ebook_converter.tinycss.decoding import decode

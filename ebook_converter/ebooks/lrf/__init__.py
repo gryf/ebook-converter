@@ -1,18 +1,17 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 """
 This package contains logic to read and write LRF files.
-The LRF file format is documented at U{http://www.sven.de/librie/Librie/LrfFormat}.
+The LRF file format is documented at
+http://www.sven.de/librie/Librie/LrfFormat.
 """
-
 from ebook_converter.ebooks.lrf.pylrs.pylrs import Book as _Book
 from ebook_converter.ebooks.lrf.pylrs.pylrs import TextBlock, Header, \
                                              TextStyle, BlockStyle
 from ebook_converter.ebooks.lrf.fonts import FONT_FILE_MAP
 from ebook_converter.ebooks import ConversionError
 
+
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 __docformat__ = "epytext"
 
 

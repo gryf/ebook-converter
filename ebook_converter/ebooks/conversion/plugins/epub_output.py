@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-__license__   = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import os, shutil, re
 
 from ebook_converter.customize.conversion import (OutputFormatPlugin,
@@ -13,6 +5,11 @@ from ebook_converter.customize.conversion import (OutputFormatPlugin,
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter import CurrentDir
 from ebook_converter.polyglot.builtins import unicode_type, filter, map, zip, range, as_bytes
+
+
+__license__   = 'GPL v3'
+__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
+__docformat__ = 'restructuredtext en'
 
 block_level_tags = (
       'address',

@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-'''
+"""
 Defines the plugin system for conversions.
-'''
+"""
 import re, os, shutil, numbers
 
 from ebook_converter import CurrentDir

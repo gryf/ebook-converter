@@ -1,12 +1,10 @@
-#!/usr/bin/env  python2
-from __future__ import absolute_import, division, print_function, unicode_literals
+from struct import pack
+from ebook_converter.utils.localization import lang_as_iso639_1
+
 
 __license__   = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
 __docformat__ = 'restructuredtext en'
-
-from struct import pack
-from ebook_converter.utils.localization import lang_as_iso639_1
 
 lang_codes = {
         }
