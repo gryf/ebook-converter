@@ -7,17 +7,17 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 import os, subprocess, shutil, re
 from functools import partial
 
-from calibre import prints
-from calibre.constants import iswindows, ispy3
-from calibre.ptempfile import TemporaryDirectory
-from calibre.ebooks.metadata import (
+from ebook_converter import prints
+from ebook_converter.constants import iswindows, ispy3
+from ebook_converter.ptempfile import TemporaryDirectory
+from ebook_converter.ebooks.metadata import (
     MetaInformation, string_to_authors, check_isbn, check_doi)
-from calibre.utils.ipc.simple_worker import fork_job, WorkerError
-from polyglot.builtins import iteritems, unicode_type
+from ebook_converter.utils.ipc.simple_worker import fork_job, WorkerError
+from ebook_converter.polyglot.builtins import iteritems, unicode_type
 
 
 def get_tools():
-    from calibre.ebooks.pdf.pdftohtml import PDFTOHTML
+    from ebook_converter.ebooks.pdf.pdftohtml import PDFTOHTML
     base = os.path.dirname(PDFTOHTML)
     suffix = '.exe' if iswindows else ''
     pdfinfo = os.path.join(base, 'pdfinfo') + suffix
@@ -32,12 +32,14 @@ def read_info(outputdir, get_cover):
     way to pass unicode paths via command line arguments. This also ensures
     that if poppler crashes, no stale file handles are left for the original
     file, only for src.pdf.'''
-    os.chdir(outputdir)
     pdfinfo, pdftoppm = get_tools()
+    source_file = os.path.join(outputdir, 'src.pdf')
+    cover_file = os.path.join(outputdir, 'cover')
     ans = {}
 
     try:
-        raw = subprocess.check_output([pdfinfo, '-enc', 'UTF-8', '-isodates', 'src.pdf'])
+        raw = subprocess.check_output([pdfinfo, '-enc', 'UTF-8', '-isodates',
+                                       source_file])
     except subprocess.CalledProcessError as e:
         prints('pdfinfo errored out with return code: %d'%e.returncode)
         return None
@@ -61,7 +63,7 @@ def read_info(outputdir, get_cover):
     # https://cgit.freedesktop.org/poppler/poppler/commit/?id=c91483aceb1b640771f572cb3df9ad707e5cad0d
     # we can no longer rely on it.
     try:
-        raw = subprocess.check_output([pdfinfo, '-meta', 'src.pdf']).strip()
+        raw = subprocess.check_output([pdfinfo, '-meta', source_file]).strip()
     except subprocess.CalledProcessError as e:
         prints('pdfinfo failed to read XML metadata with return code: %d'%e.returncode)
     else:
@@ -74,8 +76,8 @@ def read_info(outputdir, get_cover):
 
     if get_cover:
         try:
-            subprocess.check_call([pdftoppm, '-singlefile', '-jpeg', '-cropbox',
-                'src.pdf', 'cover'])
+            subprocess.check_call([pdftoppm, '-singlefile', '-jpeg',
+                                   '-cropbox', source_file, cover_file])
         except subprocess.CalledProcessError as e:
             prints('pdftoppm errored out with return code: %d'%e.returncode)
 
@@ -114,17 +116,7 @@ def get_metadata(stream, cover=True):
         stream.seek(0)
         with open(os.path.join(pdfpath, 'src.pdf'), 'wb') as f:
             shutil.copyfileobj(stream, f)
-        try:
-            res = fork_job('calibre.ebooks.metadata.pdf', 'read_info',
-                    (pdfpath, bool(cover)))
-        except WorkerError as e:
-            prints(e.orig_tb)
-            raise RuntimeError('Failed to run pdfinfo')
-        info = res['result']
-        with open(res['stdout_stderr'], 'rb') as f:
-            raw = f.read().strip()
-            if raw:
-                prints(raw)
+        info = read_info(pdfpath, bool(cover))
         if info is None:
             raise ValueError('Could not read info dict from PDF')
         covpath = os.path.join(pdfpath, 'cover.jpg')
@@ -140,8 +132,6 @@ def get_metadata(stream, cover=True):
     else:
         au = string_to_authors(au)
     mi = MetaInformation(title, au)
-    # if isbn is not None:
-    #    mi.isbn = isbn
 
     creator = info.get('Creator', None)
     if creator:
@@ -161,7 +151,7 @@ def get_metadata(stream, cover=True):
         mi.tags.insert(0, subject)
 
     if 'xmp_metadata' in info:
-        from calibre.ebooks.metadata.xmp import consolidate_metadata
+        from ebook_converter.ebooks.metadata.xmp import consolidate_metadata
         mi = consolidate_metadata(mi, info)
 
     # Look for recognizable identifiers in the info dict, if they were not
@@ -182,9 +172,8 @@ def get_metadata(stream, cover=True):
 
 get_quick_metadata = partial(get_metadata, cover=False)
 
-from calibre.utils.podofo import set_metadata as podofo_set_metadata
+#from ebook_converter.utils.podofo import set_metadata as podofo_set_metadata
 
 
 def set_metadata(stream, mi):
-    stream.seek(0)
-    return podofo_set_metadata(stream, mi)
+    return None

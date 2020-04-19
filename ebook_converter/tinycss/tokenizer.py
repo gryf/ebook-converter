@@ -14,7 +14,7 @@
 
 from __future__ import unicode_literals
 
-from tinycss import token_data
+from ebook_converter.tinycss import token_data
 
 
 def tokenize_flat(css_source, ignore_comments=True,

@@ -13,10 +13,10 @@
 from __future__ import unicode_literals
 from itertools import chain, islice
 
-from tinycss.decoding import decode
-from tinycss.token_data import TokenList
-from tinycss.tokenizer import tokenize_grouped
-from tinycss.parsing import (
+from ebook_converter.tinycss.decoding import decode
+from ebook_converter.tinycss.token_data import TokenList
+from ebook_converter.tinycss.tokenizer import tokenize_grouped
+from ebook_converter.tinycss.parsing import (
     strip_whitespace, remove_whitespace, split_on_comma, validate_value,
     validate_any, ParseError)
 

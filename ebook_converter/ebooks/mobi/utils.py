@@ -14,7 +14,7 @@ from ebook_converter.utils.img import save_cover_data_to, scale_image, image_to_
 from ebook_converter.utils.imghdr import what
 from ebook_converter.ebooks import normalize
 from ebook_converter.polyglot.builtins import unicode_type, range, as_bytes, map
-from tinycss.color3 import parse_color_string
+from ebook_converter.tinycss.color3 import parse_color_string
 
 IMAGE_MAX_SIZE = 10 * 1024 * 1024
 RECORD_SIZE = 0x1000  # 4096 (Text record size (uncompressed))

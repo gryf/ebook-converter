@@ -500,7 +500,6 @@ class Style(object):
         background shortcut properties. Note that inheritance/default values
         are not used. None is returned if no background color is set.
         '''
-
         def validate_color(col):
             return cssprofiles.validateWithProfile('color',
                         col,

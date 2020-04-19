@@ -41,8 +41,7 @@ class PDFInput(InputFormatPlugin):
         PDFDocument(xml, self.opts, self.log)
         return os.path.join(getcwd(), 'metadata.opf')
 
-    def convert(self, stream, options, file_ext, log,
-                accelerators):
+    def convert(self, stream, options, file_ext, log, accelerators):
         from ebook_converter.ebooks.metadata.opf2 import OPFCreator
         from ebook_converter.ebooks.pdf.pdftohtml import pdftohtml
 

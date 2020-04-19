@@ -471,7 +471,7 @@ class HTMLPreProcessor(object):
         return re.search('<H2[^><]*id=BookTitle', raw) is not None
 
     def is_pdftohtml(self, src):
-        return '<!-- created by calibre\'s pdftohtml -->' in src[:1000]
+        return '<!-- created by ebook-converter\'s pdftohtml -->' in src[:1000]
 
     def __call__(self, html, remove_special_chars=None,
             get_preprocess_html=False):
@@ -627,7 +627,7 @@ class HTMLPreProcessor(object):
             html = preprocessor(html)
 
         if is_pdftohtml:
-            html = html.replace('<!-- created by calibre\'s pdftohtml -->', '')
+            html = html.replace('<!-- created by ebook-converter\'s pdftohtml -->', '')
 
         if getattr(self.extra_opts, 'smarten_punctuation', False):
             html = smarten_punctuation(html, self.log)

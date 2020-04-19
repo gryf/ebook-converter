@@ -53,6 +53,8 @@ Currently, I've tested following input formats:
 - rtf
 - mobi
 - fb2
+- html
+- pdf
 
 Note, that old Microsoft doc format is not supported, although old documents
 can be fairly easy converted using text processors programs, lik Word or
@@ -68,6 +70,7 @@ Currently, following formats are supported:
 - epub
 - mobi
 - docx
+- htmlz (zipped HTML file with additional assets, like images)
 
 
 Installation

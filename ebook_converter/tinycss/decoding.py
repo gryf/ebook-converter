@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 import operator
 import re
 
-from polyglot.binary import from_hex_bytes
+from ebook_converter.polyglot.binary import from_hex_bytes
 
 
 __all__ = ['decode']  # Everything else is implementation detail

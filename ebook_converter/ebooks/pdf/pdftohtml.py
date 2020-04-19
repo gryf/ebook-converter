@@ -98,7 +98,7 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
             with lopen(index, 'r+b') as i:
                 raw = i.read().decode('utf-8', 'replace')
                 raw = flip_images(raw)
-                raw = raw.replace('<head', '<!-- created by ebook_converter\'s pdftohtml -->\n  <head', 1)
+                raw = raw.replace('<head', '<!-- created by ebook-converter\'s pdftohtml -->\n  <head', 1)
                 i.seek(0)
                 i.truncate()
                 # versions of pdftohtml >= 0.20 output self closing <br> tags, this

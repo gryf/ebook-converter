@@ -12,14 +12,14 @@ from collections import defaultdict
 from lxml import etree
 from lxml.builder import ElementMaker
 
-from calibre import prints
-from calibre.ebooks.metadata import check_isbn, check_doi
-from calibre.utils.xml_parse import safe_xml_fromstring
-from calibre.ebooks.metadata.book.base import Metadata
-from calibre.ebooks.metadata.opf2 import dump_dict
-from calibre.utils.date import parse_date, isoformat, now
-from calibre.utils.localization import canonicalize_lang, lang_as_iso639_1
-from polyglot.builtins import iteritems, string_or_bytes, filter
+from ebook_converter import prints
+from ebook_converter.ebooks.metadata import check_isbn, check_doi
+from ebook_converter.utils.xml_parse import safe_xml_fromstring
+from ebook_converter.ebooks.metadata.book.base import Metadata
+from ebook_converter.ebooks.metadata.opf2 import dump_dict
+from ebook_converter.utils.date import parse_date, isoformat, now
+from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
+from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, filter
 
 _xml_declaration = re.compile(r'<\?xml[^<>]+encoding\s*=\s*[\'"](.*?)[\'"][^<>]*>', re.IGNORECASE)
 
@@ -173,8 +173,8 @@ def read_series(root):
 
 
 def read_user_metadata(mi, root):
-    from calibre.utils.config import from_json
-    from calibre.ebooks.metadata.book.json_codec import decode_is_multiple
+    from ebook_converter.utils.config import from_json
+    from ebook_converter.ebooks.metadata.book.json_codec import decode_is_multiple
     fields = set()
     for item in XPath('//calibre:custom_metadata')(root):
         for li in XPath('./rdf:Bag/rdf:li')(item):
@@ -436,8 +436,8 @@ def create_series(calibre, series, series_index):
 
 
 def create_user_metadata(calibre, all_user_metadata):
-    from calibre.utils.config import to_json
-    from calibre.ebooks.metadata.book.json_codec import object_to_unicode, encode_is_multiple
+    from ebook_converter.utils.config import to_json
+    from ebook_converter.ebooks.metadata.book.json_codec import object_to_unicode, encode_is_multiple
 
     s = calibre.makeelement(expand('calibre:custom_metadata'))
     calibre.append(s)
@@ -640,7 +640,7 @@ def merge_xmp_packet(old, new):
 
 
 if __name__ == '__main__':
-    from calibre.utils.podofo import get_xmp_metadata
+    from ebook_converter.utils.podofo import get_xmp_metadata
     xmp_packet = get_xmp_metadata(sys.argv[-1])
     mi = metadata_from_xmp_packet(xmp_packet)
     np = metadata_to_xmp_packet(mi)

@@ -43,7 +43,7 @@ class HeuristicProcessor(object):
         self.common_in_text_beginnings = '[\\w\'\"“‘‛]'
 
     def is_pdftohtml(self, src):
-        return '<!-- created by calibre\'s pdftohtml -->' in src[:1000]
+        return '<!-- created by ebook-converter\'s pdftohtml -->' in src[:1000]
 
     def is_abbyy(self, src):
         return '<meta name="generator" content="ABBYY FineReader' in src[:1000]

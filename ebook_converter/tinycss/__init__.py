@@ -12,9 +12,9 @@
 from .version import VERSION
 __version__ = VERSION
 
-from tinycss.css21 import CSS21Parser
-from tinycss.page3 import CSSPage3Parser
-from tinycss.fonts3 import CSSFonts3Parser
+from ebook_converter.tinycss.css21 import CSS21Parser
+from ebook_converter.tinycss.page3 import CSSPage3Parser
+from ebook_converter.tinycss.fonts3 import CSSFonts3Parser
 from ebook_converter.tinycss.media3 import CSSMedia3Parser
 
 
