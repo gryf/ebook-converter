@@ -4,7 +4,7 @@ from ebook_converter.ebooks.lrf.fonts import get_font
 from ebook_converter.ebooks.lrf.pylrs.pylrs import TextBlock, Text, CR, Span, \
                                              CharButton, Plot, Paragraph, \
                                              LrsTextTag
-from ebook_converter.polyglot.builtins import string_or_bytes, native_string_type
+from ebook_converter.polyglot.builtins import native_string_type
 
 
 __license__ = 'GPL v3'
@@ -40,7 +40,7 @@ def tokens(tb):
             yield 2, None
         elif isinstance(x, Text):
             yield x.text, cattrs(attrs, {})
-        elif isinstance(x, string_or_bytes):
+        elif isinstance(x, (str, bytes)):
             yield x, cattrs(attrs, {})
         elif isinstance(x, (CharButton, LrsTextTag)):
             if x.contents:

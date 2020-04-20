@@ -10,7 +10,7 @@ from tempfile import SpooledTemporaryFile
 from ebook_converter import sanitize_file_name
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.ebooks.chardet import detect
-from ebook_converter.polyglot.builtins import string_or_bytes, getcwd, as_bytes
+from ebook_converter.polyglot.builtins import getcwd, as_bytes
 
 try:
     import zlib  # We may need its compression method
@@ -749,7 +749,7 @@ class ZipFile:
         self.comment = b''
 
         # Check if we were passed a file-like object
-        if isinstance(file, string_or_bytes):
+        if isinstance(file, (str, bytes)):
             self._filePassed = 0
             self.filename = file
             modeDict = {'r' : 'rb', 'w': 'wb', 'a' : 'r+b'}

@@ -21,10 +21,7 @@ def as_bytes(x, encoding='utf-8'):
         return bytes(x)
     if isinstance(x, memoryview):
         return x.tobytes()
-    ans = str(x)
-    if isinstance(ans, str):
-        ans = ans.encode(encoding)
-    return ans
+    return str(x).encode(encoding)
 
 
 def as_unicode(x, encoding='utf-8', errors='strict'):
@@ -45,9 +42,6 @@ def reraise(tp, value, tb=None):
         tb = None
 
 
-string_or_bytes = str, bytes
-string_or_unicode = str
-long_type = int
 raw_input = input
 getcwd = os.getcwd
 getenv = os.getenv

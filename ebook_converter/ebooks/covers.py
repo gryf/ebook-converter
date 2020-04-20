@@ -2,7 +2,7 @@ import re, random, unicodedata, numbers
 from collections import namedtuple
 from contextlib import contextmanager
 from math import ceil, sqrt, cos, sin, atan2
-from ebook_converter.polyglot.builtins import iteritems, itervalues, string_or_bytes
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 from itertools import chain
 
 from PyQt5.Qt import (
@@ -270,7 +270,7 @@ def format_fields(mi, prefs):
 
 @contextmanager
 def preserve_fields(obj, fields):
-    if isinstance(fields, string_or_bytes):
+    if isinstance(fields, (str, bytes)):
         fields = fields.split()
     null = object()
     mem = {f:getattr(obj, f, null) for f in fields}

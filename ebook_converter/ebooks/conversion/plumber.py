@@ -13,7 +13,6 @@ from ebook_converter.utils.zipfile import ZipFile
 from ebook_converter import (extract, walk, isbytestring, filesystem_encoding,
         get_types_map)
 from ebook_converter.constants import __version__
-from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 __license__ = 'GPL 3'
@@ -1023,7 +1022,7 @@ OptionRecommendation(name='search_replace',
 
     def dump_input(self, ret, output_dir):
         out_dir = os.path.join(self.opts.debug_pipeline, 'input')
-        if isinstance(ret, string_or_bytes):
+        if isinstance(ret, (str, bytes)):
             shutil.copytree(output_dir, out_dir)
         else:
             if not os.path.exists(out_dir):
@@ -1216,7 +1215,7 @@ OptionRecommendation(name='search_replace',
         transform_css_rules = ()
         if self.opts.transform_css_rules:
             transform_css_rules = self.opts.transform_css_rules
-            if isinstance(transform_css_rules, string_or_bytes):
+            if isinstance(transform_css_rules, (str, bytes)):
                 transform_css_rules = json.loads(transform_css_rules)
         flattener = CSSFlattener(fbase=fbase, fkey=fkey,
                 lineh=line_height,

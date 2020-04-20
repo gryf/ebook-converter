@@ -14,7 +14,7 @@ from ebook_converter.utils.config_base import (
     tweaks, from_json, to_json
 )
 from ebook_converter.utils.lock import ExclusiveFile
-from ebook_converter.polyglot.builtins import string_or_bytes, native_string_type
+from ebook_converter.polyglot.builtins import native_string_type
 
 
 __license__ = 'GPL v3'
@@ -191,7 +191,7 @@ class OptionParser(optparse.OptionParser):
                 upper.__dict__[dest] = lower.__dict__[dest]
 
     def add_option_group(self, *args, **kwargs):
-        if isinstance(args[0], string_or_bytes):
+        if isinstance(args[0], (str, bytes)):
             args = list(args)
             args[0] = native_string_type(args[0])
         return optparse.OptionParser.add_option_group(self, *args, **kwargs)

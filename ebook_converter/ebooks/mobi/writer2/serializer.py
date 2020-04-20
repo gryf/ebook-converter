@@ -9,7 +9,6 @@ from ebook_converter.ebooks.mobi.utils import is_guide_ref_start
 from ebook_converter.ebooks.oeb.base import (
     OEB_DOCS, XHTML, XHTML_NS, XML_NS, namespace, prefixname, urlnormalize
 )
-from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 __license__ = 'GPL v3'
@@ -306,7 +305,7 @@ class Serializer(object):
 
     def serialize_elem(self, elem, item, nsrmap=NSRMAP):
         buf = self.buf
-        if not isinstance(elem.tag, string_or_bytes) \
+        if not isinstance(elem.tag, (str, bytes)) \
             or namespace(elem.tag) not in nsrmap:
             return
         tag = prefixname(elem.tag, nsrmap)

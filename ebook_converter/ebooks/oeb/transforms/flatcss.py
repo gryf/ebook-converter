@@ -16,7 +16,7 @@ from ebook_converter.ebooks.oeb.base import (XHTML, XHTML_NS, CSS_MIME, OEB_STYL
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils.filenames import ascii_filename, ascii_text
 from ebook_converter.utils.icu import numeric_sort_key
-from ebook_converter.polyglot.builtins import iteritems, string_or_bytes
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -351,7 +351,7 @@ class CSSFlattener(object):
                     cssdict[property] = "%0.5fem" % (value / fsize)
 
     def flatten_node(self, node, stylizer, names, styles, pseudo_styles, psize, item_id, recurse=True):
-        if not isinstance(node.tag, string_or_bytes) \
+        if not isinstance(node.tag, (str, bytes)) \
            or namespace(node.tag) != XHTML_NS:
             return
         tag = barename(node.tag)

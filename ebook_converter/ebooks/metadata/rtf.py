@@ -6,7 +6,7 @@ import re
 
 from ebook_converter import force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation
-from ebook_converter.polyglot.builtins import string_or_bytes, int_to_byte
+from ebook_converter.polyglot.builtins import int_to_byte
 
 title_pat    = re.compile(br'\{\\info.*?\{\\title(.*?)(?<!\\)\}', re.DOTALL)
 author_pat   = re.compile(br'\{\\info.*?\{\\author(.*?)(?<!\\)\}', re.DOTALL)
@@ -156,7 +156,7 @@ def create_metadata(stream, options):
         md.append(r'{\title %s}'%(title,))
     if options.authors:
         au = options.authors
-        if not isinstance(au, string_or_bytes):
+        if not isinstance(au, (str, bytes)):
             au = ', '.join(au)
         author = encode(au)
         md.append(r'{\author %s}'%(author,))

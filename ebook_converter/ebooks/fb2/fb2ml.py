@@ -15,7 +15,6 @@ from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.ebooks.oeb.base import urlnormalize
-from ebook_converter.polyglot.builtins import string_or_bytes
 from ebook_converter.polyglot.binary import as_base64_unicode
 
 
@@ -408,9 +407,9 @@ class FB2MLizer(object):
         elem = elem_tree
 
         # Ensure what we are converting is not a string and that the fist tag is part of the XHTML namespace.
-        if not isinstance(elem_tree.tag, string_or_bytes) or namespace(elem_tree.tag) != XHTML_NS:
+        if not isinstance(elem_tree.tag, (str, bytes)) or namespace(elem_tree.tag) != XHTML_NS:
             p = elem.getparent()
-            if p is not None and isinstance(p.tag, string_or_bytes) and namespace(p.tag) == XHTML_NS \
+            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) == XHTML_NS \
                     and elem.tail:
                 return [elem.tail]
             return []

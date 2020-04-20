@@ -9,7 +9,7 @@ import codecs
 import os
 
 from .pylrfopt import tagListOptimizer
-from ebook_converter.polyglot.builtins import iteritems, string_or_bytes
+from ebook_converter.polyglot.builtins import iteritems
 
 PYLRF_VERSION = "1.0"
 
@@ -397,7 +397,7 @@ class LrfTag(object):
         for f in self.format:
             if isinstance(f, dict):
                 p = f[p]
-            elif isinstance(f, string_or_bytes):
+            elif isinstance(f, (str, bytes)):
                 if isinstance(p, tuple):
                     writeString(lrf, struct.pack(f, *p))
                 else:

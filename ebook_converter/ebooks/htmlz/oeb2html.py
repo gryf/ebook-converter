@@ -13,7 +13,7 @@ from ebook_converter.ebooks.oeb.base import (
     XHTML, XHTML_NS, SVG_NS, barename, namespace, OEB_IMAGES, XLINK, rewrite_links, urlnormalize)
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils.logging import default_log
-from ebook_converter.polyglot.builtins import string_or_bytes, as_bytes
+from ebook_converter.polyglot.builtins import as_bytes
 
 
 __license__ = 'GPL 3'
@@ -94,7 +94,7 @@ class OEB2HTML(object):
                 for el in root.iter():
                     attribs = el.attrib
                     try:
-                        if not isinstance(el.tag, string_or_bytes):
+                        if not isinstance(el.tag, (str, bytes)):
                             continue
                     except:
                         continue
@@ -155,10 +155,10 @@ class OEB2HTMLNoCSSizer(OEB2HTML):
         '''
 
         # We can only processes tags. If there isn't a tag return any text.
-        if not isinstance(elem.tag, string_or_bytes) \
+        if not isinstance(elem.tag, (str, bytes)) \
            or namespace(elem.tag) not in (XHTML_NS, SVG_NS):
             p = elem.getparent()
-            if p is not None and isinstance(p.tag, string_or_bytes) and namespace(p.tag) in (XHTML_NS, SVG_NS) \
+            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) in (XHTML_NS, SVG_NS) \
                     and elem.tail:
                 return [elem.tail]
             return ['']
@@ -244,10 +244,10 @@ class OEB2HTMLInlineCSSizer(OEB2HTML):
         '''
 
         # We can only processes tags. If there isn't a tag return any text.
-        if not isinstance(elem.tag, string_or_bytes) \
+        if not isinstance(elem.tag, (str, bytes)) \
            or namespace(elem.tag) not in (XHTML_NS, SVG_NS):
             p = elem.getparent()
-            if p is not None and isinstance(p.tag, string_or_bytes) and namespace(p.tag) in (XHTML_NS, SVG_NS) \
+            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) in (XHTML_NS, SVG_NS) \
                     and elem.tail:
                 return [elem.tail]
             return ['']
@@ -347,10 +347,10 @@ class OEB2HTMLClassCSSizer(OEB2HTML):
         '''
 
         # We can only processes tags. If there isn't a tag return any text.
-        if not isinstance(elem.tag, string_or_bytes) \
+        if not isinstance(elem.tag, (str, bytes)) \
            or namespace(elem.tag) not in (XHTML_NS, SVG_NS):
             p = elem.getparent()
-            if p is not None and isinstance(p.tag, string_or_bytes) and namespace(p.tag) in (XHTML_NS, SVG_NS) \
+            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) in (XHTML_NS, SVG_NS) \
                     and elem.tail:
                 return [elem.tail]
             return ['']

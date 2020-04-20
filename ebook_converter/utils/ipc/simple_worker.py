@@ -8,7 +8,7 @@ from ebook_converter.utils.ipc import eintr_retry_call
 from ebook_converter.utils.ipc.launch import Worker
 from ebook_converter.utils.serialize import msgpack_loads, msgpack_dumps
 from ebook_converter.utils.monotonic import monotonic
-from ebook_converter.polyglot.builtins import string_or_bytes, environ_item
+from ebook_converter.polyglot.builtins import environ_item
 from ebook_converter.polyglot.binary import as_hex_unicode, from_hex_bytes
 
 
@@ -162,7 +162,7 @@ def start_pipe_worker(command, env=None, priority='normal', **process_args):
         args['close_fds'] = True
 
     exe = w.executable
-    cmd = [exe] if isinstance(exe, string_or_bytes) else exe
+    cmd = [exe] if isinstance(exe, (str, bytes)) else exe
     p = subprocess.Popen(cmd + ['--pipe-worker', command], **args)
     return p
 

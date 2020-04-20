@@ -6,7 +6,6 @@ from ebook_converter.customize import CatalogPlugin
 from ebook_converter.library.catalogs import FIELDS, TEMPLATE_ALLOWED_FIELDS
 from ebook_converter.customize.conversion import DummyReporter
 from ebook_converter.ebooks.metadata import format_isbn
-from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 __license__ = 'GPL v3'
@@ -208,11 +207,11 @@ class BIBTEX(CatalogPlugin):
                     bibtex_entry.append('year = "%s"' % item.year)
                     bibtex_entry.append('month = "%s"' % bibtexdict.utf8ToBibtex(strftime("%b", item)))
 
-                elif field.startswith('#') and isinstance(item, string_or_bytes):
+                elif field.startswith('#') and isinstance(item, (str, bytes)):
                     bibtex_entry.append('custom_%s = "%s"' % (field[1:],
                         bibtexdict.utf8ToBibtex(item)))
 
-                elif isinstance(item, string_or_bytes):
+                elif isinstance(item, (str, bytes)):
                     # elif field in ['title', 'publisher', 'cover', 'uuid', 'ondevice',
                     # 'author_sort', 'series', 'title_sort'] :
                     bibtex_entry.append('%s = "%s"' % (field, bibtexdict.utf8ToBibtex(item)))
@@ -346,7 +345,7 @@ class BIBTEX(CatalogPlugin):
             bibtexc.ascii_bibtex = True
 
         # Check citation choice and go to default in case of bad CLI
-        if isinstance(opts.impcit, string_or_bytes) :
+        if isinstance(opts.impcit, (str, bytes)) :
             if opts.impcit == 'False' :
                 citation_bibtex= False
             elif opts.impcit == 'True' :
@@ -358,7 +357,7 @@ class BIBTEX(CatalogPlugin):
             citation_bibtex= opts.impcit
 
         # Check add file entry and go to default in case of bad CLI
-        if isinstance(opts.addfiles, string_or_bytes) :
+        if isinstance(opts.addfiles, (str, bytes)) :
             if opts.addfiles == 'False' :
                 addfiles_bibtex = False
             elif opts.addfiles == 'True' :

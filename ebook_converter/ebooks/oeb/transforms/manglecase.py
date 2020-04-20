@@ -6,7 +6,6 @@ from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS
 from ebook_converter.ebooks.oeb.base import CSS_MIME
 from ebook_converter.ebooks.oeb.base import namespace
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
-from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 __license__ = 'GPL v3'
@@ -95,7 +94,7 @@ class CaseMangler(object):
                 last = child
 
     def mangle_elem(self, elem, stylizer):
-        if not isinstance(elem.tag, string_or_bytes) or \
+        if not isinstance(elem.tag, (str, bytes)) or \
            namespace(elem.tag) != XHTML_NS:
             return
         children = list(elem)

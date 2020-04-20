@@ -17,7 +17,7 @@ from ebook_converter import (isbytestring, as_unicode, get_types_map)
 from ebook_converter.ebooks.oeb.parse_utils import barename, XHTML_NS, namespace, XHTML, parse_html, NotHTML
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
-from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, itervalues
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 from ebook_converter.polyglot.urllib import unquote as urlunquote
 
 
@@ -1035,7 +1035,7 @@ class Manifest(object):
                 mt = self.media_type.lower()
             except Exception:
                 mt = 'application/octet-stream'
-            if not isinstance(data, string_or_bytes):
+            if not isinstance(data, (str, bytes)):
                 pass  # already parsed
             elif mt in OEB_DOCS:
                 data = self._parse_xhtml(data)
@@ -1296,7 +1296,7 @@ class Spine(object):
         self.page_progression_direction = None
 
     def _linear(self, linear):
-        if isinstance(linear, string_or_bytes):
+        if isinstance(linear, (str, bytes)):
             linear = linear.lower()
         if linear is None or linear in ('yes', 'true'):
             linear = True

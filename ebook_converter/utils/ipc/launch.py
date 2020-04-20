@@ -5,7 +5,7 @@ from ebook_converter.constants import isosx, isfrozen, filesystem_encoding, ispy
 from ebook_converter.utils.config import prefs
 from ebook_converter.ptempfile import PersistentTemporaryFile, base_dir
 from ebook_converter.utils.serialize import msgpack_dumps
-from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, environ_item, native_string_type, getcwd
+from ebook_converter.polyglot.builtins import iteritems, environ_item, native_string_type, getcwd
 from ebook_converter.polyglot.binary import as_hex_unicode
 try:
     import win32process
@@ -191,7 +191,7 @@ class Worker(object):
         _cwd = cwd
         if priority is None:
             priority = prefs['worker_process_priority']
-        cmd = [exe] if isinstance(exe, string_or_bytes) else exe
+        cmd = [exe] if isinstance(exe, (str, bytes)) else exe
         args = {
                 'env' : env,
                 'cwd' : _cwd,

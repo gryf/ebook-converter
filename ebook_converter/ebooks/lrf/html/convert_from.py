@@ -37,7 +37,7 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import (
     RuledLine, Span, Sub, Sup, TextBlock
 )
 from ebook_converter.ptempfile import PersistentTemporaryFile
-from ebook_converter.polyglot.builtins import getcwd, itervalues, string_or_bytes
+from ebook_converter.polyglot.builtins import getcwd, itervalues
 from ebook_converter.polyglot.urllib import unquote
 
 from PIL import Image as PILImage
@@ -1118,7 +1118,7 @@ class HTMLConverter(object):
             ans['sidemargin'] = int((factor*int(self.current_block.blockStyle.attrs['blockwidth'])) / 2)
 
         for prop in ('topskip', 'footskip', 'sidemargin'):
-            if isinstance(ans[prop], string_or_bytes):
+            if isinstance(ans[prop], (str, bytes)):
                 ans[prop] = int(ans[prop])
             if ans[prop] < 0:
                 ans[prop] = 0

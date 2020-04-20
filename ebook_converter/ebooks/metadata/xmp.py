@@ -12,7 +12,7 @@ from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.ebooks.metadata.opf2 import dump_dict
 from ebook_converter.utils.date import parse_date, isoformat, now
 from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
-from ebook_converter.polyglot.builtins import iteritems, string_or_bytes
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -477,7 +477,7 @@ def metadata_to_xmp_packet(mi):
         'authors':('dc:creator', True), 'tags':('dc:subject', False), 'publisher':('dc:publisher', False),
     }):
         val = mi.get(prop) or ()
-        if isinstance(val, string_or_bytes):
+        if isinstance(val, (str, bytes)):
             val = [val]
         create_sequence_property(dc, tag, val, ordered)
     if not mi.is_null('pubdate'):

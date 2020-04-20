@@ -5,7 +5,7 @@ from css_parser.css import PropertyValue
 from css_parser import profile as cssprofiles, CSSParser
 from ebook_converter.tinycss.fonts3 import parse_font, serialize_font_family
 from ebook_converter.ebooks.oeb.base import css_text
-from ebook_converter.polyglot.builtins import iteritems, string_or_bytes
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -125,10 +125,10 @@ def normalize_font(cssvalue, font_family_as_list=False):
         ans = {k:DEFAULTS[k] for k in composition}
         ans.update(parse_font(val))
     if font_family_as_list:
-        if isinstance(ans['font-family'], string_or_bytes):
+        if isinstance(ans['font-family'], (str, bytes)):
             ans['font-family'] = [x.strip() for x in ans['font-family'].split(',')]
     else:
-        if not isinstance(ans['font-family'], string_or_bytes):
+        if not isinstance(ans['font-family'], (str, bytes)):
             ans['font-family'] = serialize_font_family(ans['font-family'])
     return ans
 

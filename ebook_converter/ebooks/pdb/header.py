@@ -5,7 +5,6 @@ Read the header data from a pdb file.
 import re
 import struct
 import time
-from ebook_converter.polyglot.builtins import long_type
 
 
 __license__ = 'GPL v3'
@@ -83,6 +82,6 @@ class PdbHeaderBuilder(object):
 
         offset = 78 + (8 * nrecords) + 2
         for id, record in enumerate(section_lengths):
-            out_stream.write(struct.pack('>LBBBB', long_type(offset), 0, 0, 0, 0))
+            out_stream.write(struct.pack('>LBBBB', int(offset), 0, 0, 0, 0))
             offset += record
         out_stream.write(b'\x00\x00')

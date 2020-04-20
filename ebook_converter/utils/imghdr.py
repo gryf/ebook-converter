@@ -6,7 +6,6 @@ import os
 
 from ebook_converter.utils.speedups import ReadOnlyFileBuffer
 from ebook_converter.constants import ispy3
-from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 HSIZE = 120
@@ -15,7 +14,7 @@ HSIZE = 120
 def what(file, h=None):
     ' Recognize image headers '
     if h is None:
-        if isinstance(file, string_or_bytes):
+        if isinstance(file, (str, bytes)):
             with lopen(file, 'rb') as f:
                 h = f.read(HSIZE)
         else:

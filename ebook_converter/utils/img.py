@@ -17,7 +17,6 @@ from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.utils.filenames import atomic_rename
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import string_or_bytes
 
 # Utilities {{{
 # imageops, imageops_err = plugins['imageops']
@@ -505,7 +504,7 @@ def quantize_image(img, max_colors=256, dither=True, palette=''):
     img = image_from_data(img)
     if img.hasAlphaChannel():
         img = blend_image(img)
-    if palette and isinstance(palette, string_or_bytes):
+    if palette and isinstance(palette, (str, bytes)):
         palette = palette.split()
     return imageops.quantize(img, max_colors, dither, [QColor(x).rgb() for x in palette])
 

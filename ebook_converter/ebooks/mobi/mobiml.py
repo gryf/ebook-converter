@@ -11,7 +11,6 @@ from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.ebooks.oeb.transforms.flatcss import KeyMapper
 from ebook_converter.ebooks.mobi.utils import convert_color_for_font_tag
 from ebook_converter.utils.imghdr import identify
-from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 __license__ = 'GPL v3'
@@ -143,7 +142,7 @@ class MobiMLizer(object):
         return self.fnums[self.fmap[ptsize]]
 
     def mobimlize_measure(self, ptsize):
-        if isinstance(ptsize, string_or_bytes):
+        if isinstance(ptsize, (str, bytes)):
             return ptsize
         embase = self.profile.fbase
         if round(ptsize) < embase:
@@ -186,7 +185,7 @@ class MobiMLizer(object):
             parent = bstate.nested[-1] if bstate.nested else bstate.body
             indent = istate.indent
             left = istate.left
-            if isinstance(indent, string_or_bytes):
+            if isinstance(indent, (str, bytes)):
                 indent = 0
             if indent < 0 and abs(indent) < left:
                 left += indent
@@ -307,7 +306,7 @@ class MobiMLizer(object):
         inline = bstate.inline
         content = self.preize_text(text, pre_wrap=istate.pre_wrap) if istate.preserve or istate.pre_wrap else [text]
         for item in content:
-            if isinstance(item, string_or_bytes):
+            if isinstance(item, (str, bytes)):
                 if len(inline) == 0:
                     inline.text = (inline.text or '') + item
                 else:
@@ -318,7 +317,7 @@ class MobiMLizer(object):
 
     def mobimlize_elem(self, elem, stylizer, bstate, istates,
             ignore_valign=False):
-        if not isinstance(elem.tag, string_or_bytes) \
+        if not isinstance(elem.tag, (str, bytes)) \
            or namespace(elem.tag) != XHTML_NS:
             return
         style = stylizer.style(elem)

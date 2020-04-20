@@ -15,7 +15,7 @@ from odf.namespaces import TEXTNS as odTEXTNS
 from ebook_converter import CurrentDir, walk
 from ebook_converter.ebooks.oeb.base import _css_logger
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
-from ebook_converter.polyglot.builtins import string_or_bytes, getcwd, as_bytes
+from ebook_converter.polyglot.builtins import getcwd, as_bytes
 
 
 __license__ = 'GPL v3'
@@ -250,7 +250,7 @@ class Extract(ODF2XHTML):
         # first load the odf structure
         self.lines = []
         self._wfunc = self._wlines
-        if isinstance(odffile, string_or_bytes) \
+        if isinstance(odffile, (str, bytes)) \
                 or hasattr(odffile, 'read'):  # Added by Kovid
             self.document = odLoad(odffile)
         else:

@@ -1,7 +1,5 @@
 import collections
 
-from ebook_converter.polyglot.builtins import string_or_bytes
-
 
 __license__ = 'GPL v3'
 __copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
@@ -18,7 +16,7 @@ def is_iterable(obj):
     Strings, however, should be considered as atomic values to look up, not
     iterables.
     """
-    return hasattr(obj, '__iter__') and not isinstance(obj, string_or_bytes)
+    return hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes))
 
 
 class OrderedSet(collections.MutableSet):

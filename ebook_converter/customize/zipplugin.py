@@ -11,8 +11,7 @@ from ebook_converter import as_unicode
 from ebook_converter.constants import ispy3
 from ebook_converter.customize import (Plugin, numeric_version, platform,
         InvalidPlugin, PluginNotFound)
-from ebook_converter.polyglot.builtins import (itervalues, string_or_bytes,
-        reload)
+from ebook_converter.polyglot.builtins import itervalues, reload
 
 
 __license__ = 'GPL v3'
@@ -33,7 +32,7 @@ def get_resources(zfp, name_or_list_of_names):
                 be just the bytes of the resource or None if it wasn't found.
     '''
     names = name_or_list_of_names
-    if isinstance(names, string_or_bytes):
+    if isinstance(names, (str, bytes)):
         names = [names]
     ans = {}
     with zipfile.ZipFile(zfp) as zf:
@@ -64,11 +63,11 @@ def get_icons(zfp, name_or_list_of_names):
     from PyQt5.Qt import QIcon, QPixmap
     names = name_or_list_of_names
     ans = get_resources(zfp, names)
-    if isinstance(names, string_or_bytes):
+    if isinstance(names, (str, bytes)):
         names = [names]
     if ans is None:
         ans = {}
-    if isinstance(ans, string_or_bytes):
+    if isinstance(ans, (str, bytes)):
         ans = dict([(names[0], ans)])
 
     ians = {}
