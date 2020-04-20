@@ -45,7 +45,6 @@ def reraise(tp, value, tb=None):
         tb = None
 
 
-codepoint_to_chr = chr
 string_or_bytes = str, bytes
 string_or_unicode = str
 long_type = int

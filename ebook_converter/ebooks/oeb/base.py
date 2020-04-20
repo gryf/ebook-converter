@@ -17,7 +17,7 @@ from ebook_converter import (isbytestring, as_unicode, get_types_map)
 from ebook_converter.ebooks.oeb.parse_utils import barename, XHTML_NS, namespace, XHTML, parse_html, NotHTML
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
-from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, itervalues, codepoint_to_chr
+from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, itervalues
 from ebook_converter.polyglot.urllib import unquote as urlunquote
 
 
@@ -431,7 +431,7 @@ def serialize(data, media_type, pretty_print=False):
     return bytes(data)
 
 
-ASCII_CHARS   = frozenset(codepoint_to_chr(x) for x in range(128))
+ASCII_CHARS   = frozenset(chr(x) for x in range(128))
 UNIBYTE_CHARS = frozenset(x.encode('ascii') for x in ASCII_CHARS)
 USAFE         = ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                  'abcdefghijklmnopqrstuvwxyz'

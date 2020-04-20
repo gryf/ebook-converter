@@ -14,7 +14,7 @@ import urllib.parse
 import urllib.request
 import warnings
 
-from ebook_converter.polyglot.builtins import codepoint_to_chr, hasenv, native_string_type
+from ebook_converter.polyglot.builtins import hasenv, native_string_type
 from functools import partial
 
 if not hasenv('CALIBRE_SHOW_DEPRECATION_WARNINGS'):
@@ -115,7 +115,7 @@ def confirm_config_name(name):
 
 
 _filename_sanitize_unicode = frozenset(('\\', '|', '?', '*', '<',        # no2to3
-    '"', ':', '>', '+', '/') + tuple(map(codepoint_to_chr, range(32))))  # no2to3
+    '"', ':', '>', '+', '/') + tuple(map(chr, range(32))))  # no2to3
 
 
 def sanitize_file_name(name, substitute='_'):

@@ -9,7 +9,7 @@ import urllib.parse
 
 from ebook_converter import relpath, guess_type, prints, force_unicode
 from ebook_converter.utils.config_base import tweaks
-from ebook_converter.polyglot.builtins import codepoint_to_chr, getcwd, iteritems, itervalues, as_unicode
+from ebook_converter.polyglot.builtins import getcwd, iteritems, itervalues, as_unicode
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -157,7 +157,7 @@ def get_title_sort_pat(lang=None):
     return ans
 
 
-_ignore_starts = '\'"'+''.join(codepoint_to_chr(x) for x in
+_ignore_starts = '\'"'+''.join(chr(x) for x in
         list(range(0x2018, 0x201e))+[0x2032, 0x2033])
 
 

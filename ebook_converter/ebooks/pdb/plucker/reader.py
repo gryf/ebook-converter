@@ -9,7 +9,6 @@ from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.compression.palmdoc import decompress_doc
 from ebook_converter.utils.imghdr import identify
 from ebook_converter.utils.img import save_cover_data_to, Canvas, image_from_data
-from ebook_converter.polyglot.builtins import codepoint_to_chr
 
 
 __license__ = 'GPL v3'
@@ -714,7 +713,7 @@ class Reader(FormatReader):
             elif c == 0xa0:
                 html += '&nbsp;'
             else:
-                html += codepoint_to_chr(c)
+                html += chr(c)
             offset += 1
             if offset in paragraph_offsets:
                 need_set_p_id = True

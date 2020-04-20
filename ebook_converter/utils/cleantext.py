@@ -1,7 +1,6 @@
 import re
 import html.entities
 
-from ebook_converter.polyglot.builtins import codepoint_to_chr
 from ebook_converter.constants import plugins, preferred_encoding
 
 
@@ -11,7 +10,7 @@ def ascii_pat(for_binary=False):
     if ans is None:
         chars = set(range(32)) - {9, 10, 13}
         chars.add(127)
-        pat = '|'.join(map(codepoint_to_chr, chars))
+        pat = '|'.join(map(chr, chars))
         if for_binary:
             pat = pat.encode('ascii')
         ans = re.compile(pat)
@@ -32,7 +31,7 @@ def clean_ascii_chars(txt, charlist=None):
     if charlist is None:
         pat = ascii_pat(is_binary)
     else:
-        pat = '|'.join(map(codepoint_to_chr, charlist))
+        pat = '|'.join(map(chr, charlist))
         if is_binary:
             pat = pat.encode('utf-8')
     return pat.sub(empty, txt)
@@ -69,15 +68,15 @@ def unescape(text, rm=False, rchar=''):
             # character reference
             try:
                 if text[:3] == "&#x":
-                    return codepoint_to_chr(int(text[3:-1], 16))
+                    return chr(int(text[3:-1], 16))
                 else:
-                    return codepoint_to_chr(int(text[2:-1]))
+                    return chr(int(text[2:-1]))
             except ValueError:
                 pass
         else:
             # named entity
             try:
-                text = codepoint_to_chr(html.entities
+                text = chr(html.entities
                                         .name2codepoint[text[1:-1]])
             except KeyError:
                 pass

@@ -15,7 +15,6 @@ import operator
 import string
 
 from ebook_converter.css_selectors.errors import SelectorSyntaxError, ExpressionError
-from ebook_converter.polyglot.builtins import codepoint_to_chr
 
 
 utab = {c:c+32 for c in range(ord(u'A'), ord(u'Z')+1)}
@@ -665,7 +664,7 @@ def _replace_unicode(match):
     codepoint = int(match.group(1), 16)
     if codepoint > sys.maxunicode:
         codepoint = 0xFFFD
-    return codepoint_to_chr(codepoint)
+    return chr(codepoint)
 
 
 def unescape_ident(value):

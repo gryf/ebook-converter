@@ -6,7 +6,7 @@ import re
 
 from ebook_converter import force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation
-from ebook_converter.polyglot.builtins import codepoint_to_chr, string_or_bytes, int_to_byte
+from ebook_converter.polyglot.builtins import string_or_bytes, int_to_byte
 
 title_pat    = re.compile(br'\{\\info.*?\{\\title(.*?)(?<!\\)\}', re.DOTALL)
 author_pat   = re.compile(br'\{\\info.*?\{\\author(.*?)(?<!\\)\}', re.DOTALL)
@@ -90,7 +90,7 @@ def decode(raw, codec):
 
     def uni(match):
         try:
-            return codepoint_to_chr(int(match.group(1)))
+            return chr(int(match.group(1)))
         except Exception:
             return '?'
 
