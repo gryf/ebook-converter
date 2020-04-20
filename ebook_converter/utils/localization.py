@@ -7,7 +7,7 @@ import json
 from gettext import GNUTranslations, NullTranslations
 import pkg_resources
 
-from ebook_converter.polyglot.builtins import is_py3, iteritems
+from ebook_converter.polyglot.builtins import iteritems
 
 _available_translations = None
 

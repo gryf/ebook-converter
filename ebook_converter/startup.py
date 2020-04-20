@@ -9,10 +9,10 @@ Perform various initialization tasks.
 import builtins
 import locale
 import sys
-import os
+
+from ebook_converter import constants
 
 # Default translation is NOOP
-from ebook_converter.polyglot.builtins import is_py3
 builtins.__dict__['_'] = lambda s: s
 
 # For strings which belong in the translation tables, but which shouldn't be
@@ -23,7 +23,6 @@ builtins.__dict__['__'] = lambda s: s
 builtins.__dict__['dynamic_property'] = lambda func: func(None)
 
 
-from ebook_converter.constants import iswindows, preferred_encoding, plugins, isosx, islinux, isfrozen, DEBUG, isfreebsd, ispy3
 
 _run_once = False
 winutil = winutilerror = None
@@ -32,73 +31,29 @@ if not _run_once:
     _run_once = True
     from importlib import import_module
 
-    if not isfrozen and not ispy3:
-        # Prevent PyQt4 from being loaded
-        class PyQt4Ban(object):
-
-            def find_module(self, fullname, path=None):
-                if fullname.startswith('PyQt4'):
-                    return self
-
-            def load_module(self, fullname):
-                raise ImportError('Importing PyQt4 is not allowed as calibre uses PyQt5')
-
-        sys.meta_path.insert(0, PyQt4Ban())
-
     class DeVendor(object):
 
-        if ispy3:
+        def find_spec(self, fullname, path, target=None):
+            spec = None
+            if fullname == 'calibre.web.feeds.feedparser':
+                m = import_module('feedparser')
+                spec = m.__spec__
+            elif fullname.startswith('calibre.ebooks.markdown'):
+                m = import_module(fullname[len('calibre.ebooks.'):])
+                spec = m.__spec__
+            return spec
 
-            def find_spec(self, fullname, path, target=None):
-                spec = None
-                if fullname == 'calibre.web.feeds.feedparser':
-                    m = import_module('feedparser')
-                    spec = m.__spec__
-                elif fullname.startswith('calibre.ebooks.markdown'):
-                    m = import_module(fullname[len('calibre.ebooks.'):])
-                    spec = m.__spec__
-                return spec
-
-        else:
-
-            def find_module(self, fullname, path=None):
-                if fullname == 'calibre.web.feeds.feedparser' or fullname.startswith('calibre.ebooks.markdown'):
-                    return self
-
-            def load_module(self, fullname):
-                if fullname == 'calibre.web.feeds.feedparser':
-                    return import_module('feedparser')
-                return import_module(fullname[len('calibre.ebooks.'):])
 
     sys.meta_path.insert(0, DeVendor())
 
     #
     # Platform specific modules
-    if iswindows:
-        winutil, winutilerror = plugins['winutil']
+    if constants.iswindows:
+        winutil, winutilerror = constants.plugins['winutil']
         if not winutil:
             raise RuntimeError('Failed to load the winutil plugin: %s'%winutilerror)
         if len(sys.argv) > 1 and not isinstance(sys.argv[1], str):
             sys.argv[1:] = winutil.argv()[1-len(sys.argv):]
-
-        if not ispy3:
-            # Python2's expanduser is broken for non-ASCII usernames
-            # and unicode paths
-
-            def expanduser(path):
-                if isinstance(path, bytes):
-                    path = path.decode('mbcs')
-                if path[:1] != '~':
-                    return path
-                i, n = 1, len(path)
-                while i < n and path[i] not in '/\\':
-                    i += 1
-                userhome = winutil.special_folder_path(winutil.CSIDL_PROFILE)
-                if i != 1:  # ~user
-                    userhome = os.path.join(os.path.dirname(userhome), path[1:i])
-
-                return userhome + path[i:]
-            os.path.expanduser = expanduser
 
     # Ensure that all temp files/dirs are created under a calibre tmp dir
     from ebook_converter.ptempfile import base_dir
@@ -109,8 +64,8 @@ if not _run_once:
 
     #
     # Convert command line arguments to unicode
-    enc = preferred_encoding
-    if isosx:
+    enc = constants.preferred_encoding
+    if constants.isosx:
         enc = 'utf-8'
     for i in range(1, len(sys.argv)):
         if not isinstance(sys.argv[i], str):
@@ -118,7 +73,7 @@ if not _run_once:
 
     #
     # Ensure that the max number of open files is at least 1024
-    if iswindows:
+    if constants.iswindows:
         # See https://msdn.microsoft.com/en-us/library/6e3b887c.aspx
         if hasattr(winutil, 'setmaxstdio'):
             winutil.setmaxstdio(max(1024, winutil.getmaxstdio()))
@@ -129,7 +84,7 @@ if not _run_once:
             try:
                 resource.setrlimit(resource.RLIMIT_NOFILE, (min(1024, hard), hard))
             except Exception:
-                if DEBUG:
+                if constants.DEBUG:
                     import traceback
                     traceback.print_exc()
 
@@ -162,47 +117,6 @@ if not _run_once:
         except:
             pass
 
-    # local_open() opens a file that wont be inherited by child processes
-    if is_py3:
-        local_open = open  # PEP 446
-    elif iswindows:
-        def local_open(name, mode='r', bufsize=-1):
-            mode += 'N'
-            return open(name, mode, bufsize)
-    elif isosx:
-        import fcntl
-        FIOCLEX = 0x20006601
-
-        def local_open(name, mode='r', bufsize=-1):
-            ans = open(name, mode, bufsize)
-            try:
-                fcntl.ioctl(ans.fileno(), FIOCLEX)
-            except EnvironmentError:
-                fcntl.fcntl(ans, fcntl.F_SETFD, fcntl.fcntl(ans, fcntl.F_GETFD) | fcntl.FD_CLOEXEC)
-            return ans
-    else:
-        import fcntl
-        try:
-            cloexec_flag = fcntl.FD_CLOEXEC
-        except AttributeError:
-            cloexec_flag = 1
-        supports_mode_e = False
-
-        def local_open(name, mode='r', bufsize=-1):
-            global supports_mode_e
-            mode += 'e'
-            ans = open(name, mode, bufsize)
-            if supports_mode_e:
-                return ans
-            old = fcntl.fcntl(ans, fcntl.F_GETFD)
-            if not (old & cloexec_flag):
-                fcntl.fcntl(ans, fcntl.F_SETFD, old | cloexec_flag)
-            else:
-                supports_mode_e = True
-            return ans
-
-    builtins.__dict__['lopen'] = local_open
-
     from ebook_converter.utils.icu import lower as icu_lower, upper as icu_upper
     builtins.__dict__['icu_lower'] = icu_lower
     builtins.__dict__['icu_upper'] = icu_upper
@@ -226,7 +140,7 @@ if not _run_once:
         bound_signal.connect(slot, **kw)
     builtins.__dict__['connect_lambda'] = connect_lambda
 
-    if islinux or isosx or isfreebsd:
+    if constants.islinux or constants.isosx or constants.isfreebsd:
         # Name all threads at the OS level created using the threading module, see
         # http://bugs.python.org/issue15500
         import threading
@@ -244,7 +158,7 @@ if not _run_once:
                 if name:
                     if isinstance(name, str):
                         name = name.encode('ascii', 'replace').decode('ascii')
-                    plugins['speedup'][0].set_thread_name(name[:15])
+                    constants.plugins['speedup'][0].set_thread_name(name[:15])
             except Exception:
                 pass  # Don't care about failure to set name
         threading.Thread.start = new_start
@@ -254,9 +168,9 @@ def test_lopen():
     from ebook_converter.ptempfile import TemporaryDirectory
     from ebook_converter import CurrentDir
     n = 'f\xe4llen'
-    print('testing lopen()')
+    print('testing open()')
 
-    if iswindows:
+    if constants.iswindows:
         import msvcrt, win32api
 
         def assert_not_inheritable(f):
@@ -270,7 +184,7 @@ def test_lopen():
                 raise SystemExit('File handle is inheritable!')
 
     def copen(*args):
-        ans = lopen(*args)
+        ans = open(*args)
         assert_not_inheritable(ans)
         return ans
 

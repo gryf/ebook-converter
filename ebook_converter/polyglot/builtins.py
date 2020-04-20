@@ -1,9 +1,7 @@
 import importlib
 import os
-import sys
 
 
-is_py3 = sys.version_info.major >= 3
 native_string_type = str
 iterkeys = iter
 

@@ -113,7 +113,7 @@ class HTMLZOutput(OutputFormatPlugin):
                 if cover_data:
                     from ebook_converter.utils.img import save_cover_data_to
                     cover_path = os.path.join(tdir, u'cover.jpg')
-                    with lopen(cover_path, 'w') as cf:
+                    with open(cover_path, 'w') as cf:
                         cf.write('')
                     save_cover_data_to(cover_data, cover_path)
             except:

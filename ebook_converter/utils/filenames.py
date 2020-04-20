@@ -195,7 +195,7 @@ def case_preserving_open_file(path, mode='wb', mkdir_mode=0o777):
         ans = fpath = cpath
     else:
         fname = components[-1]
-        ans = lopen(os.path.join(cpath, fname), mode)
+        ans = open(os.path.join(cpath, fname), mode)
         # Ensure file and all its metadata is written to disk so that subsequent
         # listdir() has file name in it. I don't know if this is actually
         # necessary, but given the diversity of platforms, best to be safe.
@@ -434,7 +434,7 @@ class WindowsAtomicFolderMove(object):
             pass
 
         win32file.SetFilePointer(handle, 0, win32file.FILE_BEGIN)
-        with lopen(dest, 'wb') as f:
+        with open(dest, 'wb') as f:
             while True:
                 hr, raw = win32file.ReadFile(handle, 1024*1024)
                 if hr != 0:

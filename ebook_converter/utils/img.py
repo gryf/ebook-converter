@@ -49,11 +49,11 @@ def load_jxr_data(data):
     with TemporaryDirectory() as tdir:
         if iswindows and isinstance(tdir, str):
             tdir = tdir.encode('mbcs')
-        with lopen(os.path.join(tdir, 'input.jxr'), 'wb') as f:
+        with open(os.path.join(tdir, 'input.jxr'), 'wb') as f:
             f.write(data)
         cmd = [get_exe_path('JxrDecApp'), '-i', 'input.jxr', '-o', 'output.tif']
         creationflags = 0x08 if iswindows else 0
-        subprocess.Popen(cmd, cwd=tdir, stdout=lopen(os.devnull, 'wb'), stderr=subprocess.STDOUT, creationflags=creationflags).wait()
+        subprocess.Popen(cmd, cwd=tdir, stdout=open(os.devnull, 'wb'), stderr=subprocess.STDOUT, creationflags=creationflags).wait()
         i = QImage()
         if not i.load(os.path.join(tdir, 'output.tif')):
             raise NotImage('Failed to convert JPEG-XR image')
@@ -124,7 +124,7 @@ def image_from_data(data):
 
 def image_from_path(path):
     ' Load an image from the specified path. '
-    with lopen(path, 'rb') as f:
+    with open(path, 'rb') as f:
         return image_from_data(f.read())
 
 
@@ -200,7 +200,7 @@ def save_image(img, path, **kw):
     `image_to_data()` function. '''
     fmt = path.rpartition('.')[-1]
     kw['fmt'] = kw.get('fmt', fmt)
-    with lopen(path, 'wb') as f:
+    with open(path, 'wb') as f:
         f.write(image_to_data(image_from_data(img), **kw))
 
 
@@ -286,7 +286,7 @@ def save_cover_data_to(
         changed = True
     if path is None:
         return image_to_data(img, compression_quality, fmt, compression_quality // 10) if changed else data
-    with lopen(path, 'wb') as f:
+    with open(path, 'wb') as f:
         f.write(image_to_data(img, compression_quality, fmt, compression_quality // 10) if changed else data)
 # }}}
 
@@ -667,7 +667,7 @@ def test():  # {{{
 if __name__ == '__main__':  # {{{
     args = sys.argv[1:]
     infile = args.pop(0)
-    img = image_from_data(lopen(infile, 'rb').read())
+    img = image_from_data(open(infile, 'rb').read())
     func = globals()[args[0]]
     kw = {}
     args.pop(0)
@@ -692,6 +692,6 @@ if __name__ == '__main__':  # {{{
         bn = os.path.basename(infile)
         outf = bn.rpartition('.')[0] + '.' + '-output' + bn.rpartition('.')[-1]
     img = func(img, **kw)
-    with lopen(outf, 'wb') as f:
+    with open(outf, 'wb') as f:
         f.write(image_to_data(img, fmt=outf.rpartition('.')[-1]))
 # }}}

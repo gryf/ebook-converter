@@ -22,7 +22,7 @@ def decrypt_font_data(key, data, algorithm):
 
 
 def decrypt_font(key, path, algorithm):
-    with lopen(path, 'r+b') as f:
+    with open(path, 'r+b') as f:
         data = decrypt_font_data(key, f.read(), algorithm)
         f.seek(0), f.truncate(), f.write(data)
 
@@ -221,7 +221,7 @@ class EPUBInput(InputFormatPlugin):
             if os.path.exists(guide_cover):
                 renderer = render_html_svg_workaround(guide_cover, log)
                 if renderer is not None:
-                    with lopen('calibre_raster_cover.jpg', 'wb') as f:
+                    with open('calibre_raster_cover.jpg', 'wb') as f:
                         f.write(renderer)
 
         # Set the titlepage guide entry
@@ -236,7 +236,7 @@ class EPUBInput(InputFormatPlugin):
                 if k.endswith(attr):
                     return v
         try:
-            with lopen('META-INF/container.xml', 'rb') as f:
+            with open('META-INF/container.xml', 'rb') as f:
                 root = safe_xml_fromstring(f.read())
                 for r in root.xpath('//*[local-name()="rootfile"]'):
                     if attr(r, 'media-type') != "application/oebps-package+xml":
@@ -343,7 +343,7 @@ class EPUBInput(InputFormatPlugin):
         if len(list(opf.iterspine())) == 0:
             raise ValueError('No valid entries in the spine of this EPUB')
 
-        with lopen('content.opf', 'wb') as nopf:
+        with open('content.opf', 'wb') as nopf:
             nopf.write(opf.render())
 
         return os.path.abspath('content.opf')
@@ -356,7 +356,7 @@ class EPUBInput(InputFormatPlugin):
         from ebook_converter.ebooks.oeb.polish.toc import first_child
         from ebook_converter.utils.xml_parse import safe_xml_fromstring
         from tempfile import NamedTemporaryFile
-        with lopen(nav_path, 'rb') as f:
+        with open(nav_path, 'rb') as f:
             raw = f.read()
         raw = xml_to_unicode(raw, strip_encoding_pats=True, assume_utf8=True)[0]
         root = parse(raw, log=log)
@@ -420,7 +420,7 @@ class EPUBInput(InputFormatPlugin):
                     changed = True
                     elem.set('data-calibre-removed-titlepage', '1')
             if changed:
-                with lopen(nav_path, 'wb') as f:
+                with open(nav_path, 'wb') as f:
                     f.write(serialize(root, 'application/xhtml+xml'))
 
     def postprocess_book(self, oeb, opts, log):

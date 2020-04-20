@@ -190,7 +190,7 @@ else:
     def create_single_instance_mutex(name, per_user=True):
         from ebook_converter.utils.ipc import eintr_retry_call
         path = singleinstance_path(name, per_user)
-        f = lopen(path, 'w')
+        f = open(path, 'w')
         try:
             eintr_retry_call(fcntl.lockf, f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             return partial(_clean_lock_file, f)
