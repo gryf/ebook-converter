@@ -5,7 +5,7 @@ from io import BytesIO
 from ebook_converter.utils.img import save_cover_data_to, scale_image, image_to_data, image_from_data, resize_image, png_data_to_gif_data
 from ebook_converter.utils.imghdr import what
 from ebook_converter.ebooks import normalize
-from ebook_converter.polyglot.builtins import unicode_type, as_bytes
+from ebook_converter.polyglot.builtins import as_bytes
 from ebook_converter.tinycss.color3 import parse_color_string
 
 
@@ -20,17 +20,17 @@ RECORD_SIZE = 0x1000  # 4096 (Text record size (uncompressed))
 class PolyglotDict(dict):
 
     def __setitem__(self, key, val):
-        if isinstance(key, unicode_type):
+        if isinstance(key, str):
             key = key.encode('utf-8')
         dict.__setitem__(self, key, val)
 
     def __getitem__(self, key):
-        if isinstance(key, unicode_type):
+        if isinstance(key, str):
             key = key.encode('utf-8')
         return dict.__getitem__(self, key)
 
     def __contains__(self, key):
-        if isinstance(key, unicode_type):
+        if isinstance(key, str):
             key = key.encode('utf-8')
         return dict.__contains__(self, key)
 
@@ -332,7 +332,7 @@ def utf8_text(text):
     '''
     if text and text.strip():
         text = text.strip()
-        if not isinstance(text, unicode_type):
+        if not isinstance(text, str):
             text = text.decode('utf-8', 'replace')
         text = normalize(text).encode('utf-8')
     else:
@@ -635,7 +635,7 @@ def is_guide_ref_start(ref):
 
 
 def convert_color_for_font_tag(val):
-    rgba = parse_color_string(unicode_type(val or ''))
+    rgba = parse_color_string(str(val or ''))
     if rgba is None or rgba == 'currentColor':
         return val
     clamp = lambda x: min(x, max(0, x), 1)

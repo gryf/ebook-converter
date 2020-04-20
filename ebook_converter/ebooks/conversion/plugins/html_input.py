@@ -10,7 +10,7 @@ from ebook_converter.customize.conversion import (InputFormatPlugin,
 from ebook_converter.utils.localization import get_lang
 from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import unicode_type, getcwd, as_unicode
+from ebook_converter.polyglot.builtins import getcwd, as_unicode
 
 
 __license__ = 'GPL v3'
@@ -135,7 +135,7 @@ class HTMLInput(InputFormatPlugin):
         if not metadata.title:
             oeb.logger.warn('Title not specified')
             metadata.add('title', self.oeb.translate(__('Unknown')))
-        bookid = unicode_type(uuid.uuid4())
+        bookid = str(uuid.uuid4())
         metadata.add('identifier', bookid, id='uuid_id', scheme='uuid')
         for ident in metadata.identifier:
             if 'id' in ident.attrib:
@@ -225,7 +225,7 @@ class HTMLInput(InputFormatPlugin):
 
     def link_to_local_path(self, link_, base=None):
         from ebook_converter.ebooks.html.input import Link
-        if not isinstance(link_, unicode_type):
+        if not isinstance(link_, str):
             try:
                 link_ = link_.decode('utf-8', 'error')
             except:
@@ -288,7 +288,7 @@ class HTMLInput(InputFormatPlugin):
             # bhref refers to an already existing file. The read() method of
             # DirContainer will call unquote on it before trying to read the
             # file, therefore we quote it here.
-            if isinstance(bhref, unicode_type):
+            if isinstance(bhref, str):
                 bhref = bhref.encode('utf-8')
             item.html_input_href = as_unicode(urllib.parse.quote(bhref))
             if guessed in self.OEB_STYLES:

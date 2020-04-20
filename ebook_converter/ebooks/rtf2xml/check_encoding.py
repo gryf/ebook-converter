@@ -1,7 +1,5 @@
 import sys
 
-from ebook_converter.polyglot.builtins import unicode_type
-
 
 class CheckEncoding:
 
@@ -15,7 +13,7 @@ class CheckEncoding:
             try:
                 char.decode(encoding)
             except ValueError as msg:
-                sys.stderr.write('line: %s char: %s\n%s\n' %  (line_num, char_position, unicode_type(msg)))
+                sys.stderr.write('line: %s char: %s\n%s\n' %  (line_num, char_position, str(msg)))
 
     def check_encoding(self, path, encoding='us-ascii', verbose=True):
         line_num = 0

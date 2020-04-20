@@ -14,7 +14,7 @@ import urllib.parse
 import urllib.request
 import warnings
 
-from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, hasenv, native_string_type
+from ebook_converter.polyglot.builtins import codepoint_to_chr, hasenv, native_string_type
 from functools import partial
 
 if not hasenv('CALIBRE_SHOW_DEPRECATION_WARNINGS'):
@@ -80,7 +80,7 @@ def get_types_map():
 
 
 def to_unicode(raw, encoding='utf-8', errors='strict'):
-    if isinstance(raw, unicode_type):
+    if isinstance(raw, str):
         return raw
     return raw.decode(encoding, errors)
 
@@ -170,7 +170,7 @@ def prints(*args, **kwargs):
     safe_encode = kwargs.get('safe_encode', False)
     count = 0
     for i, arg in enumerate(args):
-        if isinstance(arg, unicode_type):
+        if isinstance(arg, str):
             if iswindows:
                 from ebook_converter.utils.terminal import Detect
                 cs = Detect(file)
@@ -194,8 +194,8 @@ def prints(*args, **kwargs):
             try:
                 arg = native_string_type(arg)
             except ValueError:
-                arg = unicode_type(arg)
-            if isinstance(arg, unicode_type):
+                arg = str(arg)
+            if isinstance(arg, str):
                 try:
                     arg = arg.encode(enc)
                 except UnicodeEncodeError:
@@ -334,7 +334,7 @@ def get_parsed_proxy(typ='http', debug=True):
                     traceback.print_exc()
             else:
                 if debug:
-                    prints('Using http proxy', unicode_type(ans))
+                    prints('Using http proxy', str(ans))
                 return ans
 
 
@@ -517,7 +517,7 @@ def strftime(fmt, t=None):
         if isinstance(ans, bytes):
             ans = ans.decode(preferred_encoding, 'replace')
     if early_year:
-        ans = ans.replace('_early year hack##', unicode_type(orig_year))
+        ans = ans.replace('_early year hack##', str(orig_year))
     return ans
 
 
@@ -629,7 +629,7 @@ def force_unicode(obj, enc=preferred_encoding):
 def as_unicode(obj, enc=preferred_encoding):
     if not isbytestring(obj):
         try:
-            obj = unicode_type(obj)
+            obj = str(obj)
         except Exception:
             try:
                 obj = native_string_type(obj)
@@ -652,7 +652,7 @@ def human_readable(size, sep=' '):
         if size < (1 << ((i + 1) * 10)):
             divisor, suffix = (1 << (i * 10)), candidate
             break
-    size = unicode_type(float(size)/divisor)
+    size = str(float(size)/divisor)
     if size.find(".") > -1:
         size = size[:size.find(".")+2]
     if size.endswith('.0'):

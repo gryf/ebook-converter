@@ -6,7 +6,7 @@ import glob, os
 from ebook_converter.customize.conversion import (OutputFormatPlugin,
     OptionRecommendation)
 from ebook_converter.ptempfile import TemporaryDirectory
-from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL 3'
@@ -190,8 +190,8 @@ class PDFOutput(OutputFormatPlugin):
 
     def get_cover_data(self):
         oeb = self.oeb
-        if (oeb.metadata.cover and unicode_type(oeb.metadata.cover[0]) in oeb.manifest.ids):
-            cover_id = unicode_type(oeb.metadata.cover[0])
+        if (oeb.metadata.cover and str(oeb.metadata.cover[0]) in oeb.manifest.ids):
+            cover_id = str(oeb.metadata.cover[0])
             item = oeb.manifest.ids[cover_id]
             self.cover_data = item.data
 

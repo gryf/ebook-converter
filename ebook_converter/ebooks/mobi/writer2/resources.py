@@ -8,7 +8,7 @@ from ebook_converter.ebooks import generate_masthead
 from ebook_converter.ebooks.oeb.base import OEB_RASTER_IMAGES
 from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -79,7 +79,7 @@ class Resources(object):
             self.image_indices.add(0)
         elif self.is_periodical:
             # Generate a default masthead
-            data = generate_masthead(unicode_type(self.oeb.metadata['title'][0]))
+            data = generate_masthead(str(self.oeb.metadata['title'][0]))
             self.records.append(data)
             self.used_image_indices.add(0)
             self.image_indices.add(0)
@@ -87,8 +87,8 @@ class Resources(object):
 
         cover_href = self.cover_offset = self.thumbnail_offset = None
         if (oeb.metadata.cover and
-                unicode_type(oeb.metadata.cover[0]) in oeb.manifest.ids):
-            cover_id = unicode_type(oeb.metadata.cover[0])
+                str(oeb.metadata.cover[0]) in oeb.manifest.ids):
+            cover_id = str(oeb.metadata.cover[0])
             item = oeb.manifest.ids[cover_id]
             cover_href = item.href
 

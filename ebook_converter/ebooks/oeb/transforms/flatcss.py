@@ -16,7 +16,7 @@ from ebook_converter.ebooks.oeb.base import (XHTML, XHTML_NS, CSS_MIME, OEB_STYL
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils.filenames import ascii_filename, ascii_text
 from ebook_converter.utils.icu import numeric_sort_key
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes
+from ebook_converter.polyglot.builtins import iteritems, string_or_bytes
 
 
 __license__ = 'GPL v3'
@@ -250,7 +250,7 @@ class CSSFlattener(object):
 
             cfont = {
                     'font-family': '"%s"'%font['font-family'],
-                    'panose-1': ' '.join(map(unicode_type, font['panose'])),
+                    'panose-1': ' '.join(map(str, font['panose'])),
                     'src': 'url(%s)'%item.href,
             }
 
@@ -476,7 +476,7 @@ class CSSFlattener(object):
             minlh = self.context.minimum_line_height / 100.
             slh = style['line-height']
             if not is_drop_cap and isinstance(slh, numbers.Number) and slh < minlh * fsize:
-                cssdict['line-height'] = unicode_type(minlh)
+                cssdict['line-height'] = str(minlh)
         except Exception:
             self.oeb.logger.exception('Failed to set minimum line-height')
 
@@ -538,7 +538,7 @@ class CSSFlattener(object):
                 if css in styles:
                     match = styles[css]
                 else:
-                    match = klass + unicode_type(names[klass] or '')
+                    match = klass + str(names[klass] or '')
                     styles[css] = match
                     names[klass] += 1
                 node.attrib['class'] = match
@@ -558,7 +558,7 @@ class CSSFlattener(object):
                     # then the class attribute for a.x tags will contain both
                     # that class and the class for a.x:hover, which is wrong.
                     klass = 'pcalibre'
-                    match = klass + unicode_type(names[klass] or '')
+                    match = klass + str(names[klass] or '')
                     pstyles[css] = match
                     names[klass] += 1
                 keep_classes.add(match)

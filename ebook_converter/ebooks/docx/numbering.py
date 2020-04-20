@@ -7,7 +7,7 @@ from lxml.html.builder import OL, UL, SPAN
 from ebook_converter.ebooks.docx.block_styles import ParagraphStyle
 from ebook_converter.ebooks.docx.char_styles import RunStyle, inherit
 from ebook_converter.ebooks.metadata import roman
-from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -288,7 +288,7 @@ class Numbering(object):
                     seen_instances.add(num_id)
                     p.tag = 'li'
                     p.set('value', '%s' % counter[ilvl])
-                    p.set('list-lvl', unicode_type(ilvl))
+                    p.set('list-lvl', str(ilvl))
                     p.set('list-id', num_id)
                     if lvl.num_template is not None:
                         val = lvl.format_template(counter, ilvl, lvl.num_template)

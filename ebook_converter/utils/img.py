@@ -17,7 +17,7 @@ from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.utils.filenames import atomic_rename
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import string_or_bytes, unicode_type
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 # Utilities {{{
 # imageops, imageops_err = plugins['imageops']
@@ -48,7 +48,7 @@ def get_exe_path(name):
 
 def load_jxr_data(data):
     with TemporaryDirectory() as tdir:
-        if iswindows and isinstance(tdir, unicode_type):
+        if iswindows and isinstance(tdir, str):
             tdir = tdir.encode('mbcs')
         with lopen(os.path.join(tdir, 'input.jxr'), 'wb') as f:
             f.write(data)
@@ -131,7 +131,7 @@ def image_from_path(path):
 
 def image_from_x(x):
     ' Create an image from a bytestring or a path or a file like object. '
-    if isinstance(x, unicode_type):
+    if isinstance(x, str):
         return image_from_path(x)
     if hasattr(x, 'read'):
         return image_from_data(x.read())
@@ -550,8 +550,8 @@ def run_optimizer(file_path, cmd, as_filter=False, input_data=None):
             # subprocess in python 2 cannot handle unicode strings that are not
             # encodeable in mbcs, so we fail here, where it is more explicit,
             # instead.
-            cmd = [x.encode('mbcs') if isinstance(x, unicode_type) else x for x in cmd]
-            if isinstance(cwd, unicode_type):
+            cmd = [x.encode('mbcs') if isinstance(x, str) else x for x in cmd]
+            if isinstance(cwd, str):
                 cwd = cwd.encode('mbcs')
         stdin = subprocess.PIPE if as_filter else None
         stderr = subprocess.PIPE if as_filter else subprocess.STDOUT
@@ -616,7 +616,7 @@ def encode_jpeg(file_path, quality=80):
     from ebook_converter.utils.speedups import ReadOnlyFileBuffer
     quality = max(0, min(100, int(quality)))
     exe = get_exe_path('cjpeg')
-    cmd = [exe] + '-optimize -progressive -maxmemory 100M -quality'.split() + [unicode_type(quality)]
+    cmd = [exe] + '-optimize -progressive -maxmemory 100M -quality'.split() + [str(quality)]
     img = QImage()
     if not img.load(file_path):
         raise ValueError('%s is not a valid image file' % file_path)

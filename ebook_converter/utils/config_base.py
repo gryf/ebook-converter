@@ -10,7 +10,7 @@ import pkg_resources
 
 from ebook_converter.utils.lock import ExclusiveFile
 from ebook_converter.constants import config_dir, CONFIG_DIR_MODE, ispy3, preferred_encoding, filesystem_encoding, iswindows
-from ebook_converter.polyglot.builtins import unicode_type, iteritems
+from ebook_converter.polyglot.builtins import iteritems
 
 plugin_dir = os.path.join(config_dir, 'plugins')
 
@@ -22,7 +22,7 @@ def parse_old_style(src):
         import cPickle
     options = {'cPickle':cPickle}
     try:
-        if not isinstance(src, unicode_type):
+        if not isinstance(src, str):
             src = src.decode('utf-8')
         src = src.replace('PyQt%d.QtCore' % 4, 'PyQt5.QtCore')
         src = re.sub(r'cPickle\.loads\(([\'"])', r'cPickle.loads(b\1', src)
@@ -296,7 +296,7 @@ class OptionSet(object):
     def parse_string(self, src):
         options = {}
         if src:
-            is_old_style = (isinstance(src, bytes) and src.startswith(b'#')) or (isinstance(src, unicode_type) and src.startswith(u'#'))
+            is_old_style = (isinstance(src, bytes) and src.startswith(b'#')) or (isinstance(src, str) and src.startswith(u'#'))
             if is_old_style:
                 options = parse_old_style(src)
             else:
@@ -400,7 +400,7 @@ class Config(ConfigInterface):
             src = self.option_set.serialize(opts)
             f.seek(0)
             f.truncate()
-            if isinstance(src, unicode_type):
+            if isinstance(src, str):
                 src = src.encode('utf-8')
             f.write(src)
 
@@ -551,7 +551,7 @@ def create_global_prefs(conf_obj=None):
 prefs = ConfigProxy(create_global_prefs())
 if prefs['installation_uuid'] is None:
     import uuid
-    prefs['installation_uuid'] = unicode_type(uuid.uuid4())
+    prefs['installation_uuid'] = str(uuid.uuid4())
 
 # Read tweaks
 

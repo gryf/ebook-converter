@@ -11,7 +11,6 @@ from ebook_converter.ebooks import DRMError
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.ebooks.pdb.ereader import EreaderError
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -112,7 +111,7 @@ class Reader132(FormatReader):
             os.makedirs(output_dir)
 
         title = self.mi.title
-        if not isinstance(title, unicode_type):
+        if not isinstance(title, str):
             title = title.decode('utf-8', 'replace')
         html = '<html><head><title>%s</title></head><body>' % title
 

@@ -2,7 +2,6 @@ import os, sys, zipfile, importlib
 
 from ebook_converter.constants import numeric_version, iswindows, isosx
 from ebook_converter.ptempfile import PersistentTemporaryFile
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -196,7 +195,7 @@ class Plugin(object):  # {{{
             config_dialog.exec_()
 
             if config_dialog.result() == QDialog.Accepted:
-                sc = unicode_type(sc.text()).strip()
+                sc = str(sc.text()).strip()
                 customize_plugin(self, sc)
 
         geom = bytearray(config_dialog.saveGeometry())

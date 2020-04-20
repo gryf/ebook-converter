@@ -6,7 +6,7 @@ from ebook_converter import strftime
 from ebook_converter.constants import iswindows, isosx, plugins, preferred_encoding
 from ebook_converter.utils.iso8601 import utc_tz, local_tz, UNDEFINED_DATE
 from ebook_converter.utils.localization import lcdata
-from ebook_converter.polyglot.builtins import unicode_type, native_string_type
+from ebook_converter.polyglot.builtins import native_string_type
 
 
 __license__ = 'GPL v3'
@@ -186,13 +186,13 @@ def fromordinal(day, as_utc=True):
 
 def isoformat(date_time, assume_utc=False, as_utc=True, sep='T'):
     if not hasattr(date_time, 'tzinfo'):
-        return unicode_type(date_time.isoformat())
+        return str(date_time.isoformat())
     if date_time.tzinfo is None:
         date_time = date_time.replace(tzinfo=_utc_tz if assume_utc else
                 _local_tz)
     date_time = date_time.astimezone(_utc_tz if as_utc else _local_tz)
     # native_string_type(sep) because isoformat barfs with unicode sep on python 2.x
-    return unicode_type(date_time.isoformat(native_string_type(sep)))
+    return str(date_time.isoformat(native_string_type(sep)))
 
 
 def internal_iso_format_string():
@@ -205,7 +205,7 @@ def w3cdtf(date_time, assume_utc=False):
             date_time = date_time.replace(tzinfo=_utc_tz if assume_utc else
                     _local_tz)
         date_time = date_time.astimezone(_utc_tz if as_utc else _local_tz)
-    return unicode_type(date_time.strftime('%Y-%m-%dT%H:%M:%SZ'))
+    return str(date_time.strftime('%Y-%m-%dT%H:%M:%SZ'))
 
 
 def as_local_time(date_time, assume_utc=True):

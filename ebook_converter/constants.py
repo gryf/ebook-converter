@@ -1,12 +1,15 @@
-#!/usr/bin/env python2
-# vim:fileencoding=utf-8
-# License: GPLv3 Copyright: 2015, Kovid Goyal <kovid at kovidgoyal.net>
-from ebook_converter.polyglot.builtins import unicode_type, environ_item, hasenv, getenv, as_unicode, native_string_type
-import sys, locale, codecs, os, importlib, collections
+import codecs
+import collections
+import importlib
+import locale
+import os
+import sys
+
+from ebook_converter.polyglot.builtins import environ_item, hasenv, getenv, as_unicode, native_string_type
 
 __appname__   = 'calibre'
 numeric_version = (4, 12, 0)
-__version__   = '.'.join(map(unicode_type, numeric_version))
+__version__   = '.'.join(map(str, numeric_version))
 git_version   = None
 __author__    = "Kovid Goyal <kovid@kovidgoyal.net>"
 
@@ -216,7 +219,7 @@ class Plugins(collections.Mapping):
         except Exception as err:
             p = None
             try:
-                plugin_err = unicode_type(err)
+                plugin_err = str(err)
             except Exception:
                 plugin_err = as_unicode(native_string_type(err), encoding=preferred_encoding, errors='replace')
         self._plugins[name] = p, plugin_err

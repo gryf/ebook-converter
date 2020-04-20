@@ -18,7 +18,7 @@ from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.utils import read_font_record
 from ebook_converter.ebooks.oeb.parse_utils import parse_html
 from ebook_converter.ebooks.oeb.base import XPath, XHTML, xml2text
-from ebook_converter.polyglot.builtins import unicode_type, getcwd, as_unicode
+from ebook_converter.polyglot.builtins import getcwd, as_unicode
 
 
 __license__ = 'GPL v3'
@@ -224,7 +224,7 @@ class Mobi8Reader(object):
             self.parts.append(skeleton)
             if divcnt < 1:
                 # Empty file
-                aidtext = unicode_type(uuid.uuid4())
+                aidtext = str(uuid.uuid4())
                 filename = aidtext + '.html'
             self.partinfo.append(Part(skelnum, 'text', filename, skelpos,
                 baseptr, aidtext))

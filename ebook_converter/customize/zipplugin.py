@@ -12,7 +12,7 @@ from ebook_converter.constants import ispy3
 from ebook_converter.customize import (Plugin, numeric_version, platform,
         InvalidPlugin, PluginNotFound)
 from ebook_converter.polyglot.builtins import (itervalues, string_or_bytes,
-        unicode_type, reload)
+        reload)
 
 
 __license__ = 'GPL v3'
@@ -215,7 +215,7 @@ class PluginLoader(object):
             if ans.minimum_calibre_version > numeric_version:
                 raise InvalidPlugin(
                     'The plugin at %s needs a version of calibre >= %s' %
-                    (as_unicode(path_to_zip_file), '.'.join(map(unicode_type,
+                    (as_unicode(path_to_zip_file), '.'.join(map(str,
                         ans.minimum_calibre_version))))
 
             if platform not in ans.supported_platforms:
@@ -230,7 +230,7 @@ class PluginLoader(object):
             raise
 
     def _locate_code(self, zf, path_to_zip_file):
-        names = [x if isinstance(x, unicode_type) else x.decode('utf-8') for x in
+        names = [x if isinstance(x, str) else x.decode('utf-8') for x in
                 zf.namelist()]
         names = [x[1:] if x[0] == '/' else x for x in names]
 

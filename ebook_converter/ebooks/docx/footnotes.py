@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -49,8 +49,8 @@ class Footnotes(object):
         if note is not None and note.type == 'normal':
             self.counter += 1
             anchor = 'note_%d' % self.counter
-            self.notes[anchor] = (unicode_type(self.counter), note)
-            return anchor, unicode_type(self.counter)
+            self.notes[anchor] = (str(self.counter), note)
+            return anchor, str(self.counter)
         return None, None
 
     def __iter__(self):

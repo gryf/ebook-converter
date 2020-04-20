@@ -23,18 +23,17 @@ def get_codes():
         codes = set()
         three_map = {}
         name_map = {}
-        unicode_type = type(u'')
         for x in db['3166-1']:
             two = x.get('alpha_2')
             if two:
-                two = unicode_type(two)
+                two = str(two)
             codes.add(two)
             name_map[two] = x.get('name')
             if name_map[two]:
-                name_map[two] = unicode_type(name_map[two])
+                name_map[two] = str(name_map[two])
             three = x.get('alpha_3')
             if three:
-                three_map[unicode_type(three)] = two
+                three_map[str(three)] = two
         data = {'names': name_map,
                 'codes': frozenset(codes),
                 'three_map': three_map}

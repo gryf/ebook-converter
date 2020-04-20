@@ -3,7 +3,6 @@ import os
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.utils.filenames import ascii_filename
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL 3'
@@ -73,7 +72,7 @@ class SNBInput(InputFormatPlugin):
             if d['cover'] != '':
                 oeb.guide.add('cover', 'Cover', d['cover'])
 
-        bookid = unicode_type(uuid.uuid4())
+        bookid = str(uuid.uuid4())
         oeb.metadata.add('identifier', bookid, id='uuid_id', scheme='uuid')
         for ident in oeb.metadata.identifier:
             if 'id' in ident.attrib:

@@ -10,7 +10,7 @@ from ebook_converter.ebooks.mobi.writer2 import (PALMDOC, UNCOMPRESSED)
 from ebook_converter.ebooks.mobi.utils import (encint, encode_trailing_data,
         align_block, detect_periodical, RECORD_SIZE, create_text_record)
 from ebook_converter.ebooks.mobi.writer2.indexer import Indexer
-from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -48,7 +48,7 @@ class MobiWriter(object):
         self.log = oeb.log
         pt = None
         if oeb.metadata.publication_type:
-            x = unicode_type(oeb.metadata.publication_type[0]).split(':')
+            x = str(oeb.metadata.publication_type[0]).split(':')
             if len(x) > 1:
                 pt = x[1].lower()
         self.publication_type = pt
@@ -235,7 +235,7 @@ class MobiWriter(object):
             0  # Unused
         ))  # 0 - 15 (0x0 - 0xf)
         uid = random.randint(0, 0xffffffff)
-        title = normalize(unicode_type(metadata.title[0])).encode('utf-8')
+        title = normalize(str(metadata.title[0])).encode('utf-8')
 
         # 0x0 - 0x3
         record0.write(b'MOBI')
@@ -278,7 +278,7 @@ class MobiWriter(object):
 
         # 0x4c - 0x4f : Language specifier
         record0.write(iana2mobi(
-            unicode_type(metadata.language[0])))
+            str(metadata.language[0])))
 
         # 0x50 - 0x57 : Input language and Output language
         record0.write(b'\0' * 8)
@@ -455,7 +455,7 @@ class MobiWriter(object):
         '''
         Write the PalmDB header
         '''
-        title = ascii_filename(unicode_type(self.oeb.metadata.title[0])).replace(
+        title = ascii_filename(str(self.oeb.metadata.title[0])).replace(
                 ' ', '_')
         if not isinstance(title, bytes):
             title = title.encode('ascii')

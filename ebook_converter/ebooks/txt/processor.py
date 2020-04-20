@@ -8,7 +8,7 @@ from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 
 from ebook_converter.ebooks.conversion.preprocess import DocAnalysis
 from ebook_converter.utils.cleantext import clean_ascii_chars
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, long_type
+from ebook_converter.polyglot.builtins import iteritems, long_type
 
 
 __license__ = 'GPL v3'
@@ -58,7 +58,7 @@ def split_txt(txt, epub_split_size_kb=0):
     '''
     # Takes care if there is no point to split
     if epub_split_size_kb > 0:
-        if isinstance(txt, unicode_type):
+        if isinstance(txt, str):
             txt = txt.encode('utf-8')
         length_byte = len(txt)
         # Calculating the average chunk value for easy splitting as EPUB (+2 as a safe margin)

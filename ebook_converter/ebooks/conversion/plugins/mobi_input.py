@@ -1,7 +1,6 @@
 import os
 
 from ebook_converter.customize.conversion import InputFormatPlugin
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL 3'
@@ -50,7 +49,7 @@ class MOBIInput(InputFormatPlugin):
 
         raw = parse_cache.pop('calibre_raw_mobi_markup', False)
         if raw:
-            if isinstance(raw, unicode_type):
+            if isinstance(raw, str):
                 raw = raw.encode('utf-8')
             with lopen('debug-raw.html', 'wb') as f:
                 f.write(raw)

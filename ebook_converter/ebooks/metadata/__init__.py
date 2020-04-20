@@ -9,7 +9,7 @@ import urllib.parse
 
 from ebook_converter import relpath, guess_type, prints, force_unicode
 from ebook_converter.utils.config_base import tweaks
-from ebook_converter.polyglot.builtins import codepoint_to_chr, unicode_type, getcwd, iteritems, itervalues, as_unicode
+from ebook_converter.polyglot.builtins import codepoint_to_chr, getcwd, iteritems, itervalues, as_unicode
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -190,7 +190,7 @@ coding = list(zip(
 
 def roman(num):
     if num <= 0 or num >= 4000 or int(num) != num:
-        return unicode_type(num)
+        return str(num)
     result = []
     for d, r in coding:
         while num >= d:
@@ -205,7 +205,7 @@ def fmt_sidx(i, fmt='%.2f', use_roman=False):
     try:
         i = float(i)
     except TypeError:
-        return unicode_type(i)
+        return str(i)
     if int(i) == float(i):
         return roman(int(i)) if use_roman else '%d'%int(i)
     return fmt%i
@@ -249,7 +249,7 @@ class Resource(object):
                 self._href = href_or_path
             else:
                 pc = url[2]
-                if isinstance(pc, unicode_type):
+                if isinstance(pc, str):
                     pc = pc.encode('utf-8')
                 pc = unquote(pc).decode('utf-8')
                 self.path = os.path.abspath(os.path.join(basedir, pc.replace('/', os.sep)))
@@ -270,7 +270,7 @@ class Resource(object):
                 basedir = getcwd()
         if self.path is None:
             return self._href
-        f = self.fragment.encode('utf-8') if isinstance(self.fragment, unicode_type) else self.fragment
+        f = self.fragment.encode('utf-8') if isinstance(self.fragment, str) else self.fragment
         frag = '#'+as_unicode(urllib.parse.quote(f)) if self.fragment else ''
         if self.path == basedir:
             return ''+frag
@@ -278,7 +278,7 @@ class Resource(object):
             rpath = relpath(self.path, basedir)
         except OSError:  # On windows path and basedir could be on different drives
             rpath = self.path
-        if isinstance(rpath, unicode_type):
+        if isinstance(rpath, str):
             rpath = rpath.encode('utf-8')
         return as_unicode(urllib.parse.quote(rpath.replace(os.sep, '/')))+frag
 
@@ -315,7 +315,7 @@ class ResourceCollection(object):
         return '[%s]'%', '.join(resources)
 
     def __repr__(self):
-        return unicode_type(self)
+        return str(self)
 
     def append(self, resource):
         if not isinstance(resource, Resource):
@@ -377,7 +377,7 @@ def check_isbn13(isbn):
         check = 10 - (sum(products)%10)
         if check == 10:
             check = 0
-        if unicode_type(check) == isbn[12]:
+        if str(check) == isbn[12]:
             return isbn
     except Exception:
         pass

@@ -11,7 +11,6 @@ from ebook_converter.ebooks.oeb.base import urlunquote
 from ebook_converter.ebooks.chardet import detect_xml_encoding
 from ebook_converter.constants import iswindows
 from ebook_converter import unicode_path, as_unicode, replace_entities
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -44,7 +43,7 @@ class Link(object):
         :param base: The base directory that relative URLs are with respect to.
                      Must be a unicode string.
         '''
-        assert isinstance(url, unicode_type) and isinstance(base, unicode_type)
+        assert isinstance(url, str) and isinstance(base, str)
         self.url         = url
         self.parsed_url  = urllib.parse.urlparse(self.url)
         self.is_local    = self.parsed_url.scheme in ('', 'file')
@@ -149,7 +148,7 @@ class HTMLFile(object):
         return 'HTMLFile:%d:%s:%s'%(self.level, 'b' if self.is_binary else 'a', self.path)
 
     def __repr__(self):
-        return unicode_type(self)
+        return str(self)
 
     def find_links(self, src):
         for match in self.LINK_PAT.finditer(src):

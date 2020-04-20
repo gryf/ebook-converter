@@ -5,7 +5,7 @@ from ebook_converter.constants import isosx, isfrozen, filesystem_encoding, ispy
 from ebook_converter.utils.config import prefs
 from ebook_converter.ptempfile import PersistentTemporaryFile, base_dir
 from ebook_converter.utils.serialize import msgpack_dumps
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes, environ_item, native_string_type, getcwd
+from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, environ_item, native_string_type, getcwd
 from ebook_converter.polyglot.binary import as_hex_unicode
 try:
     import win32process
@@ -97,13 +97,13 @@ class Worker(object):
             for key in os.environ:
                 try:
                     val = os.environ[key]
-                    if isinstance(val, unicode_type):
+                    if isinstance(val, str):
                         # On windows subprocess cannot handle unicode env vars
                         try:
                             val = val.encode(filesystem_encoding)
                         except ValueError:
                             val = val.encode('utf-8')
-                    if isinstance(key, unicode_type):
+                    if isinstance(key, str):
                         key = key.encode('ascii')
                     env[key] = val
                 except:
@@ -164,9 +164,9 @@ class Worker(object):
             # Windows cannot handle unicode env vars
             for k, v in iteritems(env):
                 try:
-                    if isinstance(k, unicode_type):
+                    if isinstance(k, str):
                         k = k.encode('ascii')
-                    if isinstance(v, unicode_type):
+                    if isinstance(v, str):
                         try:
                             v = v.encode(filesystem_encoding)
                         except:

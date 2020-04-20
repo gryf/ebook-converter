@@ -8,7 +8,7 @@ from functools import partial
 from ebook_converter.ebooks.htmlz.oeb2html import OEB2HTML
 from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS, barename, namespace, rewrite_links
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 __license__ = 'GPL 3'
@@ -225,7 +225,7 @@ class MarkdownMLizer(OEB2HTML):
                 text.append('+ ')
             elif li['name'] == 'ol':
                 li['num'] += 1
-                text.append(unicode_type(li['num']) + '. ')
+                text.append(str(li['num']) + '. ')
 
         # Process tags that contain text.
         if hasattr(elem, 'text') and elem.text:

@@ -6,7 +6,6 @@ from ebook_converter import prepare_string_for_xml
 from ebook_converter.constants import preferred_encoding
 from ebook_converter.ebooks.BeautifulSoup import html5_parser
 from ebook_converter.utils.html2text import html2text
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 # Hackish - ignoring sentences ending or beginning in numbers to avoid
@@ -44,7 +43,7 @@ def comments_to_html(comments):
     '''
     if not comments:
         return u'<p></p>'
-    if not isinstance(comments, unicode_type):
+    if not isinstance(comments, str):
         comments = comments.decode(preferred_encoding, 'replace')
 
     if comments.lstrip().startswith('<'):

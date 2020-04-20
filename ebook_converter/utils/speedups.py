@@ -1,7 +1,5 @@
 import os
 
-from ebook_converter.polyglot.builtins import unicode_type
-
 
 class ReadOnlyFileBuffer(object):
 
@@ -64,7 +62,7 @@ def svg_path_to_painter_path(d):
     # x1/y1 and x2/y2 = bezier control points
     x = y = x1 = y1 = x2 = y2 = 0
 
-    if isinstance(d, unicode_type):
+    if isinstance(d, str):
         d = d.encode('ascii')
     d = d.replace(b',', b' ').replace(b'\n', b' ')
     end = len(d)

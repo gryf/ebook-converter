@@ -7,7 +7,7 @@ from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter import CurrentDir
-from ebook_converter.polyglot.builtins import unicode_type, as_bytes
+from ebook_converter.polyglot.builtins import as_bytes
 
 
 __license__ = 'GPL v3'
@@ -225,15 +225,15 @@ class EPUBOutput(OutputFormatPlugin):
         identifiers = oeb.metadata['identifier']
         uuid = None
         for x in identifiers:
-            if x.get(OPF('scheme'), None).lower() == 'uuid' or unicode_type(x).startswith('urn:uuid:'):
-                uuid = unicode_type(x).split(':')[-1]
+            if x.get(OPF('scheme'), None).lower() == 'uuid' or str(x).startswith('urn:uuid:'):
+                uuid = str(x).split(':')[-1]
                 break
         encrypted_fonts = getattr(input_plugin, 'encrypted_fonts', [])
 
         if uuid is None:
             self.log.warn('No UUID identifier found')
             from uuid import uuid4
-            uuid = unicode_type(uuid4())
+            uuid = str(uuid4())
             oeb.metadata.add('identifier', uuid, scheme='uuid', id=uuid)
 
         if encrypted_fonts and not uuid.startswith('urn:uuid:'):
@@ -241,7 +241,7 @@ class EPUBOutput(OutputFormatPlugin):
             # for some absurd reason, or it will throw a hissy fit and refuse
             # to use the obfuscated fonts.
             for x in identifiers:
-                if unicode_type(x) == uuid:
+                if str(x) == uuid:
                     x.content = 'urn:uuid:'+uuid
 
         with TemporaryDirectory('_epub_output') as tdir:
@@ -336,7 +336,7 @@ class EPUBOutput(OutputFormatPlugin):
                         f.write(bytes(bytearray(data[i] ^ key[i%16] for i in range(1024))))
                     else:
                         self.log.warn('Font', path, 'is invalid, ignoring')
-                if not isinstance(uri, unicode_type):
+                if not isinstance(uri, str):
                     uri = uri.decode('utf-8')
                 fonts.append('''
                 <enc:EncryptedData>

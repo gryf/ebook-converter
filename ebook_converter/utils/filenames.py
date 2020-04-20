@@ -13,7 +13,7 @@ from ebook_converter.constants import (
     filesystem_encoding, iswindows, plugins, preferred_encoding, isosx, ispy3
 )
 from ebook_converter.utils.localization import get_udc
-from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 def ascii_text(orig):
@@ -21,7 +21,7 @@ def ascii_text(orig):
     try:
         ascii = udc.decode(orig)
     except Exception:
-        if isinstance(orig, unicode_type):
+        if isinstance(orig, str):
             orig = orig.encode('ascii', 'replace')
         ascii = orig.decode(preferred_encoding, 'replace')
     if isinstance(ascii, bytes):

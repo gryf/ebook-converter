@@ -1,7 +1,6 @@
 import re, os
 
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -127,7 +126,7 @@ def update_flow_links(mobi8_reader, resource_map, log):
             flows.append(flow)
             continue
 
-        if not isinstance(flow, unicode_type):
+        if not isinstance(flow, str):
             try:
                 flow = flow.decode(mr.header.codec)
             except UnicodeDecodeError:

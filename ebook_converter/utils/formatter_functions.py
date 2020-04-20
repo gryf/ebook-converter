@@ -14,7 +14,7 @@ from ebook_converter.utils.titlecase import titlecase
 from ebook_converter.utils.icu import capitalize, strcmp, sort_key
 from ebook_converter.utils.date import parse_date, format_date, now, UNDEFINED_DATE
 from ebook_converter.utils.localization import calibre_langcode_to_name, canonicalize_lang
-from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 __license__ = 'GPL v3'
@@ -128,12 +128,12 @@ class FormatterFunction(object):
 
     def eval_(self, formatter, kwargs, mi, locals, *args):
         ret = self.evaluate(formatter, kwargs, mi, locals, *args)
-        if isinstance(ret, (bytes, unicode_type)):
+        if isinstance(ret, (bytes, str)):
             return ret
         if isinstance(ret, list):
             return ','.join(ret)
         if isinstance(ret, (numbers.Number, bool)):
-            return unicode_type(ret)
+            return str(ret)
 
 
 class BuiltinFormatterFunction(FormatterFunction):
@@ -243,7 +243,7 @@ class BuiltinAdd(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals, x, y):
         x = float(x if x and x != 'None' else 0)
         y = float(y if y and y != 'None' else 0)
-        return unicode_type(x + y)
+        return str(x + y)
 
 
 class BuiltinSubtract(BuiltinFormatterFunction):
@@ -255,7 +255,7 @@ class BuiltinSubtract(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals, x, y):
         x = float(x if x and x != 'None' else 0)
         y = float(y if y and y != 'None' else 0)
-        return unicode_type(x - y)
+        return str(x - y)
 
 
 class BuiltinMultiply(BuiltinFormatterFunction):
@@ -267,7 +267,7 @@ class BuiltinMultiply(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals, x, y):
         x = float(x if x and x != 'None' else 0)
         y = float(y if y and y != 'None' else 0)
-        return unicode_type(x * y)
+        return str(x * y)
 
 
 class BuiltinDivide(BuiltinFormatterFunction):
@@ -279,7 +279,7 @@ class BuiltinDivide(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals, x, y):
         x = float(x if x and x != 'None' else 0)
         y = float(y if y and y != 'None' else 0)
-        return unicode_type(x / y)
+        return str(x / y)
 
 
 class BuiltinTemplate(BuiltinFormatterFunction):
@@ -371,7 +371,7 @@ class BuiltinRawField(BuiltinFormatterFunction):
             if fm is None:
                 return ', '.join(res)
             return fm['is_multiple']['list_to_ui'].join(res)
-        return unicode_type(res)
+        return str(res)
 
 
 class BuiltinRawList(BuiltinFormatterFunction):
@@ -723,7 +723,7 @@ class BuiltinCount(BuiltinFormatterFunction):
             'uses an ampersand. Examples: {tags:count(,)}, {authors:count(&)}')
 
     def evaluate(self, formatter, kwargs, mi, locals, val, sep):
-        return unicode_type(len([v for v in val.split(sep) if v]))
+        return str(len([v for v in val.split(sep) if v]))
 
 
 class BuiltinListitem(BuiltinFormatterFunction):
@@ -834,7 +834,7 @@ class BuiltinFormatsSizes(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals):
         fmt_data = mi.get('format_metadata', {})
         try:
-            return ','.join(k.upper()+':'+unicode_type(v['size']) for k,v in iteritems(fmt_data))
+            return ','.join(k.upper()+':'+str(v['size']) for k,v in iteritems(fmt_data))
         except:
             return ''
 
@@ -853,7 +853,7 @@ class BuiltinFormatsPaths(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals):
         fmt_data = mi.get('format_metadata', {})
         try:
-            return ','.join(k.upper()+':'+unicode_type(v['path']) for k,v in iteritems(fmt_data))
+            return ','.join(k.upper()+':'+str(v['path']) for k,v in iteritems(fmt_data))
         except:
             return ''
 
@@ -1084,7 +1084,7 @@ class BuiltinBooksize(BuiltinFormatterFunction):
             try:
                 v = mi._proxy_metadata.book_size
                 if v is not None:
-                    return unicode_type(mi._proxy_metadata.book_size)
+                    return str(mi._proxy_metadata.book_size)
                 return ''
             except:
                 pass

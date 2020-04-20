@@ -9,7 +9,6 @@ import urllib.parse
 import uuid
 
 from ebook_converter.utils.smartypants import smartyPants
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 # Last upstream version basis
@@ -683,7 +682,7 @@ class Textile(object):
     def footnoteID(self, match):
         id, t = match.groups()
         if id not in self.fn:
-            self.fn[id] = unicode_type(uuid.uuid4())
+            self.fn[id] = str(uuid.uuid4())
         fnid = self.fn[id]
         if not t:
             t = ''
@@ -788,7 +787,7 @@ class Textile(object):
         return url
 
     def shelve(self, text):
-        id = unicode_type(uuid.uuid4()) + 'c'
+        id = str(uuid.uuid4()) + 'c'
         self.shelf[id] = text
         return id
 

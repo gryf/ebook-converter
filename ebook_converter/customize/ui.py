@@ -18,7 +18,7 @@ from ebook_converter.utils.config import (make_config_dir, Config, ConfigProxy,
                                  plugin_dir, OptionParser)
 # from ebook_converter.ebooks.metadata.sources.base import Source
 from ebook_converter.constants import DEBUG, numeric_version
-from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 __license__ = 'GPL v3'
@@ -740,7 +740,7 @@ def build_plugin(path):
     from ebook_converter import prints
     from ebook_converter.ptempfile import PersistentTemporaryFile
     from ebook_converter.utils.zipfile import ZipFile, ZIP_STORED
-    path = unicode_type(path)
+    path = str(path)
     names = frozenset(os.listdir(path))
     if '__init__.py' not in names:
         prints(path, ' is not a valid plugin')

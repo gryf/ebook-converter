@@ -12,7 +12,7 @@ from ebook_converter.constants import __appname__, __version__
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.cleantext import clean_xml_chars
-from ebook_converter.polyglot.builtins import unicode_type, getcwd
+from ebook_converter.polyglot.builtins import getcwd
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -67,7 +67,7 @@ class TOC(list):
     def __str__(self):
         lines = ['TOC: %s#%s %s'%(self.href, self.fragment, self.text)]
         for child in self:
-            c = unicode_type(child).splitlines()
+            c = str(child).splitlines()
             for l in c:
                 lines.append('\t'+l)
         return '\n'.join(lines)
@@ -245,8 +245,8 @@ class TOC(list):
     def render(self, stream, uid):
         root = E.ncx(
                 E.head(
-                    E.meta(name='dtb:uid', content=unicode_type(uid)),
-                    E.meta(name='dtb:depth', content=unicode_type(self.depth())),
+                    E.meta(name='dtb:uid', content=str(uid)),
+                    E.meta(name='dtb:depth', content=str(self.depth())),
                     E.meta(name='dtb:generator', content='%s (%s)'%(__appname__,
                         __version__)),
                     E.meta(name='dtb:totalPageCount', content='0'),
@@ -268,10 +268,10 @@ class TOC(list):
             text = clean_xml_chars(text)
             elem = E.navPoint(
                     E.navLabel(E.text(re.sub(r'\s+', ' ', text))),
-                    E.content(src=unicode_type(np.href)+(('#' + unicode_type(np.fragment))
+                    E.content(src=str(np.href)+(('#' + str(np.fragment))
                         if np.fragment else '')),
                     id=item_id,
-                    playOrder=unicode_type(np.play_order)
+                    playOrder=str(np.play_order)
             )
             au = getattr(np, 'author', None)
             if au:

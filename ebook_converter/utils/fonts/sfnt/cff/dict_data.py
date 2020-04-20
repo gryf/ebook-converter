@@ -1,5 +1,4 @@
 from struct import pack, unpack_from
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -68,7 +67,7 @@ class ByteCode(dict):
         return float(number), index
 
     def write_float(self, f, encoding='ignored'):
-        s = unicode_type(f).upper()
+        s = str(f).upper()
         if s[:2] == "0.":
             s = s[1:]
         elif s[:3] == "-0.":

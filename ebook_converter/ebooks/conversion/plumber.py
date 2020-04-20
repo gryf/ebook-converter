@@ -13,7 +13,7 @@ from ebook_converter.utils.zipfile import ZipFile
 from ebook_converter import (extract, walk, isbytestring, filesystem_encoding,
         get_types_map)
 from ebook_converter.constants import __version__
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 __license__ = 'GPL 3'
@@ -795,7 +795,7 @@ OptionRecommendation(name='search_replace',
     def unarchive(self, path, tdir):
         extract(path, tdir)
         files = list(walk(tdir))
-        files = [f if isinstance(f, unicode_type) else f.decode(filesystem_encoding)
+        files = [f if isinstance(f, str) else f.decode(filesystem_encoding)
                 for f in files]
         from ebook_converter.customize.ui import available_input_formats
         fmts = set(available_input_formats())
@@ -848,7 +848,7 @@ OptionRecommendation(name='search_replace',
         rec = self.get_option_by_name(name)
         help = getattr(rec, 'help', None)
         if help is not None:
-            return help.replace('%default', unicode_type(rec.recommended_value))
+            return help.replace('%default', str(rec.recommended_value))
 
     def get_all_help(self):
         ans = {}
@@ -916,7 +916,7 @@ OptionRecommendation(name='search_replace',
                     try:
                         val = parse_date(val, assume_utc=x=='timestamp')
                     except:
-                        self.log.exception(_('Failed to parse date/time') + ' ' + unicode_type(val))
+                        self.log.exception(_('Failed to parse date/time') + ' ' + str(val))
                         continue
                 setattr(mi, x, val)
 

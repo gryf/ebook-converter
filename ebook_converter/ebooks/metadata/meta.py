@@ -6,7 +6,7 @@ from ebook_converter.ebooks.metadata.opf2 import OPF
 from ebook_converter import isbytestring
 from ebook_converter.customize.ui import get_file_type_metadata, set_file_type_metadata
 from ebook_converter.ebooks.metadata import MetaInformation, string_to_authors
-from ebook_converter.polyglot.builtins import getcwd, unicode_type
+from ebook_converter.polyglot.builtins import getcwd
 
 
 __license__ = 'GPL v3'
@@ -229,7 +229,7 @@ def forked_read_metadata(path, tdir):
         f.seek(0, 2)
         sz = f.tell()
         with lopen(os.path.join(tdir, 'size.txt'), 'wb') as s:
-            s.write(unicode_type(sz).encode('ascii'))
+            s.write(str(sz).encode('ascii'))
         f.seek(0)
         mi = get_metadata(f, fmt)
     if mi.cover_data and mi.cover_data[1]:

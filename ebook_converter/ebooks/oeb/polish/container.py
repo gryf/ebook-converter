@@ -49,7 +49,7 @@ from ebook_converter.utils.ipc.simple_worker import WorkerError, fork_job
 from ebook_converter.utils.logging import default_log
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.zipfile import ZipFile
-from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.builtins import iteritems
 
 exists, join, relpath = os.path.exists, os.path.join, os.path.relpath
 
@@ -163,7 +163,7 @@ class ContainerBase(object):  # {{{
         """
         def fix_data(d):
             return d.replace('\r\n', '\n').replace('\r', '\n')
-        if isinstance(data, unicode_type):
+        if isinstance(data, str):
             return fix_data(data)
         bom_enc = None
         if data[:4] in {b'\0\0\xfe\xff', b'\xff\xfe\0\0'}:
@@ -681,7 +681,7 @@ class Container(ContainerBase):  # {{{
         ''' The names of all manifest items whose media-type matches predicate.
         `predicate` can be a set, a list, a string or a function taking a single
         argument, which will be called with the media-type. '''
-        if isinstance(predicate, unicode_type):
+        if isinstance(predicate, str):
             predicate = predicate.__eq__
         elif hasattr(predicate, '__contains__'):
             predicate = predicate.__contains__

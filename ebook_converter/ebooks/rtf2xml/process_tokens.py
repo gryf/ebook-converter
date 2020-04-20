@@ -14,7 +14,6 @@ import os, re
 
 from ebook_converter.ebooks.rtf2xml import copy, check_brackets
 from ebook_converter.ptempfile import better_mktemp
-from ebook_converter.polyglot.builtins import unicode_type
 
 from . import open_for_read, open_for_write
 
@@ -694,7 +693,7 @@ class ProcessTokens:
         if num[-1] == ';':
             num = num[:-1]
             third_field = 'en'
-        num = unicode_type('%X' % int(num))
+        num = str('%X' % int(num))
         if len(num) != 2:
             num = "0" + num
         return 'cw<%s<%s<%s<%s\n' % (pre, token, third_field, num)
@@ -731,7 +730,7 @@ class ProcessTokens:
             return 0
         num = '%0.2f' % round(numerator/denominator, 2)
         return num
-        string_num = unicode_type(num)
+        string_num = str(num)
         if string_num[-2:] == ".0":
             string_num = string_num[:-2]
         return string_num

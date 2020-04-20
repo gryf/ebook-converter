@@ -7,7 +7,7 @@ from ebook_converter.ebooks.metadata.book import (SC_COPYABLE_FIELDS,
         TOP_LEVEL_IDENTIFIERS, ALL_METADATA_FIELDS)
 from ebook_converter.library.field_metadata import FieldMetadata
 from ebook_converter.utils.icu import sort_key
-from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -22,7 +22,7 @@ SIMPLE_SET = frozenset(SIMPLE_GET - {'identifiers'})
 
 def human_readable(size, precision=2):
     """ Convert a size in bytes into megabytes """
-    return ('%.'+unicode_type(precision)+'f'+ 'MB') % (size/(1024*1024),)
+    return ('%.'+str(precision)+'f'+ 'MB') % (size/(1024*1024),)
 
 
 NULL_VALUES = {
@@ -606,14 +606,14 @@ class Metadata(object):
         return authors_to_string(self.authors)
 
     def format_tags(self):
-        return ', '.join([unicode_type(t) for t in sorted(self.tags, key=sort_key)])
+        return ', '.join([str(t) for t in sorted(self.tags, key=sort_key)])
 
     def format_rating(self, v=None, divide_by=1):
         if v is None:
             if self.rating is not None:
-                return unicode_type(self.rating/divide_by)
+                return str(self.rating/divide_by)
             return 'None'
-        return unicode_type(v/divide_by)
+        return str(v/divide_by)
 
     def format_field(self, key, series_with_index=True):
         '''
@@ -637,15 +637,15 @@ class Metadata(object):
             if cmeta and cmeta['datatype'] == 'series':
                 if self.get(tkey):
                     res = self.get_extra(tkey)
-                    return (unicode_type(cmeta['name']+'_index'),
+                    return (str(cmeta['name']+'_index'),
                             self.format_series_index(res), res, cmeta)
                 else:
-                    return (unicode_type(cmeta['name']+'_index'), '', '', cmeta)
+                    return (str(cmeta['name']+'_index'), '', '', cmeta)
 
         if key in self.custom_field_keys():
             res = self.get(key, None)       # get evaluates all necessary composites
             cmeta = self.get_user_metadata(key, make_copy=False)
-            name = unicode_type(cmeta['name'])
+            name = str(cmeta['name'])
             if res is None or res == '':    # can't check "not res" because of numeric fields
                 return (name, res, None, None)
             orig_res = res
@@ -668,7 +668,7 @@ class Metadata(object):
                     res = fmt.format(res)
                 except:
                     pass
-            return (name, unicode_type(res), orig_res, cmeta)
+            return (name, str(res), orig_res, cmeta)
 
         # convert top-level ids into their value
         if key in TOP_LEVEL_IDENTIFIERS:
@@ -682,11 +682,11 @@ class Metadata(object):
         if fmkey in field_metadata and field_metadata[fmkey]['kind'] == 'field':
             res = self.get(key, None)
             fmeta = field_metadata[fmkey]
-            name = unicode_type(fmeta['name'])
+            name = str(fmeta['name'])
             if res is None or res == '':
                 return (name, res, None, None)
             orig_res = res
-            name = unicode_type(fmeta['name'])
+            name = str(fmeta['name'])
             datatype = fmeta['datatype']
             if key == 'authors':
                 res = authors_to_string(res)
@@ -704,7 +704,7 @@ class Metadata(object):
                 res = '%.2g'%(res/2)
             elif key == 'size':
                 res = human_readable(res)
-            return (name, unicode_type(res), orig_res, fmeta)
+            return (name, str(res), orig_res, fmeta)
 
         return (None, None, None, None)
 
@@ -718,7 +718,7 @@ class Metadata(object):
         ans = []
 
         def fmt(x, y):
-            ans.append('%-20s: %s'%(unicode_type(x), unicode_type(y)))
+            ans.append('%-20s: %s'%(str(x), str(y)))
 
         fmt('Title', self.title)
         if self.title_sort:
@@ -732,7 +732,7 @@ class Metadata(object):
         if getattr(self, 'book_producer', False):
             fmt('Book Producer', self.book_producer)
         if self.tags:
-            fmt('Tags', ', '.join([unicode_type(t) for t in self.tags]))
+            fmt('Tags', ', '.join([str(t) for t in self.tags]))
         if self.series:
             fmt('Series', self.series + ' #%s'%self.format_series_index())
         if not self.is_null('languages'):
@@ -745,7 +745,7 @@ class Metadata(object):
         if self.pubdate is not None:
             fmt('Published', isoformat(self.pubdate))
         if self.rights is not None:
-            fmt('Rights', unicode_type(self.rights))
+            fmt('Rights', str(self.rights))
         if self.identifiers:
             fmt('Identifiers', ', '.join(['%s:%s'%(k, v) for k, v in
                 iteritems(self.identifiers)]))
@@ -756,7 +756,7 @@ class Metadata(object):
             val = self.get(key, None)
             if val:
                 (name, val) = self.format_field(key)
-                fmt(name, unicode_type(val))
+                fmt(name, str(val))
         return '\n'.join(ans)
 
     def to_html(self):
@@ -765,22 +765,22 @@ class Metadata(object):
         '''
         from ebook_converter.ebooks.metadata import authors_to_string
         from ebook_converter.utils.date import isoformat
-        ans = [(_('Title'), unicode_type(self.title))]
+        ans = [(_('Title'), str(self.title))]
         ans += [(_('Author(s)'), (authors_to_string(self.authors) if self.authors else _('Unknown')))]
-        ans += [(_('Publisher'), unicode_type(self.publisher))]
-        ans += [(_('Producer'), unicode_type(self.book_producer))]
-        ans += [(_('Comments'), unicode_type(self.comments))]
-        ans += [('ISBN', unicode_type(self.isbn))]
-        ans += [(_('Tags'), ', '.join([unicode_type(t) for t in self.tags]))]
+        ans += [(_('Publisher'), str(self.publisher))]
+        ans += [(_('Producer'), str(self.book_producer))]
+        ans += [(_('Comments'), str(self.comments))]
+        ans += [('ISBN', str(self.isbn))]
+        ans += [(_('Tags'), ', '.join([str(t) for t in self.tags]))]
         if self.series:
-            ans += [(_('Series'), unicode_type(self.series) + ' #%s'%self.format_series_index())]
+            ans += [(_('Series'), str(self.series) + ' #%s'%self.format_series_index())]
         ans += [(_('Languages'), ', '.join(self.languages))]
         if self.timestamp is not None:
-            ans += [(_('Timestamp'), unicode_type(isoformat(self.timestamp, as_utc=False, sep=' ')))]
+            ans += [(_('Timestamp'), str(isoformat(self.timestamp, as_utc=False, sep=' ')))]
         if self.pubdate is not None:
-            ans += [(_('Published'), unicode_type(isoformat(self.pubdate, as_utc=False, sep=' ')))]
+            ans += [(_('Published'), str(isoformat(self.pubdate, as_utc=False, sep=' ')))]
         if self.rights is not None:
-            ans += [(_('Rights'), unicode_type(self.rights))]
+            ans += [(_('Rights'), str(self.rights))]
         for key in self.custom_field_keys():
             val = self.get(key, None)
             if val:

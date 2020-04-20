@@ -6,7 +6,7 @@ from ebook_converter.customize import CatalogPlugin
 from ebook_converter.library.catalogs import FIELDS, TEMPLATE_ALLOWED_FIELDS
 from ebook_converter.customize.conversion import DummyReporter
 from ebook_converter.ebooks.metadata import format_isbn
-from ebook_converter.polyglot.builtins import string_or_bytes, unicode_type
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 __license__ = 'GPL v3'
@@ -245,7 +245,7 @@ class BIBTEX(CatalogPlugin):
                     elif tpl_field in ['tags', 'authors'] :
                         tpl_field =entry[tpl_field][0]
                     elif tpl_field in ['id', 'series_index'] :
-                        tpl_field = unicode_type(entry[tpl_field])
+                        tpl_field = str(entry[tpl_field])
                     else :
                         tpl_field = entry[tpl_field]
                     return ascii_text(tpl_field)
@@ -264,7 +264,7 @@ class BIBTEX(CatalogPlugin):
                 template_citation = '%s' % re.sub(r'[\D]','', entry["isbn"])
 
             else :
-                template_citation = '%s' % unicode_type(entry["id"])
+                template_citation = '%s' % str(entry["id"])
 
             return bibtexclass.ValidateCitationKey(template_citation)
 

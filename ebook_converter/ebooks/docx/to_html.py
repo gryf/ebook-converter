@@ -21,7 +21,7 @@ from ebook_converter.ebooks.docx.fields import Fields
 from ebook_converter.ebooks.docx.settings import Settings
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
-from ebook_converter.polyglot.builtins import iteritems, itervalues, getcwd, unicode_type
+from ebook_converter.polyglot.builtins import iteritems, itervalues, getcwd
 
 
 __license__ = 'GPL v3'
@@ -476,7 +476,7 @@ class Convert(object):
                 current_hyperlink = x
             elif x.tag.endswith('}instrText') and x.text and x.text.strip().startswith('TOC '):
                 old_anchor = current_anchor
-                anchor = unicode_type(uuid.uuid4())
+                anchor = str(uuid.uuid4())
                 self.anchor_map[anchor] = current_anchor = generate_anchor('toc', frozenset(itervalues(self.anchor_map)))
                 self.toc_anchor = current_anchor
                 if old_anchor is not None:
@@ -493,7 +493,7 @@ class Convert(object):
         if m is not None:
             n = min(6, max(1, int(m.group(1))))
             dest.tag = 'h%d' % n
-            dest.set('data-heading-level', unicode_type(n))
+            dest.set('data-heading-level', str(n))
 
         if style.bidi is True:
             dest.set('dir', 'rtl')

@@ -17,7 +17,7 @@ from ebook_converter import (isbytestring, as_unicode, get_types_map)
 from ebook_converter.ebooks.oeb.parse_utils import barename, XHTML_NS, namespace, XHTML, parse_html, NotHTML
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, string_or_bytes, itervalues, codepoint_to_chr
+from ebook_converter.polyglot.builtins import iteritems, string_or_bytes, itervalues, codepoint_to_chr
 from ebook_converter.polyglot.urllib import unquote as urlunquote
 
 
@@ -121,7 +121,7 @@ def as_string_type(pat, for_unicode):
         if isinstance(pat, bytes):
             pat = pat.decode('utf-8')
     else:
-        if isinstance(pat, unicode_type):
+        if isinstance(pat, str):
             pat = pat.encode('utf-8')
     return pat
 
@@ -140,7 +140,7 @@ def self_closing_pat(for_unicode):
 
 
 def close_self_closing_tags(raw):
-    for_unicode = isinstance(raw, unicode_type)
+    for_unicode = isinstance(raw, str)
     repl = as_string_type(r'<\g<tag>\g<arg>></\g<tag>>', for_unicode)
     pat = self_closing_pat(for_unicode)
     return pat.sub(repl, raw)
@@ -421,11 +421,11 @@ def serialize(data, media_type, pretty_print=False):
             # incorrectly by some browser based renderers
             ans = close_self_closing_tags(ans)
         return ans
-    if isinstance(data, unicode_type):
+    if isinstance(data, str):
         return data.encode('utf-8')
     if hasattr(data, 'cssText'):
         data = data.cssText
-        if isinstance(data, unicode_type):
+        if isinstance(data, str):
             data = data.encode('utf-8')
         return data + b'\n'
     return bytes(data)
@@ -567,7 +567,7 @@ class DirContainer(object):
         # If it runs on a unicode object, it returns a double encoded unicode
         # string: unquote(u'%C3%A4') != unquote(b'%C3%A4').decode('utf-8')
         # and the latter is correct
-        if isinstance(path, unicode_type):
+        if isinstance(path, str):
             path = path.encode('utf-8')
         return urlunquote(path).decode('utf-8')
 
@@ -759,7 +759,7 @@ class Metadata(object):
                 return as_unicode(self.value)
         else:
             def __str__(self):
-                return unicode_type(self.value).encode('ascii', 'xmlcharrefreplace')
+                return str(self.value).encode('ascii', 'xmlcharrefreplace')
 
             def __unicode__(self):
                 return as_unicode(self.value)
@@ -918,9 +918,9 @@ class Manifest(object):
         """
 
         def __init__(self, oeb, id, href, media_type,
-                     fallback=None, loader=unicode_type, data=None):
+                     fallback=None, loader=str, data=None):
             if href:
-                href = unicode_type(href)
+                href = str(href)
             self.oeb = oeb
             self.id = id
             self.href = self.path = urlnormalize(href)
@@ -973,7 +973,7 @@ class Manifest(object):
 
             title = self.oeb.metadata.title
             if title:
-                title = unicode_type(title[0])
+                title = str(title[0])
             else:
                 title = _('Unknown')
 
@@ -1006,7 +1006,7 @@ class Manifest(object):
                 self.oeb.logger.warn('CSS import of non-CSS file %r' % path)
                 return (None, None)
             data = item.data.cssText
-            enc = None if isinstance(data, unicode_type) else 'utf-8'
+            enc = None if isinstance(data, str) else 'utf-8'
             return (enc, data)
 
         # }}}
@@ -1087,11 +1087,11 @@ class Manifest(object):
             data = self.data
             if isinstance(data, etree._Element):
                 return xml2text(data, pretty_print=self.oeb.pretty_print)
-            if isinstance(data, unicode_type):
+            if isinstance(data, str):
                 return data
             if hasattr(data, 'cssText'):
                 return css_text(data)
-            return unicode_type(data)
+            return str(data)
 
         @property
         def bytes_representation(self):
@@ -1211,7 +1211,7 @@ class Manifest(object):
             base = id
             index = 1
             while id in self.ids:
-                id = base + unicode_type(index)
+                id = base + str(index)
                 index += 1
         if href is not None:
             href = urlnormalize(href)
@@ -1219,9 +1219,9 @@ class Manifest(object):
             index = 1
             lhrefs = {x.lower() for x in self.hrefs}
             while href.lower() in lhrefs:
-                href = base + unicode_type(index) + ext
+                href = base + str(index) + ext
                 index += 1
-        return id, unicode_type(href)
+        return id, str(href)
 
     def __iter__(self):
         for item in self.items:
@@ -1435,7 +1435,7 @@ class Guide(object):
     def add(self, type, title, href):
         """Add a new reference to the `Guide`."""
         if href:
-            href = unicode_type(href)
+            href = str(href)
         ref = self.Reference(self.oeb, type, title, href)
         self.refs[type] = ref
         return ref
@@ -1641,7 +1641,7 @@ class TOC(object):
             po = node.play_order
             if po == 0:
                 po = 1
-            attrib = {'id': id, 'playOrder': unicode_type(po)}
+            attrib = {'id': id, 'playOrder': str(po)}
             if node.klass:
                 attrib['class'] = node.klass
             point = element(parent, NCX('navPoint'), attrib=attrib)
@@ -1712,7 +1712,7 @@ class PageList(object):
         TYPES = {'front', 'normal', 'special'}
 
         def __init__(self, name, href, type='normal', klass=None, id=None):
-            self.name = unicode_type(name)
+            self.name = str(name)
             self.href = urlnormalize(href)
             self.type = type if type in self.TYPES else 'normal'
             self.id = id
@@ -1749,7 +1749,7 @@ class PageList(object):
         for page in self.pages:
             id = page.id or uuid_id()
             type = page.type
-            value = unicode_type(next(values[type]))
+            value = str(next(values[type]))
             attrib = {'id': id, 'value': value, 'type': type, 'playOrder': '0'}
             if page.klass:
                 attrib['class'] = page.klass
@@ -1848,7 +1848,7 @@ class OEBBook(object):
         """Automatically decode :param:`data` into a `unicode` object."""
         def fix_data(d):
             return d.replace('\r\n', '\n').replace('\r', '\n')
-        if isinstance(data, unicode_type):
+        if isinstance(data, str):
             return fix_data(data)
         bom_enc = None
         if data[:4] in (b'\0\0\xfe\xff', b'\xff\xfe\0\0'):
@@ -1922,36 +1922,36 @@ class OEBBook(object):
         for i, elem in enumerate(xpath(ncx, '//*[@playOrder and ./ncx:content[@src]]')):
             href = urlnormalize(selector(elem)[0])
             order = playorder.get(href, i)
-            elem.attrib['playOrder'] = unicode_type(order)
+            elem.attrib['playOrder'] = str(order)
         return
 
     def _to_ncx(self):
-        lang = unicode_type(self.metadata.language[0])
+        lang = str(self.metadata.language[0])
         lang = lang.replace('_', '-')
         ncx = etree.Element(NCX('ncx'),
             attrib={'version': '2005-1', XML('lang'): lang},
             nsmap={None: NCX_NS})
         head = etree.SubElement(ncx, NCX('head'))
         etree.SubElement(head, NCX('meta'),
-            name='dtb:uid', content=unicode_type(self.uid))
+            name='dtb:uid', content=str(self.uid))
         etree.SubElement(head, NCX('meta'),
-            name='dtb:depth', content=unicode_type(self.toc.depth()))
+            name='dtb:depth', content=str(self.toc.depth()))
         generator = ''.join(['calibre (', __version__, ')'])
         etree.SubElement(head, NCX('meta'),
             name='dtb:generator', content=generator)
         etree.SubElement(head, NCX('meta'),
-            name='dtb:totalPageCount', content=unicode_type(len(self.pages)))
+            name='dtb:totalPageCount', content=str(len(self.pages)))
         maxpnum = etree.SubElement(head, NCX('meta'),
             name='dtb:maxPageNumber', content='0')
         title = etree.SubElement(ncx, NCX('docTitle'))
         text = etree.SubElement(title, NCX('text'))
-        text.text = unicode_type(self.metadata.title[0])
+        text.text = str(self.metadata.title[0])
         navmap = etree.SubElement(ncx, NCX('navMap'))
         self.toc.to_ncx(navmap)
         if len(self.pages) > 0:
             plist = self.pages.to_ncx(ncx)
             value = max(int(x) for x in xpath(plist, '//@value'))
-            maxpnum.attrib['content'] = unicode_type(value)
+            maxpnum.attrib['content'] = str(value)
         self._update_playorder(ncx)
         return ncx
 

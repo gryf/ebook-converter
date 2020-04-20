@@ -13,7 +13,7 @@ def hasenv(x):
 
 
 def as_bytes(x, encoding='utf-8'):
-    if isinstance(x, unicode_type):
+    if isinstance(x, str):
         return x.encode(encoding)
     if isinstance(x, bytes):
         return x
@@ -21,8 +21,8 @@ def as_bytes(x, encoding='utf-8'):
         return bytes(x)
     if isinstance(x, memoryview):
         return x.tobytes()
-    ans = unicode_type(x)
-    if isinstance(ans, unicode_type):
+    ans = str(x)
+    if isinstance(ans, str):
         ans = ans.encode(encoding)
     return ans
 
@@ -30,7 +30,7 @@ def as_bytes(x, encoding='utf-8'):
 def as_unicode(x, encoding='utf-8', errors='strict'):
     if isinstance(x, bytes):
         return x.decode(encoding, errors)
-    return unicode_type(x)
+    return str(x)
 
 
 def reraise(tp, value, tb=None):
@@ -46,7 +46,6 @@ def reraise(tp, value, tb=None):
 
 
 codepoint_to_chr = chr
-unicode_type = str
 string_or_bytes = str, bytes
 string_or_unicode = str
 long_type = int
@@ -57,9 +56,9 @@ getenv = os.getenv
 
 def error_message(exc):
     args = getattr(exc, 'args', None)
-    if args and isinstance(args[0], unicode_type):
+    if args and isinstance(args[0], str):
         return args[0]
-    return unicode_type(exc)
+    return str(exc)
 
 
 def iteritems(d):

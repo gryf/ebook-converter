@@ -7,7 +7,7 @@ import json
 from gettext import GNUTranslations, NullTranslations
 import pkg_resources
 
-from ebook_converter.polyglot.builtins import is_py3, iteritems, unicode_type
+from ebook_converter.polyglot.builtins import is_py3, iteritems
 
 _available_translations = None
 
@@ -253,7 +253,7 @@ def calibre_langcode_to_name(lc, localize=True):
 def canonicalize_lang(raw):
     if not raw:
         return None
-    if not isinstance(raw, unicode_type):
+    if not isinstance(raw, str):
         raw = raw.decode('utf-8', 'ignore')
     raw = raw.lower().strip()
     if not raw:

@@ -8,7 +8,7 @@ from ebook_converter.utils.ipc import eintr_retry_call
 from ebook_converter.utils.ipc.launch import Worker
 from ebook_converter.utils.serialize import msgpack_loads, msgpack_dumps
 from ebook_converter.utils.monotonic import monotonic
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, environ_item
+from ebook_converter.polyglot.builtins import string_or_bytes, environ_item
 from ebook_converter.polyglot.binary import as_hex_unicode, from_hex_bytes
 
 
@@ -267,7 +267,7 @@ def offload_worker(env={}, priority='normal', cwd=None):
 
 def compile_code(src):
     import re, io
-    if not isinstance(src, unicode_type):
+    if not isinstance(src, str):
         match = re.search(br'coding[:=]\s*([-\w.]+)', src[:200])
         enc = match.group(1).decode('utf-8') if match else 'utf-8'
         src = src.decode(enc)

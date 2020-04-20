@@ -4,7 +4,7 @@ import unicodedata
 
 # Setup code {{{
 from ebook_converter.constants import plugins
-from ebook_converter.polyglot.builtins import unicode_type, cmp
+from ebook_converter.polyglot.builtins import cmp
 from ebook_converter.utils.config_base import tweaks
 
 
@@ -250,7 +250,7 @@ ord_string = str  # _icu.ord_string
 
 def character_name(string):
     try:
-        return _icu.character_name(unicode_type(string)) or None
+        return _icu.character_name(str(string)) or None
     except (TypeError, ValueError, KeyError):
         pass
 
@@ -267,8 +267,8 @@ def normalize(text, mode='NFC'):
     # that unless you have very good reasons not too. Also, it's speed
     # decreases on wide python builds, where conversion to/from ICU's string
     # representation is slower.
-    # return _icu.normalize(_nmodes[mode], unicode_type(text))
-    return unicode.normalize(mode, unicode_type(text))
+    # return _icu.normalize(_nmodes[mode], str(text))
+    return unicode.normalize(mode, str(text))
 
 
 def contractions(col=None):

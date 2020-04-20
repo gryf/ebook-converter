@@ -56,7 +56,6 @@ import re
 
 from ebook_converter.ebooks.unihandecode.unicodepoints import CODEPOINTS
 from ebook_converter.ebooks.unihandecode.zhcodepoints import CODEPOINTS as HANCODES
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL 3'
@@ -94,8 +93,8 @@ class Unidecoder(object):
         Find what group character is a part of.
         '''
         # Code groups withing CODEPOINTS take the form 'xAB'
-        if not isinstance(character, unicode_type):
-            character = unicode_type(character, "utf-8")
+        if not isinstance(character, str):
+            character = str(character, "utf-8")
         return 'x%02x' % (ord(character) >> 8)
 
     def grouped_point(self, character):
@@ -103,6 +102,6 @@ class Unidecoder(object):
         Return the location the replacement character is in the list for a
         the group character is a part of.
         '''
-        if not isinstance(character, unicode_type):
-            character = unicode_type(character, "utf-8")
+        if not isinstance(character, str):
+            character = str(character, "utf-8")
         return ord(character) & 255

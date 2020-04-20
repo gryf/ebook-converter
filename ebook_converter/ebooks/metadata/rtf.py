@@ -6,7 +6,7 @@ import re
 
 from ebook_converter import force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation
-from ebook_converter.polyglot.builtins import codepoint_to_chr, string_or_bytes, unicode_type, int_to_byte
+from ebook_converter.polyglot.builtins import codepoint_to_chr, string_or_bytes, int_to_byte
 
 title_pat    = re.compile(br'\{\\info.*?\{\\title(.*?)(?<!\\)\}', re.DOTALL)
 author_pat   = re.compile(br'\{\\info.*?\{\\author(.*?)(?<!\\)\}', re.DOTALL)
@@ -74,7 +74,7 @@ def detect_codepage(stream):
 
 
 def encode(unistr):
-    if not isinstance(unistr, unicode_type):
+    if not isinstance(unistr, str):
         unistr = force_unicode(unistr)
     return ''.join(c if ord(c) < 128 else '\\u{}?'.format(ord(c)) for c in unistr)
 

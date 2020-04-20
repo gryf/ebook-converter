@@ -3,7 +3,6 @@ import os
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter.constants import numeric_version
 from ebook_converter import walk
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -161,6 +160,6 @@ class RecipeInput(InputFormatPlugin):
 
     def save_download(self, zf):
         raw = self.recipe_source
-        if isinstance(raw, unicode_type):
+        if isinstance(raw, str):
             raw = raw.encode('utf-8')
         zf.writestr('download.recipe', raw)

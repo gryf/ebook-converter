@@ -1,4 +1,3 @@
-from ebook_converter.polyglot.builtins import unicode_type
 from ebook_converter.constants import ispy3
 
 
@@ -21,7 +20,7 @@ def create_encoder(for_json=False):
 
     def encoder(obj):
         if isinstance(obj, datetime):
-            return encoded(0, unicode_type(obj.isoformat()), ExtType)
+            return encoded(0, str(obj.isoformat()), ExtType)
         if isinstance(obj, (set, frozenset)):
             return encoded(1, tuple(obj), ExtType)
         if getattr(obj, '__calibre_serializable__', False):

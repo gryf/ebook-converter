@@ -27,7 +27,7 @@ from ebook_converter import prints, guess_type
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
 from ebook_converter.utils.config import tweaks
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, getcwd
+from ebook_converter.polyglot.builtins import iteritems, getcwd
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -91,7 +91,7 @@ class Resource(object):  # {{{
                 self._href = href_or_path
             else:
                 pc = url[2]
-                if isinstance(pc, unicode_type):
+                if isinstance(pc, str):
                     pc = pc.encode('utf-8')
                 pc = pc.decode('utf-8')
                 self.path = os.path.abspath(os.path.join(basedir, pc.replace('/', os.sep)))
@@ -159,7 +159,7 @@ class ResourceCollection(object):  # {{{
     __unicode__ = __str__
 
     def __repr__(self):
-        return unicode_type(self)
+        return str(self)
 
     def append(self, resource):
         if not isinstance(resource, Resource):
@@ -219,10 +219,10 @@ class ManifestItem(Resource):  # {{{
         __unicode__ = __unicode__representation__
 
         def __str__(self):
-            return unicode_type(self).encode('utf-8')
+            return str(self).encode('utf-8')
 
     def __repr__(self):
-        return unicode_type(self)
+        return str(self)
 
     def __getitem__(self, index):
         if index == 0:
@@ -425,7 +425,7 @@ class Guide(ResourceCollection):  # {{{
 class MetadataField(object):
 
     def __init__(self, name, is_dc=True, formatter=None, none_is=None,
-            renderer=lambda x: unicode_type(x)):
+            renderer=lambda x: str(x)):
         self.name      = name
         self.is_dc     = is_dc
         self.formatter = formatter
@@ -806,7 +806,7 @@ class OPF(object):  # {{{
     def unquote_urls(self):
         def get_href(item):
             raw = unquote(item.get('href', ''))
-            if not isinstance(raw, unicode_type):
+            if not isinstance(raw, str):
                 raw = raw.decode('utf-8')
             return raw
         for item in self.itermanifest():
@@ -835,7 +835,7 @@ class OPF(object):  # {{{
             titles = ()
         if val:
             title = titles[0] if titles else self.create_metadata_element('title')
-            title.text = re.sub(r'\s+', ' ', unicode_type(val))
+            title.text = re.sub(r'\s+', ' ', str(val))
 
     @property
     def authors(self):
@@ -878,7 +878,7 @@ class OPF(object):  # {{{
             for key in matches[0].attrib:
                 if key.endswith('file-as'):
                     matches[0].attrib.pop(key)
-            matches[0].set('{%s}file-as'%self.NAMESPACES['opf'], unicode_type(val))
+            matches[0].set('{%s}file-as'%self.NAMESPACES['opf'], str(val))
 
     @property
     def tags(self):
@@ -895,7 +895,7 @@ class OPF(object):  # {{{
             tag.getparent().remove(tag)
         for tag in val:
             elem = self.create_metadata_element('subject')
-            self.set_text(elem, unicode_type(tag))
+            self.set_text(elem, str(tag))
 
     @property
     def pubdate(self):
@@ -951,7 +951,7 @@ class OPF(object):  # {{{
                 xid = x.get('id', None)
                 is_package_identifier = uuid_id is not None and uuid_id == xid
                 if is_package_identifier:
-                    self.set_text(x, unicode_type(uuid.uuid4()))
+                    self.set_text(x, str(uuid.uuid4()))
                     for attr in x.attrib:
                         if attr.endswith('scheme'):
                             x.attrib[attr] = 'uuid'
@@ -962,7 +962,7 @@ class OPF(object):  # {{{
             attrib = {'{%s}scheme'%self.NAMESPACES['opf']: 'ISBN'}
             matches = [self.create_metadata_element('identifier',
                                                     attrib=attrib)]
-        self.set_text(matches[0], unicode_type(val))
+        self.set_text(matches[0], str(val))
 
     def get_identifiers(self):
         identifiers = {}
@@ -1015,7 +1015,7 @@ class OPF(object):  # {{{
         for typ, val in iteritems(identifiers):
             attrib = {'{%s}scheme'%self.NAMESPACES['opf']: typ.upper()}
             self.set_text(self.create_metadata_element(
-                'identifier', attrib=attrib), unicode_type(val))
+                'identifier', attrib=attrib), str(val))
 
     @property
     def application_id(self):
@@ -1038,7 +1038,7 @@ class OPF(object):  # {{{
         if uuid_id and uuid_id in removed_ids:
             attrib['id'] = uuid_id
         self.set_text(self.create_metadata_element(
-            'identifier', attrib=attrib), unicode_type(val))
+            'identifier', attrib=attrib), str(val))
 
     @property
     def uuid(self):
@@ -1052,7 +1052,7 @@ class OPF(object):  # {{{
             attrib = {'{%s}scheme'%self.NAMESPACES['opf']: 'uuid'}
             matches = [self.create_metadata_element('identifier',
                                                     attrib=attrib)]
-        self.set_text(matches[0], unicode_type(val))
+        self.set_text(matches[0], str(val))
 
     @property
     def language(self):
@@ -1083,7 +1083,7 @@ class OPF(object):  # {{{
 
         for lang in val:
             l = self.create_metadata_element('language')
-            self.set_text(l, unicode_type(lang))
+            self.set_text(l, str(lang))
 
     @property
     def raw_languages(self):
@@ -1103,7 +1103,7 @@ class OPF(object):  # {{{
         if not matches:
             matches = [self.create_metadata_element('contributor')]
             matches[0].set('{%s}role'%self.NAMESPACES['opf'], 'bkp')
-        self.set_text(matches[0], unicode_type(val))
+        self.set_text(matches[0], str(val))
 
     def identifier_iter(self):
         for item in self.identifier_path(self.metadata):
@@ -1363,7 +1363,7 @@ class OPFCreator(Metadata):
         self.page_progression_direction = None
         self.primary_writing_mode = None
         if self.application_id is None:
-            self.application_id = unicode_type(uuid.uuid4())
+            self.application_id = str(uuid.uuid4())
         if not isinstance(self.toc, TOC):
             self.toc = None
         if not self.authors:
@@ -1487,7 +1487,7 @@ class OPFCreator(Metadata):
         a(DC_ELEM('contributor', '%s (%s) [%s]'%(__appname__, __version__,
             'https://calibre-ebook.com'), opf_attrs={'role':'bkp',
                 'file-as':__appname__}))
-        a(DC_ELEM('identifier', unicode_type(self.application_id),
+        a(DC_ELEM('identifier', str(self.application_id),
             opf_attrs={'scheme':__appname__},
             dc_attrs={'id':__appname__+'_id'}))
         if getattr(self, 'pubdate', None) is not None:
@@ -1515,7 +1515,7 @@ class OPFCreator(Metadata):
         if self.title_sort:
             a(CAL_ELEM('calibre:title_sort', self.title_sort))
         if self.rating is not None:
-            a(CAL_ELEM('calibre:rating', unicode_type(self.rating)))
+            a(CAL_ELEM('calibre:rating', str(self.rating)))
         if self.timestamp is not None:
             a(CAL_ELEM('calibre:timestamp', self.timestamp.isoformat()))
         if self.publication_type is not None:
@@ -1532,7 +1532,7 @@ class OPFCreator(Metadata):
                 href = ref.href()
                 if isinstance(href, bytes):
                     href = href.decode('utf-8')
-                item = E.item(id=unicode_type(ref.id), href=href)
+                item = E.item(id=str(ref.id), href=href)
                 item.set('media-type', ref.mime_type)
                 manifest.append(item)
         spine = E.spine()
@@ -1583,10 +1583,10 @@ def metadata_to_opf(mi, as_string=True, default_lang=None):
     from ebook_converter.ebooks.oeb.base import OPF, DC
 
     if not mi.application_id:
-        mi.application_id = unicode_type(uuid.uuid4())
+        mi.application_id = str(uuid.uuid4())
 
     if not mi.uuid:
-        mi.uuid = unicode_type(uuid.uuid4())
+        mi.uuid = str(uuid.uuid4())
 
     if not mi.book_producer:
         mi.book_producer = __appname__ + ' (%s) '%__version__ + \
@@ -1667,7 +1667,7 @@ def metadata_to_opf(mi, as_string=True, default_lang=None):
     if mi.series_index is not None:
         meta('series_index', mi.format_series_index())
     if mi.rating is not None:
-        meta('rating', unicode_type(mi.rating))
+        meta('rating', str(mi.rating))
     if hasattr(mi.timestamp, 'isoformat'):
         meta('timestamp', isoformat(mi.timestamp))
     if mi.publication_type:
@@ -1682,7 +1682,7 @@ def metadata_to_opf(mi, as_string=True, default_lang=None):
     metadata[-1].tail = '\n' +(' '*4)
 
     if mi.cover:
-        if not isinstance(mi.cover, unicode_type):
+        if not isinstance(mi.cover, str):
             mi.cover = mi.cover.decode(filesystem_encoding)
         guide.text = '\n'+(' '*8)
         r = guide.makeelement(OPF('reference'),

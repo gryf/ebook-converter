@@ -4,7 +4,6 @@ import os
 from ebook_converter.customize.conversion import OutputFormatPlugin, \
     OptionRecommendation
 from ebook_converter.ptempfile import TemporaryDirectory
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL 3'
@@ -78,9 +77,9 @@ class HTMLZOutput(OutputFormatPlugin):
             fname = u'index'
             if opts.htmlz_title_filename:
                 from ebook_converter.utils.filenames import shorten_components_to
-                fname = shorten_components_to(100, (ascii_filename(unicode_type(oeb_book.metadata.title[0])),))[0]
+                fname = shorten_components_to(100, (ascii_filename(str(oeb_book.metadata.title[0])),))[0]
             with open(os.path.join(tdir, fname+u'.html'), 'wb') as tf:
-                if isinstance(html, unicode_type):
+                if isinstance(html, str):
                     html = html.encode('utf-8')
                 tf.write(html)
 

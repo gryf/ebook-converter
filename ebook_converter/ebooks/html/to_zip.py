@@ -2,7 +2,6 @@ import textwrap, os, glob
 
 from ebook_converter.customize import FileTypePlugin
 from ebook_converter.constants import numeric_version
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -111,7 +110,7 @@ every time you add an HTML file to the library.\
         config_dialog.exec_()
 
         if config_dialog.result() == QDialog.Accepted:
-            sc = unicode_type(sc.text()).strip()
+            sc = str(sc.text()).strip()
             if bf.isChecked():
                 sc += '|bf'
             customize_plugin(self, sc)

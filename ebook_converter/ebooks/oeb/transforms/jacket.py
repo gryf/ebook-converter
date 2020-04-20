@@ -11,7 +11,6 @@ from ebook_converter.library.comments import comments_to_html, markdown
 from ebook_converter.utils.date import is_date_undefined, as_local_time
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
 from ebook_converter.ebooks.metadata import fmt_sidx, rating_to_stars
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -99,22 +98,22 @@ class Jacket(Base):
         self.log('Inserting metadata into book...')
 
         try:
-            tags = list(map(unicode_type, self.oeb.metadata.subject))
+            tags = list(map(str, self.oeb.metadata.subject))
         except Exception:
             tags = []
 
         try:
-            comments = unicode_type(self.oeb.metadata.description[0])
+            comments = str(self.oeb.metadata.description[0])
         except:
             comments = ''
 
         try:
-            title = unicode_type(self.oeb.metadata.title[0])
+            title = str(self.oeb.metadata.title[0])
         except:
             title = _('Unknown')
 
         try:
-            authors = list(map(unicode_type, self.oeb.metadata.creator))
+            authors = list(map(str, self.oeb.metadata.creator))
         except:
             authors = [_('Unknown')]
 
@@ -171,7 +170,7 @@ def get_rating(rating, rchar, e_rchar):
     return ans
 
 
-class Series(unicode_type):
+class Series(str):
 
     def __new__(self, series, series_index):
         if series and series_index is not None:
@@ -181,7 +180,7 @@ class Series(unicode_type):
                 escape(series), escape(fmt_sidx(series_index, use_roman=False)))
         else:
             combined = roman = escape(series or u'')
-        s = unicode_type.__new__(self, combined)
+        s = str.__new__(self, combined)
         s.roman = roman
         s.name = escape(series or '')
         s.number = escape(fmt_sidx(series_index or 1.0, use_roman=False))
@@ -189,11 +188,11 @@ class Series(unicode_type):
         return s
 
 
-class Tags(unicode_type):
+class Tags(str):
 
     def __new__(self, tags, output_profile):
         tags = [escape(x) for x in tags or ()]
-        t = unicode_type.__new__(self, ', '.join(tags))
+        t = str.__new__(self, ', '.join(tags))
         t.alphabetical = ', '.join(sorted(tags))
         t.tags_list = tags
         return t

@@ -2,7 +2,6 @@ import sys, os
 
 from ebook_converter.customize.conversion import OutputFormatPlugin
 from ebook_converter.customize.conversion import OptionRecommendation
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -15,7 +14,7 @@ class LRFOptions(object):
     def __init__(self, output, opts, oeb):
         def f2s(f):
             try:
-                return unicode_type(f[0])
+                return str(f[0])
             except:
                 return ''
         m = oeb.metadata
@@ -29,13 +28,13 @@ class LRFOptions(object):
         self.title_sort = self.author_sort = ''
         for x in m.creator:
             if x.role == 'aut':
-                self.author = unicode_type(x)
-                fa = unicode_type(getattr(x, 'file_as', ''))
+                self.author = str(x)
+                fa = str(getattr(x, 'file_as', ''))
                 if fa:
                     self.author_sort = fa
         for x in m.title:
-            if unicode_type(x.file_as):
-                self.title_sort = unicode_type(x.file_as)
+            if str(x.file_as):
+                self.title_sort = str(x.file_as)
         self.freetext = f2s(m.description)
         self.category = f2s(m.subject)
         self.cover = None

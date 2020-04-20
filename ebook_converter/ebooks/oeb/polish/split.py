@@ -6,7 +6,7 @@ from ebook_converter.ebooks.oeb.base import barename, XPNSMAP, XPath, OPF, XHTML
 from ebook_converter.ebooks.oeb.polish.errors import MalformedMarkup
 from ebook_converter.ebooks.oeb.polish.toc import node_from_loc
 from ebook_converter.ebooks.oeb.polish.replace import LinkRebaser
-from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -181,7 +181,7 @@ def split(container, name, loc_or_xpath, before=True, totals=None):
     '''
 
     root = container.parsed(name)
-    if isinstance(loc_or_xpath, unicode_type):
+    if isinstance(loc_or_xpath, str):
         split_point = root.xpath(loc_or_xpath)[0]
     else:
         try:
@@ -279,7 +279,7 @@ def multisplit(container, name, xpath, before=True):
             raise AbortError('Cannot split on the <body> tag')
 
     for i, tag in enumerate(nodes):
-        tag.set('calibre-split-point', unicode_type(i))
+        tag.set('calibre-split-point', str(i))
 
     current = name
     all_names = [name]

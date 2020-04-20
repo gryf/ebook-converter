@@ -4,7 +4,6 @@ import urllib.parse
 from ebook_converter import guess_type
 from ebook_converter.utils.imghdr import identify
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
-from ebook_converter.polyglot.builtins import unicode_type
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -111,9 +110,9 @@ class CoverManager(object):
             self.svg_template = self.svg_template.replace('__viewbox__',
                     '0 0 %d %d'%(width, height))
             self.svg_template = self.svg_template.replace('__width__',
-                    unicode_type(width))
+                    str(width))
             self.svg_template = self.svg_template.replace('__height__',
-                    unicode_type(height))
+                    str(height))
 
             if href is not None:
                 templ = self.non_svg_template if self.no_svg_cover \

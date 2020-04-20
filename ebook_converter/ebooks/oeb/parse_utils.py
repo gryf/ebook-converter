@@ -6,7 +6,7 @@ from ebook_converter import xml_replace_entities, force_unicode
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
-from ebook_converter.polyglot.builtins import iteritems, itervalues, unicode_type, string_or_bytes
+from ebook_converter.polyglot.builtins import iteritems, itervalues, string_or_bytes
 
 
 __license__ = 'GPL v3'
@@ -162,7 +162,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
 
     filename = force_unicode(filename, enc=filesystem_encoding)
 
-    if not isinstance(data, unicode_type):
+    if not isinstance(data, str):
         if decoder is not None:
             data = decoder(data)
         else:
@@ -244,7 +244,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
         nroot = safe_xml_fromstring('<html></html>')
         has_body = False
         for child in list(data):
-            if isinstance(child.tag, (unicode_type, bytes)) and barename(child.tag) == 'body':
+            if isinstance(child.tag, (str, bytes)) and barename(child.tag) == 'body':
                 has_body = True
                 break
         parent = nroot

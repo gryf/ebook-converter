@@ -6,7 +6,7 @@ from functools import partial
 from threading import Lock
 
 from ebook_converter import isbytestring, force_unicode, as_unicode, prints
-from ebook_converter.polyglot.builtins import unicode_type, iteritems
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL 3'
@@ -111,7 +111,7 @@ class UnicodeHTMLStream(HTMLStream):
         for arg in args:
             if isbytestring(arg):
                 arg = force_unicode(arg)
-            elif not isinstance(arg, unicode_type):
+            elif not isinstance(arg, str):
                 arg = as_unicode(arg)
             self.data.append(arg+sep)
             self.plain_text.append(arg+sep)

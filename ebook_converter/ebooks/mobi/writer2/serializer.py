@@ -9,7 +9,7 @@ from ebook_converter.ebooks.mobi.utils import is_guide_ref_start
 from ebook_converter.ebooks.oeb.base import (
     OEB_DOCS, XHTML, XHTML_NS, XML_NS, namespace, prefixname, urlnormalize
 )
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 __license__ = 'GPL v3'
@@ -20,7 +20,7 @@ __docformat__ = 'restructuredtext en'
 class Buf(io.BytesIO):
 
     def write(self, x):
-        if isinstance(x, unicode_type):
+        if isinstance(x, str):
             x = x.encode('utf-8')
         io.BytesIO.write(self, x)
 
@@ -226,7 +226,7 @@ class Serializer(object):
                 buf.write(b'<div> <div height="1em"></div>')
             else:
                 t = tocref.title
-                if isinstance(t, unicode_type):
+                if isinstance(t, str):
                     t = t.encode('utf-8')
                 buf.write(b'<div></div> <div> <h2 height="1em"><font size="+2"><b>' + t +
                           b'</b></font></h2> <div height="1em"></div>')
@@ -246,7 +246,7 @@ class Serializer(object):
                 buf.write(b'0000000000')
                 buf.write(b' ><font size="+1"><b><u>')
                 t = tocitem.title
-                if isinstance(t, unicode_type):
+                if isinstance(t, str):
                     t = t.encode('utf-8')
                 buf.write(t)
                 buf.write(b'</u></b></font></a></li>')
@@ -364,7 +364,7 @@ class Serializer(object):
         text = text.replace(u'\u00AD', '')  # Soft-hyphen
         if quot:
             text = text.replace('"', '&quot;')
-        if isinstance(text, unicode_type):
+        if isinstance(text, str):
             text = unicodedata.normalize('NFC', text)
         self.buf.write(text.encode('utf-8'))
 

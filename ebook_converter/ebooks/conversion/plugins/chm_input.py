@@ -10,7 +10,7 @@ from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants import filesystem_encoding
-from ebook_converter.polyglot.builtins import unicode_type, as_bytes
+from ebook_converter.polyglot.builtins import as_bytes
 
 __license__ = 'GPL v3'
 __copyright__ = ('2008, Kovid Goyal <kovid at kovidgoyal.net>, '
@@ -41,7 +41,7 @@ class CHMInput(InputFormatPlugin):
 
         log.debug('Processing CHM...')
         with TemporaryDirectory('_chm2oeb') as tdir:
-            if not isinstance(tdir, unicode_type):
+            if not isinstance(tdir, str):
                 tdir = tdir.decode(filesystem_encoding)
             html_input = plugin_for_input_format('html')
             for opt in html_input.options:
@@ -129,7 +129,7 @@ class CHMInput(InputFormatPlugin):
         base = os.path.dirname(os.path.abspath(htmlpath))
 
         def unquote(x):
-            if isinstance(x, unicode_type):
+            if isinstance(x, str):
                 x = x.encode('utf-8')
             return _unquote(x).decode('utf-8')
 

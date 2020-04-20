@@ -15,7 +15,6 @@ from ebook_converter.ebooks.oeb.base import urlnormalize
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL v3'
@@ -78,7 +77,7 @@ class SVGRasterizer(object):
                     logger.info('Found SVG image height in %, trying to convert...')
                     try:
                         h = float(image.get('height').replace('%', ''))/100.
-                        image.set('height', unicode_type(h*sizes[1]))
+                        image.set('height', str(h*sizes[1]))
                     except:
                         logger.exception('Failed to convert percentage height:',
                                 image.get('height'))
@@ -224,11 +223,11 @@ class SVGRasterizer(object):
         covers = self.oeb.metadata.cover
         if not covers:
             return
-        if unicode_type(covers[0]) not in self.oeb.manifest.ids:
+        if str(covers[0]) not in self.oeb.manifest.ids:
             self.oeb.logger.warn('Cover not in manifest, skipping.')
             self.oeb.metadata.clear('cover')
             return
-        cover = self.oeb.manifest.ids[unicode_type(covers[0])]
+        cover = self.oeb.manifest.ids[str(covers[0])]
         if not cover.media_type == SVG_MIME:
             return
         width = (self.profile.width / 72) * self.profile.dpi

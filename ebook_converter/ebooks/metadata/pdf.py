@@ -10,7 +10,7 @@ from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.ebooks.metadata import (
     MetaInformation, string_to_authors, check_isbn, check_doi)
 from ebook_converter.utils.ipc.simple_worker import fork_job, WorkerError
-from ebook_converter.polyglot.builtins import iteritems, unicode_type
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -94,8 +94,8 @@ def page_images(pdfpath, outputdir='.', first=1, last=1, image_format='jpeg', pr
         args['creationflags'] = w.HIGH_PRIORITY_CLASS | w.CREATE_NO_WINDOW
     try:
         subprocess.check_call([
-            pdftoppm, '-cropbox', '-' + image_format, '-f', unicode_type(first),
-            '-l', unicode_type(last), pdfpath, os.path.join(outputdir, prefix)
+            pdftoppm, '-cropbox', '-' + image_format, '-f', str(first),
+            '-l', str(last), pdfpath, os.path.join(outputdir, prefix)
         ], **args)
     except subprocess.CalledProcessError as e:
         raise ValueError('Failed to render PDF, pdftoppm errorcode: %s'%e.returncode)

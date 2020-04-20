@@ -7,7 +7,7 @@ from collections import OrderedDict, Counter
 
 from ebook_converter.ebooks.oeb.base import XPNSMAP, TOC, XHTML, xml2text, barename
 from ebook_converter.ebooks import ConversionError
-from ebook_converter.polyglot.builtins import itervalues, unicode_type
+from ebook_converter.polyglot.builtins import itervalues
 
 
 __license__ = 'GPL v3'
@@ -122,7 +122,7 @@ class DetectStructure(object):
                 elem = matches[0]
                 eid = elem.get('id', None)
                 if not eid:
-                    eid = 'start_reading_at_'+unicode_type(uuid.uuid4()).replace('-', '')
+                    eid = 'start_reading_at_'+str(uuid.uuid4()).replace('-', '')
                     elem.set('id', eid)
                 if 'text' in self.oeb.guide:
                     self.oeb.guide.remove('text')

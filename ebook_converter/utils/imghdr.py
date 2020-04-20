@@ -6,7 +6,7 @@ import os
 
 from ebook_converter.utils.speedups import ReadOnlyFileBuffer
 from ebook_converter.constants import ispy3
-from ebook_converter.polyglot.builtins import string_or_bytes, unicode_type
+from ebook_converter.polyglot.builtins import string_or_bytes
 
 
 HSIZE = 120
@@ -41,7 +41,7 @@ def identify(src):
     recognized. '''
     width = height = -1
 
-    if isinstance(src, unicode_type):
+    if isinstance(src, str):
         stream = lopen(src, 'rb')
     elif isinstance(src, bytes):
         stream = ReadOnlyFileBuffer(src)

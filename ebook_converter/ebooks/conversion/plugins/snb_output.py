@@ -3,7 +3,6 @@ import os
 from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants import __appname__, __version__
-from ebook_converter.polyglot.builtins import unicode_type
 
 
 __license__ = 'GPL 3'
@@ -73,20 +72,20 @@ class SNBOutput(OutputFormatPlugin):
             # Process Meta data
             meta = oeb_book.metadata
             if meta.title:
-                title = unicode_type(meta.title[0])
+                title = str(meta.title[0])
             else:
                 title = ''
-            authors = [unicode_type(x) for x in meta.creator if x.role == 'aut']
+            authors = [str(x) for x in meta.creator if x.role == 'aut']
             if meta.publisher:
-                publishers = unicode_type(meta.publisher[0])
+                publishers = str(meta.publisher[0])
             else:
                 publishers = ''
             if meta.language:
-                lang = unicode_type(meta.language[0]).upper()
+                lang = str(meta.language[0]).upper()
             else:
                 lang = ''
             if meta.description:
-                abstract = unicode_type(meta.description[0])
+                abstract = str(meta.description[0])
             else:
                 abstract = ''
 

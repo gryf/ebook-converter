@@ -13,7 +13,7 @@ from ebook_converter.ebooks.oeb.base import (
     XHTML, XHTML_NS, SVG_NS, barename, namespace, OEB_IMAGES, XLINK, rewrite_links, urlnormalize)
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils.logging import default_log
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, as_bytes
+from ebook_converter.polyglot.builtins import string_or_bytes, as_bytes
 
 
 __license__ = 'GPL 3'
@@ -43,7 +43,7 @@ class OEB2HTML(object):
         self.log.info('Converting OEB book to HTML...')
         self.opts = opts
         try:
-            self.book_title = unicode_type(oeb_book.metadata.title[0])
+            self.book_title = str(oeb_book.metadata.title[0])
         except Exception:
             self.book_title = _('Unknown')
         self.links = {}

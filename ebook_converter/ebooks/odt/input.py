@@ -15,7 +15,7 @@ from odf.namespaces import TEXTNS as odTEXTNS
 from ebook_converter import CurrentDir, walk
 from ebook_converter.ebooks.oeb.base import _css_logger
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
-from ebook_converter.polyglot.builtins import unicode_type, string_or_bytes, getcwd, as_bytes
+from ebook_converter.polyglot.builtins import string_or_bytes, getcwd, as_bytes
 
 
 __license__ = 'GPL v3'
@@ -174,7 +174,7 @@ class Extract(ODF2XHTML):
             css = style.text
             if css:
                 css, sel_map = self.do_filter_css(css)
-                if not isinstance(css, unicode_type):
+                if not isinstance(css, str):
                     css = css.decode('utf-8', 'ignore')
                 style.text = css
                 for x in root.xpath('//*[@class]'):

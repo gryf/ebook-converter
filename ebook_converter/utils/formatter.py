@@ -8,7 +8,7 @@ import re, string, traceback, numbers
 from ebook_converter import prints
 from ebook_converter.constants import DEBUG
 from ebook_converter.utils.formatter_functions import formatter_functions
-from ebook_converter.polyglot.builtins import unicode_type, error_message
+from ebook_converter.polyglot.builtins import error_message
 
 
 __license__ = 'GPL v3'
@@ -214,7 +214,7 @@ class TemplateFormatter(string.Formatter):
             except:
                 raise ValueError(
                     _('format: type {0} requires a decimal (float) value, got {1}').format(typ, val))
-        return unicode_type(('{0:'+fmt+'}').format(val))
+        return str(('{0:'+fmt+'}').format(val))
 
     def _explode_format_string(self, fmt):
         try:
@@ -273,7 +273,7 @@ class TemplateFormatter(string.Formatter):
         # ensure we are dealing with a string.
         if isinstance(val, numbers.Number):
             if val:
-                val = unicode_type(val)
+                val = str(val)
             else:
                 val = ''
         # Handle conditional text

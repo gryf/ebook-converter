@@ -6,7 +6,7 @@ from ebook_converter import walk, prints, as_unicode
 from ebook_converter.constants import (config_dir, iswindows, isosx, plugins, DEBUG,
         isworker, filesystem_encoding)
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
-from ebook_converter.polyglot.builtins import itervalues, unicode_type
+from ebook_converter.polyglot.builtins import itervalues
 
 
 __license__ = 'GPL v3'
@@ -261,7 +261,7 @@ class FontScanner(Thread):
         '''
         from ebook_converter.utils.fonts.utils import (supports_text,
                 panose_to_css_generic_family, get_printable_characters)
-        if not isinstance(text, unicode_type):
+        if not isinstance(text, str):
             raise TypeError(u'%r is not unicode'%text)
         text = get_printable_characters(text)
         found = {}

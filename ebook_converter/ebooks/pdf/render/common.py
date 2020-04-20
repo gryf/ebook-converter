@@ -4,7 +4,7 @@ from datetime import datetime
 
 from ebook_converter.constants import ispy3
 from ebook_converter.utils.logging import default_log
-from ebook_converter.polyglot.builtins import iteritems, unicode_type, codepoint_to_chr
+from ebook_converter.polyglot.builtins import iteritems, codepoint_to_chr
 from ebook_converter.polyglot.binary import as_hex_bytes
 
 
@@ -56,7 +56,7 @@ PAPER_SIZES = {k:globals()[k.upper()] for k in ('a0 a1 a2 a3 a4 a5 a6 b0 b1 b2'
 def fmtnum(o):
     if isinstance(o, float):
         return pdf_float(o)
-    return unicode_type(o)
+    return str(o)
 
 
 def serialize(o, stream):
@@ -66,7 +66,7 @@ def serialize(o, stream):
         # Must check bool before int as bools are subclasses of int
         stream.write_raw(b'true' if o else b'false')
     elif isinstance(o, numbers.Integral):
-        stream.write_raw(unicode_type(o).encode('ascii') if ispy3 else bytes(o))
+        stream.write_raw(str(o).encode('ascii') if ispy3 else bytes(o))
     elif hasattr(o, 'pdf_serialize'):
         o.pdf_serialize(stream)
     elif o is None:
@@ -80,7 +80,7 @@ def serialize(o, stream):
         raise ValueError('Unknown object: %r'%o)
 
 
-class Name(unicode_type):
+class Name(str):
 
     def pdf_serialize(self, stream):
         raw = self.encode('ascii')
@@ -117,7 +117,7 @@ def escape_pdf_string(bytestring):
     return bytes(ba)
 
 
-class String(unicode_type):
+class String(str):
 
     def pdf_serialize(self, stream):
         try:
@@ -129,7 +129,7 @@ class String(unicode_type):
         stream.write(b'('+escape_pdf_string(raw)+b')')
 
 
-class UTF16String(unicode_type):
+class UTF16String(str):
 
     def pdf_serialize(self, stream):
         raw = codecs.BOM_UTF16_BE + self.encode('utf-16-be')
