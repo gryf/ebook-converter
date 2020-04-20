@@ -10,7 +10,7 @@ from ebook_converter.customize.conversion import (InputFormatPlugin,
 from ebook_converter.utils.localization import get_lang
 from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import getcwd, as_unicode
+from ebook_converter.polyglot.builtins import as_unicode
 
 
 __license__ = 'GPL v3'
@@ -63,7 +63,7 @@ class HTMLInput(InputFormatPlugin):
     def convert(self, stream, opts, file_ext, log,
                 accelerators):
         self._is_case_sensitive = None
-        basedir = getcwd()
+        basedir = os.getcwd()
         self.opts = opts
 
         fname = None
@@ -220,7 +220,7 @@ class HTMLInput(InputFormatPlugin):
                 continue
             toc.add(title, item.href)
 
-        oeb.container = DirContainer(getcwd(), oeb.log, ignore_opf=True)
+        oeb.container = DirContainer(os.getcwd(), oeb.log, ignore_opf=True)
         return oeb
 
     def link_to_local_path(self, link_, base=None):
@@ -232,7 +232,7 @@ class HTMLInput(InputFormatPlugin):
                 self.log.warn('Failed to decode link %r. Ignoring'%link_)
                 return None, None
         try:
-            l = Link(link_, base if base else getcwd())
+            l = Link(link_, base if base else os.getcwd())
         except:
             self.log.exception('Failed to process link: %r'%link_)
             return None, None

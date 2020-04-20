@@ -1,8 +1,10 @@
+import os
+
 from ebook_converter import replace_entities
 from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.reader.headers import NULL_INDEX
 from ebook_converter.ebooks.mobi.reader.index import read_index
-from ebook_converter.polyglot.builtins import iteritems, getcwd
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -78,7 +80,7 @@ def read_ncx(sections, index, codec):
 
 
 def build_toc(index_entries):
-    ans = TOC(base_path=getcwd())
+    ans = TOC(base_path=os.getcwd())
     levels = {x['hlvl'] for x in index_entries}
     num_map = {-1: ans}
     level_map = {l:[x for x in index_entries if x['hlvl'] == l] for l in

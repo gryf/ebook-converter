@@ -9,7 +9,7 @@ from struct import calcsize, unpack, pack
 from collections import namedtuple, OrderedDict
 from tempfile import SpooledTemporaryFile
 
-from ebook_converter.polyglot.builtins import itervalues, getcwd
+from ebook_converter.polyglot.builtins import itervalues
 
 
 __license__ = 'GPL v3'
@@ -243,7 +243,7 @@ def extractall(path_or_stream, path=None):
         f = open(f, 'rb')
         close_at_end = True
     if path is None:
-        path = getcwd()
+        path = os.getcwd()
     pos = f.tell()
     try:
         _extractall(f, path)
@@ -290,7 +290,7 @@ class LocalZipFile(object):
 
     def extractall(self, path=None):
         self.stream.seek(0)
-        _extractall(self.stream, path=(path or getcwd()))
+        _extractall(self.stream, path=(path or os.getcwd()))
 
     def close(self):
         pass

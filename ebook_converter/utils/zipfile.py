@@ -10,7 +10,7 @@ from tempfile import SpooledTemporaryFile
 from ebook_converter import sanitize_file_name
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.ebooks.chardet import detect
-from ebook_converter.polyglot.builtins import getcwd, as_bytes
+from ebook_converter.polyglot.builtins import as_bytes
 
 try:
     import zlib  # We may need its compression method
@@ -1085,7 +1085,7 @@ class ZipFile:
             member = self.getinfo(member)
 
         if path is None:
-            path = getcwd()
+            path = os.getcwd()
 
         return self._extract_member(member, path, pwd)
 

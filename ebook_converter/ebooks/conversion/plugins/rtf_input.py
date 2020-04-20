@@ -2,7 +2,7 @@ import os, glob, re, textwrap
 import pkg_resources
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
-from ebook_converter.polyglot.builtins import iteritems, getcwd, as_bytes
+from ebook_converter.polyglot.builtins import iteritems, as_bytes
 
 __license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
@@ -306,7 +306,7 @@ class RTFInput(InputFormatPlugin):
             mi.title = _('Unknown')
         if not mi.authors:
             mi.authors = [_('Unknown')]
-        opf = OPFCreator(getcwd(), mi)
+        opf = OPFCreator(os.getcwd(), mi)
         opf.create_manifest([(u'index.xhtml', None)])
         opf.create_spine([u'index.xhtml'])
         opf.render(open(u'metadata.opf', 'wb'))

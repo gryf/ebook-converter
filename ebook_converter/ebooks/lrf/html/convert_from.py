@@ -37,7 +37,7 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import (
     RuledLine, Span, Sub, Sup, TextBlock
 )
 from ebook_converter.ptempfile import PersistentTemporaryFile
-from ebook_converter.polyglot.builtins import getcwd, itervalues
+from ebook_converter.polyglot.builtins import itervalues
 from ebook_converter.polyglot.urllib import unquote
 
 from PIL import Image as PILImage
@@ -1888,7 +1888,7 @@ def process_file(path, options, logger):
     if not oname:
         suffix = '.lrs' if options.lrs else '.lrf'
         name = os.path.splitext(os.path.basename(path))[0] + suffix
-        oname = os.path.join(getcwd(), name)
+        oname = os.path.join(os.getcwd(), name)
     oname = os.path.abspath(os.path.expanduser(oname))
     conv.writeto(oname, lrs=options.lrs)
     conv.cleanup()

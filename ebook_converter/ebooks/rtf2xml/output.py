@@ -11,9 +11,8 @@
 #                                                                       #
 #########################################################################
 import sys, os
-from ebook_converter.polyglot.builtins import raw_input
+
 from . import open_for_read, open_for_write
-# , codecs
 
 
 class Output:
@@ -83,7 +82,7 @@ class Output:
             msg += ('Type "o" to overwrite.\n'
                     'Type any other key to print to standard output.\n')
             sys.stderr.write(msg)
-            user_response = raw_input()
+            user_response = input()
         if user_response == 'o':
             with open_for_read(self.__file) as read_obj:
                 with open_for_write(self.output_file) as write_obj:

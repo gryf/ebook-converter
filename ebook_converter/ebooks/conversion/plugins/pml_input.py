@@ -4,7 +4,6 @@ import shutil
 
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.ptempfile import TemporaryDirectory
-from ebook_converter.polyglot.builtins import getcwd
 
 
 __license__ = 'GPL v3'
@@ -74,10 +73,10 @@ class PMLInput(InputFormatPlugin):
         if not imgs:
             imgs = glob.glob(os.path.join(os.path.join(tdir, 'images'), '*.png'))
         if imgs:
-            os.makedirs(os.path.join(getcwd(), 'images'))
+            os.makedirs(os.path.join(os.getcwd(), 'images'))
         for img in imgs:
             pimg_name = os.path.basename(img)
-            pimg_path = os.path.join(getcwd(), 'images', pimg_name)
+            pimg_path = os.path.join(os.getcwd(), 'images', pimg_name)
 
             images.append('images/' + pimg_name)
 
@@ -105,7 +104,7 @@ class PMLInput(InputFormatPlugin):
                 pmls = glob.glob(os.path.join(tdir, '*.pml'))
                 for pml in pmls:
                     html_name = os.path.splitext(os.path.basename(pml))[0]+'.html'
-                    html_path = os.path.join(getcwd(), html_name)
+                    html_path = os.path.join(os.getcwd(), html_name)
 
                     pages.append(html_name)
                     log.debug('Processing PML item %s...' % pml)
@@ -131,7 +130,7 @@ class PMLInput(InputFormatPlugin):
         mi = get_metadata(stream, 'pml')
         if 'images/cover.png' in images:
             mi.cover = 'images/cover.png'
-        opf = OPFCreator(getcwd(), mi)
+        opf = OPFCreator(os.getcwd(), mi)
         log.debug('Generating manifest...')
         opf.create_manifest(manifest_items)
         opf.create_spine(pages)
@@ -140,7 +139,7 @@ class PMLInput(InputFormatPlugin):
             with lopen('toc.ncx', 'wb') as tocfile:
                 opf.render(opffile, tocfile, 'toc.ncx')
 
-        return os.path.join(getcwd(), 'metadata.opf')
+        return os.path.join(os.getcwd(), 'metadata.opf')
 
     def postprocess_book(self, oeb, opts, log):
         from ebook_converter.ebooks.oeb.base import XHTML, barename

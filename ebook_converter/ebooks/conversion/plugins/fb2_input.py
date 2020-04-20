@@ -6,7 +6,7 @@ import pkg_resources
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter import guess_type
-from ebook_converter.polyglot.builtins import iteritems, getcwd
+from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -147,7 +147,7 @@ class FB2Input(InputFormatPlugin):
                     cpath = os.path.abspath(href)
                     break
 
-        opf = OPFCreator(getcwd(), mi)
+        opf = OPFCreator(os.getcwd(), mi)
         entries = [(f2, guess_type(f2)[0]) for f2 in os.listdir(u'.')]
         opf.create_manifest(entries)
         opf.create_spine(['index.xhtml'])
@@ -155,7 +155,7 @@ class FB2Input(InputFormatPlugin):
             opf.guide.set_cover(cpath)
         with open('metadata.opf', 'wb') as f:
             opf.render(f)
-        return os.path.join(getcwd(), 'metadata.opf')
+        return os.path.join(os.getcwd(), 'metadata.opf')
 
     def extract_embedded_content(self, doc):
         from ebook_converter.ebooks.fb2 import base64_decode

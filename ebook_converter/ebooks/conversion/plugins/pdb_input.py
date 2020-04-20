@@ -1,5 +1,6 @@
+import os
+
 from ebook_converter.customize.conversion import InputFormatPlugin
-from ebook_converter.polyglot.builtins import getcwd
 
 
 __license__ = 'GPL v3'
@@ -30,6 +31,6 @@ class PDBInput(InputFormatPlugin):
         log.debug('Detected ebook format as: %s with identity: %s' % (IDENTITY_TO_NAME[header.ident], header.ident))
 
         reader = Reader(header, stream, log, options)
-        opf = reader.extract_content(getcwd())
+        opf = reader.extract_content(os.getcwd())
 
         return opf

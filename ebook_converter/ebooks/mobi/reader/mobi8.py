@@ -18,7 +18,7 @@ from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.utils import read_font_record
 from ebook_converter.ebooks.oeb.parse_utils import parse_html
 from ebook_converter.ebooks.oeb.base import XPath, XHTML, xml2text
-from ebook_converter.polyglot.builtins import getcwd, as_unicode
+from ebook_converter.polyglot.builtins import as_unicode
 
 
 __license__ = 'GPL v3'
@@ -356,7 +356,7 @@ class Mobi8Reader(object):
                 if isinstance(idtext, bytes):
                     idtext = idtext.decode(self.header.codec)
                 linktgt += '#' + idtext
-            g = Guide.Reference(linktgt, getcwd())
+            g = Guide.Reference(linktgt, os.getcwd())
             g.title, g.type = ref_title, ref_type
             if g.title == 'start' or g.type == 'text':
                 has_start = True
@@ -370,7 +370,7 @@ class Mobi8Reader(object):
                 linktgt = fi.filename
                 if idtext:
                     linktgt += '#' + idtext
-                g = Guide.Reference('%s/%s'%(fi.type, linktgt), getcwd())
+                g = Guide.Reference('%s/%s'%(fi.type, linktgt), os.getcwd())
                 g.title, g.type = 'start', 'text'
                 guide.append(g)
 
@@ -484,7 +484,7 @@ class Mobi8Reader(object):
                         except:
                             self.log.exception('Failed to read inline ToC')
 
-        opf = OPFCreator(getcwd(), mi)
+        opf = OPFCreator(os.getcwd(), mi)
         opf.guide = guide
 
         def exclude(path):
@@ -504,7 +504,7 @@ class Mobi8Reader(object):
             except:
                 pass
 
-        opf.create_manifest_from_files_in([getcwd()], exclude=exclude)
+        opf.create_manifest_from_files_in([os.getcwd()], exclude=exclude)
         for entry in opf.manifest:
             if entry.mime_type == 'text/html':
                 entry.mime_type = 'application/xhtml+xml'

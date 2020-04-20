@@ -2,7 +2,6 @@ import os
 
 from ebook_converter import _ent_pat, walk, xml_entity_to_unicode
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
-from ebook_converter.polyglot.builtins import getcwd
 
 
 __license__ = 'GPL 3'
@@ -141,7 +140,7 @@ class TXTInput(InputFormatPlugin):
         txt = b''
         log.debug('Reading text from file...')
         length = 0
-        base_dir = self.output_dir = getcwd()
+        base_dir = self.output_dir = os.getcwd()
 
         # Extract content from zip archive.
         if file_ext == 'txtz':

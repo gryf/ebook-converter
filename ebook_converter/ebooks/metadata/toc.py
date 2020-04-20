@@ -12,7 +12,6 @@ from ebook_converter.constants import __appname__, __version__
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.cleantext import clean_xml_chars
-from ebook_converter.polyglot.builtins import getcwd
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -49,7 +48,7 @@ def parse_html_toc(data):
 class TOC(list):
 
     def __init__(self, href=None, fragment=None, text=None, parent=None,
-            play_order=0, base_path=getcwd(), type='unknown', author=None,
+            play_order=0, base_path=os.getcwd(), type='unknown', author=None,
             description=None, toc_thumbnail=None):
         self.href = href
         self.fragment = fragment

@@ -5,7 +5,7 @@ from ebook_converter.constants import isosx, isfrozen, filesystem_encoding, ispy
 from ebook_converter.utils.config import prefs
 from ebook_converter.ptempfile import PersistentTemporaryFile, base_dir
 from ebook_converter.utils.serialize import msgpack_dumps
-from ebook_converter.polyglot.builtins import iteritems, environ_item, native_string_type, getcwd
+from ebook_converter.polyglot.builtins import iteritems, environ_item, native_string_type
 from ebook_converter.polyglot.binary import as_hex_unicode
 try:
     import win32process
@@ -183,7 +183,7 @@ class Worker(object):
         exe = self.gui_executable if self.gui else self.executable
         env = self.env
         try:
-            origwd = cwd or os.path.abspath(getcwd())
+            origwd = cwd or os.path.abspath(os.getcwd())
         except EnvironmentError:
             # cwd no longer exists
             origwd = cwd or os.path.expanduser('~')

@@ -9,7 +9,7 @@ iterkeys = iter
 
 
 def hasenv(x):
-    return getenv(x) is not None
+    return os.getenv(x) is not None
 
 
 def as_bytes(x, encoding='utf-8'):
@@ -40,11 +40,6 @@ def reraise(tp, value, tb=None):
     finally:
         value = None
         tb = None
-
-
-raw_input = input
-getcwd = os.getcwd
-getenv = os.getenv
 
 
 def error_message(exc):

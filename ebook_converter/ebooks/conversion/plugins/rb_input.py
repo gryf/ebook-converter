@@ -1,5 +1,6 @@
+import os
+
 from ebook_converter.customize.conversion import InputFormatPlugin
-from ebook_converter.polyglot.builtins import getcwd
 
 
 __license__ = 'GPL 3'
@@ -20,6 +21,6 @@ class RBInput(InputFormatPlugin):
         from ebook_converter.ebooks.rb.reader import Reader
 
         reader = Reader(stream, log, options.input_encoding)
-        opf = reader.extract_content(getcwd())
+        opf = reader.extract_content(os.getcwd())
 
         return opf

@@ -2,7 +2,6 @@ import os
 from io import BytesIO
 
 from ebook_converter.customize.conversion import InputFormatPlugin
-from ebook_converter.polyglot.builtins import getcwd
 
 
 __license__ = 'GPL 3'
@@ -38,7 +37,7 @@ class DJVUInput(InputFormatPlugin):
         for opt in html_input.options:
             setattr(options, opt.option.name, opt.recommended_value)
         options.input_encoding = 'utf-8'
-        base = getcwd()
+        base = os.getcwd()
         htmlfile = os.path.join(base, 'index.html')
         c = 0
         while os.path.exists(htmlfile):

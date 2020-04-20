@@ -6,7 +6,6 @@ from ebook_converter.ebooks.metadata.opf2 import OPF
 from ebook_converter import isbytestring
 from ebook_converter.customize.ui import get_file_type_metadata, set_file_type_metadata
 from ebook_converter.ebooks.metadata import MetaInformation, string_to_authors
-from ebook_converter.polyglot.builtins import getcwd
 
 
 __license__ = 'GPL v3'
@@ -201,7 +200,7 @@ def metadata_from_filename(name, pat=None, fallback_pat=None):
 def opf_metadata(opfpath):
     if hasattr(opfpath, 'read'):
         f = opfpath
-        opfpath = getattr(f, 'name', getcwd())
+        opfpath = getattr(f, 'name', os.getcwd())
     else:
         f = open(opfpath, 'rb')
     try:

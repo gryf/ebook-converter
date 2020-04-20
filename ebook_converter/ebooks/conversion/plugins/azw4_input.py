@@ -1,5 +1,6 @@
+import os
+
 from ebook_converter.customize.conversion import InputFormatPlugin
-from ebook_converter.polyglot.builtins import getcwd
 
 
 __license__ = 'GPL v3'
@@ -22,6 +23,6 @@ class AZW4Input(InputFormatPlugin):
 
         header = PdbHeaderReader(stream)
         reader = Reader(header, stream, log, options)
-        opf = reader.extract_content(getcwd())
+        opf = reader.extract_content(os.getcwd())
 
         return opf

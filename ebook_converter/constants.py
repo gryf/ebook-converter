@@ -5,7 +5,7 @@ import locale
 import os
 import sys
 
-from ebook_converter.polyglot.builtins import environ_item, hasenv, getenv, as_unicode, native_string_type
+from ebook_converter.polyglot.builtins import environ_item, hasenv, as_unicode, native_string_type
 
 __appname__   = 'calibre'
 numeric_version = (4, 12, 0)
@@ -111,7 +111,7 @@ def _get_cache_dir():
             raise
     if isportable:
         return confcache
-    ccd = getenv('CALIBRE_CACHE_DIRECTORY')
+    ccd = os.getenv('CALIBRE_CACHE_DIRECTORY')
     if ccd is not None:
         ans = os.path.abspath(ccd)
         try:
@@ -130,7 +130,7 @@ def _get_cache_dir():
     elif isosx:
         candidate = os.path.join(os.path.expanduser('~/Library/Caches'), __appname__)
     else:
-        candidate = getenv('XDG_CACHE_HOME', '~/.cache')
+        candidate = os.getenv('XDG_CACHE_HOME', '~/.cache')
         candidate = os.path.join(os.path.expanduser(candidate),
                                     __appname__)
         if isinstance(candidate, bytes):
@@ -250,7 +250,7 @@ if plugins is None:
 
 CONFIG_DIR_MODE = 0o700
 
-cconfd = getenv('CALIBRE_CONFIG_DIRECTORY')
+cconfd = os.getenv('CALIBRE_CONFIG_DIRECTORY')
 if cconfd is not None:
     config_dir = os.path.abspath(cconfd)
 elif iswindows:
@@ -266,7 +266,7 @@ elif iswindows:
 elif isosx:
     config_dir = os.path.expanduser('~/Library/Preferences/calibre')
 else:
-    bdir = os.path.abspath(os.path.expanduser(getenv('XDG_CONFIG_HOME', '~/.config')))
+    bdir = os.path.abspath(os.path.expanduser(os.getenv('XDG_CONFIG_HOME', '~/.config')))
     config_dir = os.path.join(bdir, 'calibre')
     try:
         os.makedirs(config_dir, mode=CONFIG_DIR_MODE)
@@ -289,7 +289,7 @@ else:
 # }}}
 
 
-dv = getenv('CALIBRE_DEVELOP_FROM')
+dv = os.getenv('CALIBRE_DEVELOP_FROM')
 is_running_from_develop = bool(getattr(sys, 'frozen', False) and dv and os.path.abspath(dv) in sys.path)
 del dv
 
@@ -313,7 +313,7 @@ def get_version():
 def get_portable_base():
     'Return path to the directory that contains calibre-portable.exe or None'
     if isportable:
-        return os.path.dirname(os.path.dirname(getenv('CALIBRE_PORTABLE_BUILD')))
+        return os.path.dirname(os.path.dirname(os.getenv('CALIBRE_PORTABLE_BUILD')))
 
 
 def get_windows_username():

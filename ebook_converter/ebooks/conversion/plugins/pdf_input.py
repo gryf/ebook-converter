@@ -1,7 +1,7 @@
 import os
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
-from ebook_converter.polyglot.builtins import as_bytes, getcwd
+from ebook_converter.polyglot.builtins import as_bytes
 
 
 __license__ = 'GPL 3'
@@ -33,11 +33,11 @@ class PDFInput(InputFormatPlugin):
         from ebook_converter.utils.cleantext import clean_ascii_chars
         from ebook_converter.ebooks.pdf.reflow import PDFDocument
 
-        pdftohtml(getcwd(), stream.name, self.opts.no_images, as_xml=True)
+        pdftohtml(os.getcwd(), stream.name, self.opts.no_images, as_xml=True)
         with lopen('index.xml', 'rb') as f:
             xml = clean_ascii_chars(f.read())
         PDFDocument(xml, self.opts, self.log)
-        return os.path.join(getcwd(), 'metadata.opf')
+        return os.path.join(os.getcwd(), 'metadata.opf')
 
     def convert(self, stream, options, file_ext, log, accelerators):
         from ebook_converter.ebooks.metadata.opf2 import OPFCreator
@@ -48,16 +48,16 @@ class PDFInput(InputFormatPlugin):
         self.opts, self.log = options, log
         if options.new_pdf_engine:
             return self.convert_new(stream, accelerators)
-        pdftohtml(getcwd(), stream.name, options.no_images)
+        pdftohtml(os.getcwd(), stream.name, options.no_images)
 
         from ebook_converter.ebooks.metadata.meta import get_metadata
         log.debug('Retrieving document metadata...')
         mi = get_metadata(stream, 'pdf')
-        opf = OPFCreator(getcwd(), mi)
+        opf = OPFCreator(os.getcwd(), mi)
 
         manifest = [('index.html', None)]
 
-        images = os.listdir(getcwd())
+        images = os.listdir(os.getcwd())
         images.remove('index.html')
         for i in images:
             manifest.append((i, None))
@@ -76,4 +76,4 @@ class PDFInput(InputFormatPlugin):
                     f.seek(0)
                     f.write(raw)
 
-        return os.path.join(getcwd(), 'metadata.opf')
+        return os.path.join(os.getcwd(), 'metadata.opf')
