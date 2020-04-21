@@ -51,7 +51,7 @@ DEFAULT_GENREADING      = "fs"          # default is yes to both lrf and lrs
 
 from ebook_converter import __appname__, __version__
 from ebook_converter import entity_to_unicode
-from ebook_converter.polyglot.builtins import iteritems, native_string_type
+from ebook_converter.polyglot.builtins import native_string_type
 
 
 class LrsError(Exception):
@@ -1835,7 +1835,7 @@ class Span(LrsSimpleChar1, LrsContainer):
         oldTextStyle = self.findCurrentTextStyle()
 
         # set the attributes we want changed
-        for (name, value) in tuple(iteritems(self.attrs)):
+        for name, value in tuple(self.attrs.items()):
             if name in oldTextStyle.attrs and oldTextStyle.attrs[name] == self.attrs[name]:
                 self.attrs.pop(name)
             else:

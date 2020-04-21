@@ -7,7 +7,6 @@ from collections import OrderedDict, Counter
 
 from ebook_converter.ebooks.oeb.base import XPNSMAP, TOC, XHTML, xml2text, barename
 from ebook_converter.ebooks import ConversionError
-from ebook_converter.polyglot.builtins import itervalues
 
 
 __license__ = 'GPL v3'
@@ -269,8 +268,8 @@ class DetectStructure(object):
                 return []
 
         for document in self.oeb.spine:
-            previous_level1 = list(itervalues(added))[-1] if added else None
-            previous_level2 = list(itervalues(added2))[-1] if added2 else None
+            previous_level1 = list(added.values())[-1] if added else None
+            previous_level2 = list(added2.values())[-1] if added2 else None
 
             level1_toc, level1_title = self.get_toc_parts_for_xpath(self.opts.level1_toc)
             for elem in find_matches(level1_toc, document.data):

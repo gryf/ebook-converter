@@ -13,7 +13,6 @@ from ebook_converter.constants import (
     filesystem_encoding, iswindows, plugins, preferred_encoding, isosx, ispy3
 )
 from ebook_converter.utils.localization import get_udc
-from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 def ascii_text(orig):
@@ -367,7 +366,7 @@ class WindowsAtomicFolderMove(object):
         names = os.listdir(path)
         name_to_fileid = {x:windows_get_fileid(os.path.join(path, x)) for x in names}
         fileid_to_names = defaultdict(set)
-        for name, fileid in iteritems(name_to_fileid):
+        for name, fileid in name_to_fileid.items():
             fileid_to_names[fileid].add(name)
 
         for x in names:
@@ -417,7 +416,7 @@ class WindowsAtomicFolderMove(object):
     def copy_path_to(self, path, dest):
         import win32file
         handle = None
-        for p, h in iteritems(self.handle_map):
+        for p, h in self.handle_map.items():
             if samefile_windows(path, p):
                 handle = h
                 break
@@ -446,20 +445,20 @@ class WindowsAtomicFolderMove(object):
     def release_file(self, path):
         ' Release the lock on the file pointed to by path. Will also release the lock on any hardlinks to path '
         key = None
-        for p, h in iteritems(self.handle_map):
+        for p, h in self.handle_map.items():
             if samefile_windows(path, p):
                 key = (p, h)
                 break
         if key is not None:
             import win32file
             win32file.CloseHandle(key[1])
-            remove = [f for f, h in iteritems(self.handle_map) if h is key[1]]
+            remove = [f for f, h in self.handle_map.items() if h is key[1]]
             for x in remove:
                 self.handle_map.pop(x)
 
     def close_handles(self):
         import win32file
-        for h in itervalues(self.handle_map):
+        for h in self.handle_map.values():
             win32file.CloseHandle(h)
         self.handle_map = {}
 

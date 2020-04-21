@@ -9,7 +9,6 @@ import codecs
 import os
 
 from .pylrfopt import tagListOptimizer
-from ebook_converter.polyglot.builtins import iteritems
 
 PYLRF_VERSION = "1.0"
 
@@ -525,7 +524,7 @@ class LrfObject(object):
         # belongs somewhere, so here it is.
         #
         composites = {}
-        for name, value in iteritems(tagDict):
+        for name, value in tagDict.items():
             if name == 'rubyAlignAndAdjust':
                 continue
             if name in {

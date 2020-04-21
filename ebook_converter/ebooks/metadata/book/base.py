@@ -7,7 +7,6 @@ from ebook_converter.ebooks.metadata.book import (SC_COPYABLE_FIELDS,
         TOP_LEVEL_IDENTIFIERS, ALL_METADATA_FIELDS)
 from ebook_converter.library.field_metadata import FieldMetadata
 from ebook_converter.utils.icu import sort_key
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -253,7 +252,7 @@ class Metadata(object):
         Set all identifiers. Note that if you previously set ISBN, calling
         this method will delete it.
         '''
-        cleaned = {ck(k):cv(v) for k, v in iteritems(identifiers) if k and v}
+        cleaned = {ck(k):cv(v) for k, v in identifiers.items() if k and v}
         object.__getattribute__(self, '_data')['identifiers'] = cleaned
 
     def set_identifier(self, typ, val):
@@ -394,7 +393,7 @@ class Metadata(object):
             return
 
         um = {}
-        for key, meta in iteritems(metadata):
+        for key, meta in metadata.items():
             m = meta.copy()
             if '#value#' not in m:
                 if m['datatype'] == 'text' and m['is_multiple']:
@@ -574,7 +573,7 @@ class Metadata(object):
             if callable(getattr(other, 'get_identifiers', None)):
                 d = self.get_identifiers()
                 s = other.get_identifiers()
-                d.update([v for v in iteritems(s) if v[1] is not None])
+                d.update([v for v in s.items() if v[1] is not None])
                 self.set_identifiers(d)
             else:
                 # other structure not Metadata. Copy the top-level identifiers
@@ -748,7 +747,7 @@ class Metadata(object):
             fmt('Rights', str(self.rights))
         if self.identifiers:
             fmt('Identifiers', ', '.join(['%s:%s'%(k, v) for k, v in
-                iteritems(self.identifiers)]))
+                self.identifiers.items()]))
         if self.comments:
             fmt('Comments', self.comments)
 

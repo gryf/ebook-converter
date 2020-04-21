@@ -6,7 +6,6 @@ import pkg_resources
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter import guess_type
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -105,7 +104,7 @@ class FB2Input(InputFormatPlugin):
         notes = {a.get('href')[1:]: a for a in result.xpath('//a[@link_note and @href]') if a.get('href').startswith('#')}
         cites = {a.get('link_cite'): a for a in result.xpath('//a[@link_cite]') if not a.get('href', '')}
         all_ids = {x for x in result.xpath('//*/@id')}
-        for cite, a in iteritems(cites):
+        for cite, a in cites.items():
             note = notes.get(cite, None)
             if note:
                 c = 1

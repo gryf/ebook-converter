@@ -15,7 +15,6 @@ import sys, os
 
 from ebook_converter.ebooks.rtf2xml import copy, check_brackets
 from ebook_converter.ptempfile import better_mktemp
-from ebook_converter.polyglot.builtins import iteritems
 from . import open_for_read, open_for_write
 
 
@@ -163,7 +162,7 @@ class AddBrackets:
             self.__open_bracket = False
 
         inline_string = ''.join(['%s<nu<%s\n' % (k, v)
-                for k, v in iteritems(self.__inline)
+                for k, v in self.__inline.items()
                     if v != 'false'])
         if inline_string:
             self.__write_obj.write('ob<nu<open-brack<0003\n'

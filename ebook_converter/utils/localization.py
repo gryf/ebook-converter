@@ -7,8 +7,6 @@ import json
 from gettext import GNUTranslations, NullTranslations
 import pkg_resources
 
-from ebook_converter.polyglot.builtins import iteritems
-
 _available_translations = None
 
 
@@ -284,7 +282,7 @@ def lang_map():
     translate = _
     global _lang_map
     if _lang_map is None:
-        _lang_map = {k:translate(v) for k, v in iteritems(iso639['by_3'])}
+        _lang_map = {k:translate(v) for k, v in iso639['by_3'].items()}
     return _lang_map
 
 
@@ -308,7 +306,7 @@ def langnames_to_langcodes(names):
     translate = _
     ans = {}
     names = set(names)
-    for k, v in iteritems(iso639['by_3']):
+    for k, v in iso639['by_3'].items():
         tv = translate(v)
         if tv in names:
             names.remove(tv)

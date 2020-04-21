@@ -11,7 +11,6 @@ from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter import patheq
 from ebook_converter.ebooks.conversion import ConversionUserFeedBack
 from ebook_converter.utils.localization import localize_user_manual_link
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL 3'
@@ -254,7 +253,7 @@ def add_pipeline_options(parser, plumber):
 
               ))
 
-    for group, (desc, options) in iteritems(groups):
+    for group, (desc, options) in groups.items():
         if group:
             group = OptionGroup(parser, group, desc)
             parser.add_option_group(group)

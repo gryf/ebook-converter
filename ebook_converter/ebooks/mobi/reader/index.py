@@ -3,7 +3,6 @@ from collections import OrderedDict, namedtuple
 
 from ebook_converter.ebooks.mobi.utils import (decint, count_set_bits,
         decode_string)
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -119,10 +118,10 @@ class CNCX(object):  # {{{
     __nonzero__ = __bool__
 
     def iteritems(self):
-        return iteritems(self.records)
+        return self.records.items()
 
     def items(self):
-        return iteritems(self.records)
+        return self.records.items()
 # }}}
 
 

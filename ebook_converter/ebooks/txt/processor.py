@@ -8,7 +8,6 @@ from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 
 from ebook_converter.ebooks.conversion.preprocess import DocAnalysis
 from ebook_converter.utils.cleantext import clean_ascii_chars
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -145,7 +144,7 @@ def convert_markdown_with_metadata(txt, title='', extensions=DEFAULT_MD_EXTENSIO
     html = md.convert(txt)
     mi = Metadata(title or _('Unknown'))
     m = md.Meta
-    for k, v in iteritems({'date':'pubdate', 'summary':'comments'}):
+    for k, v in {'date':'pubdate', 'summary':'comments'}.items():
         if v not in m and k in m:
             m[v] = m.pop(k)
     for k in 'title authors series tags pubdate comments publisher rating'.split():

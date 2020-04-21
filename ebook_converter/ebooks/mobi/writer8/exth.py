@@ -6,7 +6,6 @@ from ebook_converter.constants import iswindows, isosx
 from ebook_converter.ebooks.mobi.utils import (utf8_text, to_base)
 from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.ebooks.metadata import authors_to_sort_string
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -159,7 +158,7 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
     else:
         # Pretend to be kindlegen 1.2
         vals = {204:201, 205:1, 206:2, 207:33307}
-    for code, val in iteritems(vals):
+    for code, val in vals.items():
         exth.write(pack(b'>III', code, 12, val))
         nrecs += 1
     if be_kindlegen2:

@@ -6,7 +6,6 @@ from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.fonts.scanner import font_scanner, NoFonts
 from ebook_converter.utils.fonts.utils import panose_to_css_generic_family, is_truetype_font
 from ebook_converter.utils.icu import ord_string
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -168,7 +167,7 @@ class Fonts(object):
                         d['font-weight'] = 'bold'
                     if 'Italic' in variant:
                         d['font-style'] = 'italic'
-                    d = ['%s: %s' % (k, v) for k, v in iteritems(d)]
+                    d = ['%s: %s' % (k, v) for k, v in d.items()]
                     d = ';\n\t'.join(d)
                     defs.append('@font-face {\n\t%s\n}\n' % d)
         return '\n'.join(defs)

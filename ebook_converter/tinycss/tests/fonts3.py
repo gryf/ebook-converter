@@ -1,8 +1,6 @@
 from tinycss.fonts3 import CSSFonts3Parser, parse_font_family, parse_font, serialize_font
 from tinycss.tests import BaseTest
 
-from polyglot.builtins import iteritems
-
 
 __license__ = 'GPL v3'
 __copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
@@ -29,27 +27,25 @@ class TestFonts3(BaseTest):
 
     def test_parse_font_family(self):
         ' Test parsing of font-family values '
-        for raw, q in iteritems({
-                '"1as"': ['1as'],
-                'A B C, serif': ['A B C', 'serif'],
-                r'Red\/Black': ['Red/Black'],
-                'A  B': ['A B'],
-                r'Ahem\!': ['Ahem!'],
-                r'"Ahem!"': ['Ahem!'],
-                '€42': ['€42'],
-                r'Hawaii\ 5-0': ['Hawaii 5-0'],
-                r'"X \"Y"': ['X "Y'],
-                'A B, C D, "E", serif': ['A B', 'C D', 'E', 'serif'],
-                '': [],
-                '"", a': ['a'],
-        }):
+        for raw, q in {'"1as"': ['1as'],
+                       'A B C, serif': ['A B C', 'serif'],
+                       r'Red\/Black': ['Red/Black'],
+                       'A  B': ['A B'],
+                       r'Ahem\!': ['Ahem!'],
+                       r'"Ahem!"': ['Ahem!'],
+                       '€42': ['€42'],
+                       r'Hawaii\ 5-0': ['Hawaii 5-0'],
+                       r'"X \"Y"': ['X "Y'],
+                       'A B, C D, "E", serif': ['A B', 'C D', 'E', 'serif'],
+                       '': [],
+                       '"", a': ['a']}.items():
             self.ae(q, parse_font_family(raw))
         for single in ('serif', 'sans-serif', 'A B C'):
             self.ae([single], parse_font_family(single))
 
     def test_parse_font(self):
         def t(raw, **kw):
-            q = {('line' if k == 'height' else 'font') + '-' + k:v for k, v in iteritems(kw)}
+            q = {('line' if k == 'height' else 'font') + '-' + k:v for k, v in kw.items()}
             self.ae(q, parse_font(raw))
             self.ae(q, parse_font(serialize_font(q)))
         t('caption', family=['sans-serif'])

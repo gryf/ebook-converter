@@ -14,7 +14,6 @@ from ebook_converter.utils.titlecase import titlecase
 from ebook_converter.utils.icu import capitalize, strcmp, sort_key
 from ebook_converter.utils.date import parse_date, format_date, now, UNDEFINED_DATE
 from ebook_converter.utils.localization import calibre_langcode_to_name, canonicalize_lang
-from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 __license__ = 'GPL v3'
@@ -60,7 +59,7 @@ class FormatterFunctions(object):
         self._register_functions()
 
     def _register_functions(self):
-        for compiled_funcs in itervalues(self._functions_from_library):
+        for compiled_funcs in self._functions_from_library.values():
             for cls in compiled_funcs:
                 f = self._functions.get(cls.name, None)
                 replace = False
@@ -90,7 +89,7 @@ class FormatterFunctions(object):
 
     def get_builtins_and_aliases(self):
         res = {}
-        for f in itervalues(self._builtins):
+        for f in self._builtins.values():
             res[f.name] = f
             for a in f.aliases:
                 res[a] = f
@@ -834,7 +833,7 @@ class BuiltinFormatsSizes(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals):
         fmt_data = mi.get('format_metadata', {})
         try:
-            return ','.join(k.upper()+':'+str(v['size']) for k,v in iteritems(fmt_data))
+            return ','.join(k.upper()+':'+str(v['size']) for k,v in fmt_data.items())
         except:
             return ''
 
@@ -853,7 +852,7 @@ class BuiltinFormatsPaths(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals):
         fmt_data = mi.get('format_metadata', {})
         try:
-            return ','.join(k.upper()+':'+str(v['path']) for k,v in iteritems(fmt_data))
+            return ','.join(k.upper()+':'+str(v['path']) for k,v in fmt_data.items())
         except:
             return ''
 
@@ -1530,7 +1529,7 @@ class BuiltinUserCategories(BuiltinFormatterFunction):
 
     def evaluate(self, formatter, kwargs, mi, locals_):
         if hasattr(mi, '_proxy_metadata'):
-            cats = set(k for k, v in iteritems(mi._proxy_metadata.user_categories) if v)
+            cats = set(k for k, v in mi._proxy_metadata.user_categories.items() if v)
             cats = sorted(cats, key=sort_key)
             return ', '.join(cats)
         return _('This function can be used only in the GUI')

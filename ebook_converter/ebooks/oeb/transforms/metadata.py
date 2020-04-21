@@ -1,7 +1,6 @@
 import os, re
 from ebook_converter.utils.date import isoformat, now
 from ebook_converter import guess_type
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -48,7 +47,7 @@ def meta_info_to_oeb_metadata(mi, m, log, override_input_metadata=False):
         m.clear('series')
     identifiers = mi.get_identifiers()
     set_isbn = False
-    for typ, val in iteritems(identifiers):
+    for typ, val in identifiers.items():
         has = False
         if typ.lower() == 'isbn':
             set_isbn = True

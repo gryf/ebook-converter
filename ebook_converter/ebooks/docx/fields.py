@@ -1,7 +1,7 @@
 import re
 
 from ebook_converter.ebooks.docx.index import process_index, polish_index_markup
-from ebook_converter.polyglot.builtins import iteritems, native_string_type
+from ebook_converter.polyglot.builtins import native_string_type
 
 
 __license__ = 'GPL v3'
@@ -234,7 +234,7 @@ class Fields(object):
     def polish_markup(self, object_map):
         if not self.index_fields:
             return
-        rmap = {v:k for k, v in iteritems(object_map)}
+        rmap = {v:k for k, v in object_map.items()}
         for idx, blocks in self.index_fields:
             polish_index_markup(idx, [rmap[b] for b in blocks])
 

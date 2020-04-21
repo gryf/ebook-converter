@@ -3,7 +3,6 @@ from operator import itemgetter
 from lxml import etree
 
 from ebook_converter.utils.icu import partition_by_first_letter, sort_key
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -99,7 +98,7 @@ def process_index(field, index, xe_fields, log, XPath, expand):
     if heading_text is not None:
         groups = partition_by_first_letter(xe_fields, key=itemgetter('text'))
         items = []
-        for key, fields in iteritems(groups):
+        for key, fields in groups.items():
             items.append(key), items.extend(fields)
         if styles:
             heading_style = styles[0]

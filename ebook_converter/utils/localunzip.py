@@ -9,8 +9,6 @@ from struct import calcsize, unpack, pack
 from collections import namedtuple, OrderedDict
 from tempfile import SpooledTemporaryFile
 
-from ebook_converter.polyglot.builtins import itervalues
-
 
 __license__ = 'GPL v3'
 __copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
@@ -311,7 +309,7 @@ class LocalZipFile(object):
 
         with SpooledTemporaryFile(max_size=100*1024*1024) as temp:
             ztemp = ZipFile(temp, 'w')
-            for offset, header in itervalues(self.file_info):
+            for offset, header in self.file_info.values():
                 if header.filename in names:
                     zi = ZipInfo(header.filename)
                     zi.compress_type = header.compression_method

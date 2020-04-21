@@ -2,7 +2,6 @@ import numbers
 from collections import Counter
 
 from ebook_converter.ebooks.oeb.base import barename, XPath
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -149,7 +148,7 @@ class RemoveFakeMargins(object):
                 self.levels[level].append(p)
 
         remove = set()
-        for k, v in iteritems(self.levels):
+        for k, v in self.levels.items():
             num = len(v)
             self.log.debug('Found %d items of level:'%num, k)
             level = int(k.split('_')[-1])

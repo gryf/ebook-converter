@@ -10,7 +10,6 @@ from ebook_converter.ebooks.mobi.writer2 import (PALMDOC, UNCOMPRESSED)
 from ebook_converter.ebooks.mobi.utils import (encint, encode_trailing_data,
         align_block, detect_periodical, RECORD_SIZE, create_text_record)
 from ebook_converter.ebooks.mobi.writer2.indexer import Indexer
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -421,10 +420,9 @@ class MobiWriter(object):
             extra_data_flags |= 0b10
         header_fields['extra_data_flags'] = extra_data_flags
 
-        for k, v in iteritems({'last_text_record':'last_text_record_idx',
-                'first_non_text_record':'first_non_text_record_idx',
-                'ncx_index':'primary_index_record_idx',
-                }):
+        for k, v in {'last_text_record':'last_text_record_idx',
+                     'first_non_text_record':'first_non_text_record_idx',
+                     'ncx_index':'primary_index_record_idx'}.items():
             header_fields[k] = getattr(self, v)
         if header_fields['ncx_index'] is None:
             header_fields['ncx_index'] = NULL_INDEX

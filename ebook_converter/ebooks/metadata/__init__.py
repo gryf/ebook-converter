@@ -9,7 +9,7 @@ import urllib.parse
 
 from ebook_converter import relpath, guess_type, prints, force_unicode
 from ebook_converter.utils.config_base import tweaks
-from ebook_converter.polyglot.builtins import iteritems, itervalues, as_unicode
+from ebook_converter.polyglot.builtins import as_unicode
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -49,7 +49,7 @@ def remove_bracketed_text(src, brackets=None):
     counts = Counter()
     buf = []
     src = force_unicode(src)
-    rmap = {v: k for k, v in iteritems(brackets)}
+    rmap = {v: k for k, v in brackets.items()}
     for char in src:
         if char in brackets:
             counts[char] += 1
@@ -57,7 +57,7 @@ def remove_bracketed_text(src, brackets=None):
             idx = rmap[char]
             if counts[idx] > 0:
                 counts[idx] -= 1
-        elif sum(itervalues(counts)) < 1:
+        elif sum(counts.values()) < 1:
             buf.append(char)
     return ''.join(buf)
 

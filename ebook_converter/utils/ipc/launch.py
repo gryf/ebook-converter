@@ -5,7 +5,7 @@ from ebook_converter.constants import isosx, isfrozen, filesystem_encoding, ispy
 from ebook_converter.utils.config import prefs
 from ebook_converter.ptempfile import PersistentTemporaryFile, base_dir
 from ebook_converter.utils.serialize import msgpack_dumps
-from ebook_converter.polyglot.builtins import iteritems, environ_item, native_string_type
+from ebook_converter.polyglot.builtins import environ_item, native_string_type
 from ebook_converter.polyglot.binary import as_hex_unicode
 try:
     import win32process
@@ -162,7 +162,7 @@ class Worker(object):
             self._env = env.copy()
         else:
             # Windows cannot handle unicode env vars
-            for k, v in iteritems(env):
+            for k, v in env.items():
                 try:
                     if isinstance(k, str):
                         k = k.encode('ascii')

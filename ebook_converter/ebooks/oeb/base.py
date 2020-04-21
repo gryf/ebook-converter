@@ -17,7 +17,6 @@ from ebook_converter import (isbytestring, as_unicode, get_types_map)
 from ebook_converter.ebooks.oeb.parse_utils import barename, XHTML_NS, namespace, XHTML, parse_html, NotHTML
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
-from ebook_converter.polyglot.builtins import iteritems, itervalues
 from ebook_converter.polyglot.urllib import unquote as urlunquote
 
 
@@ -700,7 +699,7 @@ class Metadata(object):
                 term = CALIBRE(local)
             self.term = term
             self.value = value
-            for attr, value in tuple(iteritems(attrib)):
+            for attr, value in tuple(attrib.items()):
                 if isprefixname(value):
                     attrib[attr] = qname(value, nsmap)
                 nsattr = Metadata.OPF_ATTRS.get(attr, attr)
@@ -857,7 +856,7 @@ class Metadata(object):
 
     def to_opf1(self, parent=None):
         nsmap = self._opf1_nsmap
-        nsrmap = {value: key for key, value in iteritems(nsmap)}
+        nsrmap = {value: key for key, value in nsmap.items()}
         elem = element(parent, 'metadata', nsmap=nsmap)
         dcmeta = element(elem, 'dc-metadata', nsmap=OPF1_NSMAP)
         xmeta = element(elem, 'x-metadata')
@@ -871,7 +870,7 @@ class Metadata(object):
 
     def to_opf2(self, parent=None):
         nsmap = self._opf2_nsmap
-        nsrmap = {value: key for key, value in iteritems(nsmap)}
+        nsrmap = {value: key for key, value in nsmap.items()}
         elem = element(parent, OPF('metadata'), nsmap=nsmap)
         for term in self.items:
             for item in self.items[term]:
@@ -1424,7 +1423,7 @@ class Guide(object):
         @property
         def item(self):
             """The manifest item associated with this reference."""
-            path = uurllib.parse.rldefrag(self.href)[0]
+            path = urllib.parse.urldefrag(self.href)[0]
             hrefs = self.oeb.manifest.hrefs
             return hrefs.get(path, None)
 
@@ -1444,7 +1443,7 @@ class Guide(object):
         return self.refs.pop(type, None)
 
     def remove_by_href(self, href):
-        remove = [r for r, i in iteritems(self.refs) if i.href == href]
+        remove = [r for r, i in self.refs.items() if i.href == href]
         for r in remove:
             self.remove(r)
 
@@ -1454,7 +1453,7 @@ class Guide(object):
     __iter__ = iterkeys
 
     def values(self):
-        return sorted(itervalues(self.refs), key=lambda ref: ref.ORDER.get(ref.type, 10000))
+        return sorted(self.refs.values(), key=lambda ref: ref.ORDER.get(ref.type, 10000))
 
     def items(self):
         for type, ref in self.refs.items():

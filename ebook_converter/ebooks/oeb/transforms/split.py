@@ -15,7 +15,6 @@ from ebook_converter.ebooks.epub import rules
 from ebook_converter.ebooks.oeb.base import (OEB_STYLES, XPNSMAP as NAMESPACES,
         rewrite_links, XHTML, urlnormalize)
 from ebook_converter.ebooks.oeb.polish.split import do_split
-from ebook_converter.polyglot.builtins import iteritems
 from ebook_converter.polyglot.urllib import unquote
 from ebook_converter.css_selectors import Select, SelectorError
 
@@ -243,7 +242,7 @@ class FlowSplitter(object):
 
         self.trees = [orig_tree]
         while ordered_ids:
-            pb_id, (pattern, before) = next(iteritems(ordered_ids))
+            pb_id, (pattern, before) = next(iter(ordered_ids.items()))
             del ordered_ids[pb_id]
             for i in range(len(self.trees)-1, -1, -1):
                 tree = self.trees[i]

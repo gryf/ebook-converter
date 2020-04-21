@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -54,7 +53,7 @@ class Footnotes(object):
         return None, None
 
     def __iter__(self):
-        for anchor, (counter, note) in iteritems(self.notes):
+        for anchor, (counter, note) in self.notes.items():
             yield anchor, counter, note
 
     @property

@@ -5,7 +5,6 @@ from ebook_converter.ebooks.oeb.base import barename, XPNSMAP, XPath, OPF, XHTML
 from ebook_converter.ebooks.oeb.polish.errors import MalformedMarkup
 from ebook_converter.ebooks.oeb.polish.toc import node_from_loc
 from ebook_converter.ebooks.oeb.polish.replace import LinkRebaser
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -237,7 +236,7 @@ def split(container, name, loc_or_xpath, before=True, totals=None):
                         a.set('href', '#' + purl.fragment)
 
     # Fix all links in the container that point to anchors in the bottom tree
-    for fname, media_type in iteritems(container.mime_map):
+    for fname, media_type in container.mime_map.items():
         if fname not in {name, bottom_name}:
             repl = SplitLinkReplacer(fname, anchors_in_bottom, name, bottom_name, container)
             container.replace_links(fname, repl)
@@ -438,7 +437,7 @@ def merge_html(container, names, master, insert_page_breaks=False):
         container.remove_item(name, remove_from_guide=False)
 
     # Fix all links in the container that point to merged files
-    for fname, media_type in iteritems(container.mime_map):
+    for fname, media_type in container.mime_map.items():
         repl = MergeLinkReplacer(fname, anchor_map, master, container)
         container.replace_links(fname, repl)
 
@@ -471,7 +470,7 @@ def merge_css(container, names, master):
 
     # Remove links to merged stylesheets in the html files, replacing with a
     # link to the master sheet
-    for name, mt in iteritems(container.mime_map):
+    for name, mt in container.mime_map.items():
         if mt in OEB_DOCS:
             removed = False
             root = p(name)

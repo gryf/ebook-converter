@@ -6,7 +6,6 @@ import glob, os
 from ebook_converter.customize.conversion import (OutputFormatPlugin,
     OptionRecommendation)
 from ebook_converter.ptempfile import TemporaryDirectory
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL 3'
@@ -234,7 +233,7 @@ class PDFOutput(OutputFormatPlugin):
         self.process_fonts()
 
         if self.opts.pdf_use_document_margins and self.stored_page_margins:
-            for href, margins in iteritems(self.stored_page_margins):
+            for href, margins in self.stored_page_margins.items():
                 item = oeb_book.manifest.hrefs.get(href)
                 if item is not None:
                     root = item.data

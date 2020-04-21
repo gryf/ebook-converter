@@ -16,7 +16,6 @@ from ebook_converter.ebooks.oeb.polish.utils import guess_type, extract
 from ebook_converter.ebooks.oeb.polish.opf import set_guide_item, get_book_language
 from ebook_converter.ebooks.oeb.polish.pretty import pretty_html_tree
 from ebook_converter.utils.localization import get_lang, canonicalize_lang, lang_as_iso639_1
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -168,7 +167,7 @@ def parse_ncx(container, ncx_name):
     if navmaps:
         process_ncx_node(container, navmaps[0], toc_root, ncx_name)
     toc_root.lang = toc_root.uid = None
-    for attr, val in iteritems(root.attrib):
+    for attr, val in root.attrib.items():
         if attr.endswith('lang'):
             toc_root.lang = str(val)
             break
@@ -415,14 +414,14 @@ def from_xpaths(container, xpaths):
         name = container.abspath_to_name(spinepath)
         root = container.parsed(name)
         level_item_map = maps[name] = {i+1:frozenset(xp(root)) for i, xp in enumerate(xpaths)}
-        for lvl, elems in iteritems(level_item_map):
+        for lvl, elems in level_item_map.items():
             if elems:
                 empty_levels.discard(lvl)
     # Remove empty levels from all level_maps
     if empty_levels:
-        for name, lmap in tuple(iteritems(maps)):
-            lmap = {lvl:items for lvl, items in iteritems(lmap) if lvl not in empty_levels}
-            lmap = sorted(iteritems(lmap), key=itemgetter(0))
+        for name, lmap in tuple(maps.items()):
+            lmap = {lvl:items for lvl, items in lmap.items() if lvl not in empty_levels}
+            lmap = sorted(lmap.items(), key=itemgetter(0))
             lmap = {i+1:items for i, (l, items) in enumerate(lmap)}
             maps[name] = lmap
 
@@ -440,9 +439,9 @@ def from_xpaths(container, xpaths):
 
         return process_node(tocroot)
 
-    for name, level_item_map in iteritems(maps):
+    for name, level_item_map in maps.items():
         root = container.parsed(name)
-        item_level_map = {e:i for i, elems in iteritems(level_item_map) for e in elems}
+        item_level_map = {e:i for i, elems in level_item_map.items() for e in elems}
         item_dirtied = False
         all_ids = set(root.xpath('//*/@id'))
 

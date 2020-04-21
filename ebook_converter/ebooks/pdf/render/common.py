@@ -4,7 +4,6 @@ from datetime import datetime
 
 from ebook_converter.constants import ispy3
 from ebook_converter.utils.logging import default_log
-from ebook_converter.polyglot.builtins import iteritems
 from ebook_converter.polyglot.binary import as_hex_bytes
 
 
@@ -160,7 +159,7 @@ class InlineDictionary(Dictionary):
 
     def pdf_serialize(self, stream):
         stream.write(b'<< ')
-        for k, v in iteritems(self):
+        for k, v in self.items():
             serialize(Name(k), stream)
             stream.write(b' ')
             serialize(v, stream)

@@ -2,7 +2,6 @@ import os
 import posixpath
 from collections import namedtuple
 from functools import partial
-from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 from lxml import etree
 
@@ -127,7 +126,7 @@ class ImagesManager(object):
         if fake_margins:
             # DOCX does not support setting margins for inline images, so we
             # fake it by using effect extents to simulate margins
-            makeelement(parent, 'wp:effectExtent', **{k[-1].lower():v for k, v in iteritems(get_image_margins(style))})
+            makeelement(parent, 'wp:effectExtent', **{k[-1].lower():v for k, v in get_image_margins(style).items()})
         else:
             makeelement(parent, 'wp:effectExtent', l='0', r='0', t='0', b='0')
         if floating is not None:
@@ -171,7 +170,7 @@ class ImagesManager(object):
         return fname
 
     def serialize(self, images_map):
-        for img in itervalues(self.images):
+        for img in self.images.values():
             images_map['word/' + img.fname] = partial(self.get_data, img.item)
 
     def get_data(self, item):

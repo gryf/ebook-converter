@@ -1,5 +1,4 @@
 import os
-from ebook_converter.polyglot.builtins import itervalues
 
 
 __license__ = 'GPL v3'
@@ -143,7 +142,7 @@ def cleanup_markup(log, root, styles, dest_dir, detect_cover, XPath):
                 current_run = [span]
 
     # Process dir attributes
-    class_map = dict(itervalues(styles.classes))
+    class_map = dict(styles.classes.values())
     parents = ('p', 'div') + tuple('h%d' % i for i in range(1, 7))
     for parent in root.xpath('//*[(%s)]' % ' or '.join('name()="%s"' % t for t in parents)):
         # Ensure that children of rtl parents that are not rtl have an

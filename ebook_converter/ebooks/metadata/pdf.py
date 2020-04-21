@@ -10,7 +10,6 @@ from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.ebooks.metadata import (
     MetaInformation, string_to_authors, check_isbn, check_doi)
 from ebook_converter.utils.ipc.simple_worker import fork_job, WorkerError
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -157,9 +156,9 @@ def get_metadata(stream, cover=True):
 
     # Look for recognizable identifiers in the info dict, if they were not
     # found in the XMP metadata
-    for scheme, check_func in iteritems({'doi':check_doi, 'isbn':check_isbn}):
+    for scheme, check_func in {'doi':check_doi, 'isbn':check_isbn}.items():
         if scheme not in mi.get_identifiers():
-            for k, v in iteritems(info):
+            for k, v in info.items():
                 if k != 'xmp_metadata':
                     val = check_func(v)
                     if val:

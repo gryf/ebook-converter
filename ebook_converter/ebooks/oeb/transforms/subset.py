@@ -2,7 +2,6 @@ from collections import defaultdict
 
 from ebook_converter.ebooks.oeb.base import urlnormalize, css_text
 from ebook_converter.utils.fonts.sfnt.subset import subset, NoGlyphs, UnsupportedFont
-from ebook_converter.polyglot.builtins import iteritems, itervalues
 from ebook_converter.tinycss.fonts3 import parse_font_family
 
 
@@ -148,7 +147,7 @@ class SubsetFonts(object):
             else:
                 fonts[item.href] = font
 
-        for font in itervalues(fonts):
+        for font in fonts.values():
             if not font['chars']:
                 self.log('The font %s is unused. Removing it.'%font['src'])
                 remove(font)
@@ -167,8 +166,8 @@ class SubsetFonts(object):
                 totals[1] += sz
             else:
                 font['item'].data = raw
-                nlen = sum(itervalues(new_stats))
-                olen = sum(itervalues(old_stats))
+                nlen = sum(new_stats.values())
+                olen = sum(old_stats.values())
                 self.log('Decreased the font %s to %.1f%% of its original size'%
                         (font['src'], nlen/olen *100))
                 totals[0] += nlen
@@ -204,7 +203,7 @@ class SubsetFonts(object):
                 if rule.type != rule.STYLE_RULE:
                     continue
                 props = {k:v for k,v in
-                        iteritems(get_font_properties(rule)) if v}
+                        get_font_properties(rule).items() if v}
                 if not props:
                     continue
                 for sel in rule.selectorList:

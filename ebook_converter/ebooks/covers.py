@@ -2,7 +2,6 @@ import re, random, unicodedata, numbers
 from collections import namedtuple
 from contextlib import contextmanager
 from math import ceil, sqrt, cos, sin, atan2
-from ebook_converter.polyglot.builtins import iteritems, itervalues
 from itertools import chain
 
 from PyQt5.Qt import (
@@ -277,7 +276,7 @@ def preserve_fields(obj, fields):
     try:
         yield
     finally:
-        for f, val in iteritems(mem):
+        for f, val in mem.items():
             if val is null:
                 delattr(obj, f)
             else:
@@ -319,10 +318,10 @@ def load_color_themes(prefs):
     t = default_color_themes.copy()
     t.update(prefs.color_themes)
     disabled = frozenset(prefs.disabled_color_themes)
-    ans = [theme_to_colors(v) for k, v in iteritems(t) if k not in disabled]
+    ans = [theme_to_colors(v) for k, v in t.items() if k not in disabled]
     if not ans:
         # Ignore disabled and return only the builtin color themes
-        ans = [theme_to_colors(v) for k, v in iteritems(default_color_themes)]
+        ans = [theme_to_colors(v) for k, v in default_color_themes.items()]
     return ans
 
 
@@ -559,14 +558,14 @@ class Blocks(Style):
 
 def all_styles():
     return set(
-        x.NAME for x in itervalues(globals()) if
+        x.NAME for x in globals().values() if
         isinstance(x, type) and issubclass(x, Style) and x is not Style
     )
 
 
 def load_styles(prefs, respect_disabled=True):
     disabled = frozenset(prefs.disabled_styles) if respect_disabled else ()
-    ans = tuple(x for x in itervalues(globals()) if
+    ans = tuple(x for x in globals().values() if
             isinstance(x, type) and issubclass(x, Style) and x is not Style and x.NAME not in disabled)
     if not ans and disabled:
         # If all styles have been disabled, ignore the disabling and return all

@@ -5,7 +5,6 @@ from collections import OrderedDict, defaultdict
 
 from ebook_converter.ebooks.mobi.utils import (encint, encode_number_as_hex,
         encode_tbs, align_block, RECORD_SIZE, CNCX as CNCX_)
-from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 __license__ = 'GPL v3'
@@ -104,7 +103,7 @@ class IndexEntry(object):
             'author_offset': 71,
 
     }
-    RTAG_MAP = {v:k for k, v in iteritems(TAG_VALUES)}  # noqa
+    RTAG_MAP = {v:k for k, v in TAG_VALUES.items()}  # noqa
 
     def __init__(self, offset, label_offset):
         self.offset, self.label_offset = offset, label_offset
@@ -220,8 +219,8 @@ class SecondaryIndexEntry(IndexEntry):
 
         # The values for this index entry
         # I dont know what the 5 means, it is not the number of entries
-        self.secondary = [5 if tag == min(
-            itervalues(self.INDEX_MAP)) else 0, 0, tag]
+        self.secondary = [5 if tag == min(self.INDEX_MAP.values())
+                          else 0, 0, tag]
 
     @property
     def tag_nums(self):
@@ -233,7 +232,7 @@ class SecondaryIndexEntry(IndexEntry):
 
     @classmethod
     def entries(cls):
-        rmap = {v:k for k,v in iteritems(cls.INDEX_MAP)}
+        rmap = {v:k for k,v in cls.INDEX_MAP.items()}
         for tag in sorted(rmap, reverse=True):
             yield cls(rmap[tag])
 
@@ -278,7 +277,7 @@ class TBS(object):  # {{{
                 for x in ('starts', 'ends', 'completes'):
                     for idx in data[x]:
                         depth_map[idx.depth].append(idx)
-                for l in itervalues(depth_map):
+                for l in depth_map.values():
                     l.sort(key=lambda x:x.offset)
                 self.periodical_tbs(data, first, depth_map)
         else:

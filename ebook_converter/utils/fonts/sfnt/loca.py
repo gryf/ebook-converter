@@ -3,7 +3,6 @@ from operator import itemgetter
 from itertools import repeat
 
 from ebook_converter.utils.fonts.sfnt import UnknownTable
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -54,7 +53,7 @@ class LocaTable(UnknownTable):
         max_glyph_id = max(max_glyph_id, current_max_glyph_id)
         self.offset_map = list(repeat(0, max_glyph_id + 2))
         glyphs = [(glyph_id, x[0], x[1]) for glyph_id, x in
-                    iteritems(resolved_glyph_map)]
+                  resolved_glyph_map.items()]
         glyphs.sort(key=itemgetter(1))
         for glyph_id, offset, sz in glyphs:
             self.offset_map[glyph_id] = offset

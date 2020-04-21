@@ -13,7 +13,6 @@ from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter import replace_entities, isbytestring
 from ebook_converter.utils.date import parse_date, is_date_undefined
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -54,8 +53,8 @@ META_NAMES = {
     'comments': ('comments', 'dc.description'),
     'tags': ('tags',),
 }
-rmap_comment = {v:k for k, v in iteritems(COMMENT_NAMES)}
-rmap_meta = {v:k for k, l in iteritems(META_NAMES) for v in l}
+rmap_comment = {v:k for k, v in COMMENT_NAMES.items()}
+rmap_meta = {v:k for k, l in META_NAMES.items() for v in l}
 
 
 # Extract an HTML attribute value, supports both single and double quotes and
@@ -230,7 +229,7 @@ def get_metadata_(src, encoding=None):
             mi.tags = tags
 
     # IDENTIFIERS
-    for (k,v) in iteritems(meta_tag_ids):
+    for (k,v) in meta_tag_ids.items():
         v = [x.strip() for x in v if x.strip()]
         if v:
             mi.set_identifier(k, v[0])

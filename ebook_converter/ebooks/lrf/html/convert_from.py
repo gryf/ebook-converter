@@ -37,7 +37,6 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import (
     RuledLine, Span, Sub, Sup, TextBlock
 )
 from ebook_converter.ptempfile import PersistentTemporaryFile
-from ebook_converter.polyglot.builtins import itervalues
 from ebook_converter.polyglot.urllib import unquote
 
 from PIL import Image as PILImage
@@ -1774,7 +1773,7 @@ class HTMLConverter(object):
         self.book.renderLrs(path) if lrs else self.book.renderLrf(path)
 
     def cleanup(self):
-        for _file in chain(itervalues(self.scaled_images), itervalues(self.rotated_images)):
+        for _file in chain(self.scaled_images.values(), self.rotated_images.values()):
             _file.__del__()
 
 

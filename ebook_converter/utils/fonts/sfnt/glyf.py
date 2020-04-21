@@ -2,7 +2,6 @@ from struct import unpack_from
 from collections import OrderedDict
 
 from ebook_converter.utils.fonts.sfnt import UnknownTable
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -80,7 +79,7 @@ class GlyfTable(UnknownTable):
         ans = OrderedDict()
         offset = 0
         block = []
-        for glyph_id, glyph in iteritems(sorted_glyph_map):
+        for glyph_id, glyph in sorted_glyph_map.items():
             raw = glyph()
             pad = 4 - (len(raw) % 4)
             if pad < 4:

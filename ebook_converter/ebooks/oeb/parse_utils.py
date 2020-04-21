@@ -6,7 +6,6 @@ from ebook_converter import xml_replace_entities, force_unicode
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
-from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 __license__ = 'GPL v3'
@@ -136,8 +135,8 @@ def clean_word_doc(data, log):
 
 
 def ensure_namespace_prefixes(node, nsmap):
-    namespace_uris = frozenset(itervalues(nsmap))
-    fnsmap = {k:v for k, v in iteritems(node.nsmap) if v not in namespace_uris}
+    namespace_uris = frozenset(nsmap.values())
+    fnsmap = {k:v for k, v in node.nsmap.items() if v not in namespace_uris}
     fnsmap.update(nsmap)
     if fnsmap != dict(node.nsmap):
         node = clone_element(node, nsmap=fnsmap, in_context=False)
@@ -230,7 +229,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
         for x in data.iterdescendants():
             try:
                 x.tag = x.tag.lower()
-                for key, val in list(iteritems(x.attrib)):
+                for key, val in tuple(x.attrib.items()):
                     del x.attrib[key]
                     key = key.lower()
                     x.attrib[key] = val

@@ -16,7 +16,6 @@ from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.reader.headers import BookHeader
 from ebook_converter.utils.img import save_cover_data_to, gif_data_to_png_data, AnimatedGIF
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -918,18 +917,16 @@ class MobiReader(object):
 
 
 def test_mbp_regex():
-    for raw, m in iteritems({
-        '<mbp:pagebreak></mbp:pagebreak>':'',
-        '<mbp:pagebreak xxx></mbp:pagebreak>yyy':' xxxyyy',
-        '<mbp:pagebreak> </mbp:pagebreak>':'',
-        '<mbp:pagebreak>xxx':'xxx',
-        '<mbp:pagebreak/>xxx':'xxx',
-        '<mbp:pagebreak sdf/ >xxx':' sdfxxx',
-        '<mbp:pagebreak / >':' ',
-        '</mbp:pagebreak>':'',
-        '</mbp:pagebreak sdf>':' sdf',
-        '</mbp:pagebreak><mbp:pagebreak></mbp:pagebreak>xxx':'xxx',
-        }):
+    for raw, m in {'<mbp:pagebreak></mbp:pagebreak>':'',
+                   '<mbp:pagebreak xxx></mbp:pagebreak>yyy':' xxxyyy',
+                   '<mbp:pagebreak> </mbp:pagebreak>':'',
+                   '<mbp:pagebreak>xxx':'xxx',
+                   '<mbp:pagebreak/>xxx':'xxx',
+                   '<mbp:pagebreak sdf/ >xxx':' sdfxxx',
+                   '<mbp:pagebreak / >':' ',
+                   '</mbp:pagebreak>':'',
+                   '</mbp:pagebreak sdf>':' sdf',
+                   '</mbp:pagebreak><mbp:pagebreak></mbp:pagebreak>xxx':'xxx'}.items():
         ans = MobiReader.PAGE_BREAK_PAT.sub(r'\1', raw)
         if ans != m:
             raise Exception('%r != %r for %r'%(ans, m, raw))

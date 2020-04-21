@@ -2,7 +2,6 @@ import json
 import re
 from collections import defaultdict, namedtuple
 from functools import wraps
-from ebook_converter.polyglot.builtins import iteritems
 
 from lxml import etree
 
@@ -185,9 +184,9 @@ def ensure_prefix(root, prefixes, prefix, value=None):
     if prefixes is None:
         prefixes = read_prefixes(root)
     prefixes[prefix] = value or reserved_prefixes[prefix]
-    prefixes = {k:v for k, v in iteritems(prefixes) if reserved_prefixes.get(k) != v}
+    prefixes = {k:v for k, v in prefixes.items() if reserved_prefixes.get(k) != v}
     if prefixes:
-        root.set('prefix', ' '.join('%s: %s' % (k, v) for k, v in iteritems(prefixes)))
+        root.set('prefix', ' '.join('%s: %s' % (k, v) for k, v in prefixes.items()))
     else:
         root.attrib.pop('prefix', None)
 
@@ -294,7 +293,7 @@ def set_identifiers(root, prefixes, refines, new_identifiers, force_identifiers=
             remove_element(ident, refines)
             continue
     metadata = XPath('./opf:metadata')(root)[0]
-    for scheme, val in iteritems(new_identifiers):
+    for scheme, val in new_identifiers.items():
         ident = metadata.makeelement(DC('identifier'))
         ident.text = '%s:%s' % (scheme, val)
         if package_identifier is None:
@@ -850,7 +849,7 @@ set_author_link_map = dict_writer('author_link_map')
 def deserialize_user_metadata(val):
     val = json.loads(val, object_hook=from_json)
     ans = {}
-    for name, fm in iteritems(val):
+    for name, fm in val.items():
         decode_is_multiple(fm)
         ans[name] = fm
     return ans
@@ -965,7 +964,7 @@ def read_metadata(root, ver=None, return_extra_data=False):
     prefixes, refines = read_prefixes(root), read_refines(root)
     identifiers = read_identifiers(root, prefixes, refines)
     ids = {}
-    for key, vals in iteritems(identifiers):
+    for key, vals in identifiers.items():
         if key == 'calibre':
             ans.application_id = vals[0]
         elif key == 'uuid':
@@ -1003,7 +1002,7 @@ def read_metadata(root, ver=None, return_extra_data=False):
         ans.series, ans.series_index = s, si
     ans.author_link_map = read_author_link_map(root, prefixes, refines) or ans.author_link_map
     ans.user_categories = read_user_categories(root, prefixes, refines) or ans.user_categories
-    for name, fm in iteritems((read_user_metadata(root, prefixes, refines) or {})):
+    for name, fm in (read_user_metadata(root, prefixes, refines) or {}).items():
         ans.set_user_metadata(name, fm)
     if return_extra_data:
         ans = ans, ver, read_raster_cover(root, prefixes, refines), first_spine_item(root, prefixes, refines)

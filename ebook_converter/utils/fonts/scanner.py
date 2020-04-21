@@ -6,7 +6,6 @@ from ebook_converter import walk, prints, as_unicode
 from ebook_converter.constants import (config_dir, iswindows, isosx, plugins, DEBUG,
         isworker, filesystem_encoding)
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
-from ebook_converter.polyglot.builtins import itervalues
 
 
 __license__ = 'GPL v3'
@@ -149,14 +148,14 @@ def path_significance(path, folders):
 
 def build_families(cached_fonts, folders, family_attr='font-family'):
     families = defaultdict(list)
-    for font in itervalues(cached_fonts):
+    for font in cached_fonts.values():
         if not font:
             continue
         lf = (font.get(family_attr) or '').lower()
         if lf:
             families[lf].append(font)
 
-    for fonts in itervalues(families):
+    for fonts in families.values():
         # Look for duplicate font files and choose the copy that is from a
         # more significant font directory (prefer user directories over
         # system directories).
@@ -181,7 +180,7 @@ def build_families(cached_fonts, folders, family_attr='font-family'):
 
     font_family_map = dict.copy(families)
     font_families = tuple(sorted((font[0]['font-family'] for font in
-                                  itervalues(font_family_map))))
+                                  font_family_map.values())))
     return font_family_map, font_families
 # }}}
 

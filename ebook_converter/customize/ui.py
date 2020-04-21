@@ -18,7 +18,6 @@ from ebook_converter.utils.config import (make_config_dir, Config, ConfigProxy,
                                  plugin_dir, OptionParser)
 # from ebook_converter.ebooks.metadata.sources.base import Source
 from ebook_converter.constants import DEBUG, numeric_version
-from ebook_converter.polyglot.builtins import iteritems, itervalues
 
 
 __license__ = 'GPL v3'
@@ -347,7 +346,7 @@ def reread_metadata_plugins():
         return (1 if plugin.plugin_path is None else 0), plugin.name
 
     for group in (_metadata_readers, _metadata_writers):
-        for plugins in itervalues(group):
+        for plugins in group.values():
             if len(plugins) > 1:
                 plugins.sort(key=key)
 
@@ -640,7 +639,7 @@ def patch_metadata_plugins(possibly_updated_plugins):
                     # Metadata source plugins dont use initialize() but that
                     # might change in the future, so be safe.
                     patches[i].initialize()
-    for i, pup in iteritems(patches):
+    for i, pup in patches.items():
         _initialized_plugins[i] = pup
 # }}}
 

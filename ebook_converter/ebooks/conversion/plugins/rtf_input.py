@@ -2,7 +2,7 @@ import os, glob, re, textwrap
 import pkg_resources
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
-from ebook_converter.polyglot.builtins import iteritems, as_bytes
+from ebook_converter.polyglot.builtins import as_bytes
 
 __license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
@@ -147,7 +147,7 @@ class RTFInput(InputFormatPlugin):
 
     def convert_images(self, imap):
         self.default_img = None
-        for count, val in iteritems(imap):
+        for count, val in imap.items():
             try:
                 imap[count] = self.convert_image(val)
             except:
@@ -212,7 +212,7 @@ class RTFInput(InputFormatPlugin):
         css += '\n'+'\n'.join(font_size_classes)
         css += '\n' +'\n'.join(color_classes)
 
-        for cls, val in iteritems(border_styles):
+        for cls, val in border_styles.items():
             css += '\n\n.%s {\n%s\n}'%(cls, val)
 
         with open(u'styles.css', 'ab') as f:

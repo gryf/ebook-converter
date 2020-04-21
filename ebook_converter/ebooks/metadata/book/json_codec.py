@@ -10,7 +10,7 @@ from ebook_converter.ebooks.metadata.book import SERIALIZABLE_FIELDS
 from ebook_converter.constants import filesystem_encoding, preferred_encoding
 from ebook_converter.library.field_metadata import FieldMetadata
 from ebook_converter import isbytestring
-from ebook_converter.polyglot.builtins import iteritems, itervalues, as_bytes
+from ebook_converter.polyglot.builtins import as_bytes
 from ebook_converter.polyglot.binary import as_base64_unicode, from_base64_bytes
 
 
@@ -151,7 +151,7 @@ class JsonCodec(object):
     def encode_metadata_attr(self, book, key):
         if key == 'user_metadata':
             meta = book.get_all_user_metadata(make_copy=True)
-            for fm in itervalues(meta):
+            for fm in meta.values():
                 if fm['datatype'] == 'datetime':
                     fm['#value#'] = datetime_to_string(fm['#value#'])
                 encode_is_multiple(fm)
@@ -186,7 +186,7 @@ class JsonCodec(object):
     def raw_to_book(self, json_book, book_class, prefix):
         try:
             book = book_class(prefix, json_book.get('lpath', None))
-            for key,val in iteritems(json_book):
+            for key,val in json_book.items():
                 meta = self.decode_metadata(key, val)
                 if key == 'user_metadata':
                     book.set_all_user_metadata(meta)
@@ -203,7 +203,7 @@ class JsonCodec(object):
         if key == 'classifiers':
             key = 'identifiers'
         if key == 'user_metadata':
-            for fm in itervalues(value):
+            for fm in value.values():
                 if fm['datatype'] == 'datetime':
                     fm['#value#'] = string_to_datetime(fm['#value#'])
                 decode_is_multiple(fm)

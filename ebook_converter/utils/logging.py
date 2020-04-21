@@ -6,7 +6,6 @@ from functools import partial
 from threading import Lock
 
 from ebook_converter import isbytestring, force_unicode, as_unicode, prints
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL 3'
@@ -88,7 +87,7 @@ class HTMLStream(Stream):
 
 class UnicodeHTMLStream(HTMLStream):
 
-    color = {k: v.decode('ascii') for k, v in iteritems(HTMLStream.color)}
+    color = {k: v.decode('ascii') for k, v in HTMLStream.color.items()}
     normal = HTMLStream.normal.decode('ascii')
 
     def __init__(self):

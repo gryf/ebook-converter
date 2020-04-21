@@ -15,7 +15,6 @@ from ebook_converter.ebooks import unit_convert
 from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS, CSS_MIME, OEB_STYLES, xpath, urlnormalize
 from ebook_converter.ebooks.oeb.normalize_css import DEFAULTS, normalizers
 from ebook_converter.css_selectors import Select, SelectorError, INAPPROPRIATE_PSEUDO_CLASSES
-from ebook_converter.polyglot.builtins import iteritems
 from ebook_converter.tinycss.media3 import CSSMedia3Parser
 
 
@@ -785,7 +784,7 @@ class Style(object):
             self._get('padding-right'), base=self.parent_width)
 
     def __str__(self):
-        items = sorted(iteritems(self._style))
+        items = sorted(self._style.items())
         return '; '.join("%s: %s" % (key, val) for key, val in items)
 
     def cssdict(self):
@@ -794,12 +793,12 @@ class Style(object):
     def pseudo_classes(self, filter_css):
         if filter_css:
             css = copy.deepcopy(self._pseudo_classes)
-            for psel, cssdict in iteritems(css):
+            for psel, cssdict in css.items():
                 for k in filter_css:
                     cssdict.pop(k, None)
         else:
             css = self._pseudo_classes
-        return {k:v for k, v in iteritems(css) if v}
+        return {k:v for k, v in css.items() if v}
 
     @property
     def is_hidden(self):

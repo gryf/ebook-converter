@@ -11,7 +11,7 @@ from ebook_converter import as_unicode
 from ebook_converter.constants import ispy3
 from ebook_converter.customize import (Plugin, numeric_version, platform,
         InvalidPlugin, PluginNotFound)
-from ebook_converter.polyglot.builtins import itervalues, reload
+from ebook_converter.polyglot.builtins import reload
 
 
 __license__ = 'GPL v3'
@@ -199,7 +199,7 @@ class PluginLoader(object):
             else:
                 m = importlib.import_module(plugin_module)
             plugin_classes = []
-            for obj in itervalues(m.__dict__):
+            for obj in m.__dict__.values():
                 if isinstance(obj, type) and issubclass(obj, Plugin) and \
                         obj.name != 'Trivial Plugin':
                     plugin_classes.append(obj)

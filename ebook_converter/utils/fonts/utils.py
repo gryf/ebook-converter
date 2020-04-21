@@ -2,7 +2,7 @@ import struct
 from io import BytesIO
 from collections import defaultdict
 
-from ebook_converter.polyglot.builtins import iteritems, itervalues, as_bytes
+from ebook_converter.polyglot.builtins import as_bytes
 
 
 __license__ = 'GPL v3'
@@ -162,7 +162,7 @@ def decode_name_record(recs):
         return mac_names[0]
 
     # Use unicode names
-    for val in itervalues(unicode_names):
+    for val in unicode_names.values():
         return val
 
     return None
@@ -223,9 +223,10 @@ def get_all_font_names(raw, raw_is_table=False):
     records = _get_font_names(raw, raw_is_table)
     ans = {}
 
-    for name, num in iteritems({'family_name':1, 'subfamily_name':2, 'full_name':4,
-            'preferred_family_name':16, 'preferred_subfamily_name':17,
-            'wws_family_name':21, 'wws_subfamily_name':22}):
+    for name, num in {'family_name': 1, 'subfamily_name': 2, 'full_name': 4,
+                      'preferred_family_name': 16,
+                      'preferred_subfamily_name': 17, 'wws_family_name': 21,
+                      'wws_subfamily_name': 22}.items():
         try:
             ans[name] = decode_name_record(records[num])
         except (IndexError, KeyError, ValueError):

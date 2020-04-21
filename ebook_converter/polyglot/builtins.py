@@ -47,14 +47,6 @@ def error_message(exc):
     return str(exc)
 
 
-def iteritems(d):
-    return iter(d.items())
-
-
-def itervalues(d):
-    return iter(d.values())
-
-
 def environ_item(x):
     if isinstance(x, bytes):
         x = x.decode('utf-8')

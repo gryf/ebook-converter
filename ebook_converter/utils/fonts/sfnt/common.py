@@ -2,7 +2,6 @@ from struct import unpack_from, calcsize
 from collections import OrderedDict, namedtuple
 
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -78,7 +77,7 @@ class ListTable(OrderedDict):
     def dump(self, prefix=''):
         print(prefix, self.__class__.__name__, sep='')
         prefix += '  '
-        for tag, child in iteritems(self):
+        for tag, child in self.items():
             print(prefix, tag, sep='')
             child.dump(prefix=prefix+'  ')
 

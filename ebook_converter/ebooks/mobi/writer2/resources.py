@@ -8,7 +8,6 @@ from ebook_converter.ebooks import generate_masthead
 from ebook_converter.ebooks.oeb.base import OEB_RASTER_IMAGES
 from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import iteritems
 
 
 __license__ = 'GPL v3'
@@ -155,7 +154,7 @@ class Resources(object):
 
     def serialize(self, records, used_images):
         used_image_indices = self.used_image_indices | {
-                v-1 for k, v in iteritems(self.item_map) if k in used_images}
+                v-1 for k, v in self.item_map.items() if k in used_images}
         for i in self.image_indices-used_image_indices:
             self.records[i] = PLACEHOLDER_GIF
         records.extend(self.records)

@@ -11,7 +11,7 @@ from ebook_converter.ebooks.pdf.render.common import PAPER_SIZES
 from ebook_converter.utils.date import utcnow
 from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
 from ebook_converter.utils.zipfile import ZipFile
-from ebook_converter.polyglot.builtins import iteritems, native_string_type
+from ebook_converter.polyglot.builtins import native_string_type
 
 
 __license__ = 'GPL v3'
@@ -52,7 +52,7 @@ def create_skeleton(opts, namespaces=None):
 
     def w(x):
         return '{%s}%s' % (namespaces['w'], x)
-    dn = {k:v for k, v in iteritems(namespaces) if k in {'w', 'r', 'm', 've', 'o', 'wp', 'w10', 'wne', 'a', 'pic'}}
+    dn = {k:v for k, v in namespaces.items() if k in {'w', 'r', 'm', 've', 'o', 'wp', 'w10', 'wne', 'a', 'pic'}}
     E = ElementMaker(namespace=dn['w'], nsmap=dn)
     doc = E.document()
     body = E.body()
@@ -70,7 +70,7 @@ def create_skeleton(opts, namespaces=None):
         E.docGrid(**{w('linePitch'):"360"}),
     ))
 
-    dn = {k:v for k, v in iteritems(namespaces) if k in tuple('wra') + ('wp',)}
+    dn = {k:v for k, v in namespaces.items() if k in tuple('wra') + ('wp',)}
     E = ElementMaker(namespace=dn['w'], nsmap=dn)
     styles = E.styles(
         E.docDefaults(
@@ -117,12 +117,11 @@ class DocumentRelationships(object):
     def __init__(self, namespace):
         self.rmap = {}
         self.namespace = namespace
-        for typ, target in iteritems({
-                namespace.names['STYLES']: 'styles.xml',
-                namespace.names['NUMBERING']: 'numbering.xml',
-                namespace.names['WEB_SETTINGS']: 'webSettings.xml',
-                namespace.names['FONTS']: 'fontTable.xml',
-        }):
+        for typ, target in {namespace.names['STYLES']: 'styles.xml',
+                            namespace.names['NUMBERING']: 'numbering.xml',
+                            namespace.names['WEB_SETTINGS']: 'webSettings.xml',
+                            namespace.names['FONTS']: 'fontTable.xml',
+                           }.items():
             self.add_relationship(target, typ)
 
     def get_relationship_id(self, target, rtype, target_mode=None):
@@ -142,7 +141,7 @@ class DocumentRelationships(object):
         namespaces = self.namespace.namespaces
         E = ElementMaker(namespace=namespaces['pr'], nsmap={None:namespaces['pr']})
         relationships = E.Relationships()
-        for (target, rtype, target_mode), rid in iteritems(self.rmap):
+        for (target, rtype, target_mode), rid in self.rmap.items():
             r = E.Relationship(Id=rid, Type=rtype, Target=target)
             if target_mode is not None:
                 r.set('TargetMode', target_mode)
@@ -169,7 +168,7 @@ class DOCX(object):
     def contenttypes(self):
         E = ElementMaker(namespace=self.namespace.namespaces['ct'], nsmap={None:self.namespace.namespaces['ct']})
         types = E.Types()
-        for partname, mt in iteritems({
+        for partname, mt in {
             "/word/footnotes.xml": "application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml",
             "/word/document.xml": "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
             "/word/numbering.xml": "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml",
@@ -181,15 +180,13 @@ class DOCX(object):
             "/word/webSettings.xml": "application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",
             "/docProps/core.xml": "application/vnd.openxmlformats-package.core-properties+xml",
             "/docProps/app.xml": "application/vnd.openxmlformats-officedocument.extended-properties+xml",
-        }):
+        }.items():
             types.append(E.Override(PartName=partname, ContentType=mt))
         added = {'png', 'gif', 'jpeg', 'jpg', 'svg', 'xml'}
         for ext in added:
             types.append(E.Default(Extension=ext, ContentType=guess_type('a.'+ext)[0]))
-        for ext, mt in iteritems({
-            "rels": "application/vnd.openxmlformats-package.relationships+xml",
-            "odttf": "application/vnd.openxmlformats-officedocument.obfuscatedFont",
-        }):
+        for ext, mt in {"rels": "application/vnd.openxmlformats-package.relationships+xml",
+                        "odttf": "application/vnd.openxmlformats-officedocument.obfuscatedFont"}.items():
             added.add(ext)
             types.append(E.Default(Extension=ext, ContentType=mt))
         for fname in self.images:
@@ -267,9 +264,9 @@ class DOCX(object):
             zf.writestr('word/fontTable.xml', xml2str(self.font_table))
             zf.writestr('word/_rels/document.xml.rels', self.document_relationships.serialize())
             zf.writestr('word/_rels/fontTable.xml.rels', xml2str(self.embedded_fonts))
-            for fname, data_getter in iteritems(self.images):
+            for fname, data_getter in self.images.items():
                 zf.writestr(fname, data_getter())
-            for fname, data in iteritems(self.fonts):
+            for fname, data in self.fonts.items():
                 zf.writestr(fname, data)
 
 
