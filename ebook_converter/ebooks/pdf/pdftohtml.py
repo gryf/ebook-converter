@@ -7,7 +7,7 @@ import sys
 
 from ebook_converter import CurrentDir, xml_replace_entities, prints
 from ebook_converter.constants import (
-    filesystem_encoding, isbsd, islinux, isosx, ispy3, iswindows
+    filesystem_encoding, isbsd, islinux, isosx, iswindows
 )
 from ebook_converter.ebooks import ConversionError, DRMError
 from ebook_converter.ebooks.chardet import xml_to_unicode
@@ -20,8 +20,6 @@ PDFTOHTML = 'pdftohtml'
 
 
 def popen(cmd, **kw):
-    if not ispy3:
-        cmd = [x.encode(filesystem_encoding) if not isinstance(x, bytes) else x for x in cmd]
     if iswindows:
         kw['creationflags'] = 0x08
     return subprocess.Popen(cmd, **kw)

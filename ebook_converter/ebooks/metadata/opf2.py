@@ -16,7 +16,7 @@ import uuid
 from lxml import etree
 
 from ebook_converter.ebooks import escape_xpath_attr
-from ebook_converter.constants import __appname__, __version__, filesystem_encoding, ispy3
+from ebook_converter.constants import __appname__, __version__, filesystem_encoding
 from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.metadata.utils import parse_opf, pretty_print_opf as _pretty_print
 from ebook_converter.ebooks.metadata import string_to_authors, MetaInformation, check_isbn
@@ -212,13 +212,7 @@ class ManifestItem(Resource):  # {{{
     def __unicode__representation__(self):
         return u'<item id="%s" href="%s" media-type="%s" />'%(self.id, self.href(), self.media_type)
 
-    if ispy3:
-        __str__ = __unicode__representation__
-    else:
-        __unicode__ = __unicode__representation__
-
-        def __str__(self):
-            return str(self).encode('utf-8')
+    __str__ = __unicode__representation__
 
     def __repr__(self):
         return str(self)

@@ -7,7 +7,7 @@ being closed.
 import tempfile, os, atexit
 
 from ebook_converter.constants import (__version__, __appname__, filesystem_encoding,
-        iswindows, get_windows_temp_path, isosx, ispy3)
+        iswindows, get_windows_temp_path, isosx)
 
 
 def cleanup(path):
@@ -263,23 +263,17 @@ class SpooledTemporaryFile(tempfile.SpooledTemporaryFile):
             suffix = ''
         if dir is None:
             dir = base_dir()
-        if ispy3:
-            self._name = None
-            tempfile.SpooledTemporaryFile.__init__(self, max_size=max_size,
-                    suffix=suffix, prefix=prefix, dir=dir, mode=mode)
-        else:
-            tempfile.SpooledTemporaryFile.__init__(self, max_size=max_size,
-                    suffix=suffix, prefix=prefix, dir=dir, mode=mode,
-                    bufsize=bufsize)
+        self._name = None
+        tempfile.SpooledTemporaryFile.__init__(self, max_size=max_size,
+                suffix=suffix, prefix=prefix, dir=dir, mode=mode)
 
-    if ispy3:
-        @property
-        def name(self):
-            return self._name
+    @property
+    def name(self):
+        return self._name
 
-        @name.setter
-        def name(self, val):
-            self._name = val
+    @name.setter
+    def name(self, val):
+        self._name = val
 
     def truncate(self, *args):
         # The stdlib SpooledTemporaryFile implementation of truncate() doesn't

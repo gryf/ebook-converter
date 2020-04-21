@@ -1,7 +1,7 @@
 import subprocess, os, sys, time
 from functools import partial
 
-from ebook_converter.constants import isosx, isfrozen, filesystem_encoding, ispy3
+from ebook_converter.constants import isosx, isfrozen, filesystem_encoding
 from ebook_converter.utils.config import prefs
 from ebook_converter.ptempfile import PersistentTemporaryFile, base_dir
 from ebook_converter.utils.serialize import msgpack_dumps
@@ -88,26 +88,7 @@ class Worker(object):
 
     @property
     def env(self):
-        if ispy3:
-            env = os.environ.copy()
-        else:
-            # We use this inefficient method of copying the environment variables
-            # because of non ascii env vars on windows. See https://bugs.launchpad.net/bugs/811191
-            env = {}
-            for key in os.environ:
-                try:
-                    val = os.environ[key]
-                    if isinstance(val, str):
-                        # On windows subprocess cannot handle unicode env vars
-                        try:
-                            val = val.encode(filesystem_encoding)
-                        except ValueError:
-                            val = val.encode('utf-8')
-                    if isinstance(key, str):
-                        key = key.encode('ascii')
-                    env[key] = val
-                except:
-                    pass
+        env = os.environ.copy()
         env[native_string_type('CALIBRE_WORKER')] = environ_item('1')
         td = as_hex_unicode(msgpack_dumps(base_dir()))
         env[native_string_type('CALIBRE_WORKER_TEMP_DIR')] = environ_item(td)
@@ -158,22 +139,8 @@ class Worker(object):
         self._env = {}
         self.gui = gui
         self.job_name = job_name
-        if ispy3:
-            self._env = env.copy()
-        else:
-            # Windows cannot handle unicode env vars
-            for k, v in env.items():
-                try:
-                    if isinstance(k, str):
-                        k = k.encode('ascii')
-                    if isinstance(v, str):
-                        try:
-                            v = v.encode(filesystem_encoding)
-                        except:
-                            v = v.encode('utf-8')
-                    self._env[k] = v
-                except:
-                    pass
+        self._env = env.copy()
+
 
     def __call__(self, redirect_output=True, cwd=None, priority=None):
         '''

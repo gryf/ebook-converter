@@ -8,7 +8,6 @@ from collections import OrderedDict
 from functools import partial
 
 from ebook_converter import as_unicode
-from ebook_converter.constants import ispy3
 from ebook_converter.customize import (Plugin, numeric_version, platform,
         InvalidPlugin, PluginNotFound)
 from ebook_converter.polyglot.builtins import reload
@@ -108,8 +107,8 @@ def load_translations(namespace, zfp):
         from io import BytesIO
         trans = _translations_cache[zfp] = GNUTranslations(BytesIO(mo))
 
-    namespace['_'] = getattr(trans, 'gettext' if ispy3 else 'ugettext')
-    namespace['ngettext'] = getattr(trans, 'ngettext' if ispy3 else 'ungettext')
+    namespace['_'] = getattr(trans, 'gettext')
+    namespace['ngettext'] = getattr(trans, 'ngettext')
 
 
 class PluginLoader(object):

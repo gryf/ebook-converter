@@ -6,7 +6,6 @@ try:
 except ValueError:
     iswindows = False
 
-from ebook_converter.constants import ispy3
 from ebook_converter.polyglot.builtins import native_string_type
 
 
@@ -152,12 +151,8 @@ class Detect(object):
             while text:
                 t, text = text[:chunk], text[chunk:]
                 wt = c_wchar_p(t)
-                if ispy3:
-                    text_len = len(t.encode('utf-16'))
-                else:
-                    # Use the fact that len(t) == wcslen(wt) in python 2.7 on
-                    # windows where the python unicode type uses UTF-16
-                    text_len = len(t)
+                text_len = len(t.encode('utf-16'))
+
                 if not self.write_console(self.file_handle, wt, text_len, byref(written), None):
                     # Older versions of windows can fail to write large strings
                     # to console with WriteConsoleW (seen it happen on Win XP)

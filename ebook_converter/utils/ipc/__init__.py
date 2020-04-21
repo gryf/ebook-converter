@@ -8,7 +8,6 @@ from ebook_converter import force_unicode
 from ebook_converter.constants import filesystem_encoding
 from ebook_converter.constants import get_windows_username
 from ebook_converter.constants import islinux
-from ebook_converter.constants import ispy3
 from ebook_converter.constants import iswindows
 from ebook_converter.utils.filenames import ascii_filename
 
@@ -51,8 +50,6 @@ def socket_address(which):
             from tempfile import gettempdir
             tmp = force_unicode(gettempdir(), filesystem_encoding)
             ans = os.path.join(tmp, sock_name)
-    if not ispy3 and not isinstance(ans, bytes):
-        ans = ans.encode(filesystem_encoding)
     return ans
 
 

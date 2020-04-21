@@ -5,7 +5,6 @@ from struct import unpack, error
 import os
 
 from ebook_converter.utils.speedups import ReadOnlyFileBuffer
-from ebook_converter.constants import ispy3
 
 
 HSIZE = 120
@@ -122,12 +121,8 @@ def jpeg_dimensions(stream):
             raise ValueError('Truncated JPEG data')
         return ans
 
-    if ispy3:
-        def read_byte():
-            return read(1)[0]
-    else:
-        def read_byte():
-            return ord(read(1)[0])
+    def read_byte():
+        return read(1)[0]
 
     x = None
     while True:

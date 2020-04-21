@@ -9,7 +9,7 @@ import urllib.parse
 
 from lxml import etree, html
 from ebook_converter import force_unicode
-from ebook_converter.constants import filesystem_encoding, __version__, ispy3
+from ebook_converter.constants import filesystem_encoding, __version__
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor
@@ -753,15 +753,8 @@ class Metadata(object):
             return 'Item(term=%r, value=%r, attrib=%r)' \
                 % (barename(self.term), self.value, self.attrib)
 
-        if ispy3:
-            def __str__(self):
-                return as_unicode(self.value)
-        else:
-            def __str__(self):
-                return str(self.value).encode('ascii', 'xmlcharrefreplace')
-
-            def __unicode__(self):
-                return as_unicode(self.value)
+        def __str__(self):
+            return as_unicode(self.value)
 
         def to_opf1(self, dcmeta=None, xmeta=None, nsrmap={}):
             attrib = {}
@@ -1096,15 +1089,8 @@ class Manifest(object):
         def bytes_representation(self):
             return serialize(self.data, self.media_type, pretty_print=self.oeb.pretty_print)
 
-        if ispy3:
-            def __str__(self):
-                return self.unicode_representation
-        else:
-            def __unicode__(self):
-                return self.unicode_representation
-
-            def __str__(self):
-                return self.bytes_representation
+        def __str__(self):
+            return self.unicode_representation
 
         def __eq__(self, other):
             return self is other
@@ -1615,15 +1601,8 @@ class TOC(object):
             ans.extend(child.get_lines(lvl+1))
         return ans
 
-    if ispy3:
-        def __str__(self):
-            return '\n'.join(self.get_lines())
-    else:
-        def __unicode__(self):
-            return '\n'.join(self.get_lines())
-
-        def __str__(self):
-            return b'\n'.join([x.encode('utf-8') for x in self.get_lines()])
+    def __str__(self):
+        return '\n'.join(self.get_lines())
 
     def to_opf1(self, tour):
         for node in self.nodes:

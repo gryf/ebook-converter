@@ -1,6 +1,3 @@
-from ebook_converter.constants import ispy3
-
-
 MSGPACK_MIME = 'application/x-msgpack'
 CANARY = 'jPoAv3zOyHvQ5JFNYg4hJ9'
 
@@ -111,22 +108,10 @@ def json_loads(data):
     return json.loads(data, object_hook=json_decoder)
 
 
-if ispy3:
+def pickle_dumps(data):
+    import pickle
+    return pickle.dumps(data, -1)
 
-    def pickle_dumps(data):
-        import pickle
-        return pickle.dumps(data, -1)
-
-    def pickle_loads(dump):
-        import pickle
-        return pickle.loads(dump, encoding='utf-8')
-
-else:
-
-    def pickle_dumps(data):
-        import cPickle as pickle
-        return pickle.dumps(data, -1)
-
-    def pickle_loads(dump):
-        import cPickle as pickle
-        return pickle.loads(dump)
+def pickle_loads(dump):
+    import pickle
+    return pickle.loads(dump, encoding='utf-8')

@@ -12,7 +12,7 @@ from threading import Thread
 #from PyQt5.QtGui import QColor, QImage, QImageReader, QImageWriter, QPixmap, QTransform
 
 from ebook_converter import fit_image, force_unicode
-from ebook_converter.constants import iswindows, plugins, ispy3
+from ebook_converter.constants import iswindows, plugins
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.utils.filenames import atomic_rename
@@ -545,13 +545,7 @@ def run_optimizer(file_path, cmd, as_filter=False, input_data=None):
             cmd[cmd.index(q)] = r
         if not as_filter:
             repl(True, iname), repl(False, oname)
-        if iswindows and not ispy3:
-            # subprocess in python 2 cannot handle unicode strings that are not
-            # encodeable in mbcs, so we fail here, where it is more explicit,
-            # instead.
-            cmd = [x.encode('mbcs') if isinstance(x, str) else x for x in cmd]
-            if isinstance(cwd, str):
-                cwd = cwd.encode('mbcs')
+
         stdin = subprocess.PIPE if as_filter else None
         stderr = subprocess.PIPE if as_filter else subprocess.STDOUT
         creationflags = 0x08 if iswindows else 0

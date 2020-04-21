@@ -31,7 +31,6 @@ islinux   = not(iswindows or isosx or isbsd or ishaiku)
 isfrozen  = hasattr(sys, 'frozen')
 isunix = isosx or islinux or ishaiku
 isportable = hasenv('CALIBRE_PORTABLE_BUILD')
-ispy3 = sys.version_info.major > 2
 isxp = isoldvista = False
 if iswindows:
     wver = sys.getwindowsversion()
@@ -153,10 +152,6 @@ def cache_dir():
     return ans
 
 
-# plugins_loc = sys.extensions_location
-# if ispy3:
-    # plugins_loc = os.path.join(plugins_loc, '3')
-
 
 # plugins {{{
 
@@ -165,45 +160,7 @@ class Plugins(collections.Mapping):
 
     def __init__(self):
         self._plugins = {}
-        plugins = []
-        # plugins = [
-                # 'pictureflow',
-                # 'lzx',
-                # 'msdes',
-                # 'podofo',
-                # 'cPalmdoc',
-                # 'progress_indicator',
-                # 'chmlib',
-                # 'icu',
-                # 'speedup',
-                # 'html_as_json',
-                # 'unicode_names',
-                # 'html_syntax_highlighter',
-                # 'hyphen',
-                # 'freetype',
-                # 'imageops',
-                # 'hunspell',
-                # '_patiencediff_c',
-                # 'bzzdec',
-                # 'matcher',
-                # 'tokenizer',
-                # 'certgen',
-                # 'lzma_binding',
-            # ]
-        # if not ispy3:
-            # plugins.extend([
-                # 'monotonic',
-                # 'zlib2',
-            # ])
-        if iswindows:
-            plugins.extend(['winutil', 'wpd', 'winfonts'])
-        if isosx:
-            plugins.append('usbobserver')
-            plugins.append('cocoa')
-        if isfreebsd or ishaiku or islinux or isosx:
-            plugins.append('libusb')
-            plugins.append('libmtp')
-        self.plugins = frozenset(plugins)
+        self.plugins = frozenset([])
 
     def load_plugin(self, name):
         if name in self._plugins:
