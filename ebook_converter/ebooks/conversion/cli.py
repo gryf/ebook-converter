@@ -9,7 +9,6 @@ from ebook_converter.utils.config import OptionParser
 from ebook_converter.utils.logging import Log
 from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter import patheq
-from ebook_converter.ebooks.conversion import ConversionUserFeedBack
 from ebook_converter.utils.localization import localize_user_manual_link
 
 
@@ -394,16 +393,7 @@ def main(args=sys.argv):
                                         if n.dest]
     plumber.merge_ui_recommendations(recommendations)
 
-    try:
-        plumber.run()
-    except ConversionUserFeedBack as e:
-        ll = {'info': log.info, 'warn': log.warn,
-                'error':log.error}.get(e.level, log.info)
-        ll(e.title)
-        if e.det_msg:
-            log.debug(e.detmsg)
-        ll(e.msg)
-        raise SystemExit(1)
+    plumber.run()
 
     log(_('Output saved to'), ' ', plumber.output)
 
