@@ -11,11 +11,6 @@ from ebook_converter.ebooks.pdf.render.common import PAPER_SIZES
 from ebook_converter.utils.date import utcnow
 from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
 from ebook_converter.utils.zipfile import ZipFile
-from ebook_converter.polyglot.builtins import native_string_type
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def xml2str(root, pretty_print=False, with_tail=False):
@@ -237,7 +232,7 @@ class DOCX(object):
         namespaces = self.namespace.namespaces
         E = ElementMaker(namespace=namespaces['cp'], nsmap={x:namespaces[x] for x in 'cp dc dcterms xsi'.split()})
         cp = E.coreProperties(E.revision("1"), E.lastModifiedBy('calibre'))
-        ts = utcnow().isoformat(native_string_type('T')).rpartition('.')[0] + 'Z'
+        ts = utcnow().isoformat('T').rpartition('.')[0] + 'Z'
         for x in 'created modified'.split():
             x = cp.makeelement('{%s}%s' % (namespaces['dcterms'], x), **{'{%s}type' % namespaces['xsi']:'dcterms:W3CDTF'})
             x.text = ts

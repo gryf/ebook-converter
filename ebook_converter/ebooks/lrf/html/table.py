@@ -4,11 +4,6 @@ from ebook_converter.ebooks.lrf.fonts import get_font
 from ebook_converter.ebooks.lrf.pylrs.pylrs import TextBlock, Text, CR, Span, \
                                              CharButton, Plot, Paragraph, \
                                              LrsTextTag
-from ebook_converter.polyglot.builtins import native_string_type
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def ceil(num):
@@ -17,8 +12,8 @@ def ceil(num):
 
 def print_xml(elem):
     from ebook_converter.ebooks.lrf.pylrs.pylrs import ElementWriter
-    elem = elem.toElement(native_string_type('utf8'))
-    ew = ElementWriter(elem, sourceEncoding=native_string_type('utf8'))
+    elem = elem.toElement('utf8')
+    ew = ElementWriter(elem, sourceEncoding='utf8')
     ew.write(sys.stdout)
     print()
 

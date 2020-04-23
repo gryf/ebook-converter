@@ -14,12 +14,6 @@ from ebook_converter.utils.config_base import (
     tweaks, from_json, to_json
 )
 from ebook_converter.utils.lock import ExclusiveFile
-from ebook_converter.polyglot.builtins import native_string_type
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
 
 
 # optparse uses gettext.gettext instead of _ from builtins, so we
@@ -164,11 +158,11 @@ class OptionParser(optparse.OptionParser):
 
     def options_iter(self):
         for opt in self.option_list:
-            if native_string_type(opt).strip():
+            if str(opt).strip():
                 yield opt
         for gr in self.option_groups:
             for opt in gr.option_list:
-                if native_string_type(opt).strip():
+                if str(opt).strip():
                     yield opt
 
     def option_by_dest(self, dest):
@@ -193,7 +187,6 @@ class OptionParser(optparse.OptionParser):
     def add_option_group(self, *args, **kwargs):
         if isinstance(args[0], (str, bytes)):
             args = list(args)
-            args[0] = native_string_type(args[0])
         return optparse.OptionParser.add_option_group(self, *args, **kwargs)
 
 

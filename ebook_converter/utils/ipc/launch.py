@@ -5,18 +5,13 @@ from ebook_converter.constants import isosx, isfrozen, filesystem_encoding
 from ebook_converter.utils.config import prefs
 from ebook_converter.ptempfile import PersistentTemporaryFile, base_dir
 from ebook_converter.utils.serialize import msgpack_dumps
-from ebook_converter.polyglot.builtins import environ_item, native_string_type
+from ebook_converter.polyglot.builtins import environ_item
 from ebook_converter.polyglot.binary import as_hex_unicode
 try:
     import win32process
     iswindows = True
 except ImportError:
     iswindows = False
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 
 if iswindows:
@@ -89,9 +84,9 @@ class Worker(object):
     @property
     def env(self):
         env = os.environ.copy()
-        env[native_string_type('CALIBRE_WORKER')] = environ_item('1')
+        env['CALIBRE_WORKER'] = environ_item('1')
         td = as_hex_unicode(msgpack_dumps(base_dir()))
-        env[native_string_type('CALIBRE_WORKER_TEMP_DIR')] = environ_item(td)
+        env['CALIBRE_WORKER_TEMP_DIR'] = environ_item(td)
         env.update(self._env)
         return env
 
@@ -154,7 +149,7 @@ class Worker(object):
         except EnvironmentError:
             # cwd no longer exists
             origwd = cwd or os.path.expanduser('~')
-        env[native_string_type('ORIGWD')] = environ_item(as_hex_unicode(msgpack_dumps(origwd)))
+        env['ORIGWD'] = environ_item(as_hex_unicode(msgpack_dumps(origwd)))
         _cwd = cwd
         if priority is None:
             priority = prefs['worker_process_priority']

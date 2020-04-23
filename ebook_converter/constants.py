@@ -5,7 +5,7 @@ import locale
 import os
 import sys
 
-from ebook_converter.polyglot.builtins import environ_item, hasenv, as_unicode, native_string_type
+from ebook_converter.polyglot.builtins import environ_item, hasenv, as_unicode
 
 __appname__   = 'calibre'
 numeric_version = (4, 12, 0)
@@ -178,7 +178,7 @@ class Plugins(collections.Mapping):
             try:
                 plugin_err = str(err)
             except Exception:
-                plugin_err = as_unicode(native_string_type(err), encoding=preferred_encoding, errors='replace')
+                plugin_err = as_unicode(err, encoding=preferred_encoding, errors='replace')
         self._plugins[name] = p, plugin_err
         # sys.path.remove(plugins_loc)
 

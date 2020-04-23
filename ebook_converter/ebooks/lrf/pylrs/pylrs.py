@@ -51,7 +51,6 @@ DEFAULT_GENREADING      = "fs"          # default is yes to both lrf and lrs
 
 from ebook_converter import __appname__, __version__
 from ebook_converter import entity_to_unicode
-from ebook_converter.polyglot.builtins import native_string_type
 
 
 class LrsError(Exception):
@@ -617,7 +616,7 @@ class Book(Delegator):
 
         _formatXml(root)
         tree = ElementTree(element=root)
-        tree.write(f, encoding=native_string_type(outputEncodingName), xml_declaration=True)
+        tree.write(f, encoding=outputEncodingName, xml_declaration=True)
 
 
 class BookInformation(Delegator):
@@ -669,7 +668,7 @@ class Info(Delegator):
         # NB: generates an encoding attribute, which lrs2lrf does not
         tree = ElementTree(element=info)
         f = io.BytesIO()
-        tree.write(f, encoding=native_string_type('utf-8'), xml_declaration=True)
+        tree.write(f, encoding='utf-8', xml_declaration=True)
         xmlInfo = f.getvalue().decode('utf-8')
         xmlInfo = re.sub(r"<CThumbnail.*?>\n", "", xmlInfo)
         xmlInfo = xmlInfo.replace("SumPage>", "Page>")

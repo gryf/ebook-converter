@@ -1,11 +1,6 @@
 import re
 
 from ebook_converter.ebooks.docx.index import process_index, polish_index_markup
-from ebook_converter.polyglot.builtins import native_string_type
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 class Field(object):
@@ -72,7 +67,7 @@ def parser(name, field_map, default_field_name=None):
         ans.pop(null, None)
         return ans
 
-    parse.__name__ = native_string_type('parse_' + name)
+    parse.__name__ = 'parse_' + name
 
     return parse
 

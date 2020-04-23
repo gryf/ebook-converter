@@ -9,7 +9,6 @@ from ebook_converter.constants import iswindows
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.ebooks.metadata import (
     MetaInformation, string_to_authors, check_isbn, check_doi)
-from ebook_converter.utils.ipc.simple_worker import fork_job, WorkerError
 
 
 __license__ = 'GPL v3'

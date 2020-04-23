@@ -2,10 +2,6 @@ import importlib
 import os
 
 
-native_string_type = str
-iterkeys = iter
-
-
 def hasenv(x):
     return os.getenv(x) is not None
 

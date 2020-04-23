@@ -6,13 +6,6 @@ try:
 except ValueError:
     iswindows = False
 
-from ebook_converter.polyglot.builtins import native_string_type
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 
 def fmt(code):
     return '\033[%dm' % code
@@ -128,7 +121,7 @@ class Detect(object):
                     # Stream is a console
                     self.set_console = windll.kernel32.SetConsoleTextAttribute
                     self.default_console_text_attributes = WCOLORS['white']
-                    kernel32 = WinDLL(native_string_type('kernel32'), use_last_error=True)
+                    kernel32 = WinDLL('kernel32', use_last_error=True)
                     self.write_console = kernel32.WriteConsoleW
                     self.write_console.argtypes = [wintypes.HANDLE, wintypes.c_wchar_p, wintypes.DWORD, POINTER(wintypes.DWORD), wintypes.LPVOID]
                     self.write_console.restype = wintypes.BOOL

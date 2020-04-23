@@ -1,8 +1,3 @@
-''' E-book management software'''
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 import math
 import os
 import pkg_resources
@@ -14,7 +9,7 @@ import urllib.parse
 import urllib.request
 import warnings
 
-from ebook_converter.polyglot.builtins import hasenv, native_string_type
+from ebook_converter.polyglot.builtins import hasenv
 from functools import partial
 
 if not hasenv('CALIBRE_SHOW_DEPRECATION_WARNINGS'):
@@ -191,10 +186,6 @@ def prints(*args, **kwargs):
                         raise
                     arg = repr(arg)
         if not isinstance(arg, bytes):
-            try:
-                arg = native_string_type(arg)
-            except ValueError:
-                arg = str(arg)
             if isinstance(arg, str):
                 try:
                     arg = arg.encode(enc)
@@ -612,10 +603,7 @@ def as_unicode(obj, enc=preferred_encoding):
         try:
             obj = str(obj)
         except Exception:
-            try:
-                obj = native_string_type(obj)
-            except Exception:
-                obj = repr(obj)
+            obj = repr(obj)
     return force_unicode(obj, enc=enc)
 
 
