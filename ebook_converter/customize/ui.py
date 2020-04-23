@@ -9,7 +9,6 @@ from ebook_converter.customize import (CatalogPlugin, FileTypePlugin, PluginNotF
                               StoreBase as Store, EditBookToolPlugin,
                               LibraryClosedPlugin)
 from ebook_converter.customize.conversion import InputFormatPlugin, OutputFormatPlugin
-from ebook_converter.customize.zipplugin import loader
 from ebook_converter.customize.profiles import InputProfile, OutputProfile
 from ebook_converter.customize.builtins import plugins as builtin_plugins
 # from ebook_converter.devices.interface import DevicePlugin

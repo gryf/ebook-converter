@@ -294,7 +294,7 @@ class PluginLoader(object):
 
 
 loader = PluginLoader()
-sys.meta_path.insert(0, loader)
+#sys.meta_path.insert(0, loader)
 
 
 if __name__ == '__main__':

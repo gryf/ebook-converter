@@ -9,10 +9,9 @@ import urllib.parse
 import urllib.request
 import warnings
 
-from ebook_converter.polyglot.builtins import hasenv
 from functools import partial
 
-if not hasenv('CALIBRE_SHOW_DEPRECATION_WARNINGS'):
+if os.getenv('CALIBRE_SHOW_DEPRECATION_WARNINGS') is None:
     warnings.simplefilter('ignore', DeprecationWarning)
 try:
     os.getcwd()
@@ -155,7 +154,7 @@ def prints(*args, **kwargs):
     '''
     file = kwargs.get('file', sys.stdout)
     file = getattr(file, 'buffer', file)
-    enc = 'utf-8' if hasenv('CALIBRE_WORKER') else preferred_encoding
+    enc = 'utf-8' if os.getenv('CALIBRE_WORKER') else preferred_encoding
     sep  = kwargs.get('sep', ' ')
     if not isinstance(sep, bytes):
         sep = sep.encode(enc)
@@ -219,7 +218,7 @@ class CommandLineError(Exception):
 
 def setup_cli_handlers(logger, level):
     import logging
-    if hasenv('CALIBRE_WORKER') and logger.handlers:
+    if os.getenv('CALIBRE_WORKER') and logger.handlers:
         return
     logger.setLevel(level)
     if level == logging.WARNING:

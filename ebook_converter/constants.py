@@ -5,7 +5,7 @@ import locale
 import os
 import sys
 
-from ebook_converter.polyglot.builtins import environ_item, hasenv, as_unicode
+from ebook_converter.polyglot.builtins import environ_item, as_unicode
 
 __appname__   = 'calibre'
 numeric_version = (4, 12, 0)
@@ -30,14 +30,15 @@ ishaiku = 'haiku1' in _plat
 islinux   = not(iswindows or isosx or isbsd or ishaiku)
 isfrozen  = hasattr(sys, 'frozen')
 isunix = isosx or islinux or ishaiku
-isportable = hasenv('CALIBRE_PORTABLE_BUILD')
+isportable = os.getenv('CALIBRE_PORTABLE_BUILD') is not None
 isxp = isoldvista = False
 if iswindows:
     wver = sys.getwindowsversion()
     isxp = wver.major < 6
     isoldvista = wver.build < 6002
 is64bit = sys.maxsize > (1 << 32)
-isworker = hasenv('CALIBRE_WORKER') or hasenv('CALIBRE_SIMPLE_WORKER')
+isworker = any([os.getenv('CALIBRE_WORKER') or
+                os.getenv('CALIBRE_SIMPLE_WORKER')])
 if isworker:
     os.environ.pop(environ_item('CALIBRE_FORCE_ANSI'), None)
 FAKE_PROTOCOL, FAKE_HOST = 'clbr', 'internal.invalid'
@@ -92,7 +93,7 @@ else:
         filesystem_encoding = 'utf-8'
 
 
-DEBUG = hasenv('CALIBRE_DEBUG')
+DEBUG = os.getenv('CALIBRE_DEBUG') is not None
 
 
 def debug():

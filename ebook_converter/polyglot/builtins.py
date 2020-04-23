@@ -1,9 +1,4 @@
 import importlib
-import os
-
-
-def hasenv(x):
-    return os.getenv(x) is not None
 
 
 def as_bytes(x, encoding='utf-8'):
