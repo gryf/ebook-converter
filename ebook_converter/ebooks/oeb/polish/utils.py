@@ -1,11 +1,16 @@
-import re, os
-from bisect import bisect
+import bisect
+import os
+import re
 
 from ebook_converter import guess_type as _guess_type, replace_entities
 
 
 __license__ = 'GPL v3'
 __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
+
+
+def _upper(string):
+    return string.upper()
 
 
 def guess_type(x):
@@ -23,7 +28,8 @@ def setup_css_parser_serialization(tab_width=2):
 def actual_case_for_name(container, name):
     from ebook_converter.utils.filenames import samefile
     if not container.exists(name):
-        raise ValueError('Cannot get actual case for %s as it does not exist' % name)
+        raise ValueError('Cannot get actual case for %s as it does not '
+                         'exist' % name)
     parts = name.split('/')
     base = ''
     ans = []
@@ -55,9 +61,12 @@ def corrected_case_for_name(container, name):
             correctx = x
         else:
             try:
-                candidates = {q for q in os.listdir(os.path.dirname(container.name_to_abspath(base)))}
+                dirname = os.path.dirname(container.name_to_abspath(base))
+                candidates = {q for q in os.listdir(dirname)}
             except EnvironmentError:
-                return None  # one of the non-terminal components of name is a file instead of a directory
+                # one of the non-terminal components of name is a file instead
+                # of a directory
+                return None
             for q in candidates:
                 if q.lower() == x.lower():
                     correctx = q
@@ -75,7 +84,7 @@ class PositionFinder(object):
         self.new_lines = tuple(m.start() + 1 for m in re.finditer(pat, raw))
 
     def __call__(self, pos):
-        lnum = bisect(self.new_lines, pos)
+        lnum = bisect.bisect(self.new_lines, pos)
         try:
             offset = abs(pos - self.new_lines[lnum - 1])
         except IndexError:
@@ -94,7 +103,7 @@ class CommentFinder(object):
     def __call__(self, offset):
         if not self.starts:
             return False
-        q = bisect(self.starts, offset) - 1
+        q = bisect.bisect(self.starts, offset) - 1
         return q >= 0 and self.starts[q] <= offset <= self.ends[q]
 
 
@@ -182,13 +191,16 @@ def handle_entities(text, func):
     return func(replace_entities(text))
 
 
-def apply_func_to_match_groups(match, func=icu_upper, handle_entities=handle_entities):
-    '''Apply the specified function to individual groups in the match object (the result of re.search() or
-    the whole match if no groups were defined. Returns the replaced string.'''
+def apply_func_to_match_groups(match, func=_upper,
+                               handle_entities=handle_entities):
+    """
+    Apply the specified function to individual groups in the match object (the
+    result of re.search() or
+    the whole match if no groups were defined. Returns the replaced string.
+    """
     found_groups = False
     i = 0
     parts, pos = [], match.start()
-    f = lambda text:handle_entities(text, func)
     while True:
         i += 1
         try:
@@ -198,19 +210,22 @@ def apply_func_to_match_groups(match, func=icu_upper, handle_entities=handle_ent
         found_groups = True
         if start > -1:
             parts.append(match.string[pos:start])
-            parts.append(f(match.string[start:end]))
+            parts.append(handle_entities(match.string[start:end], func))
             pos = end
     if not found_groups:
-        return f(match.group())
+        return handle_entities(match.group(), func)
     parts.append(match.string[pos:match.end()])
     return ''.join(parts)
 
 
-def apply_func_to_html_text(match, func=icu_upper, handle_entities=handle_entities):
-    ''' Apply the specified function only to text between HTML tag definitions. '''
-    f = lambda text:handle_entities(text, func)
+def apply_func_to_html_text(match, func=_upper,
+                            handle_entities=handle_entities):
+    """
+    Apply the specified function only to text between HTML tag definitions.
+    """
     parts = re.split(r'(<[^>]+>)', match.group())
-    parts = (x if x.startswith('<') else f(x) for x in parts)
+    parts = (x if x.startswith('<') else handle_entities(x, func)
+             for x in parts)
     return ''.join(parts)
 
 

@@ -6,6 +6,7 @@ from collections import defaultdict
 from itertools import count
 from operator import attrgetter
 import urllib.parse
+import string
 
 from lxml import etree, html
 from ebook_converter import force_unicode
@@ -763,7 +764,7 @@ class Metadata(object):
                     key = barename(key)
                 attrib[key] = prefixname(value, nsrmap)
             if namespace(self.term) == DC11_NS:
-                name = DC(icu_title(barename(self.term)))
+                name = DC(string.capwords(barename(self.term)))
                 elem = element(dcmeta, name, attrib=attrib)
                 elem.text = self.value
             else:

@@ -1,26 +1,5 @@
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-import re
-import io
-import sys
 import json
 import pkg_resources
-
-_available_translations = None
-
-
-def sanitize_lang(lang):
-    if lang:
-        match = re.match('[a-z]{2,3}(_[A-Z]{2}){0,1}', lang)
-        if match:
-            lang = match.group()
-    if lang == 'zh':
-        lang = 'zh_CN'
-    if not lang:
-        lang = 'en'
-    return lang
 
 
 def get_lang():
@@ -34,121 +13,78 @@ def is_rtl():
 _lang_trans = None
 
 
-lcdata = {
-    'abday': ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'),
-    'abmon': ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'),
-    'd_fmt': '%m/%d/%Y',
-    'd_t_fmt': '%a %d %b %Y %r %Z',
-    'day': ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
-    'mon': ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'),
-    'noexpr': '^[nN].*',
-    'radixchar': '.',
-    't_fmt': '%r',
-    't_fmt_ampm': '%I:%M:%S %p',
-    'thousep': ',',
-    'yesexpr': '^[yY].*'
-}
-
-
-def load_po(path):
-    from ebook_converter.translations.msgfmt import make
-    buf = io.BytesIO()
-    try:
-        make(path, buf)
-    except Exception:
-        print(('Failed to compile translations file: %s, ignoring') % path)
-        buf = None
-    else:
-        buf = io.BytesIO(buf.getvalue())
-    return buf
+lcdata = {'abday': ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'),
+          'abmon': ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
+                    'Sep', 'Oct', 'Nov', 'Dec'),
+          'd_fmt': '%m/%d/%Y',
+          'd_t_fmt': '%a %d %b %Y %r %Z',
+          'day': ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+                  'Friday', 'Saturday'),
+          'mon': ('January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November',
+                  'December'),
+          'noexpr': '^[nN].*',
+          'radixchar': '.',
+          't_fmt': '%r',
+          't_fmt_ampm': '%I:%M:%S %p',
+          'thousep': ',',
+          'yesexpr': '^[yY].*'}
 
 
 _iso639 = None
-_extra_lang_codes = {
-        'pt_BR' : 'Brazilian Portuguese',
-        'en_GB' : 'English (UK)',
-        'zh_CN' : 'Simplified Chinese',
-        'zh_TW' : 'Traditional Chinese',
-        'en'    : 'English',
-        'en_US' : 'English (United States)',
-        'en_AR' : 'English (Argentina)',
-        'en_AU' : 'English (Australia)',
-        'en_JP' : 'English (Japan)',
-        'en_DE' : 'English (Germany)',
-        'en_BG' : 'English (Bulgaria)',
-        'en_EG' : 'English (Egypt)',
-        'en_NZ' : 'English (New Zealand)',
-        'en_CA' : 'English (Canada)',
-        'en_GR' : 'English (Greece)',
-        'en_IN' : 'English (India)',
-        'en_NP' : 'English (Nepal)',
-        'en_TH' : 'English (Thailand)',
-        'en_TR' : 'English (Turkey)',
-        'en_CY' : 'English (Cyprus)',
-        'en_CZ' : 'English (Czech Republic)',
-        'en_PH' : 'English (Philippines)',
-        'en_PK' : 'English (Pakistan)',
-        'en_PL' : 'English (Poland)',
-        'en_HR' : 'English (Croatia)',
-        'en_HU' : 'English (Hungary)',
-        'en_ID' : 'English (Indonesia)',
-        'en_IL' : 'English (Israel)',
-        'en_RU' : 'English (Russia)',
-        'en_SG' : 'English (Singapore)',
-        'en_YE' : 'English (Yemen)',
-        'en_IE' : 'English (Ireland)',
-        'en_CN' : 'English (China)',
-        'en_TW' : 'English (Taiwan)',
-        'en_ZA' : 'English (South Africa)',
-        'es_PY' : 'Spanish (Paraguay)',
-        'es_UY' : 'Spanish (Uruguay)',
-        'es_AR' : 'Spanish (Argentina)',
-        'es_CR' : 'Spanish (Costa Rica)',
-        'es_MX' : 'Spanish (Mexico)',
-        'es_CU' : 'Spanish (Cuba)',
-        'es_CL' : 'Spanish (Chile)',
-        'es_EC' : 'Spanish (Ecuador)',
-        'es_HN' : 'Spanish (Honduras)',
-        'es_VE' : 'Spanish (Venezuela)',
-        'es_BO' : 'Spanish (Bolivia)',
-        'es_NI' : 'Spanish (Nicaragua)',
-        'es_CO' : 'Spanish (Colombia)',
-        'de_AT' : 'German (AT)',
-        'fr_BE' : 'French (BE)',
-        'nl'    : 'Dutch (NL)',
-        'nl_BE' : 'Dutch (BE)',
-        'und'   : 'Unknown'
-        }
-
-if False:
-    # Extra strings needed for Qt
-
-    # NOTE: Ante Meridian (i.e. like 10:00 AM)
-    'AM'
-    # NOTE: Post Meridian (i.e. like 10:00 PM)
-    'PM'
-    # NOTE: Ante Meridian (i.e. like 10:00 am)
-    'am'
-    # NOTE: Post Meridian (i.e. like 10:00 pm)
-    'pm'
-    '&Copy'
-    'Select All'
-    'Copy Link'
-    '&Select All'
-    'Copy &Link Location'
-    '&Undo'
-    '&Redo'
-    'Cu&t'
-    '&Paste'
-    'Paste and Match Style'
-    'Directions'
-    'Left to Right'
-    'Right to Left'
-    'Fonts'
-    '&Step up'
-    'Step &down'
-    'Close without Saving'
-    'Close Tab'
+_extra_lang_codes = {'pt_BR': 'Brazilian Portuguese',
+                     'en_GB': 'English (UK)',
+                     'zh_CN': 'Simplified Chinese',
+                     'zh_TW': 'Traditional Chinese',
+                     'en': 'English',
+                     'en_US': 'English (United States)',
+                     'en_AR': 'English (Argentina)',
+                     'en_AU': 'English (Australia)',
+                     'en_JP': 'English (Japan)',
+                     'en_DE': 'English (Germany)',
+                     'en_BG': 'English (Bulgaria)',
+                     'en_EG': 'English (Egypt)',
+                     'en_NZ': 'English (New Zealand)',
+                     'en_CA': 'English (Canada)',
+                     'en_GR': 'English (Greece)',
+                     'en_IN': 'English (India)',
+                     'en_NP': 'English (Nepal)',
+                     'en_TH': 'English (Thailand)',
+                     'en_TR': 'English (Turkey)',
+                     'en_CY': 'English (Cyprus)',
+                     'en_CZ': 'English (Czech Republic)',
+                     'en_PH': 'English (Philippines)',
+                     'en_PK': 'English (Pakistan)',
+                     'en_PL': 'English (Poland)',
+                     'en_HR': 'English (Croatia)',
+                     'en_HU': 'English (Hungary)',
+                     'en_ID': 'English (Indonesia)',
+                     'en_IL': 'English (Israel)',
+                     'en_RU': 'English (Russia)',
+                     'en_SG': 'English (Singapore)',
+                     'en_YE': 'English (Yemen)',
+                     'en_IE': 'English (Ireland)',
+                     'en_CN': 'English (China)',
+                     'en_TW': 'English (Taiwan)',
+                     'en_ZA': 'English (South Africa)',
+                     'es_PY': 'Spanish (Paraguay)',
+                     'es_UY': 'Spanish (Uruguay)',
+                     'es_AR': 'Spanish (Argentina)',
+                     'es_CR': 'Spanish (Costa Rica)',
+                     'es_MX': 'Spanish (Mexico)',
+                     'es_CU': 'Spanish (Cuba)',
+                     'es_CL': 'Spanish (Chile)',
+                     'es_EC': 'Spanish (Ecuador)',
+                     'es_HN': 'Spanish (Honduras)',
+                     'es_VE': 'Spanish (Venezuela)',
+                     'es_BO': 'Spanish (Bolivia)',
+                     'es_NI': 'Spanish (Nicaragua)',
+                     'es_CO': 'Spanish (Colombia)',
+                     'de_AT': 'German (AT)',
+                     'fr_BE': 'French (BE)',
+                     'nl': 'Dutch (NL)',
+                     'nl_BE': 'Dutch (BE)',
+                     'und': 'Unknown'}
 
 _lcase_map = {}
 for k in _extra_lang_codes:
@@ -219,11 +155,9 @@ def get_iso_language(lang_trans, lang):
     return lang_trans(ans)
 
 
-
-
 def calibre_langcode_to_name(lc, localize=True):
     iso639 = _load_iso639()
-    translate = _ if localize else lambda x: x
+    translate = lambda x: x
     try:
         return translate(iso639['by_3'][lc])
     except:

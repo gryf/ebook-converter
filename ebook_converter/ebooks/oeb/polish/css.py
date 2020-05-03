@@ -93,10 +93,14 @@ def remove_unused_css(container, report=None, remove_unused_classes=False, merge
             if num:
                 container.dirty(name)
                 num_merged += num
-    import_map = {name:get_imported_sheets(name, container, sheets) for name in sheets}
+    import_map = {name: get_imported_sheets(name, container, sheets)
+                  for name in sheets}
     if remove_unused_classes:
-        class_map = {name:{icu_lower(x) for x in classes_in_rule_list(sheet.cssRules)} for name, sheet in sheets.items()}
-    style_rules = {name:tuple(sheet.cssRules.rulesOfType(CSSRule.STYLE_RULE)) for name, sheet in sheets.items()}
+        class_map = {name: {x.lower() for x in
+                            classes_in_rule_list(sheet.cssRules)}
+                     for name, sheet in sheets.items()}
+    style_rules = {name: tuple(sheet.cssRules.rulesOfType(CSSRule.STYLE_RULE))
+                   for name, sheet in sheets.items()}
 
     num_of_removed_rules = num_of_removed_classes = 0
 
@@ -115,7 +119,7 @@ def remove_unused_css(container, report=None, remove_unused_classes=False, merge
                         num_merged += num
                         container.dirty(name)
                 if remove_unused_classes:
-                    used_classes |= {icu_lower(x) for x in classes_in_rule_list(sheet.cssRules)}
+                    used_classes |= {x.lower() for x in classes_in_rule_list(sheet.cssRules)}
                 imports = get_imported_sheets(name, container, sheets, sheet=sheet)
                 for imported_sheet in imports:
                     style_rules[imported_sheet] = tuple(filter_used_rules(style_rules[imported_sheet], container.log, select))
@@ -147,7 +151,7 @@ def remove_unused_css(container, report=None, remove_unused_classes=False, merge
             for elem in root.xpath('//*[@class]'):
                 original_classes, classes = elem.get('class', '').split(), []
                 for x in original_classes:
-                    if icu_lower(x) in used_classes:
+                    if x.lower() in used_classes:
                         classes.append(x)
                 if len(classes) != len(original_classes):
                     if classes:

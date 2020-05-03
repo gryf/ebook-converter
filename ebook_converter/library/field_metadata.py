@@ -620,8 +620,8 @@ class FieldMetadata(object):
         if label in self._tb_cats:
             raise ValueError('Duplicate user field [%s]'%(label))
         st = [label]
-        if icu_lower(label) != label:
-            st.append(icu_lower(label))
+        if label.lower() != label:
+            st.append(label.lower())
         self._tb_cats[label] = {'table':None,          'column':None,
                                 'datatype':None,       'is_multiple':{},
                                 'kind':'user',         'name':name,

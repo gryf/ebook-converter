@@ -1220,10 +1220,10 @@ class BuiltinListUnion(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals, list1, list2, separator):
         res = [l.strip() for l in list1.split(separator) if l.strip()]
         l2 = [l.strip() for l in list2.split(separator) if l.strip()]
-        lcl1 = {icu_lower(l) for l in res}
+        lcl1 = {l.lower() for l in res}
 
         for i in l2:
-            if icu_lower(i) not in lcl1 and i not in res:
+            if i.lower() not in lcl1 and i not in res:
                 res.append(i)
         if separator == ',':
             return ', '.join(res)
@@ -1241,11 +1241,11 @@ class BuiltinListDifference(BuiltinFormatterFunction):
 
     def evaluate(self, formatter, kwargs, mi, locals, list1, list2, separator):
         l1 = [l.strip() for l in list1.split(separator) if l.strip()]
-        l2 = {icu_lower(l.strip()) for l in list2.split(separator) if l.strip()}
+        l2 = {l.strip().lower() for l in list2.split(separator) if l.strip()}
 
         res = []
         for i in l1:
-            if icu_lower(i) not in l2 and i not in res:
+            if i.lower() not in l2 and i not in res:
                 res.append(i)
         if separator == ',':
             return ', '.join(res)
@@ -1263,11 +1263,11 @@ class BuiltinListIntersection(BuiltinFormatterFunction):
 
     def evaluate(self, formatter, kwargs, mi, locals, list1, list2, separator):
         l1 = [l.strip() for l in list1.split(separator) if l.strip()]
-        l2 = {icu_lower(l.strip()) for l in list2.split(separator) if l.strip()}
+        l2 = {l.strip().lower() for l in list2.split(separator) if l.strip()}
 
         res = []
         for i in l1:
-            if icu_lower(i) in l2 and i not in res:
+            if i.lower() in l2 and i not in res:
                 res.append(i)
         if separator == ',':
             return ', '.join(res)
@@ -1302,8 +1302,8 @@ class BuiltinListEquals(BuiltinFormatterFunction):
             'The comparison is case insensitive.')
 
     def evaluate(self, formatter, kwargs, mi, locals, list1, sep1, list2, sep2, yes_val, no_val):
-        s1 = {icu_lower(l.strip()) for l in list1.split(sep1) if l.strip()}
-        s2 = {icu_lower(l.strip()) for l in list2.split(sep2) if l.strip()}
+        s1 = {l.strip().lower() for l in list1.split(sep1) if l.strip()}
+        s2 = {l.strip().lower() for l in list2.split(sep2) if l.strip()}
         if s1 == s2:
             return yes_val
         return no_val
@@ -1426,7 +1426,7 @@ class BuiltinLanguageStrings(BuiltinFormatterFunction):
         retval = []
         for c in [c.strip() for c in lang_codes.split(',') if c.strip()]:
             try:
-                n = calibre_langcode_to_name(c, localize != '0')
+                n = calibre_langcode_to_name(c)
                 if n:
                     retval.append(n)
             except:

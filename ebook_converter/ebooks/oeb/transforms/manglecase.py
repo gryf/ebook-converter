@@ -1,7 +1,10 @@
 """
 CSS case-mangling transform.
 """
+import string
+
 from lxml import etree
+
 from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS
 from ebook_converter.ebooks.oeb.base import CSS_MIME
 from ebook_converter.ebooks.oeb.base import namespace
@@ -46,16 +49,17 @@ class CaseMangler(object):
             relhref = item.relhref(href)
             etree.SubElement(html.find(XHTML('head')), XHTML('link'),
                              rel='stylesheet', href=relhref, type=CSS_MIME)
-            stylizer = Stylizer(html, item.href, self.oeb, self.opts, self.profile)
+            stylizer = Stylizer(html, item.href, self.oeb, self.opts,
+                                self.profile)
             self.mangle_elem(html.find(XHTML('body')), stylizer)
 
     def text_transform(self, transform, text):
         if transform == 'capitalize':
-            return icu_title(text)
+            return string.capwords(text)
         elif transform == 'uppercase':
-            return icu_upper(text)
+            return text.upper()
         elif transform == 'lowercase':
-            return icu_lower(text)
+            return text.lower()
         return text
 
     def split_text(self, text):

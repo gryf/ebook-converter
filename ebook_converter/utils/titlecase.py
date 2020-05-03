@@ -64,23 +64,23 @@ def titlecase(text):
                 line.append(word)
                 continue
             else:
-                word = icu_lower(word)
+                word = word.lower()
 
         if APOS_SECOND.match(word):
-            word = word.replace(word[0], icu_upper(word[0]), 1)
-            word = word[:2] + icu_upper(word[2]) + word[3:]
+            word = word.replace(word[0], word[0].upprt(), 1)
+            word = word[:2] + word[2].upper() + word[3:]
             line.append(word)
             continue
         if INLINE_PERIOD.search(word) or UC_ELSEWHERE.match(word):
             line.append(word)
             continue
         if SMALL_WORDS.match(word):
-            line.append(icu_lower(word))
+            line.append(word.lower())
             continue
 
         hyphenated = []
         for item in word.split('-'):
-            hyphenated.append(CAPFIRST.sub(lambda m: icu_upper(m.group(0)), item))
+            hyphenated.append(CAPFIRST.sub(lambda m: m.group(0).upper(), item))
         line.append("-".join(hyphenated))
 
     result = "".join(line)
