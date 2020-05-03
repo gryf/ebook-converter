@@ -43,20 +43,20 @@ class InputProfile(Plugin):
     author = 'Kovid Goyal'
     supported_platforms = {'windows', 'osx', 'linux'}
     can_be_disabled = False
-    type = _('Input profile')
+    type = 'Input profile'
 
     name        = 'Default Input Profile'
     short_name  = 'default'  # Used in the CLI so dont use spaces etc. in it
-    description = _('This profile tries to provide sane defaults and is useful '
-                    'if you know nothing about the input document.')
+    description = ('This profile tries to provide sane defaults and is useful '
+                   'if you know nothing about the input document.')
 
 
 class SonyReaderInput(InputProfile):
 
     name        = 'Sony Reader'
     short_name  = 'sony'
-    description = _('This profile is intended for the SONY PRS line. '
-                    'The 500/505/600/700 etc.')
+    description = ('This profile is intended for the SONY PRS line. '
+                   'The 500/505/600/700 etc.')
 
     screen_size               = (584, 754)
     dpi                       = 168.451
@@ -68,7 +68,7 @@ class SonyReader300Input(SonyReaderInput):
 
     name        = 'Sony Reader 300'
     short_name  = 'sony300'
-    description = _('This profile is intended for the SONY PRS 300.')
+    description = 'This profile is intended for the SONY PRS 300.'
 
     dpi                       = 200
 
@@ -78,7 +78,7 @@ class SonyReader900Input(SonyReaderInput):
     author      = 'John Schember'
     name        = 'Sony Reader 900'
     short_name  = 'sony900'
-    description = _('This profile is intended for the SONY PRS-900.')
+    description = 'This profile is intended for the SONY PRS-900.'
 
     screen_size               = (584, 978)
 
@@ -87,7 +87,7 @@ class MSReaderInput(InputProfile):
 
     name        = 'Microsoft Reader'
     short_name  = 'msreader'
-    description = _('This profile is intended for the Microsoft Reader.')
+    description = 'This profile is intended for the Microsoft Reader.'
 
     screen_size               = (480, 652)
     dpi                       = 96
@@ -99,7 +99,7 @@ class MobipocketInput(InputProfile):
 
     name        = 'Mobipocket Books'
     short_name  = 'mobipocket'
-    description = _('This profile is intended for the Mobipocket books.')
+    description = 'This profile is intended for the Mobipocket books.'
 
     # Unfortunately MOBI books are not narrowly targeted, so this information is
     # quite likely to be spurious
@@ -113,7 +113,7 @@ class HanlinV3Input(InputProfile):
 
     name        = 'Hanlin V3'
     short_name  = 'hanlinv3'
-    description = _('This profile is intended for the Hanlin V3 and its clones.')
+    description = 'This profile is intended for the Hanlin V3 and its clones.'
 
     # Screen size is a best guess
     screen_size               = (584, 754)
@@ -126,7 +126,7 @@ class HanlinV5Input(HanlinV3Input):
 
     name        = 'Hanlin V5'
     short_name  = 'hanlinv5'
-    description = _('This profile is intended for the Hanlin V5 and its clones.')
+    description = 'This profile is intended for the Hanlin V5 and its clones.'
 
     # Screen size is a best guess
     screen_size               = (584, 754)
@@ -137,7 +137,7 @@ class CybookG3Input(InputProfile):
 
     name        = 'Cybook G3'
     short_name  = 'cybookg3'
-    description = _('This profile is intended for the Cybook G3.')
+    description = 'This profile is intended for the Cybook G3.'
 
     # Screen size is a best guess
     screen_size               = (600, 800)
@@ -151,7 +151,7 @@ class CybookOpusInput(InputProfile):
     author      = 'John Schember'
     name        = 'Cybook Opus'
     short_name  = 'cybook_opus'
-    description = _('This profile is intended for the Cybook Opus.')
+    description = 'This profile is intended for the Cybook Opus.'
 
     # Screen size is a best guess
     screen_size               = (600, 800)
@@ -164,7 +164,7 @@ class KindleInput(InputProfile):
 
     name        = 'Kindle'
     short_name  = 'kindle'
-    description = _('This profile is intended for the Amazon Kindle.')
+    description = 'This profile is intended for the Amazon Kindle.'
 
     # Screen size is a best guess
     screen_size               = (525, 640)
@@ -177,7 +177,7 @@ class IlliadInput(InputProfile):
 
     name        = 'Illiad'
     short_name  = 'illiad'
-    description = _('This profile is intended for the Irex Illiad.')
+    description = 'This profile is intended for the Irex Illiad.'
 
     screen_size               = (760, 925)
     dpi                       = 160.0
@@ -190,7 +190,7 @@ class IRexDR1000Input(InputProfile):
     author      = 'John Schember'
     name        = 'IRex Digital Reader 1000'
     short_name  = 'irexdr1000'
-    description = _('This profile is intended for the IRex Digital Reader 1000.')
+    description = 'This profile is intended for the IRex Digital Reader 1000.'
 
     # Screen size is a best guess
     screen_size               = (1024, 1280)
@@ -204,7 +204,7 @@ class IRexDR800Input(InputProfile):
     author      = 'Eric Cronin'
     name        = 'IRex Digital Reader 800'
     short_name  = 'irexdr800'
-    description = _('This profile is intended for the IRex Digital Reader 800.')
+    description = 'This profile is intended for the IRex Digital Reader 800.'
 
     screen_size               = (768, 1024)
     dpi                       = 160
@@ -217,7 +217,7 @@ class NookInput(InputProfile):
     author      = 'John Schember'
     name        = 'Nook'
     short_name  = 'nook'
-    description = _('This profile is intended for the B&N Nook.')
+    description = 'This profile is intended for the B&N Nook.'
 
     # Screen size is a best guess
     screen_size               = (600, 800)
@@ -241,13 +241,13 @@ class OutputProfile(Plugin):
     author = 'Kovid Goyal'
     supported_platforms = {'windows', 'osx', 'linux'}
     can_be_disabled = False
-    type = _('Output profile')
+    type = 'Output profile'
 
     name        = 'Default Output Profile'
     short_name  = 'default'  # Used in the CLI so dont use spaces etc. in it
-    description = _('This profile tries to provide sane defaults and is useful '
-                    'if you want to produce a document intended to be read at a '
-                    'computer or on a range of devices.')
+    description = ('This profile tries to provide sane defaults and is useful '
+                   'if you want to produce a document intended to be read at '
+                   'a computer or on a range of devices.')
 
     #: The image size for comics
     comic_screen_size = (584, 754)
@@ -282,8 +282,8 @@ class iPadOutput(OutputProfile):
 
     name = 'iPad'
     short_name = 'ipad'
-    description = _('Intended for the iPad and similar devices with a '
-            'resolution of 768x1024')
+    description = ('Intended for the iPad and similar devices with a '
+                   'resolution of 768x1024')
     screen_size = (768, 1024)
     comic_screen_size = (768, 1024)
     dpi = 132.0
@@ -445,14 +445,15 @@ class iPad3Output(iPadOutput):
     dpi = 264.0
     name = 'iPad 3'
     short_name = 'ipad3'
-    description = _('Intended for the iPad 3 and similar devices with a '
-            'resolution of 1536x2048')
+    description = ('Intended for the iPad 3 and similar devices with a '
+                   'resolution of 1536x2048')
 
 
 class TabletOutput(iPadOutput):
     name = 'Tablet'
     short_name = 'tablet'
-    description = _('Intended for generic tablet devices, does no resizing of images')
+    description = ('Intended for generic tablet devices, does no resizing of '
+                   'images')
 
     screen_size = (10000, 10000)
     comic_screen_size = (10000, 10000)
@@ -461,16 +462,16 @@ class TabletOutput(iPadOutput):
 class SamsungGalaxy(TabletOutput):
     name = 'Samsung Galaxy'
     short_name = 'galaxy'
-    description = _('Intended for the Samsung Galaxy and similar tablet devices with '
-            'a resolution of 600x1280')
+    description = ('Intended for the Samsung Galaxy and similar tablet '
+                   'devices with a resolution of 600x1280')
     screen_size = comic_screen_size = (600, 1280)
 
 
 class NookHD(TabletOutput):
     name = 'Nook HD+'
     short_name = 'nook_hd_plus'
-    description = _('Intended for the Nook HD+ and similar tablet devices with '
-            'a resolution of 1280x1920')
+    description = ('Intended for the Nook HD+ and similar tablet devices with '
+                   'a resolution of 1280x1920')
     screen_size = comic_screen_size = (1280, 1920)
 
 
@@ -478,8 +479,8 @@ class SonyReaderOutput(OutputProfile):
 
     name        = 'Sony Reader'
     short_name  = 'sony'
-    description = _('This profile is intended for the SONY PRS line. '
-                    'The 500/505/600/700 etc.')
+    description = ('This profile is intended for the SONY PRS line. '
+                   'The 500/505/600/700 etc.')
 
     screen_size               = (590, 775)
     dpi                       = 168.451
@@ -496,7 +497,7 @@ class KoboReaderOutput(OutputProfile):
     name = 'Kobo Reader'
     short_name = 'kobo'
 
-    description = _('This profile is intended for the Kobo Reader.')
+    description = 'This profile is intended for the Kobo Reader.'
 
     screen_size               = (536, 710)
     comic_screen_size         = (536, 710)
@@ -510,7 +511,7 @@ class SonyReader300Output(SonyReaderOutput):
     author      = 'John Schember'
     name        = 'Sony Reader 300'
     short_name  = 'sony300'
-    description = _('This profile is intended for the SONY PRS-300.')
+    description = 'This profile is intended for the SONY PRS-300.'
 
     dpi                       = 200
 
@@ -520,7 +521,7 @@ class SonyReader900Output(SonyReaderOutput):
     author      = 'John Schember'
     name        = 'Sony Reader 900'
     short_name  = 'sony900'
-    description = _('This profile is intended for the SONY PRS-900.')
+    description = 'This profile is intended for the SONY PRS-900.'
 
     screen_size               = (600, 999)
     comic_screen_size = screen_size
@@ -531,7 +532,7 @@ class SonyReaderT3Output(SonyReaderOutput):
     author = 'Kovid Goyal'
     name        = 'Sony Reader T3'
     short_name  = 'sonyt3'
-    description = _('This profile is intended for the SONY PRS-T3.')
+    description = 'This profile is intended for the SONY PRS-T3.'
 
     screen_size               = (758, 934)
     comic_screen_size = screen_size
@@ -541,7 +542,7 @@ class GenericEink(SonyReaderOutput):
 
     name = 'Generic e-ink'
     short_name = 'generic_eink'
-    description = _('Suitable for use with any e-ink device')
+    description = 'Suitable for use with any e-ink device'
     epub_periodical_format = None
 
 
@@ -549,7 +550,7 @@ class GenericEinkLarge(GenericEink):
 
     name = 'Generic e-ink large'
     short_name = 'generic_eink_large'
-    description = _('Suitable for use with any large screen e-ink device')
+    description = 'Suitable for use with any large screen e-ink device'
 
     screen_size               = (600, 999)
     comic_screen_size = screen_size
@@ -559,7 +560,8 @@ class GenericEinkHD(GenericEink):
 
     name = 'Generic e-ink HD'
     short_name = 'generic_eink_hd'
-    description = _('Suitable for use with any modern high resolution e-ink device')
+    description = ('Suitable for use with any modern high resolution e-ink '
+                   'device')
 
     screen_size = (10000, 10000)
     comic_screen_size = (10000, 10000)
@@ -569,7 +571,7 @@ class JetBook5Output(OutputProfile):
 
     name        = 'JetBook 5-inch'
     short_name  = 'jetbook5'
-    description = _('This profile is intended for the 5-inch JetBook.')
+    description = 'This profile is intended for the 5-inch JetBook.'
 
     screen_size               = (480, 640)
     dpi                       = 168.451
@@ -579,9 +581,9 @@ class SonyReaderLandscapeOutput(SonyReaderOutput):
 
     name        = 'Sony Reader Landscape'
     short_name  = 'sony-landscape'
-    description = _('This profile is intended for the SONY PRS line. '
-                    'The 500/505/700 etc, in landscape mode. Mainly useful '
-                    'for comics.')
+    description = ('This profile is intended for the SONY PRS line. '
+                   'The 500/505/700 etc, in landscape mode. Mainly useful '
+                   'for comics.')
 
     screen_size               = (784, 1012)
     comic_screen_size         = (784, 1012)
@@ -591,7 +593,7 @@ class MSReaderOutput(OutputProfile):
 
     name        = 'Microsoft Reader'
     short_name  = 'msreader'
-    description = _('This profile is intended for the Microsoft Reader.')
+    description = 'This profile is intended for the Microsoft Reader.'
 
     screen_size               = (480, 652)
     dpi                       = 96
@@ -603,7 +605,7 @@ class MobipocketOutput(OutputProfile):
 
     name        = 'Mobipocket Books'
     short_name  = 'mobipocket'
-    description = _('This profile is intended for the Mobipocket books.')
+    description = 'This profile is intended for the Mobipocket books.'
 
     # Unfortunately MOBI books are not narrowly targeted, so this information is
     # quite likely to be spurious
@@ -617,7 +619,7 @@ class HanlinV3Output(OutputProfile):
 
     name        = 'Hanlin V3'
     short_name  = 'hanlinv3'
-    description = _('This profile is intended for the Hanlin V3 and its clones.')
+    description = 'This profile is intended for the Hanlin V3 and its clones.'
 
     # Screen size is a best guess
     screen_size               = (584, 754)
@@ -630,7 +632,7 @@ class HanlinV5Output(HanlinV3Output):
 
     name        = 'Hanlin V5'
     short_name  = 'hanlinv5'
-    description = _('This profile is intended for the Hanlin V5 and its clones.')
+    description = 'This profile is intended for the Hanlin V5 and its clones.'
 
     dpi                       = 200
 
@@ -639,7 +641,7 @@ class CybookG3Output(OutputProfile):
 
     name        = 'Cybook G3'
     short_name  = 'cybookg3'
-    description = _('This profile is intended for the Cybook G3.')
+    description = 'This profile is intended for the Cybook G3.'
 
     # Screen size is a best guess
     screen_size               = (600, 800)
@@ -654,7 +656,7 @@ class CybookOpusOutput(SonyReaderOutput):
     author      = 'John Schember'
     name        = 'Cybook Opus'
     short_name  = 'cybook_opus'
-    description = _('This profile is intended for the Cybook Opus.')
+    description = 'This profile is intended for the Cybook Opus.'
 
     # Screen size is a best guess
     dpi                       = 200
@@ -668,7 +670,7 @@ class KindleOutput(OutputProfile):
 
     name        = 'Kindle'
     short_name  = 'kindle'
-    description = _('This profile is intended for the Amazon Kindle.')
+    description = 'This profile is intended for the Amazon Kindle.'
 
     # Screen size is a best guess
     screen_size               = (525, 640)
@@ -688,7 +690,7 @@ class KindleDXOutput(OutputProfile):
 
     name        = 'Kindle DX'
     short_name  = 'kindle_dx'
-    description = _('This profile is intended for the Amazon Kindle DX.')
+    description = 'This profile is intended for the Amazon Kindle DX.'
 
     # Screen size is a best guess
     screen_size               = (744, 1022)
@@ -706,7 +708,8 @@ class KindlePaperWhiteOutput(KindleOutput):
 
     name = 'Kindle PaperWhite'
     short_name = 'kindle_pw'
-    description = _('This profile is intended for the Amazon Kindle PaperWhite 1 and 2')
+    description = ('This profile is intended for the Amazon Kindle '
+                   'PaperWhite 1 and 2')
 
     # Screen size is a best guess
     screen_size               = (658, 940)
@@ -718,7 +721,7 @@ class KindleVoyageOutput(KindleOutput):
 
     name = 'Kindle Voyage'
     short_name = 'kindle_voyage'
-    description = _('This profile is intended for the Amazon Kindle Voyage')
+    description = 'This profile is intended for the Amazon Kindle Voyage'
 
     # Screen size is currently just the spec size, actual renderable area will
     # depend on someone with the device doing tests.
@@ -731,7 +734,8 @@ class KindlePaperWhite3Output(KindleVoyageOutput):
 
     name = 'Kindle PaperWhite 3'
     short_name = 'kindle_pw3'
-    description = _('This profile is intended for the Amazon Kindle PaperWhite 3 and above')
+    description = ('This profile is intended for the Amazon Kindle '
+                   'PaperWhite 3 and above')
     # Screen size is currently just the spec size, actual renderable area will
     # depend on someone with the device doing tests.
     screen_size               = (1072, 1430)
@@ -743,7 +747,8 @@ class KindleOasisOutput(KindlePaperWhite3Output):
 
     name = 'Kindle Oasis'
     short_name = 'kindle_oasis'
-    description = _('This profile is intended for the Amazon Kindle Oasis 2017 and above')
+    description = ('This profile is intended for the Amazon Kindle Oasis '
+                   '2017 and above')
     # Screen size is currently just the spec size, actual renderable area will
     # depend on someone with the device doing tests.
     screen_size               = (1264, 1680)
@@ -755,7 +760,7 @@ class KindleFireOutput(KindleDXOutput):
 
     name = 'Kindle Fire'
     short_name = 'kindle_fire'
-    description = _('This profile is intended for the Amazon Kindle Fire.')
+    description = 'This profile is intended for the Amazon Kindle Fire.'
 
     screen_size               = (570, 1016)
     dpi                       = 169.0
@@ -766,7 +771,7 @@ class IlliadOutput(OutputProfile):
 
     name        = 'Illiad'
     short_name  = 'illiad'
-    description = _('This profile is intended for the Irex Illiad.')
+    description = 'This profile is intended for the Irex Illiad.'
 
     screen_size               = (760, 925)
     comic_screen_size         = (760, 925)
@@ -780,7 +785,7 @@ class IRexDR1000Output(OutputProfile):
     author      = 'John Schember'
     name        = 'IRex Digital Reader 1000'
     short_name  = 'irexdr1000'
-    description = _('This profile is intended for the IRex Digital Reader 1000.')
+    description = 'This profile is intended for the IRex Digital Reader 1000.'
 
     # Screen size is a best guess
     screen_size               = (1024, 1280)
@@ -795,7 +800,7 @@ class IRexDR800Output(OutputProfile):
     author      = 'Eric Cronin'
     name        = 'IRex Digital Reader 800'
     short_name  = 'irexdr800'
-    description = _('This profile is intended for the IRex Digital Reader 800.')
+    description = 'This profile is intended for the IRex Digital Reader 800.'
 
     # Screen size is a best guess
     screen_size               = (768, 1024)
@@ -810,7 +815,7 @@ class NookOutput(OutputProfile):
     author      = 'John Schember'
     name        = 'Nook'
     short_name  = 'nook'
-    description = _('This profile is intended for the B&N Nook.')
+    description = 'This profile is intended for the B&N Nook.'
 
     # Screen size is a best guess
     screen_size               = (600, 730)
@@ -823,7 +828,7 @@ class NookOutput(OutputProfile):
 class NookColorOutput(NookOutput):
     name = 'Nook Color'
     short_name = 'nook_color'
-    description = _('This profile is intended for the B&N Nook Color.')
+    description = 'This profile is intended for the B&N Nook Color.'
 
     screen_size               = (600, 900)
     comic_screen_size         = (594, 900)
@@ -835,7 +840,8 @@ class PocketBook900Output(OutputProfile):
     author = 'Chris Lockfort'
     name = 'PocketBook Pro 900'
     short_name = 'pocketbook_900'
-    description = _('This profile is intended for the PocketBook Pro 900 series of devices.')
+    description = ('This profile is intended for the PocketBook Pro 900 '
+                   'series of devices.')
 
     screen_size               = (810, 1180)
     dpi                       = 150.0
@@ -847,7 +853,8 @@ class PocketBookPro912Output(OutputProfile):
     author = 'Daniele Pizzolli'
     name = 'PocketBook Pro 912'
     short_name = 'pocketbook_pro_912'
-    description = _('This profile is intended for the PocketBook Pro 912 series of devices.')
+    description = ('This profile is intended for the PocketBook Pro 912 '
+                   'series of devices.')
 
     # According to http://download.pocketbook-int.com/user-guides/E_Ink/912/User_Guide_PocketBook_912(EN).pdf
     screen_size               = (825, 1200)

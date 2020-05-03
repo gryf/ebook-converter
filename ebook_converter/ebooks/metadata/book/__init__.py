@@ -21,11 +21,11 @@ TOP_LEVEL_IDENTIFIERS = frozenset((
 ))
 
 PUBLICATION_METADATA_FIELDS = frozenset((
-    'title',            # title must never be None. Should be _('Unknown')
+    'title',            # title must never be None. Should be 'Unknown'
     # Pseudo field that can be set, but if not set is auto generated
     # from title and languages
     'title_sort',
-    'authors',          # Ordered list. Must never be None, can be [_('Unknown')]
+    'authors',          # Ordered list. Must never be None, can be ['Unknown']
     'author_sort_map',  # Map of sort strings for each author
     # Pseudo field that can be set, but if not set is auto generated
     # from authors and languages

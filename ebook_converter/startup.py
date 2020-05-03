@@ -12,13 +12,6 @@ import sys
 
 from ebook_converter import constants
 
-# Default translation is NOOP
-builtins.__dict__['_'] = lambda s: s
-
-# For strings which belong in the translation tables, but which shouldn't be
-# immediately translated to the environment language
-builtins.__dict__['__'] = lambda s: s
-
 # For backwards compat with some third party plugins
 builtins.__dict__['dynamic_property'] = lambda func: func(None)
 
@@ -92,12 +85,6 @@ if not _run_once:
     # Setup resources
     import ebook_converter.utils.resources as resources
     resources
-
-    #
-    # Setup translations
-    from ebook_converter.utils.localization import set_translators
-
-    set_translators()
 
     #
     # Initialize locale

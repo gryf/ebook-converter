@@ -30,7 +30,8 @@ class _Parser(object):
         self.prog = prog[0]
         self.prog_len = len(self.prog)
         if prog[1] != '':
-            self.error(_('failed to scan program. Invalid input {0}').format(prog[1]))
+            self.error('failed to scan program. Invalid input '
+                       '{0}'.format(prog[1]))
         self.parent = parent
         self.parent_kwargs = parent.kwargs
         self.parent_book = parent.book
@@ -38,13 +39,13 @@ class _Parser(object):
         self.funcs = funcs
 
     def error(self, message):
-        m = 'Formatter: ' + message + _(' near ')
+        m = 'Formatter: ' + message + ' near '
         if self.lex_pos > 0:
             m = '{0} {1}'.format(m, self.prog[self.lex_pos-1][1])
         elif self.lex_pos < self.prog_len:
             m = '{0} {1}'.format(m, self.prog[self.lex_pos+1][1])
         else:
-            m = '{0} {1}'.format(m, _('end of program'))
+            m = '{0} {1}'.format(m, 'end of program')
         raise ValueError(m)
 
     def token(self):
@@ -106,7 +107,7 @@ class _Parser(object):
     def program(self):
         val = self.statement()
         if not self.token_is_eof():
-            self.error(_('syntax error - program ends before EOF'))
+            self.error('syntax error - program ends before EOF')
         return val
 
     def statement(self):
@@ -133,14 +134,14 @@ class _Parser(object):
                                     self.parent_book, self.locals, id, self.expr())
                 val = self.locals.get(id, None)
                 if val is None:
-                    self.error(_('Unknown identifier ') + id)
+                    self.error('Unknown identifier ' + id)
                 return val
             # We have a function.
             # Check if it is a known one. We do this here so error reporting is
             # better, as it can identify the tokens near the problem.
             id = id.strip()
             if id not in self.funcs:
-                self.error(_('unknown function {0}').format(id))
+                self.error('unknown function {0}'.format(id))
 
             # Eat the paren
             self.consume()
@@ -160,7 +161,7 @@ class _Parser(object):
                     break
                 self.consume()
             if self.token() != ')':
-                self.error(_('missing closing parenthesis'))
+                self.error('missing closing parenthesis')
 
             # Evaluate the function
             cls = self.funcs[id]
@@ -172,7 +173,7 @@ class _Parser(object):
             # String or number
             return self.token()
         else:
-            self.error(_('expression is not function or constant'))
+            self.error('expression is not function or constant')
 
 
 class TemplateFormatter(string.Formatter):
@@ -206,14 +207,14 @@ class TemplateFormatter(string.Formatter):
             try:
                 val = int(val)
             except Exception:
-                raise ValueError(
-                    _('format: type {0} requires an integer value, got {1}').format(typ, val))
+                raise ValueError('format: type {0} requires an integer value, '
+                                 'got {1}'.format(typ, val))
         elif 'eEfFgGn%'.find(typ) >= 0:
             try:
                 val = float(val)
             except:
-                raise ValueError(
-                    _('format: type {0} requires a decimal (float) value, got {1}').format(typ, val))
+                raise ValueError('format: type {0} requires a decimal (float) '
+                                 'value, got {1}'.format(typ, val))
         return str(('{0:'+fmt+'}').format(val))
 
     def _explode_format_string(self, fmt):
@@ -329,7 +330,7 @@ class TemplateFormatter(string.Formatter):
                         if self.strip_results:
                             val = val.strip()
                 else:
-                    return _('%s: unknown function')%fname
+                    return '%s: unknown function' % fname
         if val:
             val = self._do_format(val, dispfmt)
         if not val:
@@ -408,7 +409,7 @@ class EvalFormatter(TemplateFormatter):
         if key == '':
             return ''
         key = key.lower()
-        return kwargs.get(key, _('No such variable ') + key)
+        return kwargs.get(key, 'No such variable ' + key)
 
 
 # DEPRECATED. This is not thread safe. Do not use.

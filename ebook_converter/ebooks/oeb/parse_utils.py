@@ -312,14 +312,14 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
         head = etree.Element(XHTML('head'))
         data.insert(0, head)
         title = etree.SubElement(head, XHTML('title'))
-        title.text = _('Unknown')
+        title.text = 'Unknown'
     elif not xpath(data, '/h:html/h:head/h:title'):
         title = etree.SubElement(head, XHTML('title'))
-        title.text = _('Unknown')
+        title.text = 'Unknown'
     # Ensure <title> is not empty
     title = xpath(data, '/h:html/h:head/h:title')[0]
     if not title.text or not title.text.strip():
-        title.text = _('Unknown')
+        title.text = 'Unknown'
     # Remove any encoding-specifying <meta/> elements
     for meta in META_XP(data):
         meta.getparent().remove(meta)

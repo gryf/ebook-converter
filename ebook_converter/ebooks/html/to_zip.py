@@ -12,11 +12,11 @@ __docformat__ = 'restructuredtext en'
 class HTML2ZIP(FileTypePlugin):
     name = 'HTML to ZIP'
     author = 'Kovid Goyal'
-    description = textwrap.dedent(_('''\
-Follow all local links in an HTML file and create a ZIP \
-file containing all linked files. This plugin is run \
-every time you add an HTML file to the library.\
-'''))
+    description = textwrap.dedent('''\
+            Follow all local links in an HTML file and create a ZIP \
+            file containing all linked files. This plugin is run \
+            every time you add an HTML file to the library.\
+            ''')
     version = numeric_version
     file_types = {'html', 'htm', 'xhtml', 'xhtm', 'shtm', 'shtml'}
     supported_platforms = ['windows', 'osx', 'linux']
@@ -60,8 +60,8 @@ every time you add an HTML file to the library.\
         return of.name
 
     def customization_help(self, gui=False):
-        return _('Character encoding for the input HTML files. Common choices '
-        'include: cp1252, cp1251, latin1 and utf-8.')
+        return 'Character encoding for the input HTML files. Common choices '
+    'include: cp1252, cp1251, latin1 and utf-8.'
 
     def do_user_config(self, parent=None):
         '''
@@ -81,7 +81,7 @@ every time you add an HTML file to the library.\
 
         button_box.accepted.connect(config_dialog.accept)
         button_box.rejected.connect(config_dialog.reject)
-        config_dialog.setWindowTitle(_('Customize') + ' ' + self.name)
+        config_dialog.setWindowTitle('Customize' + ' ' + self.name)
         from ebook_converter.customize.ui import (plugin_customization,
                 customize_plugin)
         help_text = self.customization_help(gui=True)
@@ -90,11 +90,12 @@ every time you add an HTML file to the library.\
         help_text.setTextInteractionFlags(Qt.LinksAccessibleByMouse | Qt.LinksAccessibleByKeyboard)
         help_text.setOpenExternalLinks(True)
         v.addWidget(help_text)
-        bf = QCheckBox(_('Add linked files in breadth first order'))
-        bf.setToolTip(_('Normally, when following links in HTML files'
-            ' calibre does it depth first, i.e. if file A links to B and '
-            ' C, but B links to D, the files are added in the order A, B, D, C. '
-            ' With this option, they will instead be added as A, B, C, D'))
+        bf = QCheckBox('Add linked files in breadth first order')
+        bf.setToolTip('Normally, when following links in HTML files calibre '
+                      'does it depth first, i.e. if file A links to B and  C, '
+                      'but B links to D, the files are added in the order A, '
+                      'B, D, C. With this option, they will instead be added '
+                      'as A, B, C, D')
         sc = plugin_customization(self)
         if not sc:
             sc = ''

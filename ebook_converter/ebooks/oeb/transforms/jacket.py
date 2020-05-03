@@ -110,12 +110,12 @@ class Jacket(Base):
         try:
             title = str(self.oeb.metadata.title[0])
         except:
-            title = _('Unknown')
+            title = 'Unknown'
 
         try:
             authors = list(map(str, self.oeb.metadata.creator))
         except:
-            authors = [_('Unknown')]
+            authors = ['Unknown']
 
         root = render_jacket(mi, self.opts.output_profile,
                 alt_title=title, alt_tags=tags, alt_authors=authors,
@@ -174,10 +174,11 @@ class Series(str):
 
     def __new__(self, series, series_index):
         if series and series_index is not None:
-            roman = _('{1} of <em>{0}</em>').format(
+            roman = '{1} of <em>{0}</em>'.format(
                 escape(series), escape(fmt_sidx(series_index, use_roman=True)))
-            combined = _('{1} of <em>{0}</em>').format(
-                escape(series), escape(fmt_sidx(series_index, use_roman=False)))
+            combined = '{1} of <em>{0}</em>'.format(
+                escape(series), escape(fmt_sidx(series_index,
+                                                use_roman=False)))
         else:
             combined = roman = escape(series or u'')
         s = str.__new__(self, combined)
@@ -227,7 +228,7 @@ def postprocess_jacket(root, output_profile, has_data):
 
 
 def render_jacket(mi, output_profile,
-        alt_title=_('Unknown'), alt_tags=[], alt_comments='',
+        alt_title='Unknown', alt_tags=[], alt_comments='',
         alt_publisher='', rescale_fonts=False, alt_authors=None):
     with open(pkg_resources.resource_filename('ebook_converter',
                                               'data/jacket/stylesheet.css'),
@@ -244,7 +245,7 @@ def render_jacket(mi, output_profile,
     try:
         title_str = alt_title if mi.is_null('title') else mi.title
     except:
-        title_str = _('Unknown')
+        title_str = 'Unknown'
     title_str = escape(title_str)
     title = '<span class="title">%s</span>' % title_str
 
@@ -275,7 +276,7 @@ def render_jacket(mi, output_profile,
 
     orig = mi.authors
     if mi.is_null('authors'):
-        mi.authors = list(alt_authors or (_('Unknown'),))
+        mi.authors = list(alt_authors or ('Unknown',))
     try:
         author = mi.format_authors()
     except:
@@ -285,20 +286,25 @@ def render_jacket(mi, output_profile,
     has_data = {}
 
     def generate_html(comments):
-        args = dict(xmlns=XHTML_NS,
-                    title_str=title_str,
-                    css=css,
-                    title=title,
-                    author=author,
-                    publisher=publisher,
-                    pubdate_label=_('Published'), pubdate=pubdate,
-                    series_label=_('Series'), series=series,
-                    rating_label=_('Rating'), rating=rating,
-                    tags_label=_('Tags'), tags=tags,
-                    comments=comments,
-                    footer='',
-                    searchable_tags=' '.join(escape(t)+'ttt' for t in tags.tags_list),
-                    )
+        args = {'author': author,
+                'comments': comments,
+                'css': css,
+                'footer': '',
+                'pubdate': pubdate,
+                'pubdate_label': 'Published',
+                'publisher': publisher,
+                'rating': rating,
+                'rating_label': 'Rating',
+                'searchable_tags': ' '.join(escape(t) + 'ttt'
+                                            for t in tags.tags_list),
+                'series': series,
+                'series_label': 'Series',
+                'tags': tags,
+                'tags_label': 'Tags',
+                'title': title,
+                'title_str': title_str,
+                'xmlns': XHTML_NS}
+
         for key in mi.custom_field_keys():
             m = mi.get_user_metadata(key, False) or {}
             try:

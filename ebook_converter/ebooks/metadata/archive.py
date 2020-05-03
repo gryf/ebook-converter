@@ -40,8 +40,9 @@ class KPFExtract(FileTypePlugin):
 
     name = 'KPF Extract'
     author = 'Kovid Goyal'
-    description = _('Extract the source DOCX file from Amazon Kindle Create KPF files.'
-            ' Note this will not contain any edits made in the Kindle Create program itself.')
+    description = ('Extract the source DOCX file from Amazon Kindle Create '
+                   'KPF files. Note this will not contain any edits made in '
+                   'the Kindle Create program itself.')
     file_types = {'kpf'}
     supported_platforms = ['windows', 'osx', 'linux']
     on_import = True
@@ -62,9 +63,9 @@ class KPFExtract(FileTypePlugin):
 class ArchiveExtract(FileTypePlugin):
     name = 'Archive Extract'
     author = 'Kovid Goyal'
-    description = _('Extract common e-book formats from archive files '
-        '(ZIP/RAR). Also try to autodetect if they are actually '
-        'CBZ/CBR files.')
+    description = ('Extract common e-book formats from archive files (ZIP/'
+                   'RAR). Also try to autodetect if they are actually CBZ/CBR '
+                   'files.')
     file_types = {'zip', 'rar'}
     supported_platforms = ['windows', 'osx', 'linux']
     on_import = True

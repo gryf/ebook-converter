@@ -960,7 +960,7 @@ def set_last_modified_in_opf(root):
 
 
 def read_metadata(root, ver=None, return_extra_data=False):
-    ans = Metadata(_('Unknown'), [_('Unknown')])
+    ans = Metadata('Unknown', ['Unknown'])
     prefixes, refines = read_prefixes(root), read_refines(root)
     identifiers = read_identifiers(root, prefixes, refines)
     ids = {}

@@ -461,9 +461,9 @@ class Indexer(object):  # {{{
                 if node.klass == 'article':
                     aut, desc = node.author, node.description
                     if not aut:
-                        aut = _('Unknown')
+                        aut = 'Unknown'
                     if not desc:
-                        desc = _('No details available')
+                        desc = 'No details available'
                     node.author, node.description = aut, desc
 
         self.cncx = CNCX(oeb.toc, self.is_periodical)

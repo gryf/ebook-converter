@@ -336,7 +336,7 @@ def utf8_text(text):
             text = text.decode('utf-8', 'replace')
         text = normalize(text).encode('utf-8')
     else:
-        text = _('Unknown').encode('utf-8')
+        text = 'Unknown'.encode('utf-8')
     return text
 
 

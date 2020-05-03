@@ -29,23 +29,23 @@ class CSV_XML(CatalogPlugin):
                 default='all',
                 dest='fields',
                 action=None,
-                help=_('The fields to output when cataloging books in the '
+                help='The fields to output when cataloging books in the '
                     'database.  Should be a comma-separated list of fields.\n'
                     'Available fields: %(fields)s,\n'
                     'plus user-created custom fields.\n'
                     'Example: %(opt)s=title,authors,tags\n'
                     "Default: '%%default'\n"
-                    "Applies to: CSV, XML output formats") % dict(
+                    "Applies to: CSV, XML output formats" % dict(
                         fields=', '.join(FIELDS), opt='--fields')),
 
             Option('--sort-by',
                 default='id',
                 dest='sort_by',
                 action=None,
-                help=_('Output field to sort on.\n'
+                help='Output field to sort on.\n'
                 'Available fields: author_sort, id, rating, size, timestamp, title_sort\n'
                 "Default: '%default'\n"
-                "Applies to: CSV, XML output formats"))]
+                "Applies to: CSV, XML output formats")]
 
     def run(self, path_to_output, opts, db, notification=DummyReporter()):
         from ebook_converter.library import current_library_name

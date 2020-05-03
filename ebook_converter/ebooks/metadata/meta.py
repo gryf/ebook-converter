@@ -33,7 +33,7 @@ def metadata_from_formats(formats, force_read_metadata=False, pattern=None):
     except:
         mi = metadata_from_filename(list(iter(formats))[0], pat=pattern)
         if not mi.authors:
-            mi.authors = [_('Unknown')]
+            mi.authors = ['Unknown']
         return mi
 
 
@@ -61,9 +61,9 @@ def _metadata_from_formats(formats, force_read_metadata=False, pattern=None):
                 return mi
 
     if not mi.title:
-        mi.title = _('Unknown')
+        mi.title = 'Unknown'
     if not mi.authors:
-        mi.authors = [_('Unknown')]
+        mi.authors = ['Unknown']
 
     return mi
 
@@ -106,9 +106,9 @@ def _get_metadata(stream, stream_type, use_libprs_metadata,
     base = metadata_from_filename(name, pat=pattern, fallback_pat=re.compile(
             r'^(?P<title>.+) - (?P<author>[^-]+)$'))
     if not base.authors:
-        base.authors = [_('Unknown')]
+        base.authors = ['Unknown']
     if not base.title:
-        base.title = _('Unknown')
+        base.title = 'Unknown'
     mi = MetaInformation(None, None)
     if force_read_metadata or prefs['read_file_metadata']:
         mi = get_file_type_metadata(stream, stream_type)

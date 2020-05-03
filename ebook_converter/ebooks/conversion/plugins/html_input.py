@@ -35,27 +35,24 @@ class HTMLInput(InputFormatPlugin):
     options = {
         OptionRecommendation(name='breadth_first',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Traverse links in HTML files breadth first. Normally, '
+            help='Traverse links in HTML files breadth first. Normally, '
                     'they are traversed depth first.'
-                   )
         ),
 
         OptionRecommendation(name='max_levels',
             recommended_value=5, level=OptionRecommendation.LOW,
-            help=_('Maximum levels of recursion when following links in '
+            help='Maximum levels of recursion when following links in '
                    'HTML files. Must be non-negative. 0 implies that no '
                    'links in the root HTML file are followed. Default is '
                    '%default.'
-                   )
         ),
 
         OptionRecommendation(name='dont_package',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Normally this input plugin re-arranges all the input '
+            help='Normally this input plugin re-arranges all the input '
                 'files into a standard folder hierarchy. Only use this option '
                 'if you know what you are doing as it can result in various '
                 'nasty side effects in the rest of the conversion pipeline.'
-                )
         ),
 
     }
@@ -129,12 +126,12 @@ class HTMLInput(InputFormatPlugin):
                 a = string_to_authors(a)
             if not a:
                 oeb.logger.warn('Creator not specified')
-                a = [self.oeb.translate(__('Unknown'))]
+                a = [self.oeb.translate('Unknown')]
             for aut in a:
                 metadata.add('creator', aut)
         if not metadata.title:
             oeb.logger.warn('Title not specified')
-            metadata.add('title', self.oeb.translate(__('Unknown')))
+            metadata.add('title', self.oeb.translate('Unknown'))
         bookid = str(uuid.uuid4())
         metadata.add('identifier', bookid, id='uuid_id', scheme='uuid')
         for ident in metadata.identifier:

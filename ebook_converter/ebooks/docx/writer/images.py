@@ -202,7 +202,8 @@ class ImagesManager(object):
         makeelement(parent, 'wp:extent', cx=str(width), cy=str(height))
         makeelement(parent, 'wp:effectExtent', l='0', r='0', t='0', b='0')
         makeelement(parent, 'wp:wrapTopAndBottom')
-        self.create_docx_image_markup(parent, 'cover.jpg', _('Cover'), img.rid, width, height)
+        self.create_docx_image_markup(parent, 'cover.jpg', 'Cover', img.rid,
+                                      width, height)
         return ans
 
     def write_cover_block(self, body, cover_image):

@@ -9,23 +9,23 @@ __copyright__ = '2009, John Schember <john@nachtimwald.com>'
 __docformat__ = 'restructuredtext en'
 
 MD_EXTENSIONS = {
-    'abbr': _('Abbreviations'),
-    'admonition': _('Support admonitions'),
-    'attr_list': _('Add attribute to HTML tags'),
-    'codehilite': _('Add code highlighting via Pygments'),
-    'def_list': _('Definition lists'),
-    'extra': _('Enables various common extensions'),
-    'fenced_code': _('Alternative code block syntax'),
-    'footnotes': _('Footnotes'),
-    'legacy_attrs': _('Use legacy element attributes'),
-    'legacy_em': _('Use legacy underscore handling for connected words'),
-    'meta': _('Metadata in the document'),
-    'nl2br': _('Treat newlines as hard breaks'),
-    'sane_lists': _('Do not allow mixing list types'),
-    'smarty': _('Use markdown\'s internal smartypants parser'),
-    'tables': _('Support tables'),
-    'toc': _('Generate a table of contents'),
-    'wikilinks': _('Wiki style links'),
+    'abbr': 'Abbreviations',
+    'admonition': 'Support admonitions',
+    'attr_list': 'Add attribute to HTML tags',
+    'codehilite': 'Add code highlighting via Pygments',
+    'def_list': 'Definition lists',
+    'extra': 'Enables various common extensions',
+    'fenced_code': 'Alternative code block syntax',
+    'footnotes': 'Footnotes',
+    'legacy_attrs': 'Use legacy element attributes',
+    'legacy_em': 'Use legacy underscore handling for connected words',
+    'meta': 'Metadata in the document',
+    'nl2br': 'Treat newlines as hard breaks',
+    'sane_lists': 'Do not allow mixing list types',
+    'smarty': 'Use markdown\'s internal smartypants parser',
+    'tables': 'Support tables',
+    'toc': 'Generate a table of contents',
+    'wikilinks': 'Wiki style links',
 }
 
 
@@ -39,57 +39,67 @@ class TXTInput(InputFormatPlugin):
     ui_data = {
         'md_extensions': MD_EXTENSIONS,
         'paragraph_types': {
-            'auto': _('Try to auto detect paragraph type'),
-            'block': _('Treat a blank line as a paragraph break'),
-            'single': _('Assume every line is a paragraph'),
-            'print': _('Assume every line starting with 2+ spaces or a tab starts a paragraph'),
-            'unformatted': _('Most lines have hard line breaks, few/no blank lines or indents'),
-            'off': _('Don\'t modify the paragraph structure'),
+            'auto': 'Try to auto detect paragraph type',
+            'block': 'Treat a blank line as a paragraph break',
+            'single': 'Assume every line is a paragraph',
+            'print': 'Assume every line starting with 2+ spaces or a tab '
+                     'starts a paragraph',
+            'unformatted': 'Most lines have hard line breaks, few/no blank '
+                           'lines or indents',
+            'off': 'Don\'t modify the paragraph structure',
         },
         'formatting_types': {
-            'auto': _('Automatically decide which formatting processor to use'),
-            'plain': _('No formatting'),
-            'heuristic': _('Use heuristics to determine chapter headings, italics, etc.'),
-            'textile': _('Use the TexTile markup language'),
-            'markdown': _('Use the Markdown markup language')
+            'auto': 'Automatically decide which formatting processor to use',
+            'plain': 'No formatting',
+            'heuristic': 'Use heuristics to determine chapter headings, '
+                         'italics, etc.',
+            'textile': 'Use the TexTile markup language',
+            'markdown': 'Use the Markdown markup language'
         },
     }
 
     options = {
         OptionRecommendation(name='formatting_type', recommended_value='auto',
             choices=list(ui_data['formatting_types']),
-            help=_('Formatting used within the document.\n'
-                   '* auto: {auto}\n'
-                   '* plain: {plain}\n'
-                   '* heuristic: {heuristic}\n'
-                   '* textile: {textile}\n'
-                   '* markdown: {markdown}\n'
-                   'To learn more about markdown see {url}').format(
-                       url='https://daringfireball.net/projects/markdown/', **ui_data['formatting_types'])
+            help='Formatting used within the document.\n'
+                 '* auto: {auto}\n'
+                 '* plain: {plain}\n'
+                 '* heuristic: {heuristic}\n'
+                 '* textile: {textile}\n'
+                 '* markdown: {markdown}\n'
+                 'To learn more about markdown see '
+                 '{url}'.format(url='https://daringfireball.net/projects/'
+                                    'markdown/',
+                                **ui_data['formatting_types'])
         ),
         OptionRecommendation(name='paragraph_type', recommended_value='auto',
             choices=list(ui_data['paragraph_types']),
-            help=_('Paragraph structure to assume. The value of "off" is useful for formatted documents such as Markdown or Textile. '
-                   'Choices are:\n'
-                   '* auto: {auto}\n'
-                   '* block: {block}\n'
-                   '* single: {single}\n'
-                   '* print:  {print}\n'
-                   '* unformatted: {unformatted}\n'
-                   '* off: {off}').format(**ui_data['paragraph_types'])
+            help='Paragraph structure to assume. The value of "off" is useful '
+                 'for formatted documents such as Markdown or Textile. '
+                 'Choices are:\n'
+                 '* auto: {auto}\n'
+                 '* block: {block}\n'
+                 '* single: {single}\n'
+                 '* print:  {print}\n'
+                 '* unformatted: {unformatted}\n'
+                 '* off: {off}'.format(**ui_data['paragraph_types'])
         ),
         OptionRecommendation(name='preserve_spaces', recommended_value=False,
-            help=_('Normally extra spaces are condensed into a single space. '
-                'With this option all spaces will be displayed.')),
+            help='Normally extra spaces are condensed into a single space. '
+                 'With this option all spaces will be displayed.'),
         OptionRecommendation(name='txt_in_remove_indents', recommended_value=False,
-            help=_('Normally extra space at the beginning of lines is retained. '
-                   'With this option they will be removed.')),
-        OptionRecommendation(name="markdown_extensions", recommended_value='footnotes, tables, toc',
-            help=_('Enable extensions to markdown syntax. Extensions are formatting that is not part '
-                   'of the standard markdown format. The extensions enabled by default: %default.\n'
-                   'To learn more about markdown extensions, see {}\n'
-                   'This should be a comma separated list of extensions to enable:\n'
-                   ).format('https://python-markdown.github.io/extensions/') + '\n'.join('* %s: %s' % (k, MD_EXTENSIONS[k]) for k in sorted(MD_EXTENSIONS))),
+            help='Normally extra space at the beginning of lines is retained. '
+                 'With this option they will be removed.'),
+        OptionRecommendation(name="markdown_extensions",
+            recommended_value='footnotes, tables, toc',
+            help='Enable extensions to markdown syntax. Extensions are '
+                 'formatting that is not part of the standard markdown '
+                 'format. The extensions enabled by default: %default.\nTo '
+                 'learn more about markdown extensions, see {}\nThis should '
+                 'be a comma separated list of extensions to enable:'
+                 '\n'.format('https://python-markdown.github.io/extensions/') +
+                             '\n'.join('* %s: %s' % (k, MD_EXTENSIONS[k])
+                                       for k in sorted(MD_EXTENSIONS))),
     }
 
     def shift_file(self, fname, data):
@@ -301,5 +311,5 @@ class TXTInput(InputFormatPlugin):
         for item in oeb.spine:
             if hasattr(item.data, 'xpath'):
                 for title in item.data.xpath('//*[local-name()="title"]'):
-                    if title.text == _('Unknown'):
+                    if title.text == 'Unknown':
                         title.text = self.html_postprocess_title

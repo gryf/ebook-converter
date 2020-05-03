@@ -29,13 +29,13 @@ class OEBWriter(object):
         """Add any book-writing options to the :class:`Config` object
         :param:`cfg`.
         """
-        oeb = cfg.add_group('oeb', _('OPF/NCX/etc. generation options.'))
+        oeb = cfg.add_group('oeb', 'OPF/NCX/etc. generation options.')
         versions = ['1.2', '2.0']
         oeb('opf_version', ['--opf-version'], default='2.0', choices=versions,
-            help=_('OPF version to generate. Default is %default.'))
+            help='OPF version to generate. Default is %default.')
         oeb('adobe_page_map', ['--adobe-page-map'], default=False,
-            help=_('Generate an Adobe "page-map" file if pagination '
-                   'information is available.'))
+            help='Generate an Adobe "page-map" file if pagination '
+            'information is available.')
         return cfg
 
     @classmethod

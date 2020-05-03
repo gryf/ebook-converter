@@ -44,64 +44,64 @@ class MOBIOutput(OutputFormatPlugin):
     options = {
         OptionRecommendation(name='prefer_author_sort',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('When present, use author sort field as author.')
+            help='When present, use author sort field as author.'
         ),
         OptionRecommendation(name='no_inline_toc',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Don\'t add Table of Contents to the book. Useful if '
-                'the book has its own table of contents.')),
+            help='Don\'t add Table of Contents to the book. Useful if '
+                'the book has its own table of contents.'),
         OptionRecommendation(name='toc_title', recommended_value=None,
-            help=_('Title for any generated in-line table of contents.')
+            help='Title for any generated in-line table of contents.'
         ),
         OptionRecommendation(name='dont_compress',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Disable compression of the file contents.')
+            help='Disable compression of the file contents.'
         ),
         OptionRecommendation(name='personal_doc', recommended_value='[PDOC]',
-            help=_('Tag for MOBI files to be marked as personal documents.'
+            help='Tag for MOBI files to be marked as personal documents.'
                    ' This option has no effect on the conversion. It is used'
                    ' only when sending MOBI files to a device. If the file'
                    ' being sent has the specified tag, it will be marked as'
-                   ' a personal document when sent to the Kindle.')
+                   ' a personal document when sent to the Kindle.'
         ),
         OptionRecommendation(name='mobi_ignore_margins',
             recommended_value=False,
-            help=_('Ignore margins in the input document. If False, then '
+            help='Ignore margins in the input document. If False, then '
                 'the MOBI output plugin will try to convert margins specified'
-                ' in the input document, otherwise it will ignore them.')
+                ' in the input document, otherwise it will ignore them.'
         ),
         OptionRecommendation(name='mobi_toc_at_start',
             recommended_value=False,
-            help=_('When adding the Table of Contents to the book, add it at the start of the '
-                'book instead of the end. Not recommended.')
+            help='When adding the Table of Contents to the book, add it at the start of the '
+                'book instead of the end. Not recommended.'
         ),
         OptionRecommendation(name='extract_to',
-            help=_('Extract the contents of the generated %s file to the '
+            help='Extract the contents of the generated %s file to the '
                 'specified directory. The contents of the directory are first '
-                'deleted, so be careful.') % 'MOBI'
+                'deleted, so be careful.' % 'MOBI'
         ),
         OptionRecommendation(name='share_not_sync', recommended_value=False,
-            help=_('Enable sharing of book content via Facebook etc. '
+            help='Enable sharing of book content via Facebook etc. '
                 ' on the Kindle. WARNING: Using this feature means that '
                 ' the book will not auto sync its last read position '
-                ' on multiple devices. Complain to Amazon.')
+                ' on multiple devices. Complain to Amazon.'
         ),
         OptionRecommendation(name='mobi_keep_original_images',
             recommended_value=False,
-            help=_('By default calibre converts all images to JPEG format '
+            help='By default calibre converts all images to JPEG format '
                 'in the output MOBI file. This is for maximum compatibility '
                 'as some older MOBI viewers have problems with other image '
                 'formats. This option tells calibre not to do this. '
                 'Useful if your document contains lots of GIF/PNG images that '
-                'become very large when converted to JPEG.')),
+                'become very large when converted to JPEG.'),
         OptionRecommendation(name='mobi_file_type', choices=ui_data['file_types'], recommended_value='old',
-            help=_('By default calibre generates MOBI files that contain the '
+            help='By default calibre generates MOBI files that contain the '
                 'old MOBI 6 format. This format is compatible with all '
                 'devices. However, by changing this setting, you can tell '
                 'calibre to generate MOBI files that contain both MOBI 6 and '
                 'the new KF8 format, or only the new KF8 format. KF8 has '
                 'more features than MOBI 6, but only works with newer Kindles. '
-                'Allowed values: {}').format('old, both, new')),
+                'Allowed values: {}'.format('old, both, new'))
 
     }
 
@@ -139,7 +139,7 @@ class MOBIOutput(OutputFormatPlugin):
                 # single section periodical
                 self.oeb.manifest.remove(one)
                 self.oeb.manifest.remove(two)
-                sections = [TOC(klass='section', title=_('All articles'),
+                sections = [TOC(klass='section', title='All articles',
                     href=self.oeb.spine[0].href)]
                 for x in toc:
                     sections[0].nodes.append(x)
@@ -274,34 +274,34 @@ class AZW3Output(OutputFormatPlugin):
     options = {
         OptionRecommendation(name='prefer_author_sort',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('When present, use author sort field as author.')
+            help='When present, use author sort field as author.'
         ),
         OptionRecommendation(name='no_inline_toc',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Don\'t add Table of Contents to the book. Useful if '
-                'the book has its own table of contents.')),
+            help='Don\'t add Table of Contents to the book. Useful if '
+                'the book has its own table of contents.'),
         OptionRecommendation(name='toc_title', recommended_value=None,
-            help=_('Title for any generated in-line table of contents.')
+            help='Title for any generated in-line table of contents.'
         ),
         OptionRecommendation(name='dont_compress',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Disable compression of the file contents.')
+            help='Disable compression of the file contents.'
         ),
         OptionRecommendation(name='mobi_toc_at_start',
             recommended_value=False,
-            help=_('When adding the Table of Contents to the book, add it at the start of the '
-                'book instead of the end. Not recommended.')
+            help='When adding the Table of Contents to the book, add it at the start of the '
+                'book instead of the end. Not recommended.'
         ),
         OptionRecommendation(name='extract_to',
-            help=_('Extract the contents of the generated %s file to the '
+            help='Extract the contents of the generated %s file to the '
                 'specified directory. The contents of the directory are first '
-                'deleted, so be careful.') % 'AZW3'),
+                'deleted, so be careful.' % 'AZW3'),
         OptionRecommendation(name='share_not_sync', recommended_value=False,
-            help=_('Enable sharing of book content via Facebook etc. '
+            help='Enable sharing of book content via Facebook etc. '
                 ' on the Kindle. WARNING: Using this feature means that '
                 ' the book will not auto sync its last read position '
-                ' on multiple devices. Complain to Amazon.')
-        ),
+                ' on multiple devices. Complain to Amazon.'
+        )
     }
 
     def convert(self, oeb, output_path, input_plugin, opts, log):

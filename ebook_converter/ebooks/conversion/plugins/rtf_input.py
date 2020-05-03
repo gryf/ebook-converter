@@ -49,7 +49,8 @@ class RTFInput(InputFormatPlugin):
 
     options = {
         OptionRecommendation(name='ignore_wmf', recommended_value=False,
-            help=_('Ignore WMF images instead of replacing them with a placeholder image.')),
+            help='Ignore WMF images instead of replacing them with a '
+                 'placeholder image.'),
     }
 
     def generate_xml(self, stream):
@@ -259,8 +260,9 @@ class RTFInput(InputFormatPlugin):
             xml = self.generate_xml(stream.name)
         except RtfInvalidCodeException as e:
             self.log.exception('Unable to parse RTF')
-            raise ValueError(_('This RTF file has a feature calibre does not '
-            'support. Convert it to HTML first and then try it.\n%s')%e)
+            raise ValueError('This RTF file has a feature calibre does not '
+                             'support. Convert it to HTML first and then try '
+                             'it.\n%s' % e)
 
         d = glob.glob(os.path.join('*_rtf_pict_dir', 'picts.rtf'))
         if d:
@@ -303,9 +305,9 @@ class RTFInput(InputFormatPlugin):
         stream.seek(0)
         mi = get_metadata(stream, 'rtf')
         if not mi.title:
-            mi.title = _('Unknown')
+            mi.title = 'Unknown'
         if not mi.authors:
-            mi.authors = [_('Unknown')]
+            mi.authors = ['Unknown']
         opf = OPFCreator(os.getcwd(), mi)
         opf.create_manifest([(u'index.xhtml', None)])
         opf.create_spine([u'index.xhtml'])

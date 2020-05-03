@@ -141,31 +141,31 @@ class FB2Output(OutputFormatPlugin):
         'home_sex',  # Erotica & sex
         'home',  # Other
     ]
-    ui_data = {
-        'sectionize': {
-            'toc': _('Section per entry in the ToC'),
-            'files': _('Section per file'),
-            'nothing': _('A single section')
-        },
-        'genres': FB2_GENRES,
-    }
+    ui_data = {'sectionize': {'toc': 'Section per entry in the ToC',
+                              'files': 'Section per file',
+                              'nothing': 'A single section'},
+               'genres': FB2_GENRES}
 
     options = {
         OptionRecommendation(name='sectionize',
             recommended_value='files', level=OptionRecommendation.LOW,
             choices=list(ui_data['sectionize']),
-            help=_('Specify how sections are created:\n'
-                ' * nothing: {nothing}\n'
-                ' * files: {files}\n'
-                ' * toc: {toc}\n'
-                'If ToC based generation fails, adjust the "Structure detection" and/or "Table of Contents" settings '
-                '(turn on "Force use of auto-generated Table of Contents").').format(**ui_data['sectionize'])
+            help='Specify how sections are created:\n'
+                 ' * nothing: {nothing}\n'
+                 ' * files: {files}\n'
+                 ' * toc: {toc}\n'
+                 'If ToC based generation fails, adjust the "Structure '
+                 'detection" and/or "Table of Contents" settings (turn on '
+                 '"Force use of auto-generated Table of Contents")'
+                 '.'.format(**ui_data['sectionize'])
         ),
         OptionRecommendation(name='fb2_genre',
             recommended_value='antique', level=OptionRecommendation.LOW,
             choices=FB2_GENRES,
-            help=(_('Genre for the book. Choices: %s\n\n See: ') % ', '.join(FB2_GENRES)
-                ) + 'http://www.fictionbook.org/index.php/Eng:FictionBook_2.1_genres ' + _('for a complete list with descriptions.')),
+            help='Genre for the book. Choices: %s\n\n See: http://www.'
+                 'fictionbook.org/index.php/Eng:FictionBook_2.1_genres for a '
+                 'complete list with descriptions.'  % ', '.join(FB2_GENRES)),
+
     }
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):

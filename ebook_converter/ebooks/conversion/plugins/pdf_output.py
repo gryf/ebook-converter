@@ -29,114 +29,111 @@ class PDFOutput(OutputFormatPlugin):
 
     options = {
         OptionRecommendation(name='use_profile_size', recommended_value=False,
-            help=_('Instead of using the paper size specified in the PDF Output options,'
+            help='Instead of using the paper size specified in the PDF Output options,'
                    ' use a paper size corresponding to the current output profile.'
-                   ' Useful if you want to generate a PDF for viewing on a specific device.')),
+                   ' Useful if you want to generate a PDF for viewing on a specific device.'),
         OptionRecommendation(name='unit', recommended_value='inch',
             level=OptionRecommendation.LOW, short_switch='u', choices=UNITS,
-            help=_('The unit of measure for page sizes. Default is inch. Choices '
+            help='The unit of measure for page sizes. Default is inch. Choices '
             'are {} '
-            'Note: This does not override the unit for margins!').format(', '.join(UNITS))),
+            'Note: This does not override the unit for margins!'.format(', '.join(UNITS))),
         OptionRecommendation(name='paper_size', recommended_value='letter',
             level=OptionRecommendation.LOW, choices=PAPER_SIZES,
-            help=_('The size of the paper. This size will be overridden when a '
+            help='The size of the paper. This size will be overridden when a '
             'non default output profile is used. Default is letter. Choices '
-            'are {}').format(', '.join(PAPER_SIZES))),
+            'are {}'.format(', '.join(PAPER_SIZES))),
         OptionRecommendation(name='custom_size', recommended_value=None,
-            help=_('Custom size of the document. Use the form widthxheight '
+            help='Custom size of the document. Use the form widthxheight '
             'e.g. `123x321` to specify the width and height. '
-            'This overrides any specified paper-size.')),
+            'This overrides any specified paper-size.'),
         OptionRecommendation(name='preserve_cover_aspect_ratio',
             recommended_value=False,
-            help=_('Preserve the aspect ratio of the cover, instead'
+            help='Preserve the aspect ratio of the cover, instead'
                 ' of stretching it to fill the full first page of the'
-                ' generated pdf.')),
+                ' generated pdf.'),
         OptionRecommendation(name='pdf_serif_family',
-            recommended_value='Times', help=_(
-                'The font family used to render serif fonts. Will work only if the font is available system-wide.')),
+            recommended_value='Times', help=
+                'The font family used to render serif fonts. Will work only if the font is available system-wide.'),
         OptionRecommendation(name='pdf_sans_family',
-            recommended_value='Helvetica', help=_(
-                'The font family used to render sans-serif fonts. Will work only if the font is available system-wide.')),
+            recommended_value='Helvetica', help=
+                'The font family used to render sans-serif fonts. Will work only if the font is available system-wide.'),
         OptionRecommendation(name='pdf_mono_family',
-            recommended_value='Courier', help=_(
-                'The font family used to render monospace fonts. Will work only if the font is available system-wide.')),
+            recommended_value='Courier', help=
+                'The font family used to render monospace fonts. Will work only if the font is available system-wide.'),
         OptionRecommendation(name='pdf_standard_font', choices=ui_data['font_types'],
-            recommended_value='serif', help=_(
-                'The font family used to render monospace fonts')),
+            recommended_value='serif', help=
+                'The font family used to render monospace fonts'),
         OptionRecommendation(name='pdf_default_font_size',
-            recommended_value=20, help=_(
-                'The default font size')),
-        OptionRecommendation(name='pdf_mono_font_size',
-            recommended_value=16, help=_(
-                'The default font size for monospaced text')),
+            recommended_value=20, help='The default font size'),
+        OptionRecommendation(name='pdf_mono_font_size', recommended_value=16,
+                             help='The default font size for monospaced text'),
         OptionRecommendation(name='pdf_hyphenate', recommended_value=False,
-            help=_('Break long words at the end of lines. This can give the text at the right margin a more even appearance.')),
+            help='Break long words at the end of lines. This can give the text at the right margin a more even appearance.'),
         OptionRecommendation(name='pdf_mark_links', recommended_value=False,
-            help=_('Surround all links with a red box, useful for debugging.')),
+            help='Surround all links with a red box, useful for debugging.'),
         OptionRecommendation(name='pdf_page_numbers', recommended_value=False,
-            help=_('Add page numbers to the bottom of every page in the generated PDF file. If you '
+            help='Add page numbers to the bottom of every page in the generated PDF file. If you '
                    'specify a footer template, it will take precedence '
-                   'over this option.')),
+                   'over this option.'),
         OptionRecommendation(name='pdf_footer_template', recommended_value=None,
-            help=_('An HTML template used to generate %s on every page.'
-                   ' The strings _PAGENUM_, _TITLE_, _AUTHOR_ and _SECTION_ will be replaced by their current values.')%_('footers')),
+            help='An HTML template used to generate %s on every page.'
+                   ' The strings _PAGENUM_, _TITLE_, _AUTHOR_ and _SECTION_ will be replaced by their current values.' % 'footers'),
         OptionRecommendation(name='pdf_header_template', recommended_value=None,
-            help=_('An HTML template used to generate %s on every page.'
-                   ' The strings _PAGENUM_, _TITLE_, _AUTHOR_ and _SECTION_ will be replaced by their current values.')%_('headers')),
+            help='An HTML template used to generate %s on every page.'
+                   ' The strings _PAGENUM_, _TITLE_, _AUTHOR_ and _SECTION_ will be replaced by their current values.' % 'headers'),
         OptionRecommendation(name='pdf_add_toc', recommended_value=False,
-            help=_('Add a Table of Contents at the end of the PDF that lists page numbers. '
-                   'Useful if you want to print out the PDF. If this PDF is intended for electronic use, use the PDF Outline instead.')),
+            help='Add a Table of Contents at the end of the PDF that lists page numbers. '
+                   'Useful if you want to print out the PDF. If this PDF is intended for electronic use, use the PDF Outline instead.'),
         OptionRecommendation(name='toc_title', recommended_value=None,
-            help=_('Title for generated table of contents.')
+            help='Title for generated table of contents.'
         ),
 
         OptionRecommendation(name='pdf_page_margin_left', recommended_value=72.0,
             level=OptionRecommendation.LOW,
-            help=_('The size of the left page margin, in pts. Default is 72pt.'
-                   ' Overrides the common left page margin setting.')
+            help='The size of the left page margin, in pts. Default is 72pt.'
+                   ' Overrides the common left page margin setting.'
         ),
 
         OptionRecommendation(name='pdf_page_margin_top', recommended_value=72.0,
             level=OptionRecommendation.LOW,
-            help=_('The size of the top page margin, in pts. Default is 72pt.'
-                   ' Overrides the common top page margin setting, unless set to zero.')
+            help='The size of the top page margin, in pts. Default is 72pt.'
+                   ' Overrides the common top page margin setting, unless set to zero.'
         ),
 
         OptionRecommendation(name='pdf_page_margin_right', recommended_value=72.0,
             level=OptionRecommendation.LOW,
-            help=_('The size of the right page margin, in pts. Default is 72pt.'
-                   ' Overrides the common right page margin setting, unless set to zero.')
+            help='The size of the right page margin, in pts. Default is 72pt.'
+                   ' Overrides the common right page margin setting, unless set to zero.'
         ),
 
         OptionRecommendation(name='pdf_page_margin_bottom', recommended_value=72.0,
             level=OptionRecommendation.LOW,
-            help=_('The size of the bottom page margin, in pts. Default is 72pt.'
-                   ' Overrides the common bottom page margin setting, unless set to zero.')
+            help='The size of the bottom page margin, in pts. Default is 72pt.'
+                   ' Overrides the common bottom page margin setting, unless set to zero.'
         ),
         OptionRecommendation(name='pdf_use_document_margins', recommended_value=False,
-            help=_('Use the page margins specified in the input document via @page CSS rules.'
+            help='Use the page margins specified in the input document via @page CSS rules.'
             ' This will cause the margins specified in the conversion settings to be ignored.'
-            ' If the document does not specify page margins, the conversion settings will be used as a fallback.')
+            ' If the document does not specify page margins, the conversion settings will be used as a fallback.'
         ),
         OptionRecommendation(name='pdf_page_number_map', recommended_value=None,
-            help=_('Adjust page numbers, as needed. Syntax is a JavaScript expression for the page number.'
-                ' For example, "if (n < 3) 0; else n - 3;", where n is current page number.')
+            help='Adjust page numbers, as needed. Syntax is a JavaScript expression for the page number.'
+                ' For example, "if (n < 3) 0; else n - 3;", where n is current page number.'
         ),
         OptionRecommendation(name='uncompressed_pdf',
-            recommended_value=False, help=_(
-                'Generate an uncompressed PDF, useful for debugging.')
+            recommended_value=False, help=
+                'Generate an uncompressed PDF, useful for debugging.'
         ),
         OptionRecommendation(name='pdf_odd_even_offset', recommended_value=0.0,
             level=OptionRecommendation.LOW,
-            help=_(
+            help=
                 'Shift the text horizontally by the specified offset (in pts).'
                 ' On odd numbered pages, it is shifted to the right and on even'
                 ' numbered pages to the left. Use negative numbers for the opposite'
                 ' effect. Note that this setting is ignored on pages where the margins'
                 ' are smaller than the specified offset. Shifting is done by setting'
                 ' the PDF CropBox, not all software respects the CropBox.'
-            )
-        ),
+        )
 
     }
 

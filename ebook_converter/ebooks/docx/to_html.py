@@ -61,7 +61,7 @@ class Convert(object):
         self.ws_pat = re.compile(r'[\n\r\t]')
         self.log = self.docx.log
         self.detect_cover = detect_cover
-        self.notes_text = notes_text or _('Notes')
+        self.notes_text = notes_text or 'Notes'
         self.notes_nopb = notes_nopb
         self.nosupsub = nosupsub
         self.dest_dir = dest_dir or os.getcwd()
@@ -77,7 +77,7 @@ class Convert(object):
         self.html = HTML(
             HEAD(
                 META(charset='utf-8'),
-                TITLE(self.mi.title or _('Unknown')),
+                TITLE(self.mi.title or 'Unknown'),
                 LINK(rel='stylesheet', type='text/css', href='docx.css'),
             ),
             self.body
@@ -390,8 +390,9 @@ class Convert(object):
 
         def process_guide(E, guide):
             if self.toc_anchor is not None:
-                guide.append(E.reference(
-                    href='index.html#' + self.toc_anchor, title=_('Table of Contents'), type='toc'))
+                guide.append(E.reference(href='index.html#' + self.toc_anchor,
+                                         title='Table of Contents',
+                                         type='toc'))
         toc_file = os.path.join(self.dest_dir, 'toc.ncx')
         with open(os.path.join(self.dest_dir, 'metadata.opf'), 'wb') as of, open(toc_file, 'wb') as ncx:
             opf.render(of, ncx, 'toc.ncx', process_guide=process_guide)

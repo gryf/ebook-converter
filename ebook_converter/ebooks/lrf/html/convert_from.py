@@ -322,9 +322,9 @@ class HTMLConverter(object):
 
         if not self.book_designer and self.is_book_designer(raw):
             self.book_designer = True
-            self.log.info(_('\tBook Designer file detected.'))
+            self.log.info('\tBook Designer file detected.')
 
-        self.log.info(_('\tParsing HTML...'))
+        self.log.info('\tParsing HTML...')
 
         if self.baen:
             nmassage.extend(HTMLConverter.BAEN)
@@ -340,7 +340,7 @@ class HTMLConverter(object):
         soup = html5_parser(raw)
         if not self.baen and self.is_baen(soup):
             self.baen = True
-            self.log.info(_('\tBaen file detected. Re-parsing...'))
+            self.log.info('\tBaen file detected. Re-parsing...')
             return self.preprocess(raw)
         if self.book_designer:
             t = soup.find(id='BookTitle')
@@ -356,7 +356,7 @@ class HTMLConverter(object):
             try:
                 with open(os.path.join(tdir, 'html2lrf-verbose.html'), 'wb') as f:
                     f.write(str(soup).encode('utf-8'))
-                    self.log.info(_('Written preprocessed HTML to ')+f.name)
+                    self.log.info('Written preprocessed HTML to '+f.name)
             except:
                 pass
 
@@ -372,7 +372,8 @@ class HTMLConverter(object):
                 self.css[selector] = self.override_css[selector]
 
         self.file_name = os.path.basename(path)
-        self.log.info(_('Processing %s')%(path if self.verbose else self.file_name))
+        self.log.info('Processing %s' % (path if self.verbose else
+                                         self.file_name))
 
         if not os.path.exists(path):
             path = path.replace('&', '%26')  # convertlit replaces & with %26 in file names
@@ -385,7 +386,7 @@ class HTMLConverter(object):
         else:
             raw = xml_to_unicode(raw, self.verbose)[0]
         soup = self.preprocess(raw)
-        self.log.info(_('\tConverting to BBeB...'))
+        self.log.info('\tConverting to BBeB...')
         self.current_style = {}
         self.page_break_found = False
         if not isinstance(path, str):
@@ -533,12 +534,13 @@ class HTMLConverter(object):
                     for c in self.current_page.contents:
                         if isinstance(c, (TextBlock, ImageBlock)):
                             return c
-                raise ConversionError(_('Could not parse file: %s')%self.file_name)
+                raise ConversionError('Could not parse file: %s' %
+                                      self.file_name)
             else:
                 try:
                     index = self.book.pages().index(opage)
                 except ValueError:
-                    self.log.warning(_('%s is an empty file')%self.file_name)
+                    self.log.warning('%s is an empty file' % self.file_name)
                     tb = self.book.create_text_block()
                     self.current_page.append(tb)
                     return tb
@@ -546,7 +548,8 @@ class HTMLConverter(object):
                     for c in page.contents:
                         if isinstance(c, (TextBlock, ImageBlock, Canvas)):
                             return c
-                raise ConversionError(_('Could not parse file: %s')%self.file_name)
+                raise ConversionError('Could not parse file: %s' %
+                                      self.file_name)
 
         return top
 
@@ -557,9 +560,8 @@ class HTMLConverter(object):
                 para = children[i]
                 break
         if para is None:
-            raise ConversionError(
-                _('Failed to parse link %(tag)s %(children)s')%dict(
-                    tag=tag, children=children))
+            raise ConversionError('Failed to parse link %(tag)s %(children)s' %
+                                  dict(tag=tag, children=children))
         text = self.get_text(tag, 1000)
         if not text:
             text = 'Link'
@@ -941,9 +943,8 @@ class HTMLConverter(object):
                 self.scaled_images[path] = pt
                 return pt.name
             except (IOError, SystemError) as err:  # PIL chokes on interlaced PNG images as well a some GIF images
-                self.log.warning(
-                    _('Unable to process image %(path)s. Error: %(err)s')%dict(
-                        path=path, err=err))
+                self.log.warning('Unable to process image %(path)s. Error: '
+                                 '%(err)s' % dict(path=path, err=err))
 
         if width is None or height is None:
             width, height = im.size
@@ -988,7 +989,8 @@ class HTMLConverter(object):
                 self.rotated_images[path] = pt
                 width, height = im.size
             except IOError:  # PIL chokes on interlaced PNG files and since auto-rotation is not critical we ignore the error
-                self.log.debug(_('Unable to process interlaced PNG %s')% original_path)
+                self.log.debug('Unable to process interlaced PNG %s' %
+                               original_path)
             finally:
                 pt.close()
 
@@ -1725,9 +1727,11 @@ class HTMLConverter(object):
                 try:
                     self.process_table(tag, tag_css)
                 except Exception as err:
-                    self.log.warning(_('An error occurred while processing a table: %s. Ignoring table markup.')%repr(err))
+                    self.log.warning('An error occurred while processing a '
+                                     'table: %s. Ignoring table markup.' %
+                                     repr(err))
                     self.log.exception('')
-                    self.log.debug(_('Bad table:\n%s')%str(tag)[:300])
+                    self.log.debug('Bad table:\n%s' % str(tag)[:300])
                     self.in_table = False
                     self.process_children(tag, tag_css, tag_pseudo_css)
                 finally:
@@ -1749,7 +1753,7 @@ class HTMLConverter(object):
         for block, xpos, ypos, delta, targets in table.blocks(int(ps['textwidth']), int(ps['textheight'])):
             if not block:
                 if ypos > int(ps['textheight']):
-                    raise Exception(_('Table has cell that is too large'))
+                    raise Exception('Table has cell that is too large')
                 canvases.append(Canvas(int(self.current_page.pageStyle.attrs['textwidth']), ypos+rowpad,
                         blockrule='block-fixed'))
                 for name in targets:
@@ -1813,10 +1817,10 @@ def process_file(path, options, logger):
                 tim.save(tf.name)
                 tpath = tf.name
             except IOError as err:  # PIL sometimes fails, for example on interlaced PNG files
-                logger.warn(_('Could not read cover image: %s'), err)
+                logger.warn('Could not read cover image: %s', err)
                 options.cover = None
         else:
-            raise ConversionError(_('Cannot read from: %s')% (options.cover,))
+            raise ConversionError('Cannot read from: %s'% (options.cover,))
 
     if not options.title:
         options.title = default_title
@@ -1844,9 +1848,9 @@ def process_file(path, options, logger):
         header = Paragraph()
         fheader = options.headerformat
         if not options.title:
-            options.title = _('Unknown')
+            options.title = 'Unknown'
         if not options.author:
-            options.author = _('Unknown')
+            options.author = 'Unknown'
         if not fheader:
             fheader = "%t by %a"
         fheader = re.sub(r'(?<!%)%t', options.title, fheader)
@@ -1946,4 +1950,4 @@ def try_opf(path, options, logger):
         if not getattr(options, 'toc', None):
             options.toc   = opf.toc
     except Exception:
-        logger.exception(_('Failed to process OPF file'))
+        logger.exception('Failed to process OPF file')

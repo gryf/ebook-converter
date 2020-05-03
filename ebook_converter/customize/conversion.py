@@ -101,7 +101,7 @@ class InputFormatPlugin(Plugin):
     The main action happens in :meth:`convert`.
     '''
 
-    type = _('Conversion input')
+    type = 'Conversion input'
     can_be_disabled = False
     supported_platforms = ['windows', 'osx', 'linux']
     commit_name = None  # unique name under which options for this plugin are saved
@@ -137,11 +137,11 @@ class InputFormatPlugin(Plugin):
     common_options = {
         OptionRecommendation(name='input_encoding',
             recommended_value=None, level=OptionRecommendation.LOW,
-            help=_('Specify the character encoding of the input document. If '
-                   'set this option will override any encoding declared by the '
-                   'document itself. Particularly useful for documents that '
-                   'do not declare an encoding or that have erroneous '
-                   'encoding declarations.')
+            help='Specify the character encoding of the input document. If '
+                 'set this option will override any encoding declared by the '
+                 'document itself. Particularly useful for documents that '
+                 'do not declare an encoding or that have erroneous '
+                 'encoding declarations.'
         )}
 
     #: Options to customize the behavior of this plugin. Every option must be an
@@ -239,7 +239,7 @@ class OutputFormatPlugin(Plugin):
     The main action happens in :meth:`convert`.
     '''
 
-    type = _('Conversion output')
+    type = 'Conversion output'
     can_be_disabled = False
     supported_platforms = ['windows', 'osx', 'linux']
     commit_name = None  # unique name under which options for this plugin are saved
@@ -255,9 +255,9 @@ class OutputFormatPlugin(Plugin):
     common_options = {
         OptionRecommendation(name='pretty_print',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('If specified, the output plugin will try to create output '
-            'that is as human readable as possible. May not have any effect '
-            'for some output plugins.')
+            help='If specified, the output plugin will try to create output '
+                 'that is as human readable as possible. May not have any '
+                 'effect for some output plugins.'
         )}
 
     #: Options to customize the behavior of this plugin. Every option must be an
@@ -270,7 +270,7 @@ class OutputFormatPlugin(Plugin):
 
     @property
     def description(self):
-        return _('Convert e-books to the %s format')%self.file_type
+        return 'Convert e-books to the %s format' % self.file_type
 
     def __init__(self, *args):
         Plugin.__init__(self, *args)

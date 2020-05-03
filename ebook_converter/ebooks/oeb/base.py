@@ -967,7 +967,7 @@ class Manifest(object):
             if title:
                 title = str(title[0])
             else:
-                title = _('Unknown')
+                title = 'Unknown'
 
             return self._parse_xhtml(convert_markdown(data, title=title))
 
@@ -1368,23 +1368,23 @@ class Guide(object):
         :attr:`href`: Book-internal URL of the referenced section.  May include
             a fragment identifier.
         """
-        _TYPES_TITLES = [('cover', __('Cover')),
-                         ('title-page', __('Title page')),
-                         ('toc', __('Table of Contents')),
-                         ('index', __('Index')),
-                         ('glossary', __('Glossary')),
-                         ('acknowledgements', __('Acknowledgements')),
-                         ('bibliography', __('Bibliography')),
-                         ('colophon', __('Colophon')),
-                         ('copyright-page', __('Copyright')),
-                         ('dedication', __('Dedication')),
-                         ('epigraph', __('Epigraph')),
-                         ('foreword', __('Foreword')),
-                         ('loi', __('List of illustrations')),
-                         ('lot', __('List of tables')),
-                         ('notes', __('Notes')),
-                         ('preface', __('Preface')),
-                         ('text', __('Main text'))]
+        _TYPES_TITLES = [('cover', 'Cover'),
+                         ('title-page', 'Title page'),
+                         ('toc', 'Table of Contents'),
+                         ('index', 'Index'),
+                         ('glossary', 'Glossary'),
+                         ('acknowledgements', 'Acknowledgements'),
+                         ('bibliography', 'Bibliography'),
+                         ('colophon', 'Colophon'),
+                         ('copyright-page', 'Copyright'),
+                         ('dedication', 'Dedication'),
+                         ('epigraph', 'Epigraph'),
+                         ('foreword', 'Foreword'),
+                         ('loi', 'List of illustrations'),
+                         ('lot', 'List of tables'),
+                         ('notes', 'Notes'),
+                         ('preface', 'Preface'),
+                         ('text', 'Main text')]
         TITLES = dict(_TYPES_TITLES)
         TYPES = frozenset(TITLES)
         ORDER = {t: i for i, (t, _) in enumerate(_TYPES_TITLES)}

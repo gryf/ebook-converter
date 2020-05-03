@@ -35,10 +35,9 @@ class SplitError(ValueError):
 
     def __init__(self, path, root):
         size = len(tostring(root))/1024.
-        ValueError.__init__(self,
-            _('Could not find reasonable point at which to split: '
-                '%(path)s Sub-tree size: %(size)d KB')%dict(
-                            path=path, size=size))
+        ValueError.__init__(self, 'Could not find reasonable point at which '
+                            'to split: %(path)s Sub-tree size: %(size)d KB' %
+                            {'path': path, 'size': size})
 
 
 class Split(object):

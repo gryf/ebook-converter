@@ -30,10 +30,10 @@ class TopazError(ValueError):
 class KFXError(ValueError):
 
     def __init__(self):
-        ValueError.__init__(self, _(
-            'This is an Amazon KFX book. It cannot be processed.'
-            ' See {} for information on how to handle KFX books.'
-        ).format('https://www.mobileread.com/forums/showthread.php?t=283371'))
+        ValueError.__init__(self, 'This is an Amazon KFX book. It cannot be '
+                            'processed. See https://www.mobileread.com/forums/'
+                            'showthread.php?t=283371 for information on how '
+                            'to handle KFX books.')
 
 
 class MobiReader(object):
@@ -77,7 +77,8 @@ class MobiReader(object):
 
         raw = stream.read()
         if raw.startswith(b'TPZ'):
-            raise TopazError(_('This is an Amazon Topaz book. It cannot be processed.'))
+            raise TopazError('This is an Amazon Topaz book. It cannot be '
+                             'processed.')
         if raw.startswith(b'\xeaDRMION\xee'):
             raise KFXError()
 
@@ -642,7 +643,7 @@ class MobiReader(object):
     def create_opf(self, htmlfile, guide=None, root=None):
         mi = getattr(self.book_header.exth, 'mi', self.embedded_mi)
         if mi is None:
-            mi = MetaInformation(self.book_header.title, [_('Unknown')])
+            mi = MetaInformation(self.book_header.title, ['Unknown'])
         opf = OPFCreator(os.path.dirname(htmlfile), mi)
         if hasattr(self.book_header.exth, 'cover_offset'):
             opf.cover = 'images/%05d.jpg' % (self.book_header.exth.cover_offset + 1)

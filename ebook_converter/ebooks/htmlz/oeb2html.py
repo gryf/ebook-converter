@@ -45,7 +45,7 @@ class OEB2HTML(object):
         try:
             self.book_title = str(oeb_book.metadata.title[0])
         except Exception:
-            self.book_title = _('Unknown')
+            self.book_title = 'Unknown'
         self.links = {}
         self.images = {}
         self.base_hrefs = [item.href for item in oeb_book.spine]

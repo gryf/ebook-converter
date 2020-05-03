@@ -276,9 +276,9 @@ class Extract(ODF2XHTML):
             stream.seek(0)
             mi = get_metadata(stream, 'odt')
             if not mi.title:
-                mi.title = _('Unknown')
+                mi.title = 'Unknown'
             if not mi.authors:
-                mi.authors = [_('Unknown')]
+                mi.authors = ['Unknown']
             self.filter_load(stream, mi, log)
 
             # NOTE(gryf): Here is a workaround for ODF2XHTML.xhtml() method,

@@ -402,7 +402,7 @@ class WindowsAtomicFolderMove(object):
                 self.close_handles()
                 if getattr(e, 'winerror', 0) == winerror.ERROR_SHARING_VIOLATION:
                     err = IOError(errno.EACCES,
-                            _('File is open in another process'))
+                            'File is open in another process')
                     err.filename = f
                     raise err
                 prints('CreateFile failed for: %r' % f)

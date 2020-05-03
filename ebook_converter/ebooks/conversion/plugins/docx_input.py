@@ -8,19 +8,21 @@ __copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 class DOCXInput(InputFormatPlugin):
     name        = 'DOCX Input'
     author      = 'Kovid Goyal'
-    description = _('Convert DOCX files (.docx and .docm) to HTML')
+    description = 'Convert DOCX files (.docx and .docm) to HTML'
     file_types  = {'docx', 'docm'}
     commit_name = 'docx_input'
 
     options = {
         OptionRecommendation(name='docx_no_cover', recommended_value=False,
-            help=_('Normally, if a large image is present at the start of the document that looks like a cover, '
-                   'it will be removed from the document and used as the cover for created e-book. This option '
-                   'turns off that behavior.')),
+            help='Normally, if a large image is present at the start of the '
+                 'document that looks like a cover, it will be removed from '
+                 'the document and used as the cover for created e-book. This '
+                 'option turns off that behavior.'),
         OptionRecommendation(name='docx_no_pagebreaks_between_notes', recommended_value=False,
-            help=_('Do not insert a page break after every endnote.')),
+            help='Do not insert a page break after every endnote.'),
         OptionRecommendation(name='docx_inline_subsup', recommended_value=False,
-            help=_('Render superscripts and subscripts so that they do not affect the line height.')),
+            help='Render superscripts and subscripts so that they do not '
+                 'affect the line height.'),
     }
 
     recommendations = {('page_breaks_before', '/', OptionRecommendation.MED)}

@@ -146,14 +146,14 @@ class OEBReader(object):
         m.add('identifier', str(uuid.uuid4()), id='uuid_id', scheme='uuid')
         self.oeb.uid = self.oeb.metadata.identifier[-1]
         if not m.title:
-            m.add('title', self.oeb.translate(__('Unknown')))
+            m.add('title', self.oeb.translate('Unknown'))
         has_aut = False
         for x in m.creator:
             if getattr(x, 'role', '').lower() in ('', 'aut'):
                 has_aut = True
                 break
         if not has_aut:
-            m.add('creator', self.oeb.translate(__('Unknown')), role='aut')
+            m.add('creator', self.oeb.translate('Unknown'), role='aut')
 
     def _manifest_prune_invalid(self):
         '''

@@ -222,7 +222,7 @@ class DOCX(object):
 
     @property
     def metadata(self):
-        mi = Metadata(_('Unknown'))
+        mi = Metadata('Unknown')
         dp_name, ap_name = self.get_document_properties_names()
         if dp_name:
             try:

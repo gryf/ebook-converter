@@ -25,51 +25,54 @@ class ComicInput(InputFormatPlugin):
 
     options = {
         OptionRecommendation(name='colors', recommended_value=0,
-            help=_('Reduce the number of colors used in the image. This works only'
-                   ' if you choose the PNG output format. It is useful to reduce file sizes.'
-                   ' Set to zero to turn off. Maximum value is 256. It is off by default.')),
+            help='Reduce the number of colors used in the image. This works '
+                 'only if you choose the PNG output format. It is useful to '
+                 'reduce file sizes. Set to zero to turn off. Maximum value '
+                 'is 256. It is off by default.'),
         OptionRecommendation(name='dont_normalize', recommended_value=False,
-            help=_('Disable normalize (improve contrast) color range '
-            'for pictures. Default: False')),
+            help='Disable normalize (improve contrast) color range '
+                 'for pictures. Default: False'),
         OptionRecommendation(name='keep_aspect_ratio', recommended_value=False,
-            help=_('Maintain picture aspect ratio. Default is to fill the screen.')),
+            help='Maintain picture aspect ratio. Default is to fill the '
+                 'screen.'),
         OptionRecommendation(name='dont_sharpen', recommended_value=False,
-            help=_('Disable sharpening.')),
+            help='Disable sharpening.'),
         OptionRecommendation(name='disable_trim', recommended_value=False,
-            help=_('Disable trimming of comic pages. For some comics, '
-                     'trimming might remove content as well as borders.')),
+            help='Disable trimming of comic pages. For some comics, trimming '
+                 'might remove content as well as borders.'),
         OptionRecommendation(name='landscape', recommended_value=False,
-            help=_("Don't split landscape images into two portrait images")),
+            help="Don't split landscape images into two portrait images"),
         OptionRecommendation(name='wide', recommended_value=False,
-            help=_("Keep aspect ratio and scale image using screen height as "
-            "image width for viewing in landscape mode.")),
+            help="Keep aspect ratio and scale image using screen height as "
+                 "image width for viewing in landscape mode."),
         OptionRecommendation(name='right2left', recommended_value=False,
-              help=_('Used for right-to-left publications like manga. '
-              'Causes landscape pages to be split into portrait pages '
-              'from right to left.')),
+              help='Used for right-to-left publications like manga. '
+                   'Causes landscape pages to be split into portrait pages '
+                   'from right to left.'),
         OptionRecommendation(name='despeckle', recommended_value=False,
-              help=_('Enable Despeckle. Reduces speckle noise. '
-              'May greatly increase processing time.')),
+              help='Enable Despeckle. Reduces speckle noise. May greatly '
+                   'increase processing time.'),
         OptionRecommendation(name='no_sort', recommended_value=False,
-              help=_("Don't sort the files found in the comic "
-              "alphabetically by name. Instead use the order they were "
-              "added to the comic.")),
+              help="Don't sort the files found in the comic "
+                   "alphabetically by name. Instead use the order they were "
+                   "added to the comic."),
         OptionRecommendation(name='output_format', choices=['png', 'jpg'],
-            recommended_value='png', help=_('The format that images in the created e-book '
-                'are converted to. You can experiment to see which format gives '
-                'you optimal size and look on your device.')),
+                recommended_value='png',
+                help='The format that images in the created e-book are '
+                     'converted to. You can experiment to see which format '
+                     'gives you optimal size and look on your device.'),
         OptionRecommendation(name='no_process', recommended_value=False,
-              help=_("Apply no processing to the image")),
+              help="Apply no processing to the image"),
         OptionRecommendation(name='dont_grayscale', recommended_value=False,
-            help=_('Do not convert the image to grayscale (black and white)')),
+            help='Do not convert the image to grayscale (black and white)'),
         OptionRecommendation(name='comic_image_size', recommended_value=None,
-            help=_('Specify the image size as widthxheight pixels. Normally,'
-                ' an image size is automatically calculated from the output '
-                'profile, this option overrides it.')),
+            help='Specify the image size as widthxheight pixels. Normally,'
+                 ' an image size is automatically calculated from the output '
+                 'profile, this option overrides it.'),
         OptionRecommendation(name='dont_add_comic_pages_to_toc', recommended_value=False,
-            help=_('When converting a CBC do not add links to each page to'
-                ' the TOC. Note this only applies if the TOC has more than one'
-                ' section')),
+            help='When converting a CBC do not add links to each page to'
+                 ' the TOC. Note this only applies if the TOC has more than '
+                 'one section'),
         }
 
     recommendations = {
@@ -192,7 +195,7 @@ class ComicInput(InputFormatPlugin):
             raise ValueError('No comic pages found in %s'%stream.name)
 
         mi  = MetaInformation(os.path.basename(stream.name).rpartition('.')[0],
-            [_('Unknown')])
+            ['Unknown'])
         opf = OPFCreator(os.getcwd(), mi)
         entries = []
 
@@ -222,7 +225,7 @@ class ComicInput(InputFormatPlugin):
         if len(comics) == 1:
             wrappers = comics[0][2]
             for i, x in enumerate(wrappers):
-                toc.add_item(href(x), None, _('Page')+' %d'%(i+1),
+                toc.add_item(href(x), None, 'Page %d' % (i+1),
                         play_order=i)
         else:
             po = 0
@@ -234,7 +237,7 @@ class ComicInput(InputFormatPlugin):
                 if not opts.dont_add_comic_pages_to_toc:
                     for i, x in enumerate(wrappers):
                         stoc.add_item(href(x), None,
-                                _('Page')+' %d'%(i+1), play_order=po)
+                                'Page %d' % (i+1), play_order=po)
                         po += 1
         opf.set_toc(toc)
         with open('metadata.opf', 'wb') as m, open('toc.ncx', 'wb') as n:

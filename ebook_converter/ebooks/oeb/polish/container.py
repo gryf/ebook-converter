@@ -1458,12 +1458,13 @@ class AZW3Container(Container):
         with open(pathtoazw3, 'rb') as stream:
             raw = stream.read(3)
             if raw == b'TPZ':
-                raise InvalidMobi(_('This is not a MOBI file. It is a Topaz file.'))
+                raise InvalidMobi('This is not a MOBI file. It is a Topaz '
+                                  'file.')
 
             try:
                 header = MetadataHeader(stream, default_log)
             except MobiError:
-                raise InvalidMobi(_('This is not a MOBI file.'))
+                raise InvalidMobi('This is not a MOBI file.')
 
             if header.encryption_type != 0:
                 raise DRMError()
@@ -1471,15 +1472,16 @@ class AZW3Container(Container):
             kf8_type = header.kf8_type
 
             if kf8_type is None:
-                raise InvalidMobi(_('This MOBI file does not contain a KF8 format '
-                        'book. KF8 is the new format from Amazon. calibre can '
-                        'only edit MOBI files that contain KF8 books. Older '
-                        'MOBI files without KF8 are not editable.'))
+                raise InvalidMobi('This MOBI file does not contain a KF8 '
+                                  'format book. KF8 is the new format from '
+                                  'Amazon. calibre can only edit MOBI files '
+                                  'that contain KF8 books. Older MOBI files '
+                                  'without KF8 are not editable.')
 
             if kf8_type == 'joint':
-                raise InvalidMobi(_('This MOBI file contains both KF8 and '
-                    'older Mobi6 data. calibre can only edit MOBI files '
-                    'that contain only KF8 data.'))
+                raise InvalidMobi('This MOBI file contains both KF8 and older '
+                                  'Mobi6 data. calibre can only edit MOBI '
+                                  'files that contain only KF8 data.')
 
         try:
             opf_path, obfuscated_fonts = fork_job(

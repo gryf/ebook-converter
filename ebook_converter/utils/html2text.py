@@ -9,7 +9,7 @@ def html2text(html):
             r'<\s*(?P<solidus>/?)\s*[uU]\b(?P<rest>[^>]*)>',
             r'<\g<solidus>span\g<rest>>', html)
     h2t = HTML2Text()
-    h2t.default_image_alt = _('Unnamed image')
+    h2t.default_image_alt = 'Unnamed image'
     h2t.body_width = 0
     h2t.single_line_break = True
     h2t.emphasis_mark = '*'

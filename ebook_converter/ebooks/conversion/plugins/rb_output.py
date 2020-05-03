@@ -18,7 +18,7 @@ class RBOutput(OutputFormatPlugin):
     options = {
         OptionRecommendation(name='inline_toc',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Add Table of Contents to beginning of the book.'))}
+            help='Add Table of Contents to beginning of the book.')}
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
         from ebook_converter.ebooks.rb.writer import RBWriter

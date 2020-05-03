@@ -70,8 +70,8 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
                     stdin=subprocess.PIPE)
         except OSError as err:
             if err.errno == errno.ENOENT:
-                raise ConversionError(
-                    _('Could not find pdftohtml, check it is in your PATH'))
+                raise ConversionError('Could not find pdftohtml, check it is '
+                                      'in your PATH')
             else:
                 raise
         ret = eintr_retry_call(p.wait)

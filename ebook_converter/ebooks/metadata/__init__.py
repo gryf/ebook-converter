@@ -344,9 +344,9 @@ class ResourceCollection(object):
             res.set_basedir(path)
 
 
-def MetaInformation(title, authors=(_('Unknown'),)):
+def MetaInformation(title, authors=('Unknown',)):
     ''' Convenient encapsulation of book metadata, needed for compatibility
-        @param title: title or ``_('Unknown')`` or a MetaInformation object
+        @param title: title or ``'Unknown'`` or a MetaInformation object
         @param authors: List of strings or []
     '''
     from ebook_converter.ebooks.metadata.book.base import Metadata

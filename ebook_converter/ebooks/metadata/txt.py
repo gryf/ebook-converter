@@ -17,7 +17,7 @@ def get_metadata(stream, extract_cover=True):
     name = getattr(stream, 'name', '').rpartition('.')[0]
     if name:
         name = os.path.basename(name)
-    mi = MetaInformation(name or _('Unknown'), [_('Unknown')])
+    mi = MetaInformation(name or 'Unknown', ['Unknown'])
     stream.seek(0)
 
     mdata = ''

@@ -16,10 +16,6 @@ from ebook_converter.utils.config_base import (
 from ebook_converter.utils.lock import ExclusiveFile
 
 
-# optparse uses gettext.gettext instead of _ from builtins, so we
-# monkey patch it.
-optparse._ = _
-
 if False:
     # Make pyflakes happy
     Config, ConfigProxy, Option, OptionValues, StringConfig, OptionSet,
@@ -38,7 +34,7 @@ class CustomHelpFormatter(optparse.IndentedHelpFormatter):
         if parts:
             parts[0] = colored(parts[0], fg='yellow', bold=True)
         usage = ' '.join(parts)
-        return colored(_('Usage'), fg='blue', bold=True) + ': ' + usage
+        return colored('Usage', fg='blue', bold=True) + ': ' + usage
 
     def format_heading(self, heading):
         from ebook_converter.utils.terminal import colored
@@ -89,21 +85,18 @@ class OptionParser(optparse.OptionParser):
 
         usage = textwrap.dedent(usage)
         if epilog is None:
-            epilog = _('Created by ')+colored(__author__, fg='cyan')
-        usage += '\n\n'+_('''Whenever you pass arguments to %prog that have spaces in them, '''
-                          '''enclose the arguments in quotation marks. For example: "{}"''').format(
-                               "C:\\some path with spaces" if iswindows else '/some path/with spaces') +'\n'
+            epilog = 'Created by ' + colored(__author__, fg='cyan')
+        usage += ('\n\nWhenever you pass arguments to %prog that have spaces '
+                  'in them, enclose the arguments in quotation marks. For '
+                  'example: "{}"\n\n').format("C:\\some path with spaces"
+                                              if iswindows
+                                              else '/some path/with spaces')
         if version is None:
             version = '%%prog (%s %s)'%(__appname__, get_version())
         optparse.OptionParser.__init__(self, usage=usage, version=version, epilog=epilog,
                                formatter=CustomHelpFormatter(),
                                conflict_handler=conflict_handler, **kwds)
         self.gui_mode = gui_mode
-        if False:
-            # Translatable string from optparse
-            _("Options")
-            _("show this help message and exit")
-            _("show program's version number and exit")
 
     def print_usage(self, file=None):
         from ebook_converter.utils.terminal import ANSIStream

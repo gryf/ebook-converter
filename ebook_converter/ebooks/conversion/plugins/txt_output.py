@@ -22,9 +22,9 @@ class TXTOutput(OutputFormatPlugin):
     ui_data = {
             'newline_types': NEWLINE_TYPES,
             'formatting_types': {
-                'plain': _('Plain text'),
-                'markdown': _('Markdown formatted text'),
-                'textile': _('TexTile formatted text')
+                'plain': 'Plain text',
+                'markdown': 'Markdown formatted text',
+                'textile': 'TexTile formatted text'
             },
     }
 
@@ -32,52 +32,57 @@ class TXTOutput(OutputFormatPlugin):
         OptionRecommendation(name='newline', recommended_value='system',
             level=OptionRecommendation.LOW,
             short_switch='n', choices=NEWLINE_TYPES,
-            help=_('Type of newline to use. Options are %s. Default is \'system\'. '
+            help='Type of newline to use. Options are %s. Default is \'system\'. '
                 'Use \'old_mac\' for compatibility with Mac OS 9 and earlier. '
                 'For macOS use \'unix\'. \'system\' will default to the newline '
-                'type used by this OS.') % sorted(NEWLINE_TYPES)),
+                'type used by this OS.' % sorted(NEWLINE_TYPES)),
         OptionRecommendation(name='txt_output_encoding', recommended_value='utf-8',
             level=OptionRecommendation.LOW,
-            help=_('Specify the character encoding of the output document. '
-            'The default is utf-8.')),
+            help='Specify the character encoding of the output document. '
+                 'The default is utf-8.'),
         OptionRecommendation(name='inline_toc',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Add Table of Contents to beginning of the book.')),
+            help='Add Table of Contents to beginning of the book.'),
         OptionRecommendation(name='max_line_length',
             recommended_value=0, level=OptionRecommendation.LOW,
-            help=_('The maximum number of characters per line. This splits on '
-            'the first space before the specified value. If no space is found '
-            'the line will be broken at the space after and will exceed the '
-            'specified value. Also, there is a minimum of 25 characters. '
-            'Use 0 to disable line splitting.')),
+            help='The maximum number of characters per line. This splits on '
+                 'the first space before the specified value. If no space is '
+                 'found the line will be broken at the space after and will '
+                 'exceed the specified value. Also, there is a minimum of 25 '
+                 'characters. Use 0 to disable line splitting.'),
         OptionRecommendation(name='force_max_line_length',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Force splitting on the max-line-length value when no space '
-            'is present. Also allows max-line-length to be below the minimum')),
+            help='Force splitting on the max-line-length value when no space '
+                 'is present. Also allows max-line-length to be below the '
+                 'minimum'),
         OptionRecommendation(name='txt_output_formatting',
              recommended_value='plain',
              choices=list(ui_data['formatting_types']),
-             help=_('Formatting used within the document.\n'
-                    '* plain: {plain}\n'
-                    '* markdown: {markdown}\n'
-                    '* textile: {textile}').format(**ui_data['formatting_types'])),
+             help='Formatting used within the document.\n'
+                  '* plain: {plain}\n'
+                  '* markdown: {markdown}\n'
+                  '* textile: {textile}'
+                  ''.format(**ui_data['formatting_types'])),
         OptionRecommendation(name='keep_links',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Do not remove links within the document. This is only '
-            'useful when paired with a txt-output-formatting option that '
-            'is not none because links are always removed with plain text output.')),
+            help='Do not remove links within the document. This is only '
+                 'useful when paired with a txt-output-formatting option that '
+                 'is not none because links are always removed with plain '
+                 'text output.'),
         OptionRecommendation(name='keep_image_references',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Do not remove image references within the document. This is only '
-            'useful when paired with a txt-output-formatting option that '
-            'is not none because links are always removed with plain text output.')),
+            help='Do not remove image references within the document. This is '
+                 'only useful when paired with a txt-output-formatting option '
+                 'that is not none because links are always removed with '
+                 'plain text output.'),
         OptionRecommendation(name='keep_color',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Do not remove font color from output. This is only useful when '
-                   'txt-output-formatting is set to textile. Textile is the only '
-                   'formatting that supports setting font color. If this option is '
-                   'not specified font color will not be set and default to the '
-                   'color displayed by the reader (generally this is black).')),
+            help='Do not remove font color from output. This is only useful '
+                 'when txt-output-formatting is set to textile. Textile is '
+                 'the only formatting that supports setting font color. If '
+                 'this option is not specified font color will not be set and '
+                 'default to the color displayed by the reader (generally '
+                 'this is black).')
      }
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):

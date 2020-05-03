@@ -30,18 +30,18 @@ class HTMLOutput(OutputFormatPlugin):
 
     options = {
         OptionRecommendation(name='template_css',
-            help=_('CSS file used for the output instead of the default file')),
+            help='CSS file used for the output instead of the default file'),
 
         OptionRecommendation(name='template_html_index',
-            help=_('Template used for generation of the HTML index file instead of the default file')),
+            help='Template used for generation of the HTML index file instead of the default file'),
 
         OptionRecommendation(name='template_html',
-            help=_('Template used for the generation of the HTML contents of the book instead of the default file')),
+            help='Template used for the generation of the HTML contents of the book instead of the default file'),
 
         OptionRecommendation(name='extract_to',
-            help=_('Extract the contents of the generated ZIP file to the '
+            help='Extract the contents of the generated ZIP file to the '
                 'specified directory. WARNING: The contents of the directory '
-                'will be deleted.')
+                'will be deleted.'
         ),
     }
 

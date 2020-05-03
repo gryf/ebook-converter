@@ -110,7 +110,7 @@ def get_metadata(stream):
     root = _get_fbroot(get_fb2_data(stream)[0])
     ctx = Context(root)
     book_title = _parse_book_title(root, ctx)
-    authors = _parse_authors(root, ctx) or [_('Unknown')]
+    authors = _parse_authors(root, ctx) or ['Unknown']
 
     # fallback for book_title
     if book_title:
@@ -118,7 +118,7 @@ def get_metadata(stream):
     else:
         book_title = force_unicode(os.path.splitext(
             os.path.basename(getattr(stream, 'name',
-                _('Unknown'))))[0])
+                'Unknown')))[0])
     mi = MetaInformation(book_title, authors)
 
     try:
@@ -173,7 +173,7 @@ def _parse_authors(root, ctx):
 
     # if no author so far
     if not authors:
-        authors.append(_('Unknown'))
+        authors.append('Unknown')
 
     return authors
 

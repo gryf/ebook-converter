@@ -30,78 +30,79 @@ class BIBTEX(CatalogPlugin):
                 default='all',
                 dest='fields',
                 action=None,
-                help=_('The fields to output when cataloging books in the '
+                help='The fields to output when cataloging books in the '
                     'database.  Should be a comma-separated list of fields.\n'
                     'Available fields: %(fields)s.\n'
                     'plus user-created custom fields.\n'
                     'Example: %(opt)s=title,authors,tags\n'
                     "Default: '%%default'\n"
-                    "Applies to: BIBTEX output format")%dict(
+                    "Applies to: BIBTEX output format" % dict(
                         fields=', '.join(FIELDS), opt='--fields')),
 
             Option('--sort-by',
                 default='id',
                 dest='sort_by',
                 action=None,
-                help=_('Output field to sort on.\n'
+                help='Output field to sort on.\n'
                 'Available fields: author_sort, id, rating, size, timestamp, title.\n'
                 "Default: '%default'\n"
-                "Applies to: BIBTEX output format")),
+                "Applies to: BIBTEX output format"),
 
             Option('--create-citation',
                 default='True',
                 dest='impcit',
                 action=None,
-                help=_('Create a citation for BibTeX entries.\n'
+                help='Create a citation for BibTeX entries.\n'
                 'Boolean value: True, False\n'
                 "Default: '%default'\n"
-                "Applies to: BIBTEX output format")),
+                "Applies to: BIBTEX output format"),
 
             Option('--add-files-path',
                 default='True',
                 dest='addfiles',
                 action=None,
-                help=_('Create a file entry if formats is selected for BibTeX entries.\n'
+                help='Create a file entry if formats is selected for BibTeX entries.\n'
                 'Boolean value: True, False\n'
                 "Default: '%default'\n"
-                "Applies to: BIBTEX output format")),
+                "Applies to: BIBTEX output format"),
 
             Option('--citation-template',
                 default='{authors}{id}',
                 dest='bib_cit',
                 action=None,
-                help=_('The template for citation creation from database fields.\n'
+                help='The template for citation creation from database fields.\n'
                     'Should be a template with {} enclosed fields.\n'
                     'Available fields: %s.\n'
                     "Default: '%%default'\n"
-                    "Applies to: BIBTEX output format")%', '.join(TEMPLATE_ALLOWED_FIELDS)),
+                    "Applies to: BIBTEX output format" %
+                   ', '.join(TEMPLATE_ALLOWED_FIELDS)),
 
             Option('--choose-encoding',
                 default='utf8',
                 dest='bibfile_enc',
                 action=None,
-                help=_('BibTeX file encoding output.\n'
+                help='BibTeX file encoding output.\n'
                 'Available types: utf8, cp1252, ascii.\n'
                 "Default: '%default'\n"
-                "Applies to: BIBTEX output format")),
+                "Applies to: BIBTEX output format"),
 
             Option('--choose-encoding-configuration',
                 default='strict',
                 dest='bibfile_enctag',
                 action=None,
-                help=_('BibTeX file encoding flag.\n'
+                help='BibTeX file encoding flag.\n'
                 'Available types: strict, replace, ignore, backslashreplace.\n'
                 "Default: '%default'\n"
-                "Applies to: BIBTEX output format")),
+                "Applies to: BIBTEX output format"),
 
             Option('--entry-type',
                 default='book',
                 dest='bib_entry',
                 action=None,
-                help=_('Entry type for BibTeX catalog.\n'
+                help='Entry type for BibTeX catalog.\n'
                 'Available types: book, misc, mixed.\n'
                 "Default: '%default'\n"
-                "Applies to: BIBTEX output format"))]
+                "Applies to: BIBTEX output format")]
 
     def run(self, path_to_output, opts, db, notification=DummyReporter()):
         from ebook_converter.utils.date import isoformat

@@ -122,10 +122,10 @@ def get_metadata(stream, cover=True):
             with open(covpath, 'rb') as f:
                 cdata = f.read()
 
-    title = info.get('Title', None) or _('Unknown')
+    title = info.get('Title', None) or 'Unknown'
     au = info.get('Author', None)
     if au is None:
-        au = [_('Unknown')]
+        au = ['Unknown']
     else:
         au = string_to_authors(au)
     mi = MetaInformation(title, au)

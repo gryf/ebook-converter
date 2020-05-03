@@ -24,7 +24,7 @@ class LRFOptions(object):
             if val < 0:
                 setattr(opts, attr, 0)
         self.title = None
-        self.author = self.publisher = _('Unknown')
+        self.author = self.publisher = 'Unknown'
         self.title_sort = self.author_sort = ''
         for x in m.creator:
             if x.role == 'aut':
@@ -91,43 +91,44 @@ class LRFOutput(OutputFormatPlugin):
 
     options = {
         OptionRecommendation(name='enable_autorotation', recommended_value=False,
-            help=_('Enable auto-rotation of images that are wider than the screen width.')
+            help='Enable auto-rotation of images that are wider than the '
+                 'screen width.'
         ),
         OptionRecommendation(name='wordspace',
             recommended_value=2.5, level=OptionRecommendation.LOW,
-            help=_('Set the space between words in pts. Default is %default')
+            help='Set the space between words in pts. Default is %default'
         ),
         OptionRecommendation(name='header', recommended_value=False,
-            help=_('Add a header to all the pages with title and author.')
+            help='Add a header to all the pages with title and author.'
         ),
         OptionRecommendation(name='header_format', recommended_value="%t by %a",
-            help=_('Set the format of the header. %a is replaced by the author '
-            'and %t by the title. Default is %default')
+            help='Set the format of the header. %a is replaced by the author '
+                 'and %t by the title. Default is %default'
         ),
         OptionRecommendation(name='header_separation', recommended_value=0,
-            help=_('Add extra spacing below the header. Default is %default pt.')
+            help='Add extra spacing below the header. Default is %default pt.'
         ),
         OptionRecommendation(name='minimum_indent', recommended_value=0,
-            help=_('Minimum paragraph indent (the indent of the first line '
-            'of a paragraph) in pts. Default: %default')
+            help='Minimum paragraph indent (the indent of the first line '
+                 'of a paragraph) in pts. Default: %default'
         ),
         OptionRecommendation(name='render_tables_as_images',
             recommended_value=False,
-            help=_('This option has no effect')
+            help='This option has no effect'
         ),
         OptionRecommendation(name='text_size_multiplier_for_rendered_tables',
             recommended_value=1.0,
-            help=_('Multiply the size of text in rendered tables by this '
-            'factor. Default is %default')
+            help='Multiply the size of text in rendered tables by this '
+                 'factor. Default is %default'
         ),
         OptionRecommendation(name='serif_family', recommended_value=None,
-            help=_('The serif family of fonts to embed')
+            help='The serif family of fonts to embed'
         ),
         OptionRecommendation(name='sans_family', recommended_value=None,
-            help=_('The sans-serif family of fonts to embed')
+            help='The sans-serif family of fonts to embed'
         ),
         OptionRecommendation(name='mono_family', recommended_value=None,
-            help=_('The monospace family of fonts to embed')
+            help='The monospace family of fonts to embed'
         ),
 
     }
@@ -151,7 +152,7 @@ class LRFOutput(OutputFormatPlugin):
         book = Book(title=opts.title, author=opts.author,
                 bookid=uuid4().hex,
                 publisher='%s %s'%(__appname__, __version__),
-                category=_('Comic'), pagestyledefault=ps,
+                category='Comic', pagestyledefault=ps,
                 booksetting=BookSetting(screenwidth=width, screenheight=height))
         for page in pages:
             imageStream = ImageStream(page)

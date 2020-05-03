@@ -19,52 +19,52 @@ class DOCXOutput(OutputFormatPlugin):
     options = {
         OptionRecommendation(name='docx_page_size', recommended_value='letter',
             level=OptionRecommendation.LOW, choices=PAGE_SIZES,
-            help=_('The size of the page. Default is letter. Choices '
-            'are %s') % PAGE_SIZES),
+            help='The size of the page. Default is letter. Choices '
+            'are %s' % PAGE_SIZES),
 
         OptionRecommendation(name='docx_custom_page_size', recommended_value=None,
-            help=_('Custom size of the document. Use the form widthxheight '
+            help='Custom size of the document. Use the form widthxheight '
             'EG. `123x321` to specify the width and height (in pts). '
-            'This overrides any specified page-size.')),
+            'This overrides any specified page-size.'),
 
         OptionRecommendation(name='docx_no_cover', recommended_value=False,
-            help=_('Do not insert the book cover as an image at the start of the document.'
-                   ' If you use this option, the book cover will be discarded.')),
+            help='Do not insert the book cover as an image at the start of the document.'
+                   ' If you use this option, the book cover will be discarded.'),
 
         OptionRecommendation(name='preserve_cover_aspect_ratio', recommended_value=False,
-            help=_('Preserve the aspect ratio of the cover image instead of stretching'
-                   ' it out to cover the entire page.')),
+            help='Preserve the aspect ratio of the cover image instead of stretching'
+                   ' it out to cover the entire page.'),
 
         OptionRecommendation(name='docx_no_toc', recommended_value=False,
-            help=_('Do not insert the table of contents as a page at the start of the document.')),
+            help='Do not insert the table of contents as a page at the start of the document.'),
 
         OptionRecommendation(name='extract_to',
-            help=_('Extract the contents of the generated %s file to the '
+            help='Extract the contents of the generated %s file to the '
                 'specified directory. The contents of the directory are first '
-                'deleted, so be careful.') % 'DOCX'),
+                'deleted, so be careful.' % 'DOCX'),
 
         OptionRecommendation(name='docx_page_margin_left', recommended_value=72.0,
             level=OptionRecommendation.LOW,
-            help=_('The size of the left page margin, in pts. Default is 72pt.'
-                   ' Overrides the common left page margin setting.')
+            help='The size of the left page margin, in pts. Default is 72pt.'
+                   ' Overrides the common left page margin setting.'
         ),
 
         OptionRecommendation(name='docx_page_margin_top', recommended_value=72.0,
             level=OptionRecommendation.LOW,
-            help=_('The size of the top page margin, in pts. Default is 72pt.'
-                   ' Overrides the common top page margin setting, unless set to zero.')
+            help='The size of the top page margin, in pts. Default is 72pt.'
+                   ' Overrides the common top page margin setting, unless set to zero.'
         ),
 
         OptionRecommendation(name='docx_page_margin_right', recommended_value=72.0,
             level=OptionRecommendation.LOW,
-            help=_('The size of the right page margin, in pts. Default is 72pt.'
-                   ' Overrides the common right page margin setting, unless set to zero.')
+            help='The size of the right page margin, in pts. Default is 72pt.'
+                   ' Overrides the common right page margin setting, unless set to zero.'
         ),
 
         OptionRecommendation(name='docx_page_margin_bottom', recommended_value=72.0,
             level=OptionRecommendation.LOW,
-            help=_('The size of the bottom page margin, in pts. Default is 72pt.'
-                   ' Overrides the common bottom page margin setting, unless set to zero.')
+            help='The size of the bottom page margin, in pts. Default is 72pt.'
+                   ' Overrides the common bottom page margin setting, unless set to zero.'
         ),
 
     }

@@ -194,8 +194,9 @@ def split(container, name, loc_or_xpath, before=True, totals=None):
             try:
                 split_point = node_from_loc(root, loc_or_xpath, totals=totals)
             except MalformedMarkup:
-                raise MalformedMarkup(_('The file %s has malformed markup. Try running the Fix HTML tool'
-                                        ' before splitting') % name)
+                raise MalformedMarkup('The file %s has malformed markup. Try '
+                                      'running the Fix HTML tool before '
+                                      'splitting' % name)
             container.replace(name, root)
     if in_table(split_point):
         raise AbortError('Cannot split inside tables')
@@ -269,7 +270,7 @@ def multisplit(container, name, xpath, before=True):
     root = container.parsed(name)
     nodes = root.xpath(xpath, namespaces=XPNSMAP)
     if not nodes:
-        raise AbortError(_('The expression %s did not match any nodes') % xpath)
+        raise AbortError('The expression %s did not match any nodes' % xpath)
     for split_point in nodes:
         if in_table(split_point):
             raise AbortError('Cannot split inside tables')

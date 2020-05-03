@@ -19,8 +19,8 @@ class TCROutput(OutputFormatPlugin):
     options = {
         OptionRecommendation(name='tcr_output_encoding', recommended_value='utf-8',
             level=OptionRecommendation.LOW,
-            help=_('Specify the character encoding of the output document. '
-            'The default is utf-8.'))}
+            help='Specify the character encoding of the output document. '
+            'The default is utf-8.')}
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
         from ebook_converter.ebooks.txt.txtml import TXTMLizer

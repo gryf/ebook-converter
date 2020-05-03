@@ -167,20 +167,19 @@ def remove_unused_css(container, report=None, remove_unused_classes=False, merge
     num_changes = num_of_removed_rules + num_merged + num_of_removed_classes
     if num_changes > 0:
         if num_of_removed_rules > 0:
-            report(ngettext('Removed one unused CSS style rule', 'Removed {} unused CSS style rules',
-                            num_of_removed_rules).format(num_of_removed_rules))
+            report('Removed {} unused CSS style '
+                   'rules'.format(num_of_removed_rules))
         if num_of_removed_classes > 0:
-            report(ngettext('Removed one unused class from the HTML', 'Removed {} unused classes from the HTML',
-                   num_of_removed_classes).format(num_of_removed_classes))
+            report('Removed {} unused classes from the HTML'
+                   .format(num_of_removed_classes))
         if num_merged > 0:
-            report(ngettext('Merged one CSS style rule', 'Merged {} CSS style rules',
-                            num_merged).format(num_merged))
+            report('Merged {} CSS style rules'.format(num_merged))
     if num_of_removed_rules == 0:
-        report(_('No unused CSS style rules found'))
+        report('No unused CSS style rules found')
     if remove_unused_classes and num_of_removed_classes == 0:
-        report(_('No unused class attributes found'))
+        report('No unused class attributes found')
     if merge_rules and num_merged == 0:
-        report(_('No style rules that could be merged found'))
+        report('No style rules that could be merged found')
     return num_changes > 0
 
 

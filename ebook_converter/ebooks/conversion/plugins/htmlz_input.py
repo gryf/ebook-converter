@@ -59,16 +59,17 @@ class HTMLZInput(InputFormatPlugin):
         # HTMLZ archive probably won't turn out as the user expects. With
         # Multiple HTML files ZIP input should be used in place of HTMLZ.
         if multiple_html:
-            log.warn(_('Multiple HTML files found in the archive. Only %s will be used.') % index)
+            log.warn('Multiple HTML files found in the archive. Only %s will '
+                     'be used.' % index)
 
         if index:
             with open(index, 'rb') as tf:
                 html = tf.read()
         else:
-            raise Exception(_('No top level HTML file found.'))
+            raise Exception('No top level HTML file found.')
 
         if not html:
-            raise Exception(_('Top level HTML file %s is empty') % index)
+            raise Exception('Top level HTML file %s is empty' % index)
 
         # Encoding
         if options.input_encoding:

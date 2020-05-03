@@ -100,7 +100,7 @@ class DetectStructure(object):
 
         for node in self.oeb.toc.iter():
             if not node.title or not node.title.strip():
-                node.title = _('Unnamed')
+                node.title = 'Unnamed'
 
         if self.opts.start_reading_at:
             self.detect_start_reading()
@@ -279,7 +279,7 @@ class DetectStructure(object):
                     node = self.oeb.toc.add(text, _href,
                             play_order=self.oeb.toc.next_play_order())
                     added[elem] = node
-                    # node.add(_('Top'), _href)
+                    # node.add('Top', _href)
 
             if self.opts.level2_toc is not None and added:
                 level2_toc, level2_title = self.get_toc_parts_for_xpath(self.opts.level2_toc)

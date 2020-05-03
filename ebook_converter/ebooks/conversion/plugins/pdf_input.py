@@ -19,13 +19,13 @@ class PDFInput(InputFormatPlugin):
 
     options = {
         OptionRecommendation(name='no_images', recommended_value=False,
-            help=_('Do not extract images from the document')),
+            help='Do not extract images from the document'),
         OptionRecommendation(name='unwrap_factor', recommended_value=0.45,
-            help=_('Scale used to determine the length at which a line should '
+            help='Scale used to determine the length at which a line should '
             'be unwrapped. Valid values are a decimal between 0 and 1. The '
-            'default is 0.45, just below the median line length.')),
+            'default is 0.45, just below the median line length.'),
         OptionRecommendation(name='new_pdf_engine', recommended_value=False,
-            help=_('Use the new PDF conversion engine. Currently not operational.'))
+            help='Use the new PDF conversion engine. Currently not operational.')
     }
 
     def convert_new(self, stream, accelerators):

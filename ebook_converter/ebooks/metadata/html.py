@@ -151,10 +151,10 @@ def get_metadata_(src, encoding=None):
         return ans
 
     # Title
-    title = get('title') or title_tag.strip() or _('Unknown')
+    title = get('title') or title_tag.strip() or 'Unknown'
 
     # Author
-    authors = authors_to_string(get_all('authors')) or _('Unknown')
+    authors = authors_to_string(get_all('authors')) or 'Unknown'
 
     # Create MetaInformation with Title and Author
     mi = Metadata(title, string_to_authors(authors))
@@ -340,7 +340,7 @@ class MetadataHtmlTest(unittest.TestCase):
 
     def test_input_title(self):
         stream_meta = get_metadata(self.get_stream('title'))
-        canon_meta = Metadata('A Title Tag &amp; Title Ⓒ', [_('Unknown')])
+        canon_meta = Metadata('A Title Tag &amp; Title Ⓒ', ['Unknown'])
         self.compare_metadata(stream_meta, canon_meta)
 
     def test_input_meta_single(self):

@@ -473,72 +473,70 @@ def create_global_prefs(conf_obj=None):
     c = Config('global', 'calibre wide preferences') if conf_obj is None else conf_obj
     c.add_opt('database_path',
               default=os.path.expanduser('~/library1.db'),
-              help=_('Path to the database in which books are stored'))
+              help='Path to the database in which books are stored')
     c.add_opt('filename_pattern', default=u'(?P<title>.+) - (?P<author>[^_]+)',
-              help=_('Pattern to guess metadata from filenames'))
+              help='Pattern to guess metadata from filenames')
     c.add_opt('isbndb_com_key', default='',
-              help=_('Access key for isbndb.com'))
+              help='Access key for isbndb.com')
     c.add_opt('network_timeout', default=5,
-              help=_('Default timeout for network operations (seconds)'))
+              help='Default timeout for network operations (seconds)')
     c.add_opt('library_path', default=None,
-              help=_('Path to directory in which your library of books is stored'))
+              help='Path to directory in which your library of books is stored')
     c.add_opt('language', default=None,
-              help=_('The language in which to display the user interface'))
+              help='The language in which to display the user interface')
     c.add_opt('output_format', default='EPUB',
-              help=_('The default output format for e-book conversions. When auto-converting'
-                  ' to send to a device this can be overridden by individual device preferences.'
-                  ' These can be changed by right clicking the device icon in calibre and'
-                  ' choosing "Configure".'))
+              help='The default output format for e-book conversions. When auto-converting'
+              ' to send to a device this can be overridden by individual device preferences.'
+              ' These can be changed by right clicking the device icon in calibre and'
+              ' choosing "Configure".')
     c.add_opt('input_format_order', default=['EPUB', 'AZW3', 'MOBI', 'LIT', 'PRC',
         'FB2', 'HTML', 'HTM', 'XHTM', 'SHTML', 'XHTML', 'ZIP', 'DOCX', 'ODT', 'RTF', 'PDF',
         'TXT'],
-              help=_('Ordered list of formats to prefer for input.'))
+              help='Ordered list of formats to prefer for input.')
     c.add_opt('read_file_metadata', default=True,
-              help=_('Read metadata from files'))
+              help='Read metadata from files')
     c.add_opt('worker_process_priority', default='normal',
-              help=_('The priority of worker processes. A higher priority '
-                  'means they run faster and consume more resources. '
-                  'Most tasks like conversion/news download/adding books/etc. '
-                  'are affected by this setting.'))
+              help='The priority of worker processes. A higher priority '
+              'means they run faster and consume more resources. '
+              'Most tasks like conversion/news download/adding books/etc. '
+              'are affected by this setting.')
     c.add_opt('swap_author_names', default=False,
-            help=_('Swap author first and last names when reading metadata'))
+            help='Swap author first and last names when reading metadata')
     c.add_opt('add_formats_to_existing', default=False,
-            help=_('Add new formats to existing book records'))
+            help='Add new formats to existing book records')
     c.add_opt('check_for_dupes_on_ctl', default=False,
-            help=_('Check for duplicates when copying to another library'))
+            help='Check for duplicates when copying to another library')
     c.add_opt('installation_uuid', default=None, help='Installation UUID')
-    c.add_opt('new_book_tags', default=[], help=_('Tags to apply to books added to the library'))
-    c.add_opt('mark_new_books', default=False, help=_(
-        'Mark newly added books. The mark is a temporary mark that is automatically removed when calibre is restarted.'))
+    c.add_opt('new_book_tags', default=[], help='Tags to apply to books added to the library')
+    c.add_opt('mark_new_books', default=False, help='Mark newly added books. The mark is a temporary mark that is automatically removed when calibre is restarted.')
 
     # these are here instead of the gui preferences because calibredb and
     # calibre server can execute searches
-    c.add_opt('saved_searches', default={}, help=_('List of named saved searches'))
-    c.add_opt('user_categories', default={}, help=_('User-created Tag browser categories'))
+    c.add_opt('saved_searches', default={}, help='List of named saved searches')
+    c.add_opt('user_categories', default={}, help='User-created Tag browser categories')
     c.add_opt('manage_device_metadata', default='manual',
-        help=_('How and when calibre updates metadata on the device.'))
+        help='How and when calibre updates metadata on the device.')
     c.add_opt('limit_search_columns', default=False,
-            help=_('When searching for text without using lookup '
-            'prefixes, as for example, Red instead of title:Red, '
-            'limit the columns searched to those named below.'))
+              help='When searching for text without using lookup '
+              'prefixes, as for example, Red instead of title:Red, '
+              'limit the columns searched to those named below.')
     c.add_opt('limit_search_columns_to',
             default=['title', 'authors', 'tags', 'series', 'publisher'],
-            help=_('Choose columns to be searched when not using prefixes, '
-                'as for example, when searching for Red instead of '
-                'title:Red. Enter a list of search/lookup names '
-                'separated by commas. Only takes effect if you set the option '
-                'to limit search columns above.'))
+              help='Choose columns to be searched when not using prefixes, '
+              'as for example, when searching for Red instead of '
+              'title:Red. Enter a list of search/lookup names '
+              'separated by commas. Only takes effect if you set the option '
+              'to limit search columns above.')
     c.add_opt('use_primary_find_in_search', default=True,
-            help=_(u'Characters typed in the search box will match their '
-                   'accented versions, based on the language you have chosen '
-                   'for the calibre interface. For example, in '
-                   u'English, searching for n will match both {} and n, but if '
-                   'your language is Spanish it will only match n. Note that '
-                   'this is much slower than a simple search on very large '
-                   'libraries. Also, this option will have no effect if you turn '
-                   'on case-sensitive searching'))
-    c.add_opt('case_sensitive', default=False, help=_(
-        'Make searches case-sensitive'))
+              help=u'Characters typed in the search box will match their '
+              'accented versions, based on the language you have chosen '
+              'for the calibre interface. For example, in '
+              u'English, searching for n will match both {} and n, but if '
+              'your language is Spanish it will only match n. Note that '
+              'this is much slower than a simple search on very large '
+              'libraries. Also, this option will have no effect if you turn '
+              'on case-sensitive searching')
+    c.add_opt('case_sensitive', default=False, help='Make searches case-sensitive')
 
     c.add_opt('migrated', default=False, help='For Internal use. Don\'t modify.')
     return c

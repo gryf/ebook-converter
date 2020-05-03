@@ -32,8 +32,7 @@ class FB2Input(InputFormatPlugin):
     options = {
     OptionRecommendation(name='no_inline_fb2_toc',
         recommended_value=False, level=OptionRecommendation.LOW,
-        help=_('Do not insert a Table of Contents at the beginning of the book.'
-                )
+        help='Do not insert a Table of Contents at the beginning of the book.'
         )}
 
     def convert(self, stream, options, file_ext, log,
@@ -129,9 +128,9 @@ class FB2Input(InputFormatPlugin):
         stream.seek(0)
         mi = get_metadata(stream, 'fb2')
         if not mi.title:
-            mi.title = _('Unknown')
+            mi.title = 'Unknown'
         if not mi.authors:
-            mi.authors = [_('Unknown')]
+            mi.authors = ['Unknown']
         cpath = None
         if mi.cover_data and mi.cover_data[1]:
             with open('fb2_cover_calibre_mi.jpg', 'wb') as f:

@@ -142,7 +142,7 @@ def convert_markdown_with_metadata(txt, title='', extensions=DEFAULT_MD_EXTENSIO
         extensions.append('meta')
     md = create_markdown_object(extensions)
     html = md.convert(txt)
-    mi = Metadata(title or _('Unknown'))
+    mi = Metadata(title or 'Unknown')
     m = md.Meta
     for k, v in {'date':'pubdate', 'summary':'comments'}.items():
         if v not in m and k in m:

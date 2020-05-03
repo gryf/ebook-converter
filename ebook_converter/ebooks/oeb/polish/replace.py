@@ -157,7 +157,7 @@ def smarten_punctuation(container, report):
             newhtml = smarten_punctuation(html, container.log)
             if newhtml != html:
                 changed = True
-                report(_('Smartened punctuation in: %s')%name)
+                report('Smartened punctuation in: %s' % name)
                 newhtml = strip_encoding_declarations(newhtml)
                 f.seek(0)
                 f.truncate()
@@ -171,7 +171,7 @@ def smarten_punctuation(container, report):
             container.dirty(name)
             smartened = True
     if not smartened:
-        report(_('No punctuation that could be smartened found'))
+        report('No punctuation that could be smartened found')
     return smartened
 
 

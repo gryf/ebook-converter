@@ -25,7 +25,7 @@ class SafeFormat(TemplateFormatter):
                 if hasattr(self.book, orig_key):
                     key = orig_key
                 else:
-                    raise ValueError(_('Value: unknown field ') + orig_key)
+                    raise ValueError('Value: unknown field ' + orig_key)
         try:
             b = self.book.get_user_metadata(key, False)
         except:

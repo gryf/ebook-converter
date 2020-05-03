@@ -20,30 +20,30 @@ class SNBOutput(OutputFormatPlugin):
     options = {
         OptionRecommendation(name='snb_output_encoding', recommended_value='utf-8',
             level=OptionRecommendation.LOW,
-            help=_('Specify the character encoding of the output document. '
-            'The default is utf-8.')),
+            help='Specify the character encoding of the output document. '
+                 'The default is utf-8.'),
         OptionRecommendation(name='snb_max_line_length',
             recommended_value=0, level=OptionRecommendation.LOW,
-            help=_('The maximum number of characters per line. This splits on '
-            'the first space before the specified value. If no space is found '
-            'the line will be broken at the space after and will exceed the '
-            'specified value. Also, there is a minimum of 25 characters. '
-            'Use 0 to disable line splitting.')),
+            help='The maximum number of characters per line. This splits on '
+                 'the first space before the specified value. If no space is '
+                 'found the line will be broken at the space after and will '
+                 'exceed the specified value. Also, there is a minimum of 25 '
+                 'characters. Use 0 to disable line splitting.'),
         OptionRecommendation(name='snb_insert_empty_line',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Specify whether or not to insert an empty line between '
-            'two paragraphs.')),
+            help='Specify whether or not to insert an empty line between two '
+                 'paragraphs.'),
         OptionRecommendation(name='snb_dont_indent_first_line',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Specify whether or not to insert two space characters '
-            'to indent the first line of each paragraph.')),
+            help='Specify whether or not to insert two space characters to '
+            'indent the first line of each paragraph.'),
         OptionRecommendation(name='snb_hide_chapter_name',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Specify whether or not to hide the chapter title for each '
-            'chapter. Useful for image-only output (eg. comics).')),
+            help='Specify whether or not to hide the chapter title for each '
+                 'chapter. Useful for image-only output (eg. comics).'),
         OptionRecommendation(name='snb_full_screen',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Resize all the images for full screen view. ')),
+            help='Resize all the images for full screen view. '),
      }
 
     def convert(self, oeb_book, output_path, input_plugin, opts, log):
@@ -123,7 +123,7 @@ class SNBOutput(OutputFormatPlugin):
                 log.warn('This SNB file has no Table of Contents. '
                     'Creating a default TOC')
                 first = next(iter(oeb_book.spine))
-                oeb_book.toc.add(_('Start page'), first.href)
+                oeb_book.toc.add('Start page', first.href)
             else:
                 first = next(iter(oeb_book.spine))
                 if oeb_book.toc[0].href != first.href:
@@ -133,9 +133,9 @@ class SNBOutput(OutputFormatPlugin):
                     # the tocInfoTree directly instead of modifying the toc
                     ch = etree.SubElement(tocBody, "chapter")
                     ch.set("src", ProcessFileName(first.href) + ".snbc")
-                    ch.text = _('Cover pages')
+                    ch.text = 'Cover pages'
                     outputFiles[first.href] = []
-                    outputFiles[first.href].append(("", _("Cover pages")))
+                    outputFiles[first.href].append(("", "Cover pages"))
 
             for tocitem in oeb_book.toc:
                 if tocitem.href.find('#') != -1:
@@ -148,10 +148,12 @@ class SNBOutput(OutputFormatPlugin):
                         else:
                             outputFiles[item[0]] = []
                             if "" not in outputFiles[item[0]]:
-                                outputFiles[item[0]].append(("", tocitem.title + _(" (Preface)")))
+                                outputFiles[item[0]].append(("",
+                                                             tocitem.title +
+                                                             " (Preface)"))
                                 ch = etree.SubElement(tocBody, "chapter")
                                 ch.set("src", ProcessFileName(item[0]) + ".snbc")
-                                ch.text = tocitem.title + _(" (Preface)")
+                                ch.text = tocitem.title + " (Preface)"
                             outputFiles[item[0]].append((item[1], tocitem.title))
                 else:
                     if tocitem.href in outputFiles:
@@ -200,7 +202,8 @@ class SNBOutput(OutputFormatPlugin):
                                 f.write(etree.tostring(oldTree, pretty_print=True, encoding='utf-8'))
                     else:
                         log.debug('Merge %s with last TOC item...' % item.href)
-                        snbwriter.merge_content(oldTree, oeb_book, item, [('', _("Start"))], opts)
+                        snbwriter.merge_content(oldTree, oeb_book, item,
+                                                [('', "Start")], opts)
 
             # Output the last one if needed
             log.debug('Output the last modified chapter again: %s' % lastName)

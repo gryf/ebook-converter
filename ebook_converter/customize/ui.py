@@ -12,7 +12,6 @@ from ebook_converter.customize import profiles
 from ebook_converter.customize import builtins
 from ebook_converter.ebooks import metadata
 from ebook_converter.utils import config as cfg
-from ebook_converter import constants
 
 
 builtin_names = frozenset(p.name for p in builtins.plugins)
@@ -25,13 +24,13 @@ class NameConflict(ValueError):
 
 def _config():
     c = cfg.Config('customize')
-    c.add_opt('plugins', default={}, help=_('Installed plugins'))
+    c.add_opt('plugins', default={}, help='Installed plugins')
     c.add_opt('filetype_mapping', default={},
-              help=_('Mapping for filetype plugins'))
+              help='Mapping for filetype plugins')
     c.add_opt('plugin_customization', default={},
-              help=_('Local plugin customization'))
-    c.add_opt('disabled_plugins', default=set(), help=_('Disabled plugins'))
-    c.add_opt('enabled_plugins', default=set(), help=_('Enabled plugins'))
+              help='Local plugin customization')
+    c.add_opt('disabled_plugins', default=set(), help='Disabled plugins')
+    c.add_opt('enabled_plugins', default=set(), help='Enabled plugins')
 
     return cfg.ConfigProxy(c)
 
@@ -459,8 +458,8 @@ def initialize_plugin(plugin, path_to_zip_file):
     except Exception:
         print('Failed to initialize plugin:', plugin.name, plugin.version)
         tb = traceback.format_exc()
-        raise customize.InvalidPlugin((_('Initialization of plugin %s failed '
-                                         'with traceback:') % tb) + '\n'+tb)
+        raise customize.InvalidPlugin(('Initialization of plugin %s failed '
+                                       'with traceback:' % tb) + '\n'+tb)
 
 
 def has_external_plugins():
@@ -501,25 +500,29 @@ def initialized_plugins():
 # CLI
 
 def option_parser():
-    parser = cfg.OptionParser(usage=_('''\
+    parser = cfg.OptionParser(usage='''\
     %prog options
 
     Customize calibre by loading external plugins.
-    '''))
+    ''')
     parser.add_option('-a', '--add-plugin', default=None,
-                      help=_('Add a plugin by specifying the path to the ZIP file containing it.'))
+                      help='Add a plugin by specifying the path to the ZIP '
+                      'file containing it.')
     parser.add_option('-b', '--build-plugin', default=None,
-            help=_('For plugin developers: Path to the directory where you are'
-                ' developing the plugin. This command will automatically zip '
-                'up the plugin and update it in calibre.'))
+                      help='For plugin developers: Path to the directory '
+                      'where you are developing the plugin. This command will '
+                      'automatically zip up the plugin and update it in '
+                      'calibre.')
     parser.add_option('-r', '--remove-plugin', default=None,
-                      help=_('Remove a custom plugin by name. Has no effect on builtin plugins'))
+                      help='Remove a custom plugin by name. Has no effect on '
+                      'builtin plugins')
     parser.add_option('--customize-plugin', default=None,
-                      help=_('Customize plugin. Specify name of plugin and customization string separated by a comma.'))
-    parser.add_option('-l', '--list-plugins', default=False, action='store_true',
-                      help=_('List all installed plugins'))
+                      help='Customize plugin. Specify name of plugin and '
+                      'customization string separated by a comma.')
+    parser.add_option('-l', '--list-plugins', default=False,
+                      action='store_true', help='List all installed plugins')
     parser.add_option('--enable-plugin', default=None,
-                      help=_('Enable the named plugin'))
+                      help='Enable the named plugin')
     parser.add_option('--disable-plugin', default=None,
-                      help=_('Disable the named plugin'))
+                      help='Disable the named plugin')
     return parser

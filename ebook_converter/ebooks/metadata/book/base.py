@@ -24,21 +24,19 @@ def human_readable(size, precision=2):
     return ('%.'+str(precision)+'f'+ 'MB') % (size/(1024*1024),)
 
 
-NULL_VALUES = {
-                'user_metadata': {},
-                'cover_data'   : (None, None),
-                'tags'         : [],
-                'identifiers'  : {},
-                'languages'    : [],
-                'device_collections': [],
-                'author_sort_map': {},
-                'authors'      : [_('Unknown')],
-                'author_sort'  : _('Unknown'),
-                'title'        : _('Unknown'),
-                'user_categories' : {},
-                'author_link_map' : {},
-                'language'     : 'und'
-}
+NULL_VALUES = {'user_metadata': {},
+               'cover_data': (None, None),
+               'tags': [],
+               'identifiers': {},
+               'languages': [],
+               'device_collections': [],
+               'author_sort_map': {},
+               'authors': ['Unknown'],
+               'author_sort': 'Unknown',
+               'title': 'Unknown',
+               'user_categories': {},
+               'author_link_map': {},
+               'language': 'und'}
 
 field_metadata = FieldMetadata()
 
@@ -74,10 +72,10 @@ class Metadata(object):
     '''
     __calibre_serializable__ = True
 
-    def __init__(self, title, authors=(_('Unknown'),), other=None, template_cache=None,
-                 formatter=None):
+    def __init__(self, title, authors=('Unknown',), other=None,
+                 template_cache=None, formatter=None):
         '''
-        @param title: title or ``_('Unknown')``
+        @param title: title or ``'Unknown'``
         @param authors: List of strings or []
         @param other: None or a metadata object
         '''
@@ -101,7 +99,7 @@ class Metadata(object):
         '''
         Return True if the value of field is null in this object.
         'null' means it is unknown or evaluates to False. So a title of
-        _('Unknown') is null or a language of 'und' is null.
+        'Unknown' is null or a language of 'und' is null.
 
         Be careful with numeric fields since this will return True for zero as
         well as None.
@@ -142,11 +140,9 @@ class Metadata(object):
             if val is None:
                 d['#value#'] = 'RECURSIVE_COMPOSITE FIELD (Metadata) ' + field
                 val = d['#value#'] = self.formatter.safe_format(
-                                            d['display']['composite_template'],
-                                            self,
-                                            _('TEMPLATE ERROR'),
-                                            self, column_name=field,
-                                            template_cache=self.template_cache).strip()
+                    d['display']['composite_template'], self, 'TEMPLATE ERROR',
+                    self, column_name=field,
+                    template_cache=self.template_cache).strip()
             return val
         if field.startswith('#') and field.endswith('_index'):
             try:
@@ -474,7 +470,7 @@ class Metadata(object):
             if v not in (None, NULL_VALUES.get(attr, None)):
                 setattr(dest, attr, copy.deepcopy(v))
 
-        unknown = _('Unknown')
+        unknown = 'Unknown'
         if other.title and other.title != unknown:
             self.title = other.title
             if hasattr(other, 'title_sort'):
@@ -658,7 +654,7 @@ class Metadata(object):
             elif datatype == 'datetime':
                 res = format_date(res, cmeta['display'].get('date_format','dd MMM yyyy'))
             elif datatype == 'bool':
-                res = _('Yes') if res else _('No')
+                res = 'Yes' if res else 'No'
             elif datatype == 'rating':
                 res = '%.2g'%(res/2)
             elif datatype in ['int', 'float']:
@@ -725,7 +721,7 @@ class Metadata(object):
         if self.authors:
             fmt('Author(s)',  authors_to_string(self.authors) +
                ((' [' + self.author_sort + ']')
-                if self.author_sort and self.author_sort != _('Unknown') else ''))
+                if self.author_sort and self.author_sort != 'Unknown' else ''))
         if self.publisher:
             fmt('Publisher', self.publisher)
         if getattr(self, 'book_producer', False):
@@ -764,22 +760,26 @@ class Metadata(object):
         '''
         from ebook_converter.ebooks.metadata import authors_to_string
         from ebook_converter.utils.date import isoformat
-        ans = [(_('Title'), str(self.title))]
-        ans += [(_('Author(s)'), (authors_to_string(self.authors) if self.authors else _('Unknown')))]
-        ans += [(_('Publisher'), str(self.publisher))]
-        ans += [(_('Producer'), str(self.book_producer))]
-        ans += [(_('Comments'), str(self.comments))]
+        ans = [('Title', str(self.title))]
+        ans += [('Author(s)', (authors_to_string(self.authors)
+                               if self.authors else 'Unknown'))]
+        ans += [('Publisher', str(self.publisher))]
+        ans += [('Producer', str(self.book_producer))]
+        ans += [('Comments', str(self.comments))]
         ans += [('ISBN', str(self.isbn))]
-        ans += [(_('Tags'), ', '.join([str(t) for t in self.tags]))]
+        ans += [('Tags', ', '.join([str(t) for t in self.tags]))]
         if self.series:
-            ans += [(_('Series'), str(self.series) + ' #%s'%self.format_series_index())]
-        ans += [(_('Languages'), ', '.join(self.languages))]
+            ans += [('Series', str(self.series) +
+                     ' #%s' % self.format_series_index())]
+        ans += [('Languages', ', '.join(self.languages))]
         if self.timestamp is not None:
-            ans += [(_('Timestamp'), str(isoformat(self.timestamp, as_utc=False, sep=' ')))]
+            ans += [('Timestamp', str(isoformat(self.timestamp, as_utc=False,
+                                                sep=' ')))]
         if self.pubdate is not None:
-            ans += [(_('Published'), str(isoformat(self.pubdate, as_utc=False, sep=' ')))]
+            ans += [('Published', str(isoformat(self.pubdate, as_utc=False,
+                                                sep=' ')))]
         if self.rights is not None:
-            ans += [(_('Rights'), str(self.rights))]
+            ans += [('Rights', str(self.rights))]
         for key in self.custom_field_keys():
             val = self.get(key, None)
             if val:

@@ -55,10 +55,10 @@ class Plugin(object):
     version = (1, 0, 0)
 
     #: A short string describing what this plugin does
-    description = _('Does absolutely nothing')
+    description = 'Does absolutely nothing'
 
     #: The author of this plugin
-    author = _('Unknown')
+    author = 'Unknown'
 
     #: When more than one plugin exists for a filetype,
     #: the plugins are run in order of decreasing priority.
@@ -76,7 +76,7 @@ class Plugin(object):
 
     #: The type of this plugin. Used for categorizing plugins in the
     #: GUI
-    type = _('Base')
+    type = 'Base'
 
     def __init__(self, plugin_path):
         self.plugin_path = plugin_path
@@ -264,7 +264,7 @@ class FileTypePlugin(Plugin):
     #: on the final file produced by the conversion output plugin.
     on_postprocess = False
 
-    type = _('File type')
+    type = 'File type'
 
     def run(self, path_to_ebook):
         """
@@ -335,7 +335,7 @@ class MetadataReaderPlugin(Plugin):
     version = numeric_version
     author = 'Kovid Goyal'
 
-    type = _('Metadata reader')
+    type = 'Metadata reader'
 
     def __init__(self, *args, **kwargs):
         Plugin.__init__(self, *args, **kwargs)
@@ -367,7 +367,7 @@ class MetadataWriterPlugin(Plugin):
     version = numeric_version
     author = 'Kovid Goyal'
 
-    type = _('Metadata writer')
+    type = 'Metadata writer'
 
     def __init__(self, *args, **kwargs):
         Plugin.__init__(self, *args, **kwargs)
@@ -398,7 +398,7 @@ class CatalogPlugin(Plugin):
     #: For example: 'epub' or 'xml'
     file_types = set()
 
-    type = _('Catalog generator')
+    type = 'Catalog generator'
 
     #: CLI parser options specific to this plugin, declared as namedtuple
     #: Option:
@@ -406,8 +406,8 @@ class CatalogPlugin(Plugin):
     #:   from collections import namedtuple
     #:   Option = namedtuple('Option', 'option, default, dest, help')
     #:   cli_options = [Option('--catalog-title', default = 'My Catalog',
-    #:   dest = 'catalog_title', help = (_('Title of generated catalog. '
-    #:                                     '\nDefault:') +
+    #:   dest = 'catalog_title', help = ('Title of generated catalog. '
+    #:                                     '\nDefault:' +
     #:                                   " '" + '%default' + "'"))]
     #:   cli_options parsed in
     #:   ebook_converter.db.cli.cmd_catalog:option_parser()
@@ -511,7 +511,7 @@ class InterfaceActionBase(Plugin):
 
     supported_platforms = ['windows', 'osx', 'linux']
     author = 'Kovid Goyal'
-    type = _('User interface action')
+    type = 'User interface action'
     can_be_disabled = False
 
     actual_plugin = None
@@ -544,7 +544,7 @@ class PreferencesPlugin(Plugin):
 
     supported_platforms = ['windows', 'osx', 'linux']
     author = 'Kovid Goyal'
-    type = _('Preferences')
+    type = 'Preferences'
     can_be_disabled = False
 
     #: Import path to module that contains a class named ConfigWidget
@@ -596,11 +596,11 @@ class StoreBase(Plugin):
 
     supported_platforms = ['windows', 'osx', 'linux']
     author = 'John Schember'
-    type = _('Store')
+    type = 'Store'
     # Information about the store. Should be in the primary language
     # of the store. This should not be translatable when set by
     # a subclass.
-    description = _('An e-book store.')
+    description = 'An e-book store.'
     minimum_calibre_version = (0, 8, 0)
     version = (1, 0, 1)
 
@@ -643,7 +643,7 @@ class StoreBase(Plugin):
 
 class EditBookToolPlugin(Plugin):
 
-    type = _('Edit book tool')
+    type = 'Edit book tool'
     minimum_calibre_version = (1, 46, 0)
 
 
@@ -653,7 +653,7 @@ class LibraryClosedPlugin(Plugin):
     when the library is changed, or when a library is used in some other way.
     At the moment these plugins won't be called by the CLI functions.
     """
-    type = _('Library closed')
+    type = 'Library closed'
 
     # minimum version 2.54 because that is when support was added
     minimum_calibre_version = (2, 54, 0)

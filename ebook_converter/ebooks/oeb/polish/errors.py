@@ -13,7 +13,8 @@ class InvalidBook(ValueError):
 class DRMError(_DRMError):
 
     def __init__(self):
-        super(DRMError, self).__init__(_('This file is locked with DRM. It cannot be edited.'))
+        super(DRMError, self).__init__('This file is locked with DRM. It '
+                                       'cannot be edited.')
 
 
 class MalformedMarkup(ValueError):

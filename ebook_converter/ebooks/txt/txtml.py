@@ -96,7 +96,7 @@ class TXTMLizer(object):
         toc = ['']
         if getattr(self.opts, 'inline_toc', None):
             self.log.debug('Generating table of contents...')
-            toc.append('%s\n\n' % _('Table of Contents:'))
+            toc.append('%s\n\n' % 'Table of Contents:')
             for item in self.toc_titles:
                 toc.append('* %s\n\n' % item)
         return ''.join(toc)

@@ -32,7 +32,7 @@ class EXTHHeader(object):  # {{{
         self.length, self.num_items = struct.unpack('>LL', raw[4:12])
         raw = raw[12:]
         pos = 0
-        self.mi = MetaInformation(_('Unknown'), [_('Unknown')])
+        self.mi = MetaInformation('Unknown', ['Unknown'])
         self.has_fake_cover = True
         self.start_offset = None
         left = self.num_items
@@ -67,7 +67,7 @@ class EXTHHeader(object):  # {{{
                 if content == b'EBSP':
                     if not self.mi.tags:
                         self.mi.tags = []
-                    self.mi.tags.append(_('Sample Book'))
+                    self.mi.tags.append('Sample Book')
             elif idx == 502:
                 # last update time
                 pass
@@ -127,7 +127,7 @@ class EXTHHeader(object):  # {{{
                 self.mi.authors.append(au)
         elif idx == 101:
             self.mi.publisher = clean_xml_chars(self.decode(content).strip())
-            if self.mi.publisher in {'Unknown', _('Unknown')}:
+            if self.mi.publisher in {'Unknown', 'Unknown'}:
                 self.mi.publisher = None
         elif idx == 103:
             self.mi.comments  = clean_xml_chars(self.decode(content).strip())
@@ -194,7 +194,7 @@ class BookHeader(object):
         if len(raw) <= 16:
             self.codec = 'cp1252'
             self.extra_flags = 0
-            self.title = _('Unknown')
+            self.title = 'Unknown'
             self.language = 'ENGLISH'
             self.sublanguage = 'NEUTRAL'
             self.exth_flag, self.exth = 0, None
@@ -233,7 +233,7 @@ class BookHeader(object):
 
             toff, tlen = struct.unpack('>II', raw[0x54:0x5c])
             tend = toff + tlen
-            self.title = raw[toff:tend] if tend < len(raw) else _('Unknown')
+            self.title = raw[toff:tend] if tend < len(raw) else 'Unknown'
             langcode  = struct.unpack('!L', raw[0x5C:0x60])[0]
             langid    = langcode & 0xFF
             sublangid = (langcode >> 10) & 0xFF

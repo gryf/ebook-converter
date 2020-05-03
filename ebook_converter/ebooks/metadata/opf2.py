@@ -1360,7 +1360,7 @@ class OPFCreator(Metadata):
         if not isinstance(self.toc, TOC):
             self.toc = None
         if not self.authors:
-            self.authors = [_('Unknown')]
+            self.authors = ['Unknown']
         if self.guide is None:
             self.guide = Guide()
         if self.cover:
@@ -1470,7 +1470,7 @@ class OPFCreator(Metadata):
         metadata = M.metadata()
         a = metadata.append
         role = {}
-        a(DC_ELEM('title', self.title if self.title else _('Unknown'),
+        a(DC_ELEM('title', self.title if self.title else 'Unknown',
             opf_attrs=role))
         for i, author in enumerate(self.authors):
             fa = {'role':'aut'}
@@ -1679,7 +1679,7 @@ def metadata_to_opf(mi, as_string=True, default_lang=None):
             mi.cover = mi.cover.decode(filesystem_encoding)
         guide.text = '\n'+(' '*8)
         r = guide.makeelement(OPF('reference'),
-                attrib={'type':'cover', 'title':_('Cover'), 'href':mi.cover})
+                attrib={'type': 'cover', 'title': 'Cover', 'href': mi.cover})
         r.tail = '\n' +(' '*4)
         guide.append(r)
     if pretty_print_opf:

@@ -110,10 +110,10 @@ def get_metadata(stream):
     """
     stream.seek(0)
     if stream.read(5) != br'{\rtf':
-        return MetaInformation(_('Unknown'))
+        return MetaInformation('Unknown')
     block = get_document_info(stream)[0]
     if not block:
-        return MetaInformation(_('Unknown'))
+        return MetaInformation('Unknown')
 
     stream.seek(0)
     cpg = detect_codepage(stream)
@@ -123,7 +123,7 @@ def get_metadata(stream):
     if title_match is not None:
         title = decode(title_match.group(1).strip(), cpg)
     else:
-        title = _('Unknown')
+        title = 'Unknown'
     author_match = author_pat.search(block)
     if author_match is not None:
         author = decode(author_match.group(1).strip(), cpg)

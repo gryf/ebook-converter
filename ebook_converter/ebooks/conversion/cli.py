@@ -14,7 +14,7 @@ from ebook_converter import patheq
 from ebook_converter.utils.localization import localize_user_manual_link
 
 
-USAGE = '%prog ' + _('''\
+USAGE = '%prog ' + '''\
 input_file output_file [options]
 
 Convert an e-book from one format to another.
@@ -38,7 +38,8 @@ To get help on them specify the input and output file and then use the -h \
 option.
 
 For full documentation of the conversion system see
-''') + localize_user_manual_link('https://manual.calibre-ebook.com/conversion.html')
+https://manual.calibre-ebook.com/conversion.html
+'''
 
 HEURISTIC_OPTIONS = ['markup_chapter_headings',
                       'italicize_common_cases', 'fix_indents',
@@ -98,21 +99,20 @@ def option_recommendation_to_cli_option(add_option, rec):
     if opt.name == 'read_metadata_from_opf':
         switches.append('--from-opf')
     if opt.name == 'transform_css_rules':
-        attrs['help'] = _(
-            'Path to a file containing rules to transform the CSS styles'
-            ' in this book. The easiest way to create such a file is to'
-            ' use the wizard for creating rules in the calibre GUI. Access'
-            ' it in the "Look & feel->Transform styles" section of the conversion'
-            ' dialog. Once you create the rules, you can use the "Export" button'
-            ' to save them to a file.'
-        )
+        attrs['help'] = ('Path to a file containing rules to transform the '
+                         'CSS styles in this book. The easiest way to create '
+                         'such a file is to use the wizard for creating rules '
+                         'in the calibre GUI. Access it in the "Look & '
+                         'feel->Transform styles" section of the conversion '
+                         'dialog. Once you create the rules, you can use the '
+                         '"Export" button to save them to a file.')
     if opt.name in DEFAULT_TRUE_OPTIONS and rec.recommended_value is True:
         switches = ['--disable-'+opt.long_switch]
     add_option(optparse.Option(*switches, **attrs))
 
 
 def group_titles():
-    return _('INPUT OPTIONS'), _('OUTPUT OPTIONS')
+    return 'INPUT OPTIONS', 'OUTPUT OPTIONS'
 
 
 def recipe_test(option, opt_str, value, parser):
@@ -160,15 +160,17 @@ def add_input_output_options(parser, plumber):
 
     if input_options:
         title = group_titles()[0]
-        io = optparse.OptionGroup(parser, title, _('Options to control the processing'
-                          ' of the input %s file')%plumber.input_fmt)
+        io = optparse.OptionGroup(parser, title, 'Options to control the '
+                                  'processing of the input %s file' %
+                                  plumber.input_fmt)
         add_options(io.add_option, input_options)
         parser.add_option_group(io)
 
     if output_options:
         title = group_titles()[1]
-        oo = optparse.OptionGroup(parser, title, _('Options to control the processing'
-                          ' of the output %s')%plumber.output_fmt)
+        oo = optparse.OptionGroup(parser, title, 'Options to control the '
+                                  'processing of the output %s' %
+                                  plumber.output_fmt)
         add_options(oo.add_option, output_options)
         parser.add_option_group(oo)
 
@@ -181,8 +183,8 @@ def add_pipeline_options(parser, plumber):
                      'output_profile',
                      ]
                     )),
-              (_('LOOK AND FEEL') , (
-                  _('Options to control the look and feel of the output'),
+              ('LOOK AND FEEL' , (
+                  'Options to control the look and feel of the output',
                   [
                       'base_font_size', 'disable_font_rescaling',
                       'font_size_mapping', 'embed_font_family',
@@ -200,26 +202,23 @@ def add_pipeline_options(parser, plumber):
                   ]
                   )),
 
-              (_('HEURISTIC PROCESSING') , (
-                  _('Modify the document text and structure using common'
-                     ' patterns. Disabled by default. Use %(en)s to enable. '
-                     ' Individual actions can be disabled with the %(dis)s options.')
-                  % dict(en='--enable-heuristics', dis='--disable-*'),
+              ('HEURISTIC PROCESSING' ,
+               ('Modify the document text and structure using common '
+                'patterns. Disabled by default. Use %(en)s to enable. '
+                'Individual actions can be disabled with the %(dis)s '
+                'options.' % dict(en='--enable-heuristics', dis='--disable-*'),
                   ['enable_heuristics'] + HEURISTIC_OPTIONS
                   )),
 
-              (_('SEARCH AND REPLACE') , (
-                 _('Modify the document text and structure using user defined patterns.'),
-                 [
-                     'sr1_search', 'sr1_replace',
-                     'sr2_search', 'sr2_replace',
-                     'sr3_search', 'sr3_replace',
-                     'search_replace',
-                 ]
+              ('SEARCH AND REPLACE' ,
+               ('Modify the document text and structure using user defined '
+                'patterns.',
+                 ['sr1_search', 'sr1_replace', 'sr2_search', 'sr2_replace',
+                  'sr3_search', 'sr3_replace', 'search_replace']
               )),
 
-              (_('STRUCTURE DETECTION') , (
-                  _('Control auto-detection of document structure.'),
+              ('STRUCTURE DETECTION' , (
+                  'Control auto-detection of document structure.',
                   [
                       'chapter', 'chapter_mark',
                       'prefer_metadata_cover', 'remove_first_image',
@@ -228,21 +227,20 @@ def add_pipeline_options(parser, plumber):
                   ]
                   )),
 
-              (_('TABLE OF CONTENTS') , (
-                  _('Control the automatic generation of a Table of Contents. By '
-                  'default, if the source file has a Table of Contents, it will '
-                  'be used in preference to the automatically generated one.'),
-                  [
-                    'level1_toc', 'level2_toc', 'level3_toc',
-                    'toc_threshold', 'max_toc_links', 'no_chapters_in_toc',
-                    'use_auto_toc', 'toc_filter', 'duplicate_links_in_toc',
-                  ]
-                  )),
+              ('TABLE OF CONTENTS' ,
+               ('Control the automatic generation of a Table of Contents. By '
+                'default, if the source file has a Table of Contents, it will '
+                'be used in preference to the automatically generated one.',
+                ['level1_toc', 'level2_toc', 'level3_toc', 'toc_threshold',
+                 'max_toc_links', 'no_chapters_in_toc', 'use_auto_toc',
+                 'toc_filter', 'duplicate_links_in_toc']
+               )
+              ),
 
-              (_('METADATA') , (_('Options to set metadata in the output'),
+              ('METADATA' , ('Options to set metadata in the output',
                             plumber.metadata_option_names + ['read_metadata_from_opf'],
                             )),
-              (_('DEBUG'), (_('Options to help with debugging the conversion'),
+              ('DEBUG', ('Options to help with debugging the conversion',
                         [
                          'verbose',
                          'debug_pipeline',
@@ -265,9 +263,9 @@ def add_pipeline_options(parser, plumber):
 def option_parser():
     parser = OptionParser(usage=USAGE)
     parser.add_option('--list-recipes', default=False, action='store_true',
-            help=_('List builtin recipe names. You can create an e-book from '
-                'a builtin recipe like this: ebook-convert "Recipe Name.recipe" '
-                'output.epub'))
+            help='List builtin recipe names. You can create an e-book from '
+                 'a builtin recipe like this: ebook-convert "Recipe '
+                 'Name.recipe" output.epub')
     return parser
 
 
@@ -393,20 +391,20 @@ def main(args=sys.argv):
 
     plumber.run()
 
-    log(_('Output saved to'), ' ', plumber.output)
+    log('Output saved to', ' ', plumber.output)
 
     return 0
 
 
 def manual_index_strings():
-    return _('''\
+    return '''\
 The options and default values for the options change depending on both the
 input and output formats, so you should always check with::
 
     %s
 
 Below are the options that are common to all conversion, followed by the
-options specific to every input and output format.''')
+options specific to every input and output format.'''
 
 
 if __name__ == '__main__':

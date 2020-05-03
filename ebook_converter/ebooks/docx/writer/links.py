@@ -161,7 +161,7 @@ class LinksManager(object):
         pbb.set('{%s}val' % self.namespace.namespaces['w'], 'on')
         for block in reversed(self.toc):
             block.serialize(body, self.namespace.makeelement)
-        title = __('Table of Contents')
+        title = 'Table of Contents'
         makeelement = self.namespace.makeelement
         p = makeelement(body, 'w:p', append=False)
         ppr = makeelement(p, 'w:pPr')

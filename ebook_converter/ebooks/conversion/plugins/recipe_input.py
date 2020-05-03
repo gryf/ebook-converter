@@ -18,7 +18,7 @@ class RecipeInput(InputFormatPlugin):
 
     name        = 'Recipe Input'
     author      = 'Kovid Goyal'
-    description = _('Download periodical content from the internet')
+    description = 'Download periodical content from the internet'
     file_types  = {'recipe', 'downloaded_recipe'}
     commit_name = 'recipe_input'
 
@@ -34,20 +34,19 @@ class RecipeInput(InputFormatPlugin):
 
     options = {
         OptionRecommendation(name='test', recommended_value=False,
-            help=_(
-            'Useful for recipe development. Forces'
-            ' max_articles_per_feed to 2 and downloads at most 2 feeds.'
-            ' You can change the number of feeds and articles by supplying optional arguments.'
-            ' For example: --test 3 1 will download at most 3 feeds and only 1 article per feed.')),
+            help='Useful for recipe development. Forces max_articles_per_feed '
+                 'to 2 and downloads at most 2 feeds. You can change the '
+                 'number of feeds and articles by supplying optional '
+                 'arguments. For example: --test 3 1 will download at most 3 '
+                 'feeds and only 1 article per feed.'),
         OptionRecommendation(name='username', recommended_value=None,
-            help=_('Username for sites that require a login to access '
-                'content.')),
+            help='Username for sites that require a login to access content.'),
         OptionRecommendation(name='password', recommended_value=None,
-            help=_('Password for sites that require a login to access '
-                'content.')),
+            help='Password for sites that require a login to access content.'),
         OptionRecommendation(name='dont_download_recipe',
             recommended_value=False,
-            help=_('Do not download latest version of builtin recipes from the calibre server')),
+            help='Do not download latest version of builtin recipes from the '
+                 'calibre server'),
         OptionRecommendation(name='lrf', recommended_value=False,
             help='Optimize fetching for subsequent conversion to LRF.'),
         }

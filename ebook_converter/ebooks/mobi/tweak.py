@@ -1,4 +1,5 @@
-import os, glob
+import glob
+import os
 
 from ebook_converter import CurrentDir
 from ebook_converter.ebooks.mobi import MobiError
@@ -8,8 +9,8 @@ from ebook_converter.utils.logging import default_log
 from ebook_converter.ebooks import DRMError
 from ebook_converter.ebooks.mobi.reader.mobi8 import Mobi8Reader
 from ebook_converter.ebooks.conversion.plumber import Plumber, create_oebbook
-from ebook_converter.customize.ui import (plugin_for_input_format,
-        plugin_for_output_format)
+from ebook_converter.customize.ui import plugin_for_input_format
+from ebook_converter.customize.ui import plugin_for_output_format
 from ebook_converter.utils.ipc.simple_worker import fork_job
 
 
@@ -31,44 +32,46 @@ def do_explode(path, dest):
             opf = os.path.abspath(mr())
             try:
                 os.remove('debug-raw.html')
-            except:
+            except Exception:
                 pass
 
     return opf
 
 
-def explode(path, dest, question=lambda x:True):
+def explode(path, dest, question=lambda x: True):
     with open(path, 'rb') as stream:
         raw = stream.read(3)
         stream.seek(0)
         if raw == b'TPZ':
-            raise BadFormat(_('This is not a MOBI file. It is a Topaz file.'))
+            raise BadFormat('This is not a MOBI file. It is a Topaz file.')
 
         try:
             header = MetadataHeader(stream, default_log)
         except MobiError:
-            raise BadFormat(_('This is not a MOBI file.'))
+            raise BadFormat('This is not a MOBI file.')
 
         if header.encryption_type != 0:
-            raise DRMError(_('This file is locked with DRM. It cannot be tweaked.'))
+            raise DRMError('This file is locked with DRM. It cannot be '
+                           'tweaked.')
 
         kf8_type = header.kf8_type
 
         if kf8_type is None:
-            raise BadFormat(_('This MOBI file does not contain a KF8 format '
-                    'book. KF8 is the new format from Amazon. calibre can '
-                    'only tweak MOBI files that contain KF8 books. Older '
-                    'MOBI files without KF8 are not tweakable.'))
+            raise BadFormat('This MOBI file does not contain a KF8 format '
+                            'book. KF8 is the new format from Amazon. calibre '
+                            'can only tweak MOBI files that contain KF8 '
+                            'books. Older MOBI files without KF8 are not '
+                            'tweakable.')
 
         if kf8_type == 'joint':
-            if not question(_('This MOBI file contains both KF8 and '
-                'older Mobi6 data. Tweaking it will remove the Mobi6 data, which '
-                'means the file will not be usable on older Kindles. Are you '
-                'sure?')):
+            if not question('This MOBI file contains both KF8 and older Mobi6 '
+                            'data. Tweaking it will remove the Mobi6 data, '
+                            'which means the file will not be usable on older '
+                            'Kindles. Are you sure?'):
                 return None
 
-    return fork_job('ebook_converter.ebooks.mobi.tweak', 'do_explode', args=(path,
-            dest), no_output=True)['result']
+    return fork_job('ebook_converter.ebooks.mobi.tweak', 'do_explode',
+                    args=(path, dest), no_output=True)['result']
 
 
 def set_cover(oeb):
@@ -96,11 +99,10 @@ def do_rebuild(opf, dest_path):
 def rebuild(src_dir, dest_path):
     opf = glob.glob(os.path.join(src_dir, '*.opf'))
     if not opf:
-        raise ValueError('No OPF file found in %s'%src_dir)
+        raise ValueError('No OPF file found in %s' % src_dir)
     opf = opf[0]
     # For debugging, uncomment the following two lines
     # def fork_job(a, b, args=None, no_output=True):
     #     do_rebuild(*args)
-    fork_job('ebook_converter.ebooks.mobi.tweak', 'do_rebuild', args=(opf, dest_path),
-            no_output=True)
-
+    fork_job('ebook_converter.ebooks.mobi.tweak', 'do_rebuild',
+             args=(opf, dest_path), no_output=True)

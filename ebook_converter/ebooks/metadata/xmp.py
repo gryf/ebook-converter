@@ -235,7 +235,7 @@ def more_recent(one, two):
 
 def metadata_from_xmp_packet(raw_bytes):
     root = parse_xmp_packet(raw_bytes)
-    mi = Metadata(_('Unknown'))
+    mi = Metadata('Unknown')
     title = first_alt('//dc:title', root)
     if title:
         if title.startswith(r'\376\377'):
@@ -346,7 +346,9 @@ def consolidate_metadata(info_mi, info):
         import traceback
         traceback.print_exc()
         return info_mi
-    info_title, info_authors, info_tags = info_mi.title or _('Unknown'), list(info_mi.authors or ()), list(info_mi.tags or ())
+    info_title = info_mi.title or 'Unknown'
+    info_authors = list(info_mi.authors or ())
+    info_tags = list(info_mi.tags or ())
     info_mi.smart_update(xmp_mi, replace_metadata=True)
     prefer_info = False
     if 'ModDate' in info and hasattr(xmp_mi, 'metadata_date'):

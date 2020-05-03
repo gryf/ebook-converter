@@ -3,8 +3,9 @@ import re
 import shutil
 import urllib.parse
 
-from ebook_converter.customize.conversion import (OutputFormatPlugin,
-        OptionRecommendation)
+from ebook_converter.customize.conversion import OutputFormatPlugin
+from ebook_converter.customize.conversion import OptionRecommendation
+
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter import CurrentDir
 from ebook_converter.polyglot.builtins import as_bytes
@@ -53,78 +54,79 @@ class EPUBOutput(OutputFormatPlugin):
 
     options = {
         OptionRecommendation(name='extract_to',
-            help=_('Extract the contents of the generated %s file to the '
-                'specified directory. The contents of the directory are first '
-                'deleted, so be careful.') % 'EPUB'),
+            help='Extract the contents of the generated %s file to the '
+                 'specified directory. The contents of the directory are '
+                 'first deleted, so be careful.' % 'EPUB'),
 
         OptionRecommendation(name='dont_split_on_page_breaks',
             recommended_value=False, level=OptionRecommendation.LOW,
-            help=_('Turn off splitting at page breaks. Normally, input '
-                    'files are automatically split at every page break into '
-                    'two files. This gives an output e-book that can be '
-                    'parsed faster and with less resources. However, '
-                    'splitting is slow and if your source file contains a '
-                    'very large number of page breaks, you should turn off '
-                    'splitting on page breaks.'
-                )
+            help='Turn off splitting at page breaks. Normally, input '
+                 'files are automatically split at every page break into '
+                 'two files. This gives an output e-book that can be '
+                 'parsed faster and with less resources. However, '
+                 'splitting is slow and if your source file contains a '
+                 'very large number of page breaks, you should turn off '
+                 'splitting on page breaks.'
         ),
 
         OptionRecommendation(name='flow_size', recommended_value=260,
-            help=_('Split all HTML files larger than this size (in KB). '
-                'This is necessary as most EPUB readers cannot handle large '
-                'file sizes. The default of %defaultKB is the size required '
-                'for Adobe Digital Editions. Set to 0 to disable size based splitting.')
+            help='Split all HTML files larger than this size (in KB). '
+                 'This is necessary as most EPUB readers cannot handle large '
+                 'file sizes. The default of %defaultKB is the size required '
+                 'for Adobe Digital Editions. Set to 0 to disable size based '
+                 'splitting.'
         ),
 
         OptionRecommendation(name='no_default_epub_cover', recommended_value=False,
-            help=_('Normally, if the input file has no cover and you don\'t'
+            help='Normally, if the input file has no cover and you don\'t'
             ' specify one, a default cover is generated with the title, '
-            'authors, etc. This option disables the generation of this cover.')
+            'authors, etc. This option disables the generation of this cover.'
         ),
 
         OptionRecommendation(name='no_svg_cover', recommended_value=False,
-            help=_('Do not use SVG for the book cover. Use this option if '
+            help='Do not use SVG for the book cover. Use this option if '
                 'your EPUB is going to be used on a device that does not '
                 'support SVG, like the iPhone or the JetBook Lite. '
                 'Without this option, such devices will display the cover '
-                'as a blank page.')
+                'as a blank page.'
         ),
 
         OptionRecommendation(name='preserve_cover_aspect_ratio',
-            recommended_value=False, help=_(
-            'When using an SVG cover, this option will cause the cover to scale '
-            'to cover the available screen area, but still preserve its aspect ratio '
-            '(ratio of width to height). That means there may be white borders '
-            'at the sides or top and bottom of the image, but the image will '
-            'never be distorted. Without this option the image may be slightly '
-            'distorted, but there will be no borders.'
-            )
+            recommended_value=False,
+            help='When using an SVG cover, this option will cause the cover '
+                 'to scale to cover the available screen area, but still '
+                 'preserve its aspect ratio (ratio of width to height). That '
+                 'means there may be white borders at the sides or top and '
+                 'bottom of the image, but the image will never be distorted. '
+                 'Without this option the image may be slightly distorted, '
+                 'but there will be no borders.'
         ),
 
         OptionRecommendation(name='epub_flatten', recommended_value=False,
-            help=_('This option is needed only if you intend to use the EPUB'
-                ' with FBReaderJ. It will flatten the file system inside the'
-                ' EPUB, putting all files into the top level.')
+            help='This option is needed only if you intend to use the EPUB'
+                 ' with FBReaderJ. It will flatten the file system inside the'
+                 ' EPUB, putting all files into the top level.'
         ),
 
         OptionRecommendation(name='epub_inline_toc', recommended_value=False,
-            help=_('Insert an inline Table of Contents that will appear as part of the main book content.')
+            help='Insert an inline Table of Contents that will appear as part '
+                 'of the main book content.'
         ),
 
         OptionRecommendation(name='epub_toc_at_end', recommended_value=False,
-            help=_('Put the inserted inline Table of Contents at the end of the book instead of the start.')
+            help='Put the inserted inline Table of Contents at the end of '
+                 'the book instead of the start.'
         ),
 
         OptionRecommendation(name='toc_title', recommended_value=None,
-            help=_('Title for any generated in-line table of contents.')
+            help='Title for any generated in-line table of contents.'
         ),
 
         OptionRecommendation(name='epub_version', recommended_value='2', choices=ui_data['versions'],
-            help=_('The version of the EPUB file to generate. EPUB 2 is the'
-                ' most widely compatible, only use EPUB 3 if you know you'
-                ' actually need it.')
-        ),
-
+            help='The version of the EPUB file to generate. EPUB 2 is the '
+                 'most widely compatible, only use EPUB 3 if you know you '
+                 'actually need it.'
+        )
         }
 
     recommendations = {('pretty_print', True, OptionRecommendation.HIGH)}
@@ -219,7 +221,7 @@ class EPUBOutput(OutputFormatPlugin):
             self.log.warn('This EPUB file has no Table of Contents. '
                     'Creating a default TOC')
             first = next(iter(self.oeb.spine))
-            self.oeb.toc.add(_('Start'), first.href)
+            self.oeb.toc.add('Start', first.href)
 
         from ebook_converter.ebooks.oeb.base import OPF
         identifiers = oeb.metadata['identifier']

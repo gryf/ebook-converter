@@ -23,10 +23,10 @@ __docformat__ = 'restructuredtext en'
 
 class FormatterFunctions(object):
 
-    error_function_body = ('def evaluate(self, formatter, kwargs, mi, locals):\n'
-                       '\treturn "' +
-                            _('Duplicate user function name {0}. '
-                              'Change the name or ensure that the functions are identical') + '"')
+    error_function_body = ('def evaluate(self, formatter, kwargs, mi, '
+                           'locals):\n\treturn "Duplicate user function name '
+                           '{0}. Change the name or ensure that the functions '
+                           'are identical"')
 
     def __init__(self):
         self._builtins = {}
@@ -39,7 +39,7 @@ class FormatterFunctions(object):
                                     func_class.__class__.__name__))
         name = func_class.name
         if name in self._functions:
-            raise ValueError('Name %s already used'%name)
+            raise ValueError('Name %s already used' % name)
         self._builtins[name] = func_class
         self._functions[name] = func_class
         for a in func_class.aliases:
@@ -51,7 +51,7 @@ class FormatterFunctions(object):
                                     func_class.__class__.__name__))
         name = func_class.name
         if not replace and name in self._functions:
-            raise ValueError('Name %s already used'%name)
+            raise ValueError('Name %s already used' % name)
         self._functions[name] = func_class
 
     def register_functions(self, library_uuid, funcs):
@@ -116,7 +116,7 @@ def formatter_functions():
 
 class FormatterFunction(object):
 
-    doc = _('No documentation provided')
+    doc = 'No documentation provided'
     name = 'no name provided'
     category = 'Unknown'
     arg_count = 0
@@ -152,9 +152,9 @@ class BuiltinStrcmp(BuiltinFormatterFunction):
     name = 'strcmp'
     arg_count = 5
     category = 'Relational'
-    __doc__ = doc = _('strcmp(x, y, lt, eq, gt) -- does a case-insensitive comparison of x '
-            'and y as strings. Returns lt if x < y. Returns eq if x == y. '
-            'Otherwise returns gt.')
+    __doc__ = doc = ('strcmp(x, y, lt, eq, gt) -- does a case-insensitive '
+                     'comparison of x and y as strings. Returns lt if x < y. '
+                     'Returns eq if x == y. Otherwise returns gt.')
 
     def evaluate(self, formatter, kwargs, mi, locals, x, y, lt, eq, gt):
         v = strcmp(x, y)
@@ -169,8 +169,9 @@ class BuiltinCmp(BuiltinFormatterFunction):
     name = 'cmp'
     category = 'Relational'
     arg_count = 5
-    __doc__ = doc =   _('cmp(x, y, lt, eq, gt) -- compares x and y after converting both to '
-            'numbers. Returns lt if x < y. Returns eq if x == y. Otherwise returns gt.')
+    __doc__ = doc = ('cmp(x, y, lt, eq, gt) -- compares x and y after '
+                     'converting both to numbers. Returns lt if x < y. '
+                     'Returns eq if x == y. Otherwise returns gt.')
 
     def evaluate(self, formatter, kwargs, mi, locals, x, y, lt, eq, gt):
         x = float(x if x and x != 'None' else 0)
@@ -186,16 +187,18 @@ class BuiltinFirstMatchingCmp(BuiltinFormatterFunction):
     name = 'first_matching_cmp'
     category = 'Relational'
     arg_count = -1
-    __doc__ = doc =   _('first_matching_cmp(val, cmp1, result1, cmp2, r2, ..., else_result) -- '
-            'compares "val < cmpN" in sequence, returning resultN for '
-            'the first comparison that succeeds. Returns else_result '
-            'if no comparison succeeds. Example: '
-            'first_matching_cmp(10,5,"small",10,"middle",15,"large","giant") '
-            'returns "large". The same example with a first value of 16 returns "giant".')
+    __doc__ = doc = ('first_matching_cmp(val, cmp1, result1, cmp2, r2, ..., '
+                     'else_result) -- compares "val < cmpN" in sequence, '
+                     'returning resultN for the first comparison that '
+                     'succeeds. Returns else_result if no comparison '
+                     'succeeds. Example: first_matching_cmp(10,5,"small",10,'
+                     '"middle",15,"large","giant") returns "large". The same '
+                     'example with a first value of 16 returns "giant".')
 
     def evaluate(self, formatter, kwargs, mi, locals, *args):
         if (len(args) % 2) != 0:
-            raise ValueError(_('first_matching_cmp requires an even number of arguments'))
+            raise ValueError('first_matching_cmp requires an even number of '
+                             'arguments')
         val = float(args[0] if args[0] and args[0] != 'None' else 0)
         for i in range(1, len(args) - 1, 2):
             c = float(args[i] if args[i] and args[i] != 'None' else 0)
@@ -208,7 +211,7 @@ class BuiltinStrcat(BuiltinFormatterFunction):
     name = 'strcat'
     arg_count = -1
     category = 'String manipulation'
-    __doc__ = doc = _('strcat(a, b, ...) -- can take any number of arguments. Returns a '
+    __doc__ = doc = ('strcat(a, b, ...) -- can take any number of arguments. Returns a '
             'string formed by concatenating all the arguments')
 
     def evaluate(self, formatter, kwargs, mi, locals, *args):
@@ -223,7 +226,7 @@ class BuiltinStrlen(BuiltinFormatterFunction):
     name = 'strlen'
     arg_count = 1
     category = 'String manipulation'
-    __doc__ = doc = _('strlen(a) -- Returns the length of the string passed as '
+    __doc__ = doc = ('strlen(a) -- Returns the length of the string passed as '
             'the argument')
 
     def evaluate(self, formatter, kwargs, mi, locals, a):
@@ -237,7 +240,7 @@ class BuiltinAdd(BuiltinFormatterFunction):
     name = 'add'
     arg_count = 2
     category = 'Arithmetic'
-    __doc__ = doc = _('add(x, y) -- returns x + y. Throws an exception if either x or y are not numbers.')
+    __doc__ = doc = 'add(x, y) -- returns x + y. Throws an exception if either x or y are not numbers.'
 
     def evaluate(self, formatter, kwargs, mi, locals, x, y):
         x = float(x if x and x != 'None' else 0)
@@ -249,7 +252,7 @@ class BuiltinSubtract(BuiltinFormatterFunction):
     name = 'subtract'
     arg_count = 2
     category = 'Arithmetic'
-    __doc__ = doc = _('subtract(x, y) -- returns x - y. Throws an exception if either x or y are not numbers.')
+    __doc__ = doc = 'subtract(x, y) -- returns x - y. Throws an exception if either x or y are not numbers.'
 
     def evaluate(self, formatter, kwargs, mi, locals, x, y):
         x = float(x if x and x != 'None' else 0)
@@ -261,7 +264,7 @@ class BuiltinMultiply(BuiltinFormatterFunction):
     name = 'multiply'
     arg_count = 2
     category = 'Arithmetic'
-    __doc__ = doc = _('multiply(x, y) -- returns x * y. Throws an exception if either x or y are not numbers.')
+    __doc__ = doc = 'multiply(x, y) -- returns x * y. Throws an exception if either x or y are not numbers.'
 
     def evaluate(self, formatter, kwargs, mi, locals, x, y):
         x = float(x if x and x != 'None' else 0)
@@ -273,7 +276,7 @@ class BuiltinDivide(BuiltinFormatterFunction):
     name = 'divide'
     arg_count = 2
     category = 'Arithmetic'
-    __doc__ = doc = _('divide(x, y) -- returns x / y. Throws an exception if either x or y are not numbers.')
+    __doc__ = doc = 'divide(x, y) -- returns x / y. Throws an exception if either x or y are not numbers.'
 
     def evaluate(self, formatter, kwargs, mi, locals, x, y):
         x = float(x if x and x != 'None' else 0)
@@ -286,7 +289,7 @@ class BuiltinTemplate(BuiltinFormatterFunction):
     arg_count = 1
     category = 'Recursion'
 
-    __doc__ = doc = _('template(x) -- evaluates x as a template. The evaluation is done '
+    __doc__ = doc = ('template(x) -- evaluates x as a template. The evaluation is done '
             'in its own context, meaning that variables are not shared between '
             'the caller and the template evaluation. Because the { and } '
             'characters are special, you must use [[ for the { character and '
@@ -305,7 +308,7 @@ class BuiltinEval(BuiltinFormatterFunction):
     name = 'eval'
     arg_count = 1
     category = 'Recursion'
-    __doc__ = doc = _('eval(template) -- evaluates the template, passing the local '
+    __doc__ = doc = ('eval(template) -- evaluates the template, passing the local '
             'variables (those \'assign\'ed to) instead of the book metadata. '
             ' This permits using the template processor to construct complex '
             'results from local variables. Because the { and } '
@@ -325,7 +328,7 @@ class BuiltinAssign(BuiltinFormatterFunction):
     name = 'assign'
     arg_count = 2
     category = 'Other'
-    __doc__ = doc = _('assign(id, val) -- assigns val to id, then returns val. '
+    __doc__ = doc = ('assign(id, val) -- assigns val to id, then returns val. '
             'id must be an identifier, not an expression')
 
     def evaluate(self, formatter, kwargs, mi, locals, target, value):
@@ -337,7 +340,7 @@ class BuiltinPrint(BuiltinFormatterFunction):
     name = 'print'
     arg_count = -1
     category = 'Other'
-    __doc__ = doc = _('print(a, b, ...) -- prints the arguments to standard output. '
+    __doc__ = doc = ('print(a, b, ...) -- prints the arguments to standard output. '
             'Unless you start calibre from the command line (calibre-debug -g), '
             'the output will go to a black hole.')
 
@@ -350,7 +353,7 @@ class BuiltinField(BuiltinFormatterFunction):
     name = 'field'
     arg_count = 1
     category = 'Get values from metadata'
-    __doc__ = doc = _('field(name) -- returns the metadata field named by name')
+    __doc__ = doc = ('field(name) -- returns the metadata field named by name')
 
     def evaluate(self, formatter, kwargs, mi, locals, name):
         return formatter.get_value(name, [], kwargs)
@@ -360,7 +363,7 @@ class BuiltinRawField(BuiltinFormatterFunction):
     name = 'raw_field'
     arg_count = 1
     category = 'Get values from metadata'
-    __doc__ = doc = _('raw_field(name) -- returns the metadata field named by name '
+    __doc__ = doc = ('raw_field(name) -- returns the metadata field named by name '
             'without applying any formatting.')
 
     def evaluate(self, formatter, kwargs, mi, locals, name):
@@ -377,7 +380,7 @@ class BuiltinRawList(BuiltinFormatterFunction):
     name = 'raw_list'
     arg_count = 2
     category = 'Get values from metadata'
-    __doc__ = doc = _('raw_list(name, separator) -- returns the metadata list '
+    __doc__ = doc = ('raw_list(name, separator) -- returns the metadata list '
             'named by name without applying any formatting or sorting and '
             'with items separated by separator.')
 
@@ -392,7 +395,7 @@ class BuiltinSubstr(BuiltinFormatterFunction):
     name = 'substr'
     arg_count = 3
     category = 'String manipulation'
-    __doc__ = doc = _('substr(str, start, end) -- returns the start\'th through the end\'th '
+    __doc__ = doc = ('substr(str, start, end) -- returns the start\'th through the end\'th '
             'characters of str. The first character in str is the zero\'th '
             'character. If end is negative, then it indicates that many '
             'characters counting from the right. If end is zero, then it '
@@ -407,7 +410,7 @@ class BuiltinLookup(BuiltinFormatterFunction):
     name = 'lookup'
     arg_count = -1
     category = 'Iterating over values'
-    __doc__ = doc = _('lookup(val, pattern, field, pattern, field, ..., else_field) -- '
+    __doc__ = doc = ('lookup(val, pattern, field, pattern, field, ..., else_field) -- '
             'like switch, except the arguments are field (metadata) names, not '
             'text. The value of the appropriate field will be fetched and used. '
             'Note that because composite columns are fields, you can use this '
@@ -422,7 +425,7 @@ class BuiltinLookup(BuiltinFormatterFunction):
             else:
                 return formatter.vformat('{'+args[1].strip()+'}', [], kwargs)
         if (len(args) % 2) != 1:
-            raise ValueError(_('lookup requires either 2 or an odd number of arguments'))
+            raise ValueError('lookup requires either 2 or an odd number of arguments')
         i = 0
         while i < len(args):
             if i + 1 >= len(args):
@@ -436,7 +439,7 @@ class BuiltinTest(BuiltinFormatterFunction):
     name = 'test'
     arg_count = 3
     category = 'If-then-else'
-    __doc__ = doc = _('test(val, text if not empty, text if empty) -- return `text if not '
+    __doc__ = doc = ('test(val, text if not empty, text if empty) -- return `text if not '
             'empty` if val is not empty, otherwise return `text if empty`')
 
     def evaluate(self, formatter, kwargs, mi, locals, val, value_if_set, value_not_set):
@@ -450,7 +453,7 @@ class BuiltinContains(BuiltinFormatterFunction):
     name = 'contains'
     arg_count = 4
     category = 'If-then-else'
-    __doc__ = doc = _('contains(val, pattern, text if match, text if not match) -- checks '
+    __doc__ = doc = ('contains(val, pattern, text if match, text if not match) -- checks '
             'if val contains matches for the regular expression `pattern`. '
             'Returns `text if match` if matches are found, otherwise it returns '
             '`text if no match`')
@@ -467,7 +470,7 @@ class BuiltinSwitch(BuiltinFormatterFunction):
     name = 'switch'
     arg_count = -1
     category = 'Iterating over values'
-    __doc__ = doc = _('switch(val, pattern, value, pattern, value, ..., else_value) -- '
+    __doc__ = doc = ('switch(val, pattern, value, pattern, value, ..., else_value) -- '
             'for each `pattern, value` pair, checks if `val` matches '
             'the regular expression `pattern` and if so, returns that '
             '`value`. If no pattern matches, then `else_value` is returned. '
@@ -475,7 +478,7 @@ class BuiltinSwitch(BuiltinFormatterFunction):
 
     def evaluate(self, formatter, kwargs, mi, locals, val, *args):
         if (len(args) % 2) != 1:
-            raise ValueError(_('switch requires an odd number of arguments'))
+            raise ValueError('switch requires an odd number of arguments')
         i = 0
         while i < len(args):
             if i + 1 >= len(args):
@@ -489,7 +492,7 @@ class BuiltinStrcatMax(BuiltinFormatterFunction):
     name = 'strcat_max'
     arg_count = -1
     category = 'String manipulation'
-    __doc__ = doc = _('strcat_max(max, string1, prefix2, string2, ...) -- '
+    __doc__ = doc = ('strcat_max(max, string1, prefix2, string2, ...) -- '
             'Returns a string formed by concatenating the arguments. The '
             'returned value is initialized to string1. `Prefix, string` '
             'pairs are added to the end of the value as long as the '
@@ -499,13 +502,13 @@ class BuiltinStrcatMax(BuiltinFormatterFunction):
 
     def evaluate(self, formatter, kwargs, mi, locals, *args):
         if len(args) < 2:
-            raise ValueError(_('strcat_max requires 2 or more arguments'))
+            raise ValueError('strcat_max requires 2 or more arguments')
         if (len(args) % 2) != 0:
-            raise ValueError(_('strcat_max requires an even number of arguments'))
+            raise ValueError('strcat_max requires an even number of arguments')
         try:
             max = int(args[0])
         except:
-            raise ValueError(_('first argument to strcat_max must be an integer'))
+            raise ValueError('first argument to strcat_max must be an integer')
 
         i = 2
         result = args[1]
@@ -524,7 +527,7 @@ class BuiltinInList(BuiltinFormatterFunction):
     name = 'in_list'
     arg_count = -1
     category = 'List lookup'
-    __doc__ = doc = _('in_list(val, separator, pattern, found_val, ..., not_found_val) -- '
+    __doc__ = doc = ('in_list(val, separator, pattern, found_val, ..., not_found_val) -- '
             'treat val as a list of items separated by separator, '
             'evaluating the pattern against each value in the list. If the '
             'pattern matches a value, return found_val, otherwise return '
@@ -535,7 +538,7 @@ class BuiltinInList(BuiltinFormatterFunction):
 
     def evaluate(self, formatter, kwargs, mi, locals, val, sep, *args):
         if (len(args) % 2) != 1:
-            raise ValueError(_('in_list requires an odd number of arguments'))
+            raise ValueError('in_list requires an odd number of arguments')
         l = [v.strip() for v in val.split(sep) if v.strip()]
         i = 0
         while i < len(args):
@@ -554,7 +557,7 @@ class BuiltinStrInList(BuiltinFormatterFunction):
     name = 'str_in_list'
     arg_count = -1
     category = 'List lookup'
-    __doc__ = doc = _('str_in_list(val, separator, string, found_val, ..., not_found_val) -- '
+    __doc__ = doc = ('str_in_list(val, separator, string, found_val, ..., not_found_val) -- '
             'treat val as a list of items separated by separator, '
             'comparing the string against each value in the list. If the '
             'string matches a value (ignoring case) then return found_val, otherwise return '
@@ -566,7 +569,7 @@ class BuiltinStrInList(BuiltinFormatterFunction):
 
     def evaluate(self, formatter, kwargs, mi, locals, val, sep, *args):
         if (len(args) % 2) != 1:
-            raise ValueError(_('str_in_list requires an odd number of arguments'))
+            raise ValueError('str_in_list requires an odd number of arguments')
         l = [v.strip() for v in val.split(sep) if v.strip()]
         i = 0
         while i < len(args):
@@ -587,7 +590,7 @@ class BuiltinIdentifierInList(BuiltinFormatterFunction):
     name = 'identifier_in_list'
     arg_count = 4
     category = 'List lookup'
-    __doc__ = doc = _('identifier_in_list(val, id, found_val, not_found_val) -- '
+    __doc__ = doc = ('identifier_in_list(val, id, found_val, not_found_val) -- '
             'treat val as a list of identifiers separated by commas, '
             'comparing the string against each value in the list. An identifier '
             'has the format "identifier:value". The id parameter should be '
@@ -614,7 +617,7 @@ class BuiltinRe(BuiltinFormatterFunction):
     name = 're'
     arg_count = 3
     category = 'String manipulation'
-    __doc__ = doc = _('re(val, pattern, replacement) -- return val after applying '
+    __doc__ = doc = ('re(val, pattern, replacement) -- return val after applying '
             'the regular expression. All instances of `pattern` are replaced '
             'with `replacement`. As in all of calibre, these are '
             'Python-compatible regular expressions')
@@ -627,7 +630,7 @@ class BuiltinReGroup(BuiltinFormatterFunction):
     name = 're_group'
     arg_count = -1
     category = 'String manipulation'
-    __doc__ = doc = _('re_group(val, pattern, template_for_group_1, for_group_2, ...) -- '
+    __doc__ = doc = ('re_group(val, pattern, template_for_group_1, for_group_2, ...) -- '
             'return a string made by applying the regular expression pattern '
             'to the val and replacing each matched instance with the string '
             'computed by replacing each matched group by the value returned '
@@ -662,7 +665,7 @@ class BuiltinSwapAroundComma(BuiltinFormatterFunction):
     name = 'swap_around_comma'
     arg_count = 1
     category = 'String manipulation'
-    __doc__ = doc = _('swap_around_comma(val) -- given a value of the form '
+    __doc__ = doc = ('swap_around_comma(val) -- given a value of the form '
             '"B, A", return "A B". This is most useful for converting names '
             'in LN, FN format to FN LN. If there is no comma, the function '
             'returns val unchanged')
@@ -675,7 +678,7 @@ class BuiltinIfempty(BuiltinFormatterFunction):
     name = 'ifempty'
     arg_count = 2
     category = 'If-then-else'
-    __doc__ = doc = _('ifempty(val, text if empty) -- return val if val is not empty, '
+    __doc__ = doc = ('ifempty(val, text if empty) -- return val if val is not empty, '
             'otherwise return `text if empty`')
 
     def evaluate(self, formatter, kwargs, mi, locals, val, value_if_empty):
@@ -689,7 +692,7 @@ class BuiltinShorten(BuiltinFormatterFunction):
     name = 'shorten'
     arg_count = 4
     category = 'String manipulation'
-    __doc__ = doc = _('shorten(val, left chars, middle text, right chars) -- Return a '
+    __doc__ = doc = ('shorten(val, left chars, middle text, right chars) -- Return a '
             'shortened version of val, consisting of `left chars` '
             'characters from the beginning of val, followed by '
             '`middle text`, followed by `right chars` characters from '
@@ -716,7 +719,7 @@ class BuiltinCount(BuiltinFormatterFunction):
     name = 'count'
     arg_count = 2
     category = 'List manipulation'
-    __doc__ = doc = _('count(val, separator) -- interprets the value as a list of items '
+    __doc__ = doc = ('count(val, separator) -- interprets the value as a list of items '
             'separated by `separator`, returning the number of items in the '
             'list. Most lists use a comma as the separator, but authors '
             'uses an ampersand. Examples: {tags:count(,)}, {authors:count(&)}')
@@ -729,7 +732,7 @@ class BuiltinListitem(BuiltinFormatterFunction):
     name = 'list_item'
     arg_count = 3
     category = 'List lookup'
-    __doc__ = doc = _('list_item(val, index, separator) -- interpret the value as a list of '
+    __doc__ = doc = ('list_item(val, index, separator) -- interpret the value as a list of '
             'items separated by `separator`, returning the `index`th item. '
             'The first item is number zero. The last item can be returned '
             'using `list_item(-1,separator)`. If the item is not in the list, '
@@ -751,7 +754,7 @@ class BuiltinSelect(BuiltinFormatterFunction):
     name = 'select'
     arg_count = 2
     category = 'List lookup'
-    __doc__ = doc = _('select(val, key) -- interpret the value as a comma-separated list '
+    __doc__ = doc = ('select(val, key) -- interpret the value as a comma-separated list '
             'of items, with the items being "id:value". Find the pair with the '
             'id equal to key, and return the corresponding value.'
             )
@@ -770,7 +773,7 @@ class BuiltinApproximateFormats(BuiltinFormatterFunction):
     name = 'approximate_formats'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('approximate_formats() -- return a comma-separated '
+    __doc__ = doc = ('approximate_formats() -- return a comma-separated '
                   'list of formats that at one point were associated with the '
                   'book. There is no guarantee that this list is correct, '
                   'although it probably is. '
@@ -791,14 +794,14 @@ class BuiltinApproximateFormats(BuiltinFormatterFunction):
                 return ''
             data = sorted(fmt_data)
             return ','.join(v.upper() for v in data)
-        return _('This function can be used only in the GUI')
+        return 'This function can be used only in the GUI'
 
 
 class BuiltinFormatsModtimes(BuiltinFormatterFunction):
     name = 'formats_modtimes'
     arg_count = 1
     category = 'Get values from metadata'
-    __doc__ = doc = _('formats_modtimes(date_format) -- return a comma-separated '
+    __doc__ = doc = ('formats_modtimes(date_format) -- return a comma-separated '
                   'list of colon-separated items representing modification times '
                   'for the formats of a book. The date_format parameter '
                   'specifies how the date is to be formatted. See the '
@@ -822,7 +825,7 @@ class BuiltinFormatsSizes(BuiltinFormatterFunction):
     name = 'formats_sizes'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('formats_sizes() -- return a comma-separated list of '
+    __doc__ = doc = ('formats_sizes() -- return a comma-separated list of '
                       'colon-separated items representing sizes in bytes '
                       'of the formats of a book. You can use the select '
                       'function to get the size for a specific '
@@ -842,7 +845,7 @@ class BuiltinFormatsPaths(BuiltinFormatterFunction):
     name = 'formats_paths'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('formats_paths() -- return a comma-separated list of '
+    __doc__ = doc = ('formats_paths() -- return a comma-separated list of '
                       'colon-separated items representing full path to '
                       'the formats of a book. You can use the select '
                       'function to get the path for a specific '
@@ -861,7 +864,7 @@ class BuiltinHumanReadable(BuiltinFormatterFunction):
     name = 'human_readable'
     arg_count = 1
     category = 'Formatting values'
-    __doc__ = doc = _('human_readable(v) -- return a string '
+    __doc__ = doc = ('human_readable(v) -- return a string '
                       'representing the number v in KB, MB, GB, etc.'
             )
 
@@ -876,7 +879,7 @@ class BuiltinFormatNumber(BuiltinFormatterFunction):
     name = 'format_number'
     arg_count = 2
     category = 'Formatting values'
-    __doc__ = doc = _('format_number(v, template) -- format the number v using '
+    __doc__ = doc = ('format_number(v, template) -- format the number v using '
                   'a Python formatting template such as "{0:5.2f}" or '
                   '"{0:,d}" or "${0:5,.2f}". The field_name part of the '
                   'template must be a 0 (zero) (the "{0:" in the above examples). '
@@ -912,7 +915,7 @@ class BuiltinSublist(BuiltinFormatterFunction):
     name = 'sublist'
     arg_count = 4
     category = 'List manipulation'
-    __doc__ = doc = _('sublist(val, start_index, end_index, separator) -- interpret the '
+    __doc__ = doc = ('sublist(val, start_index, end_index, separator) -- interpret the '
             'value as a list of items separated by `separator`, returning a '
             'new list made from the `start_index` to the `end_index` item. '
             'The first item is number zero. If an index is negative, then it '
@@ -948,7 +951,7 @@ class BuiltinSubitems(BuiltinFormatterFunction):
     name = 'subitems'
     arg_count = 3
     category = 'List manipulation'
-    __doc__ = doc = _('subitems(val, start_index, end_index) -- This function is used to '
+    __doc__ = doc = ('subitems(val, start_index, end_index) -- This function is used to '
             'break apart lists of items such as genres. It interprets the value '
             'as a comma-separated list of items, where each item is a period-'
             'separated list. Returns a new list made by first finding all the '
@@ -993,7 +996,7 @@ class BuiltinFormatDate(BuiltinFormatterFunction):
     name = 'format_date'
     arg_count = 2
     category = 'Formatting values'
-    __doc__ = doc = _('format_date(val, format_string) -- format the value, '
+    __doc__ = doc = ('format_date(val, format_string) -- format the value, '
             'which must be a date, using the format_string, returning a string. '
             'The formatting codes are: '
             'd    : the day as number without a leading zero (1 to 31) '
@@ -1031,7 +1034,7 @@ class BuiltinUppercase(BuiltinFormatterFunction):
     name = 'uppercase'
     arg_count = 1
     category = 'String case changes'
-    __doc__ = doc = _('uppercase(val) -- return val in upper case')
+    __doc__ = doc = 'uppercase(val) -- return val in upper case'
 
     def evaluate(self, formatter, kwargs, mi, locals, val):
         return val.upper()
@@ -1041,7 +1044,7 @@ class BuiltinLowercase(BuiltinFormatterFunction):
     name = 'lowercase'
     arg_count = 1
     category = 'String case changes'
-    __doc__ = doc = _('lowercase(val) -- return val in lower case')
+    __doc__ = doc = 'lowercase(val) -- return val in lower case'
 
     def evaluate(self, formatter, kwargs, mi, locals, val):
         return val.lower()
@@ -1051,7 +1054,7 @@ class BuiltinTitlecase(BuiltinFormatterFunction):
     name = 'titlecase'
     arg_count = 1
     category = 'String case changes'
-    __doc__ = doc = _('titlecase(val) -- return val in title case')
+    __doc__ = doc = 'titlecase(val) -- return val in title case'
 
     def evaluate(self, formatter, kwargs, mi, locals, val):
         return titlecase(val)
@@ -1061,7 +1064,7 @@ class BuiltinCapitalize(BuiltinFormatterFunction):
     name = 'capitalize'
     arg_count = 1
     category = 'String case changes'
-    __doc__ = doc = _('capitalize(val) -- return val capitalized')
+    __doc__ = doc = 'capitalize(val) -- return val capitalized'
 
     def evaluate(self, formatter, kwargs, mi, locals, val):
         return capitalize(val)
@@ -1071,7 +1074,7 @@ class BuiltinBooksize(BuiltinFormatterFunction):
     name = 'booksize'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('booksize() -- return value of the size field. '
+    __doc__ = doc = ('booksize() -- return value of the size field. '
                 'This function works only in the GUI. If you want to use this value '
                 'in save-to-disk or send-to-device templates then you '
                 'must make a custom "Column built from other columns", use '
@@ -1088,14 +1091,14 @@ class BuiltinBooksize(BuiltinFormatterFunction):
             except:
                 pass
             return ''
-        return _('This function can be used only in the GUI')
+        return 'This function can be used only in the GUI'
 
 
 class BuiltinOndevice(BuiltinFormatterFunction):
     name = 'ondevice'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('ondevice() -- return Yes if ondevice is set, otherwise return '
+    __doc__ = doc = ('ondevice() -- return Yes if ondevice is set, otherwise return '
               'the empty string. This function works only in the GUI. If you want to '
               'use this value in save-to-disk or send-to-device templates then you '
               'must make a custom "Column built from other columns", use '
@@ -1105,16 +1108,16 @@ class BuiltinOndevice(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals):
         if hasattr(mi, '_proxy_metadata'):
             if mi._proxy_metadata.ondevice_col:
-                return _('Yes')
+                return 'Yes'
             return ''
-        return _('This function can be used only in the GUI')
+        return 'This function can be used only in the GUI'
 
 
 class BuiltinSeriesSort(BuiltinFormatterFunction):
     name = 'series_sort'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('series_sort() -- return the series sort value')
+    __doc__ = doc = 'series_sort() -- return the series sort value'
 
     def evaluate(self, formatter, kwargs, mi, locals):
         if mi.series:
@@ -1126,12 +1129,12 @@ class BuiltinHasCover(BuiltinFormatterFunction):
     name = 'has_cover'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('has_cover() -- return Yes if the book has a cover, '
+    __doc__ = doc = ('has_cover() -- return Yes if the book has a cover, '
                       'otherwise return the empty string')
 
     def evaluate(self, formatter, kwargs, mi, locals):
         if mi.has_cover:
-            return _('Yes')
+            return 'Yes'
         return ''
 
 
@@ -1139,7 +1142,7 @@ class BuiltinFirstNonEmpty(BuiltinFormatterFunction):
     name = 'first_non_empty'
     arg_count = -1
     category = 'Iterating over values'
-    __doc__ = doc = _('first_non_empty(value, value, ...) -- '
+    __doc__ = doc = ('first_non_empty(value, value, ...) -- '
             'returns the first value that is not empty. If all values are '
             'empty, then the empty value is returned. '
             'You can have as many values as you want.')
@@ -1157,7 +1160,7 @@ class BuiltinAnd(BuiltinFormatterFunction):
     name = 'and'
     arg_count = -1
     category = 'Boolean'
-    __doc__ = doc = _('and(value, value, ...) -- '
+    __doc__ = doc = ('and(value, value, ...) -- '
             'returns the string "1" if all values are not empty, otherwise '
             'returns the empty string. This function works well with test or '
             'first_non_empty. You can have as many values as you want. ')
@@ -1175,7 +1178,7 @@ class BuiltinOr(BuiltinFormatterFunction):
     name = 'or'
     arg_count = -1
     category = 'Boolean'
-    __doc__ = doc = _('or(value, value, ...) -- '
+    __doc__ = doc = ('or(value, value, ...) -- '
             'returns the string "1" if any value is not empty, otherwise '
             'returns the empty string. This function works well with test or '
             'first_non_empty. You can have as many values as you want.')
@@ -1193,7 +1196,7 @@ class BuiltinNot(BuiltinFormatterFunction):
     name = 'not'
     arg_count = 1
     category = 'Boolean'
-    __doc__ = doc = _('not(value) -- '
+    __doc__ = doc = ('not(value) -- '
             'returns the string "1" if the value is empty, otherwise '
             'returns the empty string. This function works well with test or '
             'first_non_empty.')
@@ -1206,7 +1209,7 @@ class BuiltinListUnion(BuiltinFormatterFunction):
     name = 'list_union'
     arg_count = 3
     category = 'List manipulation'
-    __doc__ = doc = _('list_union(list1, list2, separator) -- '
+    __doc__ = doc = ('list_union(list1, list2, separator) -- '
             'return a list made by merging the items in list1 and list2, '
             'removing duplicate items using a case-insensitive comparison. If '
             'items differ in case, the one in list1 is used. '
@@ -1231,7 +1234,7 @@ class BuiltinListDifference(BuiltinFormatterFunction):
     name = 'list_difference'
     arg_count = 3
     category = 'List manipulation'
-    __doc__ = doc = _('list_difference(list1, list2, separator) -- '
+    __doc__ = doc = ('list_difference(list1, list2, separator) -- '
             'return a list made by removing from list1 any item found in list2, '
             'using a case-insensitive comparison. The items in list1 and list2 '
             'are separated by separator, as are the items in the returned list.')
@@ -1253,7 +1256,7 @@ class BuiltinListIntersection(BuiltinFormatterFunction):
     name = 'list_intersection'
     arg_count = 3
     category = 'List manipulation'
-    __doc__ = doc = _('list_intersection(list1, list2, separator) -- '
+    __doc__ = doc = ('list_intersection(list1, list2, separator) -- '
             'return a list made by removing from list1 any item not found in list2, '
             'using a case-insensitive comparison. The items in list1 and list2 '
             'are separated by separator, as are the items in the returned list.')
@@ -1275,7 +1278,7 @@ class BuiltinListSort(BuiltinFormatterFunction):
     name = 'list_sort'
     arg_count = 3
     category = 'List manipulation'
-    __doc__ = doc = _('list_sort(list, direction, separator) -- '
+    __doc__ = doc = ('list_sort(list, direction, separator) -- '
             'return list sorted using a case-insensitive sort. If direction is '
             'zero, the list is sorted ascending, otherwise descending. The list items '
             'are separated by separator, as are the items in the returned list.')
@@ -1291,7 +1294,7 @@ class BuiltinListEquals(BuiltinFormatterFunction):
     name = 'list_equals'
     arg_count = 6
     category = 'List manipulation'
-    __doc__ = doc = _('list_equals(list1, sep1, list2, sep2, yes_val, no_val) -- '
+    __doc__ = doc = ('list_equals(list1, sep1, list2, sep2, yes_val, no_val) -- '
             'return yes_val if list1 and list2 contain the same items, '
             'otherwise return no_val. The items are determined by splitting '
             'each list using the appropriate separator character (sep1 or '
@@ -1310,7 +1313,7 @@ class BuiltinListRe(BuiltinFormatterFunction):
     name = 'list_re'
     arg_count = 4
     category = 'List manipulation'
-    __doc__ = doc = _('list_re(src_list, separator, include_re, opt_replace) -- '
+    __doc__ = doc = ('list_re(src_list, separator, include_re, opt_replace) -- '
             'Construct a list by first separating src_list into items using '
             'the separator character. For each item in the list, check if it '
             'matches include_re. If it does, then add it to the list to be '
@@ -1336,7 +1339,7 @@ class BuiltinListReGroup(BuiltinFormatterFunction):
     name = 'list_re_group'
     arg_count = -1
     category = 'List manipulation'
-    __doc__ = doc = _('list_re_group(src_list, separator, include_re, search_re, group_1_template, ...) -- '
+    __doc__ = doc = ('list_re_group(src_list, separator, include_re, search_re, group_1_template, ...) -- '
                       'Like list_re except replacements are not optional. It '
                       'uses re_group(list_item, search_re, group_1_template, ...) when '
                       'doing the replacements on the resulting list.')
@@ -1376,7 +1379,7 @@ class BuiltinToday(BuiltinFormatterFunction):
     name = 'today'
     arg_count = 0
     category = 'Date functions'
-    __doc__ = doc = _('today() -- '
+    __doc__ = doc = ('today() -- '
             'return a date string for today. This value is designed for use in '
             'format_date or days_between, but can be manipulated like any '
             'other string. The date is in ISO format.')
@@ -1389,7 +1392,7 @@ class BuiltinDaysBetween(BuiltinFormatterFunction):
     name = 'days_between'
     arg_count = 2
     category = 'Date functions'
-    __doc__ = doc = _('days_between(date1, date2) -- '
+    __doc__ = doc = ('days_between(date1, date2) -- '
             'return the number of days between date1 and date2. The number is '
             'positive if date1 is greater than date2, otherwise negative. If '
             'either date1 or date2 are not dates, the function returns the '
@@ -1413,7 +1416,7 @@ class BuiltinLanguageStrings(BuiltinFormatterFunction):
     name = 'language_strings'
     arg_count = 2
     category = 'Get values from metadata'
-    __doc__ = doc = _('language_strings(lang_codes, localize) -- '
+    __doc__ = doc = ('language_strings(lang_codes, localize) -- '
             'return the strings for the language codes passed in lang_codes. '
             'If localize is zero, return the strings in English. If '
             'localize is not zero, return the strings in the language of '
@@ -1435,7 +1438,7 @@ class BuiltinLanguageCodes(BuiltinFormatterFunction):
     name = 'language_codes'
     arg_count = 1
     category = 'Get values from metadata'
-    __doc__ = doc = _('language_codes(lang_strings) -- '
+    __doc__ = doc = ('language_codes(lang_strings) -- '
             'return the language codes for the strings passed in lang_strings. '
             'The strings must be in the language of the current locale. '
             'Lang_strings is a comma-separated list.')
@@ -1456,7 +1459,7 @@ class BuiltinCurrentLibraryName(BuiltinFormatterFunction):
     name = 'current_library_name'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('current_library_name() -- '
+    __doc__ = doc = ('current_library_name() -- '
             'return the last name on the path to the current calibre library. '
             'This function can be called in template program mode using the '
             'template "{:\'current_library_name()\'}".')
@@ -1470,7 +1473,7 @@ class BuiltinCurrentLibraryPath(BuiltinFormatterFunction):
     name = 'current_library_path'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('current_library_path() -- '
+    __doc__ = doc = ('current_library_path() -- '
                 'return the path to the current calibre library. This function can '
                 'be called in template program mode using the template '
                 '"{:\'current_library_path()\'}".')
@@ -1484,7 +1487,7 @@ class BuiltinFinishFormatting(BuiltinFormatterFunction):
     name = 'finish_formatting'
     arg_count = 4
     category = 'Formatting values'
-    __doc__ = doc = _('finish_formatting(val, fmt, prefix, suffix) -- apply the '
+    __doc__ = doc = ('finish_formatting(val, fmt, prefix, suffix) -- apply the '
                       'format, prefix, and suffix to a value in the same way as '
                       'done in a template like `{series_index:05.2f| - |- }`. For '
                       'example, the following program produces the same output '
@@ -1501,7 +1504,7 @@ class BuiltinVirtualLibraries(BuiltinFormatterFunction):
     name = 'virtual_libraries'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('virtual_libraries() -- return a comma-separated list of '
+    __doc__ = doc = ('virtual_libraries() -- return a comma-separated list of '
                       'virtual libraries that contain this book. This function '
                       'works only in the GUI. If you want to use these values '
                       'in save-to-disk or send-to-device templates then you '
@@ -1512,14 +1515,14 @@ class BuiltinVirtualLibraries(BuiltinFormatterFunction):
     def evaluate(self, formatter, kwargs, mi, locals_):
         if hasattr(mi, '_proxy_metadata'):
             return mi._proxy_metadata.virtual_libraries
-        return _('This function can be used only in the GUI')
+        return 'This function can be used only in the GUI'
 
 
 class BuiltinUserCategories(BuiltinFormatterFunction):
     name = 'user_categories'
     arg_count = 0
     category = 'Get values from metadata'
-    __doc__ = doc = _('user_categories() -- return a comma-separated list of '
+    __doc__ = doc = ('user_categories() -- return a comma-separated list of '
                       'the user categories that contain this book. This function '
                       'works only in the GUI. If you want to use these values '
                       'in save-to-disk or send-to-device templates then you '
@@ -1532,14 +1535,14 @@ class BuiltinUserCategories(BuiltinFormatterFunction):
             cats = set(k for k, v in mi._proxy_metadata.user_categories.items() if v)
             cats = sorted(cats, key=sort_key)
             return ', '.join(cats)
-        return _('This function can be used only in the GUI')
+        return 'This function can be used only in the GUI'
 
 
 class BuiltinTransliterate(BuiltinFormatterFunction):
     name = 'transliterate'
     arg_count = 1
     category = 'String manipulation'
-    __doc__ = doc = _('transliterate(a) -- Returns a string in a latin alphabet '
+    __doc__ = doc = ('transliterate(a) -- Returns a string in a latin alphabet '
                       'formed by approximating the sound of the words in the '
                       'source string. For example, if the source is "{0}"'
                       ' the function returns "{1}".').format(
@@ -1554,7 +1557,7 @@ class BuiltinAuthorLinks(BuiltinFormatterFunction):
     name = 'author_links'
     arg_count = 2
     category = 'Get values from metadata'
-    __doc__ = doc = _('author_links(val_separator, pair_separator) -- returns '
+    __doc__ = doc = ('author_links(val_separator, pair_separator) -- returns '
                       'a string containing a list of authors and that author\'s '
                       'link values in the '
                       'form author1 val_separator author1link pair_separator '
@@ -1573,14 +1576,14 @@ class BuiltinAuthorLinks(BuiltinFormatterFunction):
                 return ''
             names = sorted(link_data.keys(), key=sort_key)
             return pair_sep.join(n + val_sep + link_data[n] for n in names)
-        return _('This function can be used only in the GUI')
+        return 'This function can be used only in the GUI'
 
 
 class BuiltinAuthorSorts(BuiltinFormatterFunction):
     name = 'author_sorts'
     arg_count = 1
     category = 'Get values from metadata'
-    __doc__ = doc = _('author_sorts(val_separator) -- returns a string '
+    __doc__ = doc = ('author_sorts(val_separator) -- returns a string '
                       'containing a list of author\'s sort values for the '
                       'authors of the book. The sort is the one in the author '
                       'metadata (different from the author_sort in books). The '

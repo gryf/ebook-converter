@@ -191,7 +191,7 @@ class CHMInput(InputFormatPlugin):
                     title = param.attrib['value']
                 elif match_string(param.attrib['name'], 'local'):
                     href = param.attrib['value']
-            child = toc.add(title or _('Unknown'), href)
+            child = toc.add(title or 'Unknown', href)
             ancestor_map[node] = child
 
     def _process_nodes(self, root):

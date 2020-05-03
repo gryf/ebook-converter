@@ -15,7 +15,7 @@ class DevicePlugin(Plugin):
     Defines the interface that should be implemented by backends that
     communicate with an e-book reader.
     """
-    type = _('Device interface')
+    type = 'Device interface'
 
     #: Ordered list of supported formats
     FORMATS     = ["lrf", "rtf", "pdf", "txt"]
@@ -60,7 +60,7 @@ class DevicePlugin(Plugin):
 
     # Set this to None if the books on the device are files that the GUI can
     # access in order to add the books from the device to the library
-    BACKLOADING_ERROR_MESSAGE = _('Cannot get files from this device')
+    BACKLOADING_ERROR_MESSAGE = 'Cannot get files from this device'
 
     #: Path separator for paths to books on device
     path_sep = os.sep

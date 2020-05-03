@@ -19,10 +19,10 @@ plugins = []
 class PML2PMLZ(FileTypePlugin):
     name = 'PML to PMLZ'
     author = 'John Schember'
-    description = _('Create a PMLZ archive containing the PML file '
-        'and all images in the directory pmlname_img or images. '
-        'This plugin is run every time you add '
-        'a PML file to the library.')
+    description = ('Create a PMLZ archive containing the PML file '
+                   'and all images in the directory pmlname_img or images. '
+                   'This plugin is run every time you add '
+                   'a PML file to the library.')
     version = numeric_version
     file_types = {'pml'}
     supported_platforms = ['windows', 'osx', 'linux']
@@ -50,9 +50,10 @@ class PML2PMLZ(FileTypePlugin):
 class TXT2TXTZ(FileTypePlugin):
     name = 'TXT to TXTZ'
     author = 'John Schember'
-    description = _('Create a TXTZ archive when a TXT file is imported '
-        'containing Markdown or Textile references to images. The referenced '
-        'images as well as the TXT file are added to the archive.')
+    description = ('Create a TXTZ archive when a TXT file is imported '
+                   'containing Markdown or Textile references to images. The '
+                   'referenced images as well as the TXT file are added to '
+                   'the archive.')
     version = numeric_version
     file_types = {'txt', 'text'}
     supported_platforms = ['windows', 'osx', 'linux']
@@ -133,7 +134,7 @@ class ComicMetadataReader(MetadataReaderPlugin):
 
     name = 'Read comic metadata'
     file_types = {'cbr', 'cbz'}
-    description = _('Extract cover from comic files')
+    description = 'Extract cover from comic files'
 
     def customization_help(self, gui=False):
         return 'Read series number from volume or issue number. Default is volume, set this to issue to use issue number instead.'
@@ -174,7 +175,7 @@ class CHMMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read CHM metadata'
     file_types  = {'chm'}
-    description = _('Read metadata from %s files') % 'CHM'
+    description = 'Read metadata from CHM files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.chm.metadata import get_metadata
@@ -185,7 +186,7 @@ class EPUBMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read EPUB metadata'
     file_types  = {'epub'}
-    description = _('Read metadata from %s files')%'EPUB'
+    description = 'Read metadata from EPUB files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.epub import get_metadata, get_quick_metadata
@@ -198,7 +199,7 @@ class FB2MetadataReader(MetadataReaderPlugin):
 
     name        = 'Read FB2 metadata'
     file_types  = {'fb2', 'fbz'}
-    description = _('Read metadata from %s files')%'FB2'
+    description = 'Read metadata from FB2 files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.fb2 import get_metadata
@@ -209,7 +210,7 @@ class HTMLMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read HTML metadata'
     file_types  = {'html'}
-    description = _('Read metadata from %s files')%'HTML'
+    description = 'Read metadata from HTML files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.html import get_metadata
@@ -220,7 +221,7 @@ class HTMLZMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read HTMLZ metadata'
     file_types  = {'htmlz'}
-    description = _('Read metadata from %s files') % 'HTMLZ'
+    description = 'Read metadata from HTMLZ files'
     author      = 'John Schember'
 
     def get_metadata(self, stream, ftype):
@@ -232,7 +233,7 @@ class IMPMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read IMP metadata'
     file_types  = {'imp'}
-    description = _('Read metadata from %s files')%'IMP'
+    description = 'Read metadata from IMP files'
     author      = 'Ashish Kulkarni'
 
     def get_metadata(self, stream, ftype):
@@ -244,7 +245,7 @@ class LITMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read LIT metadata'
     file_types  = {'lit'}
-    description = _('Read metadata from %s files')%'LIT'
+    description = 'Read metadata from LIT files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.lit import get_metadata
@@ -255,7 +256,7 @@ class LRFMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read LRF metadata'
     file_types  = {'lrf'}
-    description = _('Read metadata from %s files')%'LRF'
+    description = 'Read metadata from LRF files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.lrf.meta import get_metadata
@@ -266,7 +267,7 @@ class LRXMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read LRX metadata'
     file_types  = {'lrx'}
-    description = _('Read metadata from %s files')%'LRX'
+    description = 'Read metadata from LRX files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.lrx import get_metadata
@@ -277,7 +278,7 @@ class MOBIMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read MOBI metadata'
     file_types  = {'mobi', 'prc', 'azw', 'azw3', 'azw4', 'pobi'}
-    description = _('Read metadata from %s files')%'MOBI'
+    description = 'Read metadata from MOBI files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.mobi import get_metadata
@@ -288,7 +289,7 @@ class ODTMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read ODT metadata'
     file_types  = {'odt'}
-    description = _('Read metadata from %s files')%'ODT'
+    description = 'Read metadata from ODT files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.odt import get_metadata
@@ -299,7 +300,7 @@ class DocXMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read DOCX metadata'
     file_types  = {'docx'}
-    description = _('Read metadata from %s files')%'DOCX'
+    description = 'Read metadata from DOCX files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.docx import get_metadata
@@ -310,7 +311,7 @@ class OPFMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read OPF metadata'
     file_types  = {'opf'}
-    description = _('Read metadata from %s files')%'OPF'
+    description = 'Read metadata from OPF files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.opf import get_metadata
@@ -321,7 +322,7 @@ class PDBMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read PDB metadata'
     file_types  = {'pdb', 'updb'}
-    description = _('Read metadata from %s files') % 'PDB'
+    description = 'Read metadata from PDB files'
     author      = 'John Schember'
 
     def get_metadata(self, stream, ftype):
@@ -333,7 +334,7 @@ class PDFMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read PDF metadata'
     file_types  = {'pdf'}
-    description = _('Read metadata from %s files')%'PDF'
+    description = 'Read metadata from PDF files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.pdf import get_metadata, get_quick_metadata
@@ -346,7 +347,7 @@ class PMLMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read PML metadata'
     file_types  = {'pml', 'pmlz'}
-    description = _('Read metadata from %s files') % 'PML'
+    description = 'Read metadata from PML files'
     author      = 'John Schember'
 
     def get_metadata(self, stream, ftype):
@@ -358,7 +359,7 @@ class RARMetadataReader(MetadataReaderPlugin):
 
     name = 'Read RAR metadata'
     file_types = {'rar'}
-    description = _('Read metadata from e-books in RAR archives')
+    description = 'Read metadata from e-books in RAR archives'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.rar import get_metadata
@@ -369,7 +370,7 @@ class RBMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read RB metadata'
     file_types  = {'rb'}
-    description = _('Read metadata from %s files')%'RB'
+    description = 'Read metadata from RB files'
     author      = 'Ashish Kulkarni'
 
     def get_metadata(self, stream, ftype):
@@ -381,7 +382,7 @@ class RTFMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read RTF metadata'
     file_types  = {'rtf'}
-    description = _('Read metadata from %s files')%'RTF'
+    description = 'Read metadata from RTF files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.rtf import get_metadata
@@ -392,7 +393,7 @@ class SNBMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read SNB metadata'
     file_types  = {'snb'}
-    description = _('Read metadata from %s files') % 'SNB'
+    description = 'Read metadata from SNB files'
     author      = 'Li Fanxi'
 
     def get_metadata(self, stream, ftype):
@@ -404,7 +405,7 @@ class TOPAZMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read Topaz metadata'
     file_types  = {'tpz', 'azw1'}
-    description = _('Read metadata from %s files')%'MOBI'
+    description = 'Read metadata from MOBI files'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.topaz import get_metadata
@@ -415,7 +416,7 @@ class TXTMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read TXT metadata'
     file_types  = {'txt'}
-    description = _('Read metadata from %s files') % 'TXT'
+    description = 'Read metadata from TXT files'
     author      = 'John Schember'
 
     def get_metadata(self, stream, ftype):
@@ -427,7 +428,7 @@ class TXTZMetadataReader(MetadataReaderPlugin):
 
     name        = 'Read TXTZ metadata'
     file_types  = {'txtz'}
-    description = _('Read metadata from %s files') % 'TXTZ'
+    description = 'Read metadata from TXTZ files'
     author      = 'John Schember'
 
     def get_metadata(self, stream, ftype):
@@ -439,7 +440,7 @@ class ZipMetadataReader(MetadataReaderPlugin):
 
     name = 'Read ZIP metadata'
     file_types = {'zip', 'oebzip'}
-    description = _('Read metadata from e-books in ZIP archives')
+    description = 'Read metadata from e-books in ZIP archives'
 
     def get_metadata(self, stream, ftype):
         from ebook_converter.ebooks.metadata.zip import get_metadata
@@ -458,7 +459,7 @@ class EPUBMetadataWriter(MetadataWriterPlugin):
 
     name = 'Set EPUB metadata'
     file_types = {'epub'}
-    description = _('Set metadata in %s files')%'EPUB'
+    description = 'Set metadata in EPUB files'
 
     def set_metadata(self, stream, mi, type):
         from ebook_converter.ebooks.metadata.epub import set_metadata
@@ -469,15 +470,16 @@ class EPUBMetadataWriter(MetadataWriterPlugin):
         h = 'disable-add-missing-cover'
         if gui:
             h = '<i>' + h + '</i>'
-        return _('Enter {0} below to have the EPUB metadata writer plugin not'
-                 ' add cover images to EPUB files that have no existing cover image.').format(h)
+        return ('Enter {0} below to have the EPUB metadata writer plugin not '
+                'add cover images to EPUB files that have no existing cover '
+                'image.'.format(h))
 
 
 class FB2MetadataWriter(MetadataWriterPlugin):
 
     name = 'Set FB2 metadata'
     file_types = {'fb2', 'fbz'}
-    description = _('Set metadata in %s files')%'FB2'
+    description = 'Set metadata in FB2 files'
 
     def set_metadata(self, stream, mi, type):
         from ebook_converter.ebooks.metadata.fb2 import set_metadata
@@ -488,7 +490,7 @@ class HTMLZMetadataWriter(MetadataWriterPlugin):
 
     name        = 'Set HTMLZ metadata'
     file_types  = {'htmlz'}
-    description = _('Set metadata from %s files') % 'HTMLZ'
+    description = 'Set metadata from HTMLZ files'
     author      = 'John Schember'
 
     def set_metadata(self, stream, mi, type):
@@ -500,7 +502,7 @@ class LRFMetadataWriter(MetadataWriterPlugin):
 
     name = 'Set LRF metadata'
     file_types = {'lrf'}
-    description = _('Set metadata in %s files')%'LRF'
+    description = 'Set metadata in LRF files'
 
     def set_metadata(self, stream, mi, type):
         from ebook_converter.ebooks.lrf.meta import set_metadata
@@ -511,7 +513,7 @@ class MOBIMetadataWriter(MetadataWriterPlugin):
 
     name        = 'Set MOBI metadata'
     file_types  = {'mobi', 'prc', 'azw', 'azw3', 'azw4'}
-    description = _('Set metadata in %s files')%'MOBI'
+    description = 'Set metadata in MOBI files'
     author      = 'Marshall T. Vandegrift'
 
     def set_metadata(self, stream, mi, type):
@@ -523,7 +525,7 @@ class PDBMetadataWriter(MetadataWriterPlugin):
 
     name        = 'Set PDB metadata'
     file_types  = {'pdb'}
-    description = _('Set metadata from %s files') % 'PDB'
+    description = 'Set metadata from PDB files'
     author      = 'John Schember'
 
     def set_metadata(self, stream, mi, type):
@@ -535,7 +537,7 @@ class PDFMetadataWriter(MetadataWriterPlugin):
 
     name        = 'Set PDF metadata'
     file_types  = {'pdf'}
-    description = _('Set metadata in %s files') % 'PDF'
+    description = 'Set metadata in PDF files'
     author      = 'Kovid Goyal'
 
     def set_metadata(self, stream, mi, type):
@@ -547,7 +549,7 @@ class RTFMetadataWriter(MetadataWriterPlugin):
 
     name = 'Set RTF metadata'
     file_types = {'rtf'}
-    description = _('Set metadata in %s files')%'RTF'
+    description = 'Set metadata in RTF files'
 
     def set_metadata(self, stream, mi, type):
         from ebook_converter.ebooks.metadata.rtf import set_metadata
@@ -558,7 +560,7 @@ class TOPAZMetadataWriter(MetadataWriterPlugin):
 
     name        = 'Set TOPAZ metadata'
     file_types  = {'tpz', 'azw1'}
-    description = _('Set metadata in %s files')%'TOPAZ'
+    description = 'Set metadata in TOPAZ files'
     author      = 'Greg Riker'
 
     def set_metadata(self, stream, mi, type):
@@ -570,7 +572,7 @@ class TXTZMetadataWriter(MetadataWriterPlugin):
 
     name        = 'Set TXTZ metadata'
     file_types  = {'txtz'}
-    description = _('Set metadata from %s files') % 'TXTZ'
+    description = 'Set metadata from TXTZ files'
     author      = 'John Schember'
 
     def set_metadata(self, stream, mi, type):
@@ -582,7 +584,7 @@ class ODTMetadataWriter(MetadataWriterPlugin):
 
     name        = 'Set ODT metadata'
     file_types  = {'odt'}
-    description = _('Set metadata from %s files')%'ODT'
+    description = 'Set metadata from ODT files'
 
     def set_metadata(self, stream, mi, type):
         from ebook_converter.ebooks.metadata.odt import set_metadata
@@ -593,7 +595,7 @@ class DocXMetadataWriter(MetadataWriterPlugin):
 
     name        = 'Set DOCX metadata'
     file_types  = {'docx'}
-    description = _('Set metadata from %s files')%'DOCX'
+    description = 'Set metadata from DOCX files'
 
     def set_metadata(self, stream, mi, type):
         from ebook_converter.ebooks.metadata.docx import set_metadata
@@ -828,228 +830,231 @@ plugins += input_profiles + output_profiles
 class ActionAdd(InterfaceActionBase):
     name = 'Add Books'
     actual_plugin = 'ebook_converter.gui2.actions.add:AddAction'
-    description = _('Add books to calibre or the connected device')
+    description = 'Add books to calibre or the connected device'
 
 
 class ActionFetchAnnotations(InterfaceActionBase):
     name = 'Fetch Annotations'
     actual_plugin = 'ebook_converter.gui2.actions.annotate:FetchAnnotationsAction'
-    description = _('Fetch annotations from a connected Kindle (experimental)')
+    description = 'Fetch annotations from a connected Kindle (experimental)'
 
 
 class ActionGenerateCatalog(InterfaceActionBase):
     name = 'Generate Catalog'
     actual_plugin = 'ebook_converter.gui2.actions.catalog:GenerateCatalogAction'
-    description = _('Generate a catalog of the books in your calibre library')
+    description = 'Generate a catalog of the books in your calibre library'
 
 
 class ActionConvert(InterfaceActionBase):
     name = 'Convert Books'
     actual_plugin = 'ebook_converter.gui2.actions.convert:ConvertAction'
-    description = _('Convert books to various e-book formats')
+    description = 'Convert books to various e-book formats'
 
 
 class ActionPolish(InterfaceActionBase):
     name = 'Polish Books'
     actual_plugin = 'ebook_converter.gui2.actions.polish:PolishAction'
-    description = _('Fine tune your e-books')
+    description = 'Fine tune your e-books'
 
 
 class ActionEditToC(InterfaceActionBase):
     name = 'Edit ToC'
     actual_plugin = 'ebook_converter.gui2.actions.toc_edit:ToCEditAction'
-    description = _('Edit the Table of Contents in your books')
+    description = 'Edit the Table of Contents in your books'
 
 
 class ActionDelete(InterfaceActionBase):
     name = 'Remove Books'
     actual_plugin = 'ebook_converter.gui2.actions.delete:DeleteAction'
-    description = _('Delete books from your calibre library or connected device')
+    description = 'Delete books from your calibre library or connected device'
 
 
 class ActionEmbed(InterfaceActionBase):
     name = 'Embed Metadata'
     actual_plugin = 'ebook_converter.gui2.actions.embed:EmbedAction'
-    description = _('Embed updated metadata into the actual book files in your calibre library')
+    description = ('Embed updated metadata into the actual book files in '
+                   'your calibre library')
 
 
 class ActionEditMetadata(InterfaceActionBase):
     name = 'Edit Metadata'
     actual_plugin = 'ebook_converter.gui2.actions.edit_metadata:EditMetadataAction'
-    description = _('Edit the metadata of books in your calibre library')
+    description = 'Edit the metadata of books in your calibre library'
 
 
 class ActionView(InterfaceActionBase):
     name = 'View'
     actual_plugin = 'ebook_converter.gui2.actions.view:ViewAction'
-    description = _('Read books in your calibre library')
+    description = 'Read books in your calibre library'
 
 
 class ActionFetchNews(InterfaceActionBase):
     name = 'Fetch News'
     actual_plugin = 'ebook_converter.gui2.actions.fetch_news:FetchNewsAction'
-    description = _('Download news from the internet in e-book form')
+    description = 'Download news from the internet in e-book form'
 
 
 class ActionQuickview(InterfaceActionBase):
     name = 'Quickview'
     actual_plugin = 'ebook_converter.gui2.actions.show_quickview:ShowQuickviewAction'
-    description = _('Show a list of related books quickly')
+    description = 'Show a list of related books quickly'
 
 
 class ActionTagMapper(InterfaceActionBase):
     name = 'Tag Mapper'
     actual_plugin = 'ebook_converter.gui2.actions.tag_mapper:TagMapAction'
-    description = _('Filter/transform the tags for books in the library')
+    description = 'Filter/transform the tags for books in the library'
 
 
 class ActionAuthorMapper(InterfaceActionBase):
     name = 'Author Mapper'
     actual_plugin = 'ebook_converter.gui2.actions.author_mapper:AuthorMapAction'
-    description = _('Transform the authors for books in the library')
+    description = 'Transform the authors for books in the library'
 
 
 class ActionTemplateTester(InterfaceActionBase):
     name = 'Template Tester'
     actual_plugin = 'ebook_converter.gui2.actions.show_template_tester:ShowTemplateTesterAction'
-    description = _('Show an editor for testing templates')
+    description = 'Show an editor for testing templates'
 
 
 class ActionSaveToDisk(InterfaceActionBase):
     name = 'Save To Disk'
     actual_plugin = 'ebook_converter.gui2.actions.save_to_disk:SaveToDiskAction'
-    description = _('Export books from your calibre library to the hard disk')
+    description = 'Export books from your calibre library to the hard disk'
 
 
 class ActionShowBookDetails(InterfaceActionBase):
     name = 'Show Book Details'
     actual_plugin = 'ebook_converter.gui2.actions.show_book_details:ShowBookDetailsAction'
-    description = _('Show Book details in a separate popup')
+    description = 'Show Book details in a separate popup'
 
 
 class ActionRestart(InterfaceActionBase):
     name = 'Restart'
     actual_plugin = 'ebook_converter.gui2.actions.restart:RestartAction'
-    description = _('Restart calibre')
+    description = 'Restart calibre'
 
 
 class ActionOpenFolder(InterfaceActionBase):
     name = 'Open Folder'
     actual_plugin = 'ebook_converter.gui2.actions.open:OpenFolderAction'
-    description = _('Open the folder that contains the book files in your'
+    description = ('Open the folder that contains the book files in your'
             ' calibre library')
 
 
 class ActionSendToDevice(InterfaceActionBase):
     name = 'Send To Device'
     actual_plugin = 'ebook_converter.gui2.actions.device:SendToDeviceAction'
-    description = _('Send books to the connected device')
+    description = 'Send books to the connected device'
 
 
 class ActionConnectShare(InterfaceActionBase):
     name = 'Connect Share'
     actual_plugin = 'ebook_converter.gui2.actions.device:ConnectShareAction'
-    description = _('Send books via email or the web. Also connect to'
+    description = ('Send books via email or the web. Also connect to'
             ' folders on your computer as if they are devices')
 
 
 class ActionHelp(InterfaceActionBase):
     name = 'Help'
     actual_plugin = 'ebook_converter.gui2.actions.help:HelpAction'
-    description = _('Browse the calibre User Manual')
+    description = 'Browse the calibre User Manual'
 
 
 class ActionPreferences(InterfaceActionBase):
     name = 'Preferences'
     actual_plugin = 'ebook_converter.gui2.actions.preferences:PreferencesAction'
-    description = _('Customize calibre')
+    description = 'Customize calibre'
 
 
 class ActionSimilarBooks(InterfaceActionBase):
     name = 'Similar Books'
     actual_plugin = 'ebook_converter.gui2.actions.similar_books:SimilarBooksAction'
-    description = _('Easily find books similar to the currently selected one')
+    description = 'Easily find books similar to the currently selected one'
 
 
 class ActionChooseLibrary(InterfaceActionBase):
     name = 'Choose Library'
     actual_plugin = 'ebook_converter.gui2.actions.choose_library:ChooseLibraryAction'
-    description = _('Switch between different calibre libraries and perform'
-            ' maintenance on them')
+    description = ('Switch between different calibre libraries and perform '
+                   'maintenance on them')
 
 
 class ActionAddToLibrary(InterfaceActionBase):
     name = 'Add To Library'
     actual_plugin = 'ebook_converter.gui2.actions.add_to_library:AddToLibraryAction'
-    description = _('Copy books from the device to your calibre library')
+    description = 'Copy books from the device to your calibre library'
 
 
 class ActionEditCollections(InterfaceActionBase):
     name = 'Edit Collections'
     actual_plugin = 'ebook_converter.gui2.actions.edit_collections:EditCollectionsAction'
-    description = _('Edit the collections in which books are placed on your device')
+    description = ('Edit the collections in which books are placed on your '
+                   'device')
 
 
 class ActionMatchBooks(InterfaceActionBase):
     name = 'Match Books'
     actual_plugin = 'ebook_converter.gui2.actions.match_books:MatchBookAction'
-    description = _('Match book on the devices to books in the library')
+    description = 'Match book on the devices to books in the library'
 
 
 class ActionCopyToLibrary(InterfaceActionBase):
     name = 'Copy To Library'
     actual_plugin = 'ebook_converter.gui2.actions.copy_to_library:CopyToLibraryAction'
-    description = _('Copy a book from one calibre library to another')
+    description = 'Copy a book from one calibre library to another'
 
 
 class ActionTweakEpub(InterfaceActionBase):
     name = 'Tweak ePub'
     actual_plugin = 'ebook_converter.gui2.actions.tweak_epub:TweakEpubAction'
-    description = _('Edit e-books in the EPUB or AZW3 formats')
+    description = 'Edit e-books in the EPUB or AZW3 formats'
 
 
 class ActionUnpackBook(InterfaceActionBase):
     name = 'Unpack Book'
     actual_plugin = 'ebook_converter.gui2.actions.unpack_book:UnpackBookAction'
-    description = _('Make small changes to EPUB or HTMLZ files in your calibre library')
+    description = ('Make small changes to EPUB or HTMLZ files in your '
+                   'calibre library')
 
 
 class ActionNextMatch(InterfaceActionBase):
     name = 'Next Match'
     actual_plugin = 'ebook_converter.gui2.actions.next_match:NextMatchAction'
-    description = _('Find the next or previous match when searching in '
-            'your calibre library in highlight mode')
+    description = ('Find the next or previous match when searching in '
+                   'your calibre library in highlight mode')
 
 
 class ActionPickRandom(InterfaceActionBase):
     name = 'Pick Random Book'
     actual_plugin = 'ebook_converter.gui2.actions.random:PickRandomAction'
-    description = _('Choose a random book from your calibre library')
+    description = 'Choose a random book from your calibre library'
 
 
 class ActionSortBy(InterfaceActionBase):
     name = 'Sort By'
     actual_plugin = 'ebook_converter.gui2.actions.sort:SortByAction'
-    description = _('Sort the list of books')
+    description = 'Sort the list of books'
 
 
 class ActionMarkBooks(InterfaceActionBase):
     name = 'Mark Books'
     actual_plugin = 'ebook_converter.gui2.actions.mark_books:MarkBooksAction'
-    description = _('Temporarily mark books')
+    description = 'Temporarily mark books'
 
 
 class ActionVirtualLibrary(InterfaceActionBase):
     name = 'Virtual Library'
     actual_plugin = 'ebook_converter.gui2.actions.virtual_library:VirtualLibraryAction'
-    description = _('Change the current Virtual library')
+    description = 'Change the current Virtual library'
 
 
 class ActionStore(InterfaceActionBase):
     name = 'Store'
     author = 'John Schember'
     actual_plugin = 'ebook_converter.gui2.actions.store:StoreAction'
-    description = _('Search for books from different book sellers')
+    description = 'Search for books from different book sellers'
 
     def customization_help(self, gui=False):
         return 'Customize the behavior of the store search.'
@@ -1066,7 +1071,8 @@ class ActionStore(InterfaceActionBase):
 class ActionPluginUpdater(InterfaceActionBase):
     name = 'Plugin Updater'
     author = 'Grant Drake'
-    description = _('Get new ebook_converter plugins or update your existing ones')
+    description = ('Get new ebook_converter plugins or update your existing '
+                   'ones')
     actual_plugin = 'calibre.gui2.actions.plugin_updates:PluginUpdaterAction'
 
 

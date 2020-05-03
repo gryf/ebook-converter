@@ -240,17 +240,17 @@ def verify_toc_destinations(container, toc):
         name = item.dest
         if not name:
             item.dest_exists = False
-            item.dest_error = _('No file named %s exists')%name
+            item.dest_error = 'No file named %s exists' % name
             continue
         try:
             root = container.parsed(name)
         except KeyError:
             item.dest_exists = False
-            item.dest_error = _('No file named %s exists')%name
+            item.dest_error = 'No file named %s exists' % name
             continue
         if not hasattr(root, 'xpath'):
             item.dest_exists = False
-            item.dest_error = _('No HTML file named %s exists')%name
+            item.dest_error = 'No HTML file named %s exists' % name
             continue
         if not item.frag:
             item.dest_exists = True
@@ -259,9 +259,8 @@ def verify_toc_destinations(container, toc):
             anchor_map[name] = frozenset(anchor_xpath(root))
         item.dest_exists = item.frag in anchor_map[name]
         if not item.dest_exists:
-            item.dest_error = _(
-                'The anchor %(a)s does not exist in file %(f)s')%dict(
-                a=item.frag, f=name)
+            item.dest_error = ('The anchor %(a)s does not exist in file '
+                               '%(f)s' % dict(a=item.frag, f=name))
 
 
 def find_existing_ncx_toc(container):
@@ -370,7 +369,7 @@ def elem_to_toc_text(elem):
     text = re.sub(r'\s+', ' ', text.strip())
     text = text[:1000].strip()
     if not text:
-        text = _('(Untitled)')
+        text = '(Untitled)'
     return text
 
 
@@ -533,8 +532,9 @@ def from_files(container):
         text = find_text(body[0])
         if not text:
             text = name.rpartition('/')[-1]
-            if i == 0 and text.rpartition('.')[0].lower() in {'titlepage', 'cover'}:
-                text = _('Cover')
+            if i == 0 and text.rpartition('.')[0].lower() in {'titlepage',
+                                                              'cover'}:
+                text = 'Cover'
         toc.add(text, name)
     return toc
 
@@ -563,8 +563,9 @@ def add_id(container, name, loc, totals=None):
         try:
             node = node_from_loc(root, loc, totals=totals)
         except MalformedMarkup:
-            raise MalformedMarkup(_('The file %s has malformed markup. Try running the Fix HTML tool'
-                                    ' before editing.') % name)
+            raise MalformedMarkup('The file %s has malformed markup. Try '
+                                  'running the Fix HTML tool before '
+                                  'editing.' % name)
         container.replace(name, root)
 
     if not node.get('id'):
@@ -641,7 +642,7 @@ def commit_ncx_toc(container, toc, lang=None, uid=None):
             if m:
                 uid = xml2text(m[0])
 
-    title = _('Table of Contents')
+    title = 'Table of Contents'
     m = container.opf_xpath('//dc:title')
     if m:
         x = xml2text(m[0]).strip()

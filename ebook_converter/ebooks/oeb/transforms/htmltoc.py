@@ -10,7 +10,7 @@ __all__ = ['HTMLTOCAdder']
 __license__ = 'GPL v3'
 __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
-DEFAULT_TITLE = __('Table of Contents')
+DEFAULT_TITLE = 'Table of Contents'
 
 STYLE_CSS = {
     'nested': """
@@ -52,9 +52,9 @@ class HTMLTOCAdder(object):
 
     @classmethod
     def config(cls, cfg):
-        group = cfg.add_group('htmltoc', _('HTML TOC generation options.'))
+        group = cfg.add_group('htmltoc', 'HTML TOC generation options.')
         group('toc_title', ['--toc-title'], default=None,
-              help=_('Title for any generated in-line table of contents.'))
+              help='Title for any generated in-line table of contents.')
         return cfg
 
     @classmethod
