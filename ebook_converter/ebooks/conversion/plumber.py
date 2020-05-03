@@ -1,5 +1,9 @@
-import os, re, sys, shutil, pprint, json
-from functools import partial
+import functools
+import json
+import os
+import pprint
+import shutil
+import sys
 
 from ebook_converter.customize.conversion import OptionRecommendation, DummyReporter
 from ebook_converter.customize.ui import input_profiles, output_profiles, \
@@ -11,13 +15,9 @@ from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils.date import parse_date
 from ebook_converter.utils.zipfile import ZipFile
 from ebook_converter import (extract, walk, isbytestring, filesystem_encoding,
-        get_types_map)
+                             get_types_map)
 from ebook_converter.constants import __version__
 
-
-__license__ = 'GPL 3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 DEBUG_README=b'''
 This debug directory contains snapshots of the e-book as it passes through the
@@ -1224,7 +1224,7 @@ OptionRecommendation(name='search_replace',
                 page_break_on_body=self.output_plugin.file_type in ('mobi',
                     'lit'),
                 transform_css_rules=transform_css_rules,
-                specializer=partial(self.output_plugin.specialize_css_for_output,
+                specializer=functools.partial(self.output_plugin.specialize_css_for_output,
                     self.log, self.opts))
         flattener(self.oeb, self.opts)
         self.opts._final_base_font_size = fbase

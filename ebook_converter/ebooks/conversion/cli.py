@@ -1,9 +1,11 @@
 """
 Command line interface to conversion sub-system
 """
-import sys, os, numbers
-from optparse import OptionGroup, Option
-from collections import OrderedDict
+import collections
+import numbers
+import optparse
+import os
+import sys
 
 from ebook_converter.utils.config import OptionParser
 from ebook_converter.utils.logging import Log
@@ -11,10 +13,6 @@ from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter import patheq
 from ebook_converter.utils.localization import localize_user_manual_link
 
-
-__license__ = 'GPL 3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 USAGE = '%prog ' + _('''\
 input_file output_file [options]
@@ -110,7 +108,7 @@ def option_recommendation_to_cli_option(add_option, rec):
         )
     if opt.name in DEFAULT_TRUE_OPTIONS and rec.recommended_value is True:
         switches = ['--disable-'+opt.long_switch]
-    add_option(Option(*switches, **attrs))
+    add_option(optparse.Option(*switches, **attrs))
 
 
 def group_titles():
@@ -156,27 +154,27 @@ def add_input_output_options(parser, plumber):
     def add_options(group, options):
         for opt in options:
             if plumber.input_fmt == 'recipe' and opt.option.long_switch == 'test':
-                group(Option('--test', dest='test', action='callback', callback=recipe_test))
+                group(optparse.Option('--test', dest='test', action='callback', callback=recipe_test))
             else:
                 option_recommendation_to_cli_option(group, opt)
 
     if input_options:
         title = group_titles()[0]
-        io = OptionGroup(parser, title, _('Options to control the processing'
+        io = optparse.OptionGroup(parser, title, _('Options to control the processing'
                           ' of the input %s file')%plumber.input_fmt)
         add_options(io.add_option, input_options)
         parser.add_option_group(io)
 
     if output_options:
         title = group_titles()[1]
-        oo = OptionGroup(parser, title, _('Options to control the processing'
+        oo = optparse.OptionGroup(parser, title, _('Options to control the processing'
                           ' of the output %s')%plumber.output_fmt)
         add_options(oo.add_option, output_options)
         parser.add_option_group(oo)
 
 
 def add_pipeline_options(parser, plumber):
-    groups = OrderedDict((
+    groups = collections.OrderedDict((
               ('' , ('',
                     [
                      'input_profile',
@@ -254,7 +252,7 @@ def add_pipeline_options(parser, plumber):
 
     for group, (desc, options) in groups.items():
         if group:
-            group = OptionGroup(parser, group, desc)
+            group = optparse.OptionGroup(parser, group, desc)
             parser.add_option_group(group)
         add_option = group.add_option if group != '' else parser.add_option
 
