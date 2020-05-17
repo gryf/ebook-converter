@@ -1,25 +1,20 @@
 import os
 
 from ebook_converter.customize.conversion import InputFormatPlugin
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
+from ebook_converter.ebooks.pdb.header import PdbHeaderReader
+from ebook_converter.ebooks.pdb import PDBError, IDENTITY_TO_NAME, get_reader
 
 
 class PDBInput(InputFormatPlugin):
 
-    name        = 'PDB Input'
-    author      = 'John Schember'
+    name = 'PDB Input'
+    author = 'John Schember'
     description = 'Convert PDB to HTML'
-    file_types  = {'pdb', 'updb'}
+    file_types = {'pdb', 'updb'}
     commit_name = 'pdb_input'
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from ebook_converter.ebooks.pdb.header import PdbHeaderReader
-        from ebook_converter.ebooks.pdb import PDBError, IDENTITY_TO_NAME, get_reader
 
         header = PdbHeaderReader(stream)
         Reader = get_reader(header.ident)
@@ -30,7 +25,8 @@ class PDBInput(InputFormatPlugin):
                            (header.ident,
                             IDENTITY_TO_NAME.get(header.ident, 'Unknown')))
 
-        log.debug('Detected ebook format as: %s with identity: %s' % (IDENTITY_TO_NAME[header.ident], header.ident))
+        log.debug('Detected ebook format as: %s with identity: %s' %
+                  (IDENTITY_TO_NAME[header.ident], header.ident))
 
         reader = Reader(header, stream, log, options)
         opf = reader.extract_content(os.getcwd())
