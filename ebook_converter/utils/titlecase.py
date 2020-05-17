@@ -6,11 +6,6 @@ License: http://www.opensource.org/licenses/mit-license.php
 """
 import re
 
-from ebook_converter.utils.icu import capitalize, upper
-
-
-__all__ = ['titlecase']
-__version__ = '0.5'
 
 SMALL = 'a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|v\\.?|via|vs\\.?'
 PUNCT = r"""!"#$%&'‘’()*+,\-‒–—―./:;?@[\\\]_`{|}~"""
@@ -19,22 +14,12 @@ SMALL_WORDS = re.compile(r'^(%s)$' % SMALL, re.I)
 INLINE_PERIOD = re.compile(r'[a-z][.][a-z]', re.I)
 UC_ELSEWHERE = re.compile(r'[%s]*?[a-zA-Z]+[A-Z]+?' % PUNCT)
 CAPFIRST = re.compile(str(r"^[%s]*?(\w)" % PUNCT), flags=re.UNICODE)
-SMALL_FIRST = re.compile(r'^([%s]*)(%s)\b' % (PUNCT, SMALL), re.I|re.U)
-SMALL_LAST = re.compile(r'\b(%s)[%s]?$' % (SMALL, PUNCT), re.I|re.U)
-SMALL_AFTER_NUM = re.compile(r'(\d+\s+)(a|an|the)\b', re.I|re.U)
+SMALL_FIRST = re.compile(r'^([%s]*)(%s)\b' % (PUNCT, SMALL), re.I | re.U)
+SMALL_LAST = re.compile(r'\b(%s)[%s]?$' % (SMALL, PUNCT), re.I | re.U)
+SMALL_AFTER_NUM = re.compile(r'(\d+\s+)(a|an|the)\b', re.I | re.U)
 SUBPHRASE = re.compile(r'([:.;?!][ ])(%s)' % SMALL)
 APOS_SECOND = re.compile(r"^[dol]{1}['‘]{1}[a-z]+$", re.I)
 UC_INITIALS = re.compile(r"^(?:[A-Z]{1}\.{1}|[A-Z]{1}\.{1}[A-Z]{1})+$")
-
-_lang = None
-
-
-def lang():
-    global _lang
-    if _lang is None:
-        from ebook_converter.utils.localization import get_lang
-        _lang = get_lang().lower()
-    return _lang
 
 
 def titlecase(text):
@@ -49,7 +34,7 @@ def titlecase(text):
 
     """
 
-    all_caps = upper(text) == text
+    all_caps = text.upper() == text
 
     pat = re.compile(r'(\s+)')
     line = []
@@ -85,20 +70,18 @@ def titlecase(text):
 
     result = "".join(line)
 
-    result = SMALL_FIRST.sub(lambda m: '%s%s' % (
-        m.group(1),
-        capitalize(m.group(2))
-    ), result)
+    result = SMALL_FIRST.sub(lambda m: '%s%s' % (m.group(1),
+                                                 m.group(2).capitalize()),
+                             result)
 
     result = SMALL_AFTER_NUM.sub(lambda m: '%s%s' % (m.group(1),
-        capitalize(m.group(2))
-    ), result)
+                                                     m.group(2).capitalize()),
+                                 result)
 
-    result = SMALL_LAST.sub(lambda m: capitalize(m.group(0)), result)
+    result = SMALL_LAST.sub(lambda m: m.group(0).capitalize(), result)
 
-    result = SUBPHRASE.sub(lambda m: '%s%s' % (
-        m.group(1),
-        capitalize(m.group(2))
-    ), result)
+    result = SUBPHRASE.sub(lambda m: '%s%s' % (m.group(1),
+                                               m.group(2).capitalize()),
+                           result)
 
     return result
