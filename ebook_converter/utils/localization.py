@@ -32,68 +32,10 @@ lcdata = {'abday': ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'),
 
 
 _iso639 = None
-_extra_lang_codes = {'pt_BR': 'Brazilian Portuguese',
-                     'en_GB': 'English (UK)',
-                     'zh_CN': 'Simplified Chinese',
-                     'zh_TW': 'Traditional Chinese',
-                     'en': 'English',
-                     'en_US': 'English (United States)',
-                     'en_AR': 'English (Argentina)',
-                     'en_AU': 'English (Australia)',
-                     'en_JP': 'English (Japan)',
-                     'en_DE': 'English (Germany)',
-                     'en_BG': 'English (Bulgaria)',
-                     'en_EG': 'English (Egypt)',
-                     'en_NZ': 'English (New Zealand)',
-                     'en_CA': 'English (Canada)',
-                     'en_GR': 'English (Greece)',
-                     'en_IN': 'English (India)',
-                     'en_NP': 'English (Nepal)',
-                     'en_TH': 'English (Thailand)',
-                     'en_TR': 'English (Turkey)',
-                     'en_CY': 'English (Cyprus)',
-                     'en_CZ': 'English (Czech Republic)',
-                     'en_PH': 'English (Philippines)',
-                     'en_PK': 'English (Pakistan)',
-                     'en_PL': 'English (Poland)',
-                     'en_HR': 'English (Croatia)',
-                     'en_HU': 'English (Hungary)',
-                     'en_ID': 'English (Indonesia)',
-                     'en_IL': 'English (Israel)',
-                     'en_RU': 'English (Russia)',
-                     'en_SG': 'English (Singapore)',
-                     'en_YE': 'English (Yemen)',
-                     'en_IE': 'English (Ireland)',
-                     'en_CN': 'English (China)',
-                     'en_TW': 'English (Taiwan)',
-                     'en_ZA': 'English (South Africa)',
-                     'es_PY': 'Spanish (Paraguay)',
-                     'es_UY': 'Spanish (Uruguay)',
-                     'es_AR': 'Spanish (Argentina)',
-                     'es_CR': 'Spanish (Costa Rica)',
-                     'es_MX': 'Spanish (Mexico)',
-                     'es_CU': 'Spanish (Cuba)',
-                     'es_CL': 'Spanish (Chile)',
-                     'es_EC': 'Spanish (Ecuador)',
-                     'es_HN': 'Spanish (Honduras)',
-                     'es_VE': 'Spanish (Venezuela)',
-                     'es_BO': 'Spanish (Bolivia)',
-                     'es_NI': 'Spanish (Nicaragua)',
-                     'es_CO': 'Spanish (Colombia)',
-                     'de_AT': 'German (AT)',
-                     'fr_BE': 'French (BE)',
-                     'nl': 'Dutch (NL)',
-                     'nl_BE': 'Dutch (BE)',
-                     'und': 'Unknown'}
-
-_lcase_map = {}
-for k in _extra_lang_codes:
-    _lcase_map[k.lower()] = k
 
 
 def _load_iso639():
     global _iso639
-
     # NOTE(gryf): msgpacked data was originally added for speed purposes. In
     # my tests, I cannot see any speed gain either on python2 or python3. It
     # is even slower (around 4-8 times), than just using code below (which is
@@ -155,12 +97,11 @@ def get_iso_language(lang_trans, lang):
     return lang_trans(ans)
 
 
-def calibre_langcode_to_name(lc, localize=True):
+def langcode_to_name(lc, localize=True):
     iso639 = _load_iso639()
-    translate = lambda x: x
     try:
-        return translate(iso639['by_3'][lc])
-    except:
+        return iso639['by_3'][lc]
+    except Exception:
         pass
     return lc
 
@@ -188,52 +129,6 @@ def canonicalize_lang(raw):
             return raw
 
     return iso639['name_map'].get(raw, None)
-
-
-_lang_map = None
-
-
-def lang_map():
-    ' Return mapping of ISO 639 3 letter codes to localized language names '
-    iso639 = _load_iso639()
-    translate = _
-    global _lang_map
-    if _lang_map is None:
-        _lang_map = {k:translate(v) for k, v in iso639['by_3'].items()}
-    return _lang_map
-
-
-def lang_map_for_ui():
-    ans = getattr(lang_map_for_ui, 'ans', None)
-    if ans is None:
-        ans = lang_map().copy()
-        for x in ('zxx', 'mis', 'mul'):
-            ans.pop(x, None)
-        lang_map_for_ui.ans = ans
-    return ans
-
-
-def langnames_to_langcodes(names):
-    '''
-    Given a list of localized language names return a mapping of the names to 3
-    letter ISO 639 language codes. If a name is not recognized, it is mapped to
-    None.
-    '''
-    iso639 = _load_iso639()
-    translate = _
-    ans = {}
-    names = set(names)
-    for k, v in iso639['by_3'].items():
-        tv = translate(v)
-        if tv in names:
-            names.remove(tv)
-            ans[tv] = k
-        if not names:
-            break
-    for x in names:
-        ans[x] = None
-
-    return ans
 
 
 def lang_as_iso639_1(name_or_code):

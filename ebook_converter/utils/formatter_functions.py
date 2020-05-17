@@ -13,12 +13,7 @@ from ebook_converter.utils.config import tweaks
 from ebook_converter.utils.titlecase import titlecase
 from ebook_converter.utils.icu import capitalize, strcmp, sort_key
 from ebook_converter.utils.date import parse_date, format_date, now, UNDEFINED_DATE
-from ebook_converter.utils.localization import calibre_langcode_to_name, canonicalize_lang
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
+from ebook_converter.utils.localization import langcode_to_name, canonicalize_lang
 
 
 class FormatterFunctions(object):
@@ -1426,7 +1421,7 @@ class BuiltinLanguageStrings(BuiltinFormatterFunction):
         retval = []
         for c in [c.strip() for c in lang_codes.split(',') if c.strip()]:
             try:
-                n = calibre_langcode_to_name(c)
+                n = langcode_to_name(c)
                 if n:
                     retval.append(n)
             except:

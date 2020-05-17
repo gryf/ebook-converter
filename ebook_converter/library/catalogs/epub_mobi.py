@@ -7,12 +7,8 @@ from ebook_converter.customize.conversion import OptionRecommendation, DummyRepo
 from ebook_converter.library import current_library_name
 from ebook_converter.library.catalogs import AuthorSortMismatchException, EmptyCatalogException
 from ebook_converter.ptempfile import PersistentTemporaryFile
-from ebook_converter.utils.localization import calibre_langcode_to_name, canonicalize_lang, get_lang
+from ebook_converter.utils.localization import langcode_to_name, canonicalize_lang, get_lang
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 Option = namedtuple('Option', 'option, default, dest, action, help')
 
@@ -293,7 +289,7 @@ class EPUB_MOBI(CatalogPlugin):
              self.fmt,
              'for %s ' % opts.output_profile if opts.output_profile else '',
              'CLI' if opts.cli_environment else 'GUI',
-             calibre_langcode_to_name(canonicalize_lang(get_lang()), localize=False))
+             langcode_to_name(canonicalize_lang(get_lang()), localize=False))
              )
 
         # If exclude_genre is blank, assume user wants all tags as genres
