@@ -18,7 +18,6 @@ To build and run ebook converter, you'll need:
 - Python 3.6 or newer
 - `Liberation fonts`_
 - setuptools
-- C compiler (yes, there is a single module, which is written in C)
 
 No Python2 support. Even if Calibre probably still is able to run on Python2, I
 do not have an intention to support it.

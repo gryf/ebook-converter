@@ -1,22 +1,46 @@
 import io
+import sys
 from struct import pack
-
-from ebook_converter.ebooks.compression import cPalmdoc
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def decompress_doc(data):
-    return cPalmdoc.decompress(data)
+    uncompressed = b''
+    skip_next = 0
+
+    for idx, item in enumerate(data):
+        if skip_next:
+            skip_next -= 1
+            continue
+
+        if item in range(1, 9):
+            # copy amount of bytes as in item
+            skip_next = item
+            for amount in range(1, item + 1):
+                uncompressed += data[idx + amount].to_bytes(1, sys.byteorder)
+
+        elif item < 128:
+            # direct ascii copy
+            uncompressed += item.to_bytes(1, sys.byteorder)
+
+        elif item >= 192:
+            # merged space and ascii character
+            uncompressed += b' ' + (item ^ 128).to_bytes(1, sys.byteorder)
+
+        else:
+            # compressed data, item contains how many characters should be
+            # repeated for the next one.
+            skip_next = 1
+            item = (item << 8) + data[idx + 1]
+            character_index = (item & 0x3FFF) >> 3
+            for _ in range((item & 7) + 3):
+                uncompressed += (uncompressed[len(uncompressed) -
+                                              character_index]
+                                 .to_bytes(1, sys.byteorder))
+
+    return uncompressed
 
 
 def compress_doc(data):
-    return cPalmdoc.compress(data) if data else b''
-
-
-def py_compress_doc(data):
     out = io.BytesIO()
     i = 0
     ldata = len(data)
@@ -65,24 +89,3 @@ def py_compress_doc(data):
             out.write(b''.join(binseq))
             i += len(binseq) - 1
     return out.getvalue()
-
-
-def find_tests():
-    import unittest
-
-    class Test(unittest.TestCase):
-
-        def test_palmdoc_compression(self):
-            for test in [
-                b'abc\x03\x04\x05\x06ms',  # Test binary writing
-                b'a b c \xfed ',  # Test encoding of spaces
-                b'0123456789axyz2bxyz2cdfgfo9iuyerh',
-                b'0123456789asd0123456789asd|yyzzxxffhhjjkk',
-                (b'ciewacnaq eiu743 r787q 0w%  ; sa fd\xef\ffdxosac wocjp acoiecowei '
-                b'owaic jociowapjcivcjpoivjporeivjpoavca; p9aw8743y6r74%$^$^%8 ')
-            ]:
-                x = compress_doc(test)
-                self.assertEqual(py_compress_doc(test), x)
-                self.assertEqual(decompress_doc(x), test)
-
-    return unittest.defaultTestLoader.loadTestsFromTestCase(Test)
