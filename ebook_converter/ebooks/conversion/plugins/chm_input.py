@@ -3,6 +3,7 @@ CHM File decoding support
 """
 import os
 from lxml import html
+from lxml.html import builder
 
 from ebook_converter.polyglot.urllib import unquote as _unquote
 from ebook_converter.ebooks.oeb.base import urlquote
@@ -19,13 +20,16 @@ __copyright__ = ('2008, Kovid Goyal <kovid at kovidgoyal.net>, '
 
 class CHMInput(InputFormatPlugin):
 
-    name        = 'CHM Input'
-    author      = 'Kovid Goyal and Alex Bramley'
+    name = 'CHM Input'
+    author = 'Kovid Goyal and Alex Bramley'
     description = 'Convert CHM files to OEB'
-    file_types  = {'chm'}
+    file_types = {'chm'}
     commit_name = 'chm_input'
 
-    def _chmtohtml(self, output_dir, chm_path, no_images, log, debug_dump=False):
+    def _chmtohtml(self, output_dir, chm_path, no_images, log,
+                   debug_dump=False):
+        # NOTE(gryf): for some reason, this import cannot be moved to the top
+        # of module.
         from ebook_converter.ebooks.chm.reader import CHMReader
         log.debug('Opening CHM file')
         rdr = CHMReader(chm_path, log, input_encoding=self.opts.input_encoding)
@@ -35,6 +39,8 @@ class CHMInput(InputFormatPlugin):
         return rdr.hhc_path
 
     def convert(self, stream, options, file_ext, log, accelerators):
+        # NOTE(gryf): for some reason, those import cannot be moved to the top
+        # of module.
         from ebook_converter.ebooks.chm.metadata import get_metadata_from_reader
         from ebook_converter.customize.ui import plugin_for_input_format
         self.opts = options
@@ -59,7 +65,7 @@ class CHMInput(InputFormatPlugin):
             if odi:
                 debug_dump = os.path.join(odi, 'input')
             mainname = self._chmtohtml(tdir, chm_name, no_images, log,
-                    debug_dump=debug_dump)
+                                       debug_dump=debug_dump)
             mainpath = os.path.join(tdir, mainname)
 
             try:
@@ -68,11 +74,9 @@ class CHMInput(InputFormatPlugin):
                 log.exception('Failed to read metadata, using filename')
                 from ebook_converter.ebooks.metadata.book.base import Metadata
                 metadata = Metadata(os.path.basename(chm_name))
-            encoding = self._chm_reader.get_encoding() or options.input_encoding or 'cp1252'
+            encoding = (self._chm_reader.get_encoding() or
+                        options.input_encoding or 'cp1252')
             self._chm_reader.CloseCHM()
-            # print((tdir, mainpath))
-            # from ebook_converter import ipython
-            # ipython()
 
             options.debug_pipeline = None
             options.input_encoding = 'utf-8'
@@ -80,7 +84,8 @@ class CHMInput(InputFormatPlugin):
             if os.path.abspath(mainpath) in self._chm_reader.re_encoded_files:
                 uenc = 'utf-8'
             htmlpath, toc = self._create_html_root(mainpath, log, uenc)
-            oeb = self._create_oebbook_html(htmlpath, tdir, options, log, metadata)
+            oeb = self._create_oebbook_html(htmlpath, tdir, options, log,
+                                            metadata)
             options.debug_pipeline = odi
             if toc.count() > 1:
                 oeb.toc = self.parse_html_toc(oeb.spine[0])
@@ -117,13 +122,10 @@ class CHMInput(InputFormatPlugin):
         hhcdata = self._read_file(hhcpath)
         hhcdata = hhcdata.decode(encoding)
         hhcdata = xml_to_unicode(hhcdata, verbose=True,
-                            strip_encoding_pats=True, resolve_entities=True)[0]
+                                 strip_encoding_pats=True,
+                                 resolve_entities=True)[0]
         hhcroot = html.fromstring(hhcdata)
         toc = self._process_nodes(hhcroot)
-        # print("=============================")
-        # print("Printing hhcroot")
-        # print(etree.tostring(hhcroot, pretty_print=True))
-        # print("=============================")
         log.debug('Found %d section nodes' % toc.count())
         htmlpath = os.path.splitext(hhcpath)[0] + ".html"
         base = os.path.dirname(os.path.abspath(htmlpath))
@@ -135,7 +137,8 @@ class CHMInput(InputFormatPlugin):
 
         def unquote_path(x):
             y = unquote(x)
-            if (not os.path.exists(os.path.join(base, x)) and os.path.exists(os.path.join(base, y))):
+            if (not os.path.exists(os.path.join(base, x)) and
+                    os.path.exists(os.path.join(base, y))):
                 x = y
             return x
 
@@ -147,28 +150,29 @@ class CHMInput(InputFormatPlugin):
                 raw = unquote_path(child.href or '')
                 rsrcname = os.path.basename(raw)
                 rsrcpath = os.path.join(subpath, rsrcname)
-                if (not os.path.exists(os.path.join(base, rsrcpath)) and os.path.exists(os.path.join(base, raw))):
+                if (not os.path.exists(os.path.join(base, rsrcpath)) and
+                        os.path.exists(os.path.join(base, raw))):
                     rsrcpath = raw
 
                 if '%' not in rsrcpath:
                     rsrcpath = urlquote(rsrcpath)
                 if not raw:
                     rsrcpath = ''
-                c = DIV(A(title, href=rsrcpath))
+                c = builder.DIV(builder.A(title, href=rsrcpath))
                 donode(child, c, base, subpath)
                 parent.append(c)
 
         with open(htmlpath, 'wb') as f:
             if toc.count() > 1:
-                from lxml.html.builder import HTML, BODY, DIV, A
                 path0 = toc[0].href
                 path0 = unquote_path(path0)
                 subpath = os.path.dirname(path0)
                 base = os.path.dirname(f.name)
-                root = DIV()
+                root = builder.DIV()
                 donode(toc, root, base, subpath)
-                raw = html.tostring(HTML(BODY(root)), encoding='utf-8',
-                                   pretty_print=True)
+                raw = html.tostring(builder.HTML(builder.BODY(root)),
+                                    encoding='utf-8',
+                                    pretty_print=True)
                 f.write(raw)
             else:
                 f.write(as_bytes(hhcdata))

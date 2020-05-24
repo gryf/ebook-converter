@@ -7,12 +7,9 @@ import sys
 import time
 import urllib.parse
 import urllib.request
-import warnings
 
 from functools import partial
 
-if os.getenv('CALIBRE_SHOW_DEPRECATION_WARNINGS') is None:
-    warnings.simplefilter('ignore', DeprecationWarning)
 try:
     os.getcwd()
 except EnvironmentError:
@@ -138,9 +135,6 @@ def sanitize_file_name(name, substitute='_'):
     if one.startswith('.'):
         one = '_' + one[1:]
     return one
-
-
-sanitize_file_name2 = sanitize_file_name_unicode = sanitize_file_name
 
 
 def prints(*args, **kwargs):
@@ -551,12 +545,12 @@ def entity_to_unicode(match, exceptions=[], encoding='cp1252',
 
 
 _ent_pat = re.compile(r'&(\S+?);')
-xml_entity_to_unicode = partial(entity_to_unicode, result_exceptions={
-    '"' : '&quot;',
-    "'" : '&apos;',
-    '<' : '&lt;',
-    '>' : '&gt;',
-    '&' : '&amp;'})
+xml_entity_to_unicode = partial(entity_to_unicode,
+                                result_exceptions={'"': '&quot;',
+                                                   "'": '&apos;',
+                                                   '<': '&lt;',
+                                                   '>': '&gt;',
+                                                   '&': '&amp;'})
 
 
 def replace_entities(raw, encoding='cp1252'):
@@ -586,7 +580,7 @@ def force_unicode(obj, enc=preferred_encoding):
         except Exception:
             try:
                 obj = obj.decode(filesystem_encoding if enc ==
-                        preferred_encoding else preferred_encoding)
+                                 preferred_encoding else preferred_encoding)
             except Exception:
                 try:
                     obj = obj.decode('utf-8')
@@ -626,11 +620,6 @@ def human_readable(size, sep=' '):
     if size.endswith('.0'):
         size = size[:-2]
     return size + sep + suffix
-
-
-def ipython(user_ns=None):
-    from ebook_converter.utils.ipython import ipython
-    ipython(user_ns=user_ns)
 
 
 def fsync(fileobj):

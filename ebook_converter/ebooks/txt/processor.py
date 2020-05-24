@@ -171,7 +171,7 @@ def convert_markdown_with_metadata(txt, title='', extensions=DEFAULT_MD_EXTENSIO
 
 
 def convert_textile(txt, title=''):
-    from ebook_converter.ebooks.textile import textile
+    from ebook_converter.ebooks.textile.functions import textile
     html = textile(txt, encoding='utf-8')
     return HTML_TEMPLATE % (title, html)
 

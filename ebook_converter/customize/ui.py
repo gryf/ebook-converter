@@ -12,6 +12,7 @@ from ebook_converter.customize import profiles
 from ebook_converter.customize import builtins
 from ebook_converter.ebooks import metadata
 from ebook_converter.utils import config as cfg
+from ebook_converter import prints
 
 
 builtin_names = frozenset(p.name for p in builtins.plugins)
@@ -348,7 +349,6 @@ def set_file_type_metadata(stream, mi, ftype, report_error=None):
                     break
                 except Exception:
                     if report_error is None:
-                        from ebook_converter import prints
                         prints('Failed to set metadata for the', ftype.upper(),
                                'format of:', getattr(mi, 'title', ''),
                                file=sys.stderr)
@@ -481,8 +481,6 @@ def initialize_plugins():
             _initialized_plugins.append(plugin)
         except Exception:
             print('Failed to initialize plugin:', repr(zfp))
-    # Prevent a custom plugin from overriding stdout/stderr as this breaks
-    # ipython
     sys.stdout, sys.stderr = ostdout, ostderr
     _initialized_plugins.sort(key=lambda x: x.priority, reverse=True)
     reread_filetype_plugins()
