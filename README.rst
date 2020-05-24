@@ -54,6 +54,7 @@ Currently, I've tested following input formats:
 - fb2
 - html
 - pdf
+- lrf
 
 Note, that old Microsoft doc format is not supported, although old documents
 can be fairly easy converted using text processors programs, lik Word or
@@ -65,7 +66,7 @@ Output formats
 
 Currently, following formats are supported:
 
-- lrf (for Sony readers)
+- lrf
 - epub
 - mobi
 - docx
