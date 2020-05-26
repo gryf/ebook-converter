@@ -1,7 +1,7 @@
 import os
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
-from ebook_converter.constants import numeric_version
+from ebook_converter.constants_old import numeric_version
 from ebook_converter import walk
 
 

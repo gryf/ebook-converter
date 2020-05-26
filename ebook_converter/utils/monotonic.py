@@ -1,7 +1,7 @@
 try:
     from time import monotonic
 except ImportError:
-    from ebook_converter.constants import plugins
+    from ebook_converter.constants_old import plugins
 
     monotonicp, err = plugins['monotonic']
     if err:

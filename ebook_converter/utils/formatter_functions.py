@@ -7,7 +7,7 @@ import inspect, re, traceback, numbers
 from math import trunc
 
 from ebook_converter import human_readable
-from ebook_converter.constants import DEBUG
+from ebook_converter.constants_old import DEBUG
 from ebook_converter.ebooks.metadata import title_sort
 from ebook_converter.utils.config import tweaks
 from ebook_converter.utils.titlecase import titlecase

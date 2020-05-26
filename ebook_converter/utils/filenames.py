@@ -9,7 +9,7 @@ import time
 from math import ceil
 
 from ebook_converter import force_unicode, isbytestring, prints, sanitize_file_name
-from ebook_converter.constants import (
+from ebook_converter.constants_old import (
     filesystem_encoding, iswindows, plugins, preferred_encoding, isosx
 )
 from ebook_converter.utils.localization import get_udc

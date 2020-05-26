@@ -282,7 +282,7 @@ class ProgressBar(object):
 
 def create_option_parser(args, log):
     if '--version' in args:
-        from ebook_converter.constants import __appname__, __version__, __author__
+        from ebook_converter.constants_old import __appname__, __version__, __author__
         log(os.path.basename(args[0]), '('+__appname__, __version__+')')
         log('Created by:', __author__)
         raise SystemExit(0)

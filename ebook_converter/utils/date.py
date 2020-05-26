@@ -3,7 +3,7 @@ from datetime import datetime, time as dtime, timedelta, MINYEAR, MAXYEAR
 from functools import partial
 
 from ebook_converter import strftime
-from ebook_converter.constants import iswindows, isosx, plugins, preferred_encoding
+from ebook_converter.constants_old import iswindows, isosx, plugins, preferred_encoding
 from ebook_converter.utils.iso8601 import utc_tz, local_tz, UNDEFINED_DATE
 from ebook_converter.utils.localization import lcdata
 

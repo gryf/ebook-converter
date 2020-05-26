@@ -2,7 +2,7 @@ from datetime import datetime
 
 from dateutil.tz import tzlocal, tzutc, tzoffset
 
-from ebook_converter.constants import plugins
+from ebook_converter.constants_old import plugins
 # speedup, err = plugins['speedup']
 # if not speedup:
     # raise RuntimeError(err)

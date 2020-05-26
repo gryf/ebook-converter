@@ -144,7 +144,7 @@ class PDFOutput(OutputFormatPlugin):
         from PyQt5.QtWebEngineCore import QWebEngineUrlScheme
         from PyQt5.QtWebEngineWidgets import QWebEnginePage  # noqa
         from ebook_converter.gui2 import must_use_qt
-        from ebook_converter.constants import FAKE_PROTOCOL
+        from ebook_converter.constants_old import FAKE_PROTOCOL
         scheme = QWebEngineUrlScheme(FAKE_PROTOCOL.encode('ascii'))
         scheme.setSyntax(QWebEngineUrlScheme.Syntax.Host)
         scheme.setFlags(QWebEngineUrlScheme.SecureScheme)

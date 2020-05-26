@@ -2,7 +2,7 @@ import re
 from struct import pack
 from io import BytesIO
 
-from ebook_converter.constants import iswindows, isosx
+from ebook_converter.constants_old import iswindows, isosx
 from ebook_converter.ebooks.mobi.utils import (utf8_text, to_base)
 from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.ebooks.metadata import authors_to_sort_string

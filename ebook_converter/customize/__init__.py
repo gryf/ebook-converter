@@ -2,7 +2,7 @@ import importlib
 import sys
 import zipfile
 
-from ebook_converter.constants import numeric_version, iswindows, isosx
+from ebook_converter.constants_old import numeric_version, iswindows, isosx
 from ebook_converter.ptempfile import PersistentTemporaryFile
 
 

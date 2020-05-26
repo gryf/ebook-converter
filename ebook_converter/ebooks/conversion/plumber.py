@@ -16,7 +16,7 @@ from ebook_converter.utils.date import parse_date
 from ebook_converter.utils.zipfile import ZipFile
 from ebook_converter import (extract, walk, isbytestring, filesystem_encoding,
                              get_types_map)
-from ebook_converter.constants import __version__
+from ebook_converter.constants_old import __version__
 
 
 DEBUG_README=b'''

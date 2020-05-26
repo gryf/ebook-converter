@@ -3,7 +3,7 @@ import sys
 import unicodedata
 
 # Setup code {{{
-from ebook_converter.constants import plugins
+from ebook_converter.constants_old import plugins
 from ebook_converter.polyglot.builtins import cmp
 from ebook_converter.utils.config_base import tweaks
 

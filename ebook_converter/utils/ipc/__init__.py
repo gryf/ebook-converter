@@ -5,10 +5,10 @@ import sys
 import threading
 
 from ebook_converter import force_unicode
-from ebook_converter.constants import filesystem_encoding
-from ebook_converter.constants import get_windows_username
-from ebook_converter.constants import islinux
-from ebook_converter.constants import iswindows
+from ebook_converter.constants_old import filesystem_encoding
+from ebook_converter.constants_old import get_windows_username
+from ebook_converter.constants_old import islinux
+from ebook_converter.constants_old import iswindows
 from ebook_converter.utils.filenames import ascii_filename
 
 

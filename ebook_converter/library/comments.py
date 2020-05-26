@@ -3,7 +3,7 @@ import re
 import bs4
 
 from ebook_converter import prepare_string_for_xml
-from ebook_converter.constants import preferred_encoding
+from ebook_converter.constants_old import preferred_encoding
 from ebook_converter.ebooks.BeautifulSoup import html5_parser
 from ebook_converter.utils.html2text import html2text
 

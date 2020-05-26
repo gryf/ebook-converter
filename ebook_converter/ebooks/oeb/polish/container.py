@@ -16,7 +16,7 @@ import urllib.parse
 from css_parser import getUrls, replaceUrls
 
 from ebook_converter import CurrentDir, walk
-from ebook_converter.constants import iswindows
+from ebook_converter.constants_old import iswindows
 from ebook_converter.customize.ui import plugin_for_input_format, plugin_for_output_format
 from ebook_converter.ebooks import escape_xpath_attr
 from ebook_converter.ebooks.chardet import xml_to_unicode

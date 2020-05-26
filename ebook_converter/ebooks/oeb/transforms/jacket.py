@@ -5,7 +5,7 @@ import pkg_resources
 import urllib.parse
 
 from ebook_converter import guess_type, strftime
-from ebook_converter.constants import iswindows
+from ebook_converter.constants_old import iswindows
 from ebook_converter.ebooks.oeb.base import XPath, XHTML_NS, XHTML, xml2text, urlnormalize
 from ebook_converter.library.comments import comments_to_html, markdown
 from ebook_converter.utils.date import is_date_undefined, as_local_time

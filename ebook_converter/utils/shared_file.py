@@ -17,7 +17,7 @@ file before deleting it.
 import os, sys
 
 from ebook_converter.polyglot.builtins import reraise
-from ebook_converter.constants import iswindows, plugins
+from ebook_converter.constants_old import iswindows, plugins
 
 
 __license__ = 'GPL v3'

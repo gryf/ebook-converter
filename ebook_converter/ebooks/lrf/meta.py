@@ -622,7 +622,7 @@ class LRFMetaFile(object):
 
 def option_parser():
     from ebook_converter.utils.config import OptionParser
-    from ebook_converter.constants import __appname__, __version__
+    from ebook_converter.constants_old import __appname__, __version__
     parser = OptionParser(usage=('''%prog [options] mybook.lrf
 
 

@@ -12,7 +12,7 @@ from threading import Thread
 #from PyQt5.QtGui import QColor, QImage, QImageReader, QImageWriter, QPixmap, QTransform
 
 from ebook_converter import fit_image, force_unicode
-from ebook_converter.constants import iswindows, plugins
+from ebook_converter.constants_old import iswindows, plugins
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.utils.filenames import atomic_rename

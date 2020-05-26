@@ -1,7 +1,7 @@
 import re
 import html.entities
 
-from ebook_converter.constants import plugins, preferred_encoding
+from ebook_converter.constants_old import plugins, preferred_encoding
 
 
 def ascii_pat(for_binary=False):

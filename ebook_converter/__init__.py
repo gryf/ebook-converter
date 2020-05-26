@@ -15,7 +15,7 @@ try:
 except EnvironmentError:
     os.chdir(os.path.expanduser('~'))
 
-from ebook_converter.constants import (iswindows, isosx, islinux, isfrozen,
+from ebook_converter.constants_old import (iswindows, isosx, islinux, isfrozen,
         isbsd, preferred_encoding, __appname__, __version__, __author__,
         win32event, win32api, winerror, fcntl,
         filesystem_encoding, plugins, config_dir)

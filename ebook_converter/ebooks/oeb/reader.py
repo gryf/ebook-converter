@@ -21,7 +21,7 @@ from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.localization import get_lang
 from ebook_converter.ptempfile import TemporaryDirectory
-from ebook_converter.constants import __appname__, __version__
+from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter import guess_type, xml_replace_entities
 from ebook_converter.polyglot.urllib import unquote
 

@@ -139,7 +139,7 @@ class LRFOutput(OutputFormatPlugin):
     def convert_images(self, pages, opts, wide):
         from ebook_converter.ebooks.lrf.pylrs.pylrs import Book, BookSetting, ImageStream, ImageBlock
         from uuid import uuid4
-        from ebook_converter.constants import __appname__, __version__
+        from ebook_converter.constants_old import __appname__, __version__
 
         width, height = (784, 1012) if wide else (584, 754)
 

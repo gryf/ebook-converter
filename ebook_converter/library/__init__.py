@@ -26,7 +26,7 @@ def generate_test_db(library_path,  # {{{
         max_tags=10
         ):
     import random, string, os, sys, time
-    from ebook_converter.constants import preferred_encoding
+    from ebook_converter.constants_old import preferred_encoding
 
     if not os.path.exists(library_path):
         os.makedirs(library_path)

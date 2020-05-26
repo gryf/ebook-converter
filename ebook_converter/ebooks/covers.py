@@ -11,7 +11,7 @@ from PyQt5.Qt import (
 )
 
 from ebook_converter import force_unicode, fit_image
-from ebook_converter.constants import __appname__, __version__
+from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter.ebooks.metadata import fmt_sidx
 from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.ebooks.metadata.book.formatter import SafeFormat

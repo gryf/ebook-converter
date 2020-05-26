@@ -4,7 +4,7 @@ import re
 import tempfile
 import urllib.parse
 
-from ebook_converter.constants import islinux, isbsd
+from ebook_converter.constants_old import islinux, isbsd
 from ebook_converter.customize.conversion import (InputFormatPlugin,
         OptionRecommendation)
 from ebook_converter.utils.localization import get_lang

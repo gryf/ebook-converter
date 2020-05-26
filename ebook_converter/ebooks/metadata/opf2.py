@@ -16,7 +16,8 @@ import uuid
 from lxml import etree
 
 from ebook_converter.ebooks import escape_xpath_attr
-from ebook_converter.constants import __appname__, __version__, filesystem_encoding
+from ebook_converter.constants_old import __appname__, __version__, \
+        filesystem_encoding
 from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.metadata.utils import parse_opf, pretty_print_opf as _pretty_print
 from ebook_converter.ebooks.metadata import string_to_authors, MetaInformation, check_isbn

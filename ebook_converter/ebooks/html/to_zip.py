@@ -1,7 +1,7 @@
 import textwrap, os, glob
 
 from ebook_converter.customize import FileTypePlugin
-from ebook_converter.constants import numeric_version
+from ebook_converter.constants_old import numeric_version
 
 
 __license__ = 'GPL v3'

@@ -2,7 +2,7 @@ import os
 from collections import namedtuple
 
 from ebook_converter import prints
-from ebook_converter.constants import iswindows
+from ebook_converter.constants_old import iswindows
 from ebook_converter.customize import Plugin
 
 

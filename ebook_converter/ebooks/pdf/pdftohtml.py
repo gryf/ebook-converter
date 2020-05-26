@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 from ebook_converter import CurrentDir, xml_replace_entities, prints
-from ebook_converter.constants import (
+from ebook_converter.constants_old import (
     filesystem_encoding, isbsd, islinux, isosx, iswindows
 )
 from ebook_converter.ebooks import ConversionError, DRMError

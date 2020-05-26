@@ -10,7 +10,7 @@ from ebook_converter.ebooks.oeb.base import urlquote
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.ptempfile import TemporaryDirectory
-from ebook_converter.constants import filesystem_encoding
+from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.polyglot.builtins import as_bytes
 
 __license__ = 'GPL v3'

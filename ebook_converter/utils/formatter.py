@@ -6,7 +6,7 @@ Created on 23 Sep 2010
 import re, string, traceback, numbers
 
 from ebook_converter import prints
-from ebook_converter.constants import DEBUG
+from ebook_converter.constants_old import DEBUG
 from ebook_converter.utils.formatter_functions import formatter_functions
 from ebook_converter.polyglot.builtins import error_message
 

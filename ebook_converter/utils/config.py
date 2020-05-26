@@ -5,7 +5,7 @@ import optparse
 import os
 from copy import deepcopy
 
-from ebook_converter.constants import (
+from ebook_converter.constants_old import (
     CONFIG_DIR_MODE, __appname__, __author__, config_dir, get_version, iswindows
 )
 from ebook_converter.utils.config_base import (

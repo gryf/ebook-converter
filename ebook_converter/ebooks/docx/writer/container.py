@@ -4,7 +4,7 @@ from lxml import etree
 from lxml.builder import ElementMaker
 
 from ebook_converter import guess_type
-from ebook_converter.constants import numeric_version, __appname__
+from ebook_converter.constants_old import numeric_version, __appname__
 from ebook_converter.ebooks.docx.names import DOCXNamespace
 from ebook_converter.ebooks.metadata import authors_to_string
 from ebook_converter.ebooks.pdf.render.common import PAPER_SIZES

@@ -7,7 +7,7 @@ import json, traceback
 from datetime import datetime, time
 
 from ebook_converter.ebooks.metadata.book import SERIALIZABLE_FIELDS
-from ebook_converter.constants import filesystem_encoding, preferred_encoding
+from ebook_converter.constants_old import filesystem_encoding, preferred_encoding
 from ebook_converter.library.field_metadata import FieldMetadata
 from ebook_converter import isbytestring
 from ebook_converter.polyglot.builtins import as_bytes

@@ -10,7 +10,7 @@ import string
 
 from lxml import etree, html
 from ebook_converter import force_unicode
-from ebook_converter.constants import filesystem_encoding, __version__
+from ebook_converter.constants_old import filesystem_encoding, __version__
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor

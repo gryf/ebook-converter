@@ -1,7 +1,7 @@
 import copy, traceback
 
 from ebook_converter import prints
-from ebook_converter.constants import DEBUG
+from ebook_converter.constants_old import DEBUG
 from ebook_converter.ebooks.metadata.book import (SC_COPYABLE_FIELDS,
         SC_FIELDS_COPY_NOT_NULL, STANDARD_METADATA_FIELDS,
         TOP_LEVEL_IDENTIFIERS, ALL_METADATA_FIELDS)

@@ -8,7 +8,7 @@ import urllib.parse
 from lxml import etree
 from lxml.builder import ElementMaker
 
-from ebook_converter.constants import __appname__, __version__
+from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.cleantext import clean_xml_chars

@@ -1,7 +1,7 @@
 import subprocess, os, sys, time
 from functools import partial
 
-from ebook_converter.constants import isosx, isfrozen, filesystem_encoding
+from ebook_converter.constants_old import isosx, isfrozen, filesystem_encoding
 from ebook_converter.utils.config import prefs
 from ebook_converter.ptempfile import PersistentTemporaryFile, base_dir
 from ebook_converter.utils.serialize import msgpack_dumps

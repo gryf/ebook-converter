@@ -8,7 +8,7 @@ import tempfile
 import time
 from functools import partial
 
-from ebook_converter.constants import (
+from ebook_converter.constants_old import (
     __appname__, fcntl, filesystem_encoding, islinux, isosx, iswindows, plugins
 )
 from ebook_converter.utils.monotonic import monotonic
@@ -16,7 +16,7 @@ from ebook_converter.utils.monotonic import monotonic
 # speedup = plugins['speedup'][0]
 if iswindows:
     import msvcrt, win32file, pywintypes, winerror, win32api, win32event
-    from ebook_converter.constants import get_windows_username
+    from ebook_converter.constants_old import get_windows_username
     excl_file_mode = stat.S_IREAD | stat.S_IWRITE
 else:
     excl_file_mode = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH

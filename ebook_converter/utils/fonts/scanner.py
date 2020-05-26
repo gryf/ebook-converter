@@ -3,7 +3,7 @@ from collections import defaultdict
 from threading import Thread
 
 from ebook_converter import walk, prints, as_unicode
-from ebook_converter.constants import (config_dir, iswindows, isosx, plugins, DEBUG,
+from ebook_converter.constants_old import (config_dir, iswindows, isosx, plugins, DEBUG,
         isworker, filesystem_encoding)
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
 

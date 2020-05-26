@@ -10,7 +10,7 @@ import uuid
 from lxml import etree
 
 from ebook_converter import prepare_string_for_xml
-from ebook_converter.constants import __appname__, __version__
+from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.img import save_cover_data_to

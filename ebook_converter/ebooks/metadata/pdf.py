@@ -5,7 +5,7 @@ import os, subprocess, shutil, re
 from functools import partial
 
 from ebook_converter import prints
-from ebook_converter.constants import iswindows
+from ebook_converter.constants_old import iswindows
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.ebooks.metadata import (
     MetaInformation, string_to_authors, check_isbn, check_doi)

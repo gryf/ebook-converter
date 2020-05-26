@@ -1,7 +1,7 @@
 import os, re, collections
 
 from ebook_converter.utils.config import prefs
-from ebook_converter.constants import filesystem_encoding
+from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.ebooks.metadata.opf2 import OPF
 from ebook_converter import isbytestring
 from ebook_converter.customize.ui import get_file_type_metadata, set_file_type_metadata

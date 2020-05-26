@@ -9,7 +9,7 @@ import urllib.parse
 
 from ebook_converter.ebooks.oeb.base import urlunquote
 from ebook_converter.ebooks.chardet import detect_xml_encoding
-from ebook_converter.constants import iswindows
+from ebook_converter.constants_old import iswindows
 from ebook_converter import unicode_path, as_unicode, replace_entities
 
 

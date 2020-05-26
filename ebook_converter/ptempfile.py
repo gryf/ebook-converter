@@ -6,7 +6,7 @@ being closed.
 """
 import tempfile, os, atexit
 
-from ebook_converter.constants import (__version__, __appname__, filesystem_encoding,
+from ebook_converter.constants_old import (__version__, __appname__, filesystem_encoding,
         iswindows, get_windows_temp_path, isosx)
 
 

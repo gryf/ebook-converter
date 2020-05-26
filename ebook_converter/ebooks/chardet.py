@@ -108,7 +108,7 @@ def detect(*args, **kwargs):
 
 
 def force_encoding(raw, verbose, assume_utf8=False):
-    from ebook_converter.constants import preferred_encoding
+    from ebook_converter.constants_old import preferred_encoding
 
     try:
         chardet = detect(raw[:1024*50])

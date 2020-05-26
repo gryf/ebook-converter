@@ -2,7 +2,7 @@ import os
 
 from lxml.html.builder import IMG, HR
 
-from ebook_converter.constants import iswindows
+from ebook_converter.constants_old import iswindows
 from ebook_converter.ebooks.docx.names import barename
 from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.img import resize_to_fit, image_to_data

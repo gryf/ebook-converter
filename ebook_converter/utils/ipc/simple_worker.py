@@ -3,7 +3,7 @@ from multiprocessing.connection import Client
 from threading import Thread
 from contextlib import closing
 
-from ebook_converter.constants import iswindows
+from ebook_converter.constants_old import iswindows
 from ebook_converter.utils.ipc import eintr_retry_call
 from ebook_converter.utils.ipc.launch import Worker
 from ebook_converter.utils.serialize import msgpack_loads, msgpack_dumps
