@@ -3,6 +3,7 @@ Based on ideas from comiclrf created by FangornUK.
 """
 import shutil, textwrap, codecs, os
 
+from ebook_converter import constants as const
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter import CurrentDir
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
@@ -245,7 +246,6 @@ class ComicInput(InputFormatPlugin):
         return os.path.abspath('metadata.opf')
 
     def create_wrappers(self, pages):
-        from ebook_converter.ebooks.oeb.base import XHTML_NS
         wrappers = []
         WRAPPER = textwrap.dedent('''\
         <html xmlns="%s">
@@ -267,7 +267,8 @@ class ComicInput(InputFormatPlugin):
         ''')
         dir = os.path.dirname(pages[0])
         for i, page in enumerate(pages):
-            wrapper = WRAPPER%(XHTML_NS, i+1, os.path.basename(page), i+1)
+            wrapper = WRAPPER%(const.XHTML_NS, i+1, os.path.basename(page),
+                               i+1)
             page = os.path.join(dir, 'page_%d.xhtml'%(i+1))
             with open(page, 'wb') as f:
                 f.write(wrapper.encode('utf-8'))
@@ -275,8 +276,6 @@ class ComicInput(InputFormatPlugin):
         return wrappers
 
     def create_viewer_wrapper(self, pages):
-        from ebook_converter.ebooks.oeb.base import XHTML_NS
-
         def page(src):
             return '<img src="{}"></img>'.format(os.path.basename(src))
 
@@ -303,7 +302,7 @@ class ComicInput(InputFormatPlugin):
             %s
             </body>
         </html>
-        ''' % (XHTML_NS, pages)
+        ''' % (const.XHTML_NS, pages)
         path = os.path.join(base, 'wrapper.xhtml')
         with open(path, 'wb') as f:
             f.write(wrapper.encode('utf-8'))

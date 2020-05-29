@@ -5,8 +5,10 @@ import re
 
 from functools import partial
 
+from ebook_converter import constants as const
 from ebook_converter.ebooks.htmlz.oeb2html import OEB2HTML
-from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS, barename, namespace, rewrite_links
+from ebook_converter.ebooks.oeb.base import XHTML, barename, namespace, \
+        rewrite_links
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.ebooks import unit_convert
 from ebook_converter.ebooks.textile.unsmarten import unsmarten
@@ -225,9 +227,9 @@ class TextileMLizer(OEB2HTML):
 
         # We can only processes tags. If there isn't a tag return any text.
         if not isinstance(elem.tag, (str, bytes)) \
-           or namespace(elem.tag) != XHTML_NS:
+           or namespace(elem.tag) != const.XHTML_NS:
             p = elem.getparent()
-            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) == XHTML_NS \
+            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) == const.XHTML_NS \
                     and elem.tail:
                 return [elem.tail]
             return ['']

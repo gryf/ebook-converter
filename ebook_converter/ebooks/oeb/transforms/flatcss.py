@@ -1,25 +1,26 @@
 """
 CSS flattening transform.
 """
-import re, operator, math, numbers
-from collections import defaultdict
-from xml.dom import SyntaxErr
+import collections
+import math
+import numbers
+import operator
+import re
+from xml import dom
 
 from lxml import etree
 import css_parser
-from css_parser.css import Property
+from css_parser import css as cp_css
 
+from ebook_converter import constants as const
 from ebook_converter import guess_type
 from ebook_converter.ebooks import unit_convert
-from ebook_converter.ebooks.oeb.base import (XHTML, XHTML_NS, CSS_MIME, OEB_STYLES,
-        namespace, barename, XPath, css_text)
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.ebooks.oeb import parse_utils
+
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils.filenames import ascii_filename, ascii_text
-from ebook_converter.utils.icu import numeric_sort_key
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 COLLAPSE = re.compile(r'[ \t\r\n\v]+')
 STRIPNUM = re.compile(r'[-0-9]+$')
@@ -121,7 +122,7 @@ class EmbedFontsCSSRules(object):
             return None
         if not self.href:
             iid, href = oeb.manifest.generate('page_styles', 'page_styles.css')
-            rules = [css_text(x) for x in self.rules]
+            rules = [base.css_text(x) for x in self.rules]
             rules = '\n\n'.join(rules)
             sheet = css_parser.parseString(rules, validate=False)
             self.href = oeb.manifest.add(iid, href, guess_type(href)[0],
@@ -186,7 +187,7 @@ class CSSFlattener(object):
         for item in oeb.manifest.values():
             # Make all links to resources absolute, as these sheets will be
             # consolidated into a single stylesheet at the root of the document
-            if item.media_type in OEB_STYLES:
+            if item.media_type in base.OEB_STYLES:
                 css_parser.replaceUrls(item.data, item.abshref,
                         ignoreImportRules=True)
 
@@ -273,7 +274,7 @@ class CSSFlattener(object):
         css = ''
         for item in self.items:
             html = item.data
-            body = html.find(XHTML('body'))
+            body = html.find(base.tag('xhtml', 'body'))
             if 'style' in html.attrib:
                 b = body.attrib.get('style', '')
                 body.set('style',  html.get('style') + ';' + b)
@@ -310,11 +311,11 @@ class CSSFlattener(object):
                 sizes[csize] += len(COLLAPSE.sub(' ', child.tail))
 
     def baseline_spine(self):
-        sizes = defaultdict(float)
+        sizes = collections.defaultdict(float)
         for item in self.items:
             html = item.data
             stylizer = self.stylizers[item]
-            body = html.find(XHTML('body'))
+            body = html.find(base.tag('xhtml', 'body'))
             fsize = self.context.source.fbase
             self.baseline_node(body, stylizer, sizes, fsize)
         try:
@@ -351,9 +352,9 @@ class CSSFlattener(object):
 
     def flatten_node(self, node, stylizer, names, styles, pseudo_styles, psize, item_id, recurse=True):
         if not isinstance(node.tag, (str, bytes)) \
-           or namespace(node.tag) != XHTML_NS:
+           or parse_utils.namespace(node.tag) != const.XHTML_NS:
             return
-        tag = barename(node.tag)
+        tag = parse_utils.barename(node.tag)
         style = stylizer.style(node)
         cssdict = style.cssdict()
         try:
@@ -375,7 +376,7 @@ class CSSFlattener(object):
                         if 'margin-left' not in cssdict and 'margin-right' not in cssdict:
                             cssdict['margin-left'] = cssdict['margin-right'] = 'auto'
                     else:
-                        for table in node.iterchildren(XHTML("table")):
+                        for table in node.iterchildren(base.tag('xhtml', "table")):
                             ts = stylizer.style(table)
                             if ts.get('margin-left') is None and ts.get('margin-right') is None:
                                 ts.set('margin-left', 'auto')
@@ -391,11 +392,12 @@ class CSSFlattener(object):
             if cssdict.get('vertical-align') == 'inherit':
                 cssdict['vertical-align'] = node.attrib['valign']
             del node.attrib['valign']
-        if node.tag == XHTML('font'):
+        if node.tag == base.tag('xhtml', 'font'):
             tags = ['descendant::h:%s'%x for x in ('p', 'div', 'table', 'h1',
                 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'ul', 'dl', 'blockquote')]
-            tag = 'div' if XPath('|'.join(tags))(node) else 'span'
-            node.tag = XHTML(tag)
+            # TODO(gryf): this will override tag from line 355. On purpose?
+            tag = 'div' if base.XPath('|'.join(tags))(node) else 'span'
+            node.tag = base.tag('xhtml', tag)
             if 'size' in node.attrib:
                 def force_int(raw):
                     return int(re.search(r'([0-9+-]+)', raw).group(1))
@@ -425,14 +427,14 @@ class CSSFlattener(object):
                 del node.attrib['face']
         if 'color' in node.attrib:
             try:
-                cssdict['color'] = Property('color', node.attrib['color']).value
-            except (ValueError, SyntaxErr):
+                cssdict['color'] = cp_css.Property('color', node.attrib['color']).value
+            except (ValueError, dom.SyntaxErr):
                 pass
             del node.attrib['color']
         if 'bgcolor' in node.attrib:
             try:
-                cssdict['background-color'] = Property('background-color', node.attrib['bgcolor']).value
-            except (ValueError, SyntaxErr):
+                cssdict['background-color'] = cp_css.Property('background-color', node.attrib['bgcolor']).value
+            except (ValueError, dom.SyntaxErr):
                 pass
             del node.attrib['bgcolor']
         if tag == 'ol' and 'type' in node.attrib:
@@ -573,7 +575,7 @@ class CSSFlattener(object):
 
     def flatten_head(self, item, href, global_href):
         html = item.data
-        head = html.find(XHTML('head'))
+        head = html.find(base.tag('xhtml', 'head'))
 
         def safe_lower(x):
             try:
@@ -583,39 +585,39 @@ class CSSFlattener(object):
             return x
 
         for node in html.xpath('//*[local-name()="style" or local-name()="link"]'):
-            if node.tag == XHTML('link') \
+            if node.tag == base.tag('xhtml', 'link') \
                and safe_lower(node.get('rel', 'stylesheet')) == 'stylesheet' \
-               and safe_lower(node.get('type', CSS_MIME)) in OEB_STYLES:
+               and safe_lower(node.get('type', base.CSS_MIME)) in base.OEB_STYLES:
                 node.getparent().remove(node)
-            elif node.tag == XHTML('style') \
-                 and node.get('type', CSS_MIME) in OEB_STYLES:
+            elif node.tag == base.tag('xhtml', 'style') \
+                 and node.get('type', base.CSS_MIME) in base.OEB_STYLES:
                 node.getparent().remove(node)
         href = item.relhref(href)
-        l = etree.SubElement(head, XHTML('link'),
-            rel='stylesheet', type=CSS_MIME, href=href)
+        l = etree.SubElement(head, base.tag('xhtml', 'link'),
+            rel='stylesheet', type=base.CSS_MIME, href=href)
         l.tail='\n'
         if global_href:
             href = item.relhref(global_href)
-            l = etree.SubElement(head, XHTML('link'),
-                rel='stylesheet', type=CSS_MIME, href=href)
+            l = etree.SubElement(head, base.tag('xhtml', 'link'),
+                rel='stylesheet', type=base.CSS_MIME, href=href)
             l.tail = '\n'
 
     def replace_css(self, css):
         manifest = self.oeb.manifest
         for item in manifest.values():
-            if item.media_type in OEB_STYLES:
+            if item.media_type in base.OEB_STYLES:
                 manifest.remove(item)
         id, href = manifest.generate('css', 'stylesheet.css')
         sheet = css_parser.parseString(css, validate=False)
         if self.transform_css_rules:
             from ebook_converter.ebooks.css_transform_rules import transform_sheet
             transform_sheet(self.transform_css_rules, sheet)
-        item = manifest.add(id, href, CSS_MIME, data=sheet)
+        item = manifest.add(id, href, base.CSS_MIME, data=sheet)
         self.oeb.manifest.main_stylesheet = item
         return href
 
     def collect_global_css(self):
-        global_css = defaultdict(list)
+        global_css = collections.defaultdict(list)
         for item in self.items:
             stylizer = self.stylizers[item]
             if float(self.context.margin_top) >= 0:
@@ -627,7 +629,7 @@ class CSSFlattener(object):
             items = sorted(stylizer.page_rule.items())
             css = ';\n'.join("%s: %s" % (key, val) for key, val in items)
             css = ('@page {\n%s\n}\n'%css) if items else ''
-            rules = [css_text(r) for r in stylizer.font_face_rules + self.embed_font_rules]
+            rules = [base.css_text(r) for r in stylizer.font_face_rules + self.embed_font_rules]
             raw = '\n\n'.join(rules)
             css += '\n\n' + raw
             global_css[css].append(item)
@@ -642,7 +644,7 @@ class CSSFlattener(object):
                 if self.transform_css_rules:
                     from ebook_converter.ebooks.css_transform_rules import transform_sheet
                     transform_sheet(self.transform_css_rules, sheet)
-                manifest.add(id_, href, CSS_MIME, data=sheet)
+                manifest.add(id_, href, base.CSS_MIME, data=sheet)
             gc_map[css] = href
 
         ans = {}
@@ -652,8 +654,8 @@ class CSSFlattener(object):
         return ans
 
     def flatten_spine(self):
-        names = defaultdict(int)
-        styles, pseudo_styles = {}, defaultdict(dict)
+        names = collections.defaultdict(int)
+        styles, pseudo_styles = {}, collections.defaultdict(dict)
         for item in self.items:
             html = item.data
             stylizer = self.stylizers[item]
@@ -661,7 +663,7 @@ class CSSFlattener(object):
                 self.specializer(item, stylizer)
             fsize = self.context.dest.fbase
             self.flatten_node(html, stylizer, names, styles, pseudo_styles, fsize, item.id, recurse=False)
-            self.flatten_node(html.find(XHTML('body')), stylizer, names, styles, pseudo_styles, fsize, item.id)
+            self.flatten_node(html.find(base.tag('xhtml', 'body')), stylizer, names, styles, pseudo_styles, fsize, item.id)
         items = sorted(((key, val) for (val, key) in styles.items()))
         # :hover must come after link and :active must come after :hover
         psels = sorted(pseudo_styles, key=lambda x :

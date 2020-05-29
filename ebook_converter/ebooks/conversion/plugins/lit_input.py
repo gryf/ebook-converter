@@ -1,17 +1,17 @@
+import copy
+
+from lxml import etree
+
+from ebook_converter import constants as const
 from ebook_converter.customize.conversion import InputFormatPlugin
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 
 class LITInput(InputFormatPlugin):
 
-    name        = 'LIT Input'
-    author      = 'Marshall T. Vandegrift'
+    name = 'LIT Input'
+    author = 'Marshall T. Vandegrift'
     description = 'Convert LIT files to HTML'
-    file_types  = {'lit'}
+    file_types = {'lit'}
     commit_name = 'lit_input'
 
     def convert(self, stream, options, file_ext, log,
@@ -22,7 +22,7 @@ class LITInput(InputFormatPlugin):
         return create_oebbook(log, stream, options, reader=LitReader)
 
     def postprocess_book(self, oeb, opts, log):
-        from ebook_converter.ebooks.oeb.base import XHTML_NS, XPath, XHTML
+        from ebook_converter.ebooks.oeb.base import XPath, XHTML
         for item in oeb.spine:
             root = item.data
             if not hasattr(root, 'xpath'):
@@ -37,22 +37,23 @@ class LITInput(InputFormatPlugin):
                 body = body[0]
                 if len(body) == 1 and body[0].tag == XHTML('pre'):
                     pre = body[0]
-                    from ebook_converter.ebooks.txt.processor import convert_basic, \
-                        separate_paragraphs_single_line
+                    from ebook_converter.ebooks.txt.processor import \
+                        convert_basic, separate_paragraphs_single_line
                     from ebook_converter.ebooks.chardet import xml_to_unicode
-                    from ebook_converter.utils.xml_parse import safe_xml_fromstring
-                    import copy
-                    self.log('LIT file with all text in singe <pre> tag detected')
+                    self.log('LIT file with all text in singe <pre> tag '
+                             'detected')
                     html = separate_paragraphs_single_line(pre.text)
                     html = convert_basic(html).replace('<html>',
-                            '<html xmlns="%s">'%XHTML_NS)
+                                                       '<html xmlns="%s">' %
+                                                       const.XHTML_NS)
                     html = xml_to_unicode(html, strip_encoding_pats=True,
-                            resolve_entities=True)[0]
+                                          resolve_entities=True)[0]
                     if opts.smarten_punctuation:
                         # SmartyPants skips text inside <pre> tags
-                        from ebook_converter.ebooks.conversion.preprocess import smarten_punctuation
-                        html = smarten_punctuation(html, self.log)
-                    root = safe_xml_fromstring(html)
+                        from ebook_converter.ebooks.conversion import \
+                                preprocess
+                        html = preprocess.smarten_punctuation(html, self.log)
+                    root = etree.fromstring(html)
                     body = XPath('//h:body')(root)
                     pre.tag = XHTML('div')
                     pre.text = ''

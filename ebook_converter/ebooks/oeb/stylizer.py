@@ -10,16 +10,15 @@ from css_parser.css import (CSSStyleRule, CSSPageRule, CSSFontFaceRule,
         cssproperties)
 from css_parser import (profile as cssprofiles, parseString, parseStyle, log as
         css_parser_log, CSSParser, profiles, replaceUrls)
+
+from ebook_converter import constants as const
 from ebook_converter import force_unicode, as_unicode
 from ebook_converter.ebooks import unit_convert
-from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS, CSS_MIME, OEB_STYLES, xpath, urlnormalize
+from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.normalize_css import DEFAULTS, normalizers
 from ebook_converter.css_selectors import Select, SelectorError, INAPPROPRIATE_PSEUDO_CLASSES
 from ebook_converter.tinycss.media3 import CSSMedia3Parser
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 css_parser_log.setLevel(logging.WARN)
 
@@ -208,7 +207,7 @@ class Stylizer(object):
         stylesheets = [html_css_stylesheet()]
         if base_css:
             stylesheets.append(parseString(base_css, validate=False))
-        style_tags = xpath(tree, '//*[local-name()="style" or local-name()="link"]')
+        style_tags = base.xpath(tree, '//*[local-name()="style" or local-name()="link"]')
 
         # Add css_parser parsing profiles from output_profile
         for profile in self.opts.output_profile.extra_css_modules:
@@ -219,7 +218,7 @@ class Stylizer(object):
         parser = CSSParser(fetcher=self._fetch_css_file,
                 log=logging.getLogger('calibre.css'))
         for elem in style_tags:
-            if (elem.tag == XHTML('style') and elem.get('type', CSS_MIME) in OEB_STYLES and media_ok(elem.get('media'))):
+            if (elem.tag == base.tag('xhtml', 'style') and elem.get('type', base.CSS_MIME) in base.OEB_STYLES and media_ok(elem.get('media'))):
                 text = elem.text if elem.text else ''
                 for x in elem:
                     t = getattr(x, 'text', None)
@@ -245,7 +244,7 @@ class Stylizer(object):
                                 self.logger.warn('Ignoring missing stylesheet in @import rule:', rule.href)
                                 continue
                             sitem = hrefs[ihref]
-                            if sitem.media_type not in OEB_STYLES:
+                            if sitem.media_type not in base.OEB_STYLES:
                                 self.logger.warn('CSS @import of non-CSS file %r' % rule.href)
                                 continue
                             stylesheets.append(sitem.data)
@@ -254,11 +253,11 @@ class Stylizer(object):
                     replaceUrls(stylesheet, item.abshref,
                             ignoreImportRules=True)
                     stylesheets.append(stylesheet)
-            elif (elem.tag == XHTML('link') and elem.get('href') and elem.get(
+            elif (elem.tag == base.tag('xhtml', 'link') and elem.get('href') and elem.get(
                     'rel', 'stylesheet').lower() == 'stylesheet' and elem.get(
-                    'type', CSS_MIME).lower() in OEB_STYLES and media_ok(elem.get('media'))
+                    'type', base.CSS_MIME).lower() in base.OEB_STYLES and media_ok(elem.get('media'))
                 ):
-                href = urlnormalize(elem.attrib['href'])
+                href = base.urlnormalize(elem.attrib['href'])
                 path = item.abshref(href)
                 sitem = oeb.manifest.hrefs.get(path, None)
                 if sitem is None:
@@ -326,7 +325,8 @@ class Stylizer(object):
 
                                 special_text = ''.join(punctuation_chars) + \
                                         (text[0] if text else '')
-                                span = x.makeelement('{%s}span' % XHTML_NS)
+                                span = x.makeelement('{%s}span' %
+                                                     const.XHTML_NS)
                                 span.text = special_text
                                 span.set('data-fake-first-letter', '1')
                                 span.tail = text[1:]
@@ -340,10 +340,10 @@ class Stylizer(object):
             else:
                 for elem in matches:
                     self.style(elem)._update_cssdict(cssdict)
-        for elem in xpath(tree, '//h:*[@style]'):
+        for elem in base.xpath(tree, '//h:*[@style]'):
             self.style(elem)._apply_style_attr(url_replacer=item.abshref)
         num_pat = re.compile(r'[0-9.]+$')
-        for elem in xpath(tree, '//h:img[@width or @height]'):
+        for elem in base.xpath(tree, '//h:img[@width or @height]'):
             style = self.style(elem)
             # Check if either height or width is not default
             is_styled = style._style.get('width', 'auto') != 'auto' or \
@@ -370,7 +370,7 @@ class Stylizer(object):
             self.logger.warn('CSS import of missing file %r' % path)
             return (None, None)
         item = hrefs[path]
-        if item.media_type not in OEB_STYLES:
+        if item.media_type not in base.OEB_STYLES:
             self.logger.warn('CSS import of non-CSS file %r' % path)
             return (None, None)
         data = item.data.cssText

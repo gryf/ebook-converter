@@ -2,10 +2,11 @@ from collections import defaultdict
 from functools import partial
 
 from css_parser.css import CSSRule, CSSStyleDeclaration
-from ebook_converter.css_selectors import parse, SelectorSyntaxError
 
+from ebook_converter import constants as const
 from ebook_converter import force_unicode
-from ebook_converter.ebooks.oeb.base import OEB_STYLES, OEB_DOCS, XHTML, css_text
+from ebook_converter.css_selectors import parse, SelectorSyntaxError
+from ebook_converter.ebooks.oeb.base import OEB_STYLES, OEB_DOCS, css_text
 from ebook_converter.ebooks.oeb.normalize_css import normalize_filter_css, normalizers
 from ebook_converter.ebooks.oeb.polish.pretty import pretty_script_or_style, pretty_xml_tree, serialize
 from ebook_converter.utils.icu import numeric_sort_key
@@ -382,7 +383,7 @@ def add_stylesheet_links(container, name, text):
     if not sheets:
         return
     for sname in sheets:
-        link = head.makeelement(XHTML('link'), type='text/css', rel='stylesheet', href=container.name_to_href(sname, name))
+        link = head.makeelement(const.XHTML_LINK, type='text/css', rel='stylesheet', href=container.name_to_href(sname, name))
         head.append(link)
     pretty_xml_tree(head)
     return serialize(root, 'text/html')

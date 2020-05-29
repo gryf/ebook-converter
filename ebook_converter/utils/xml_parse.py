@@ -1,3 +1,7 @@
+import os
+import tempfile
+import unittest
+
 from lxml import etree
 
 
@@ -24,7 +28,6 @@ def safe_xml_fromstring(string_or_bytes, recover=True):
 
 
 def find_tests():
-    import unittest, tempfile, os
 
     class TestXMLParse(unittest.TestCase):
 
@@ -37,9 +40,11 @@ def find_tests():
             os.remove(self.temp_file)
 
         def test_safe_xml_fromstring(self):
-            templ = '''<!DOCTYPE foo [ <!ENTITY e {id} "{val}" > ]><r>&e;</r>'''
+            templ = '<!DOCTYPE foo [ <!ENTITY e {id} "{val}" > ]><r>&e;</r>'
             external = 'file:///' + self.temp_file.replace(os.sep, '/')
-            self.assertEqual(etree.fromstring(templ.format(id='SYSTEM', val=external)).text, 'external')
+            self.assertEqual(etree.fromstring(templ.format(id='SYSTEM',
+                                                           val=external)).text,
+                             'external')
             for eid, val, expected in (
                 ('', 'normal entity', 'normal entity'),
                 ('', external, external),
@@ -50,7 +55,8 @@ def find_tests():
                 ('PUBLIC', external, None),
                 ('PUBLIC', 'http://example.com', None),
             ):
-                got = getattr(safe_xml_fromstring(templ.format(id=eid, val=val)), 'text', None)
+                got = getattr(etree.fromstring(templ.format(id=eid, val=val)),
+                              'text', None)
                 self.assertEqual(got, expected)
 
     return unittest.defaultTestLoader.loadTestsFromTestCase(TestXMLParse)

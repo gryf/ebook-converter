@@ -1,15 +1,12 @@
-import os, re
+import os
+import re
+
+from ebook_converter.ebooks.oeb import base
 from ebook_converter.utils.date import isoformat, now
 from ebook_converter import guess_type
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-
 def meta_info_to_oeb_metadata(mi, m, log, override_input_metadata=False):
-    from ebook_converter.ebooks.oeb.base import OPF
     if not mi.is_null('title'):
         m.clear('title')
         m.add('title', mi.title)
@@ -19,17 +16,17 @@ def meta_info_to_oeb_metadata(mi, m, log, override_input_metadata=False):
         m.clear('title_sort')
         m.add('title_sort', mi.title_sort)
     if not mi.is_null('authors'):
-        m.filter('creator', lambda x : x.role.lower() in ['aut', ''])
+        m.filter('creator', lambda x: x.role.lower() in ['aut', ''])
         for a in mi.authors:
-            attrib = {'role':'aut'}
+            attrib = {'role': 'aut'}
             if mi.author_sort:
-                attrib[OPF('file-as')] = mi.author_sort
+                attrib[base.tag('opf', 'file-as')] = mi.author_sort
             m.add('creator', a, attrib=attrib)
     if not mi.is_null('book_producer'):
-        m.filter('contributor', lambda x : x.role.lower() == 'bkp')
+        m.filter('contributor', lambda x: x.role.lower() == 'bkp')
         m.add('contributor', mi.book_producer, role='bkp')
     elif override_input_metadata:
-        m.filter('contributor', lambda x : x.role.lower() == 'bkp')
+        m.filter('contributor', lambda x: x.role.lower() == 'bkp')
     if not mi.is_null('comments'):
         m.clear('description')
         m.add('description', mi.comments)
@@ -71,7 +68,7 @@ def meta_info_to_oeb_metadata(mi, m, log, override_input_metadata=False):
         m.clear('series_index')
     if not mi.is_null('rating'):
         m.clear('rating')
-        m.add('rating', '%.2f'%mi.rating)
+        m.add('rating', '%.2f' % mi.rating)
     elif override_input_metadata:
         m.clear('rating')
     if not mi.is_null('tags'):
@@ -101,23 +98,25 @@ class MergeMetadata(object):
     'Merge in user metadata, including cover'
 
     def __call__(self, oeb, mi, opts, override_input_metadata=False):
+        _oim = override_input_metadata
         self.oeb, self.log = oeb, oeb.log
         m = self.oeb.metadata
         self.log('Merging user specified metadata...')
         meta_info_to_oeb_metadata(mi, m, oeb.log,
-                override_input_metadata=override_input_metadata)
+                                  override_input_metadata=_oim)
         cover_id = self.set_cover(mi, opts.prefer_metadata_cover)
         m.clear('cover')
         if cover_id is not None:
             m.add('cover', cover_id)
         if mi.uuid is not None:
-            m.filter('identifier', lambda x:x.id=='uuid_id')
+            m.filter('identifier', lambda x: x.id == 'uuid_id')
             self.oeb.metadata.add('identifier', mi.uuid, id='uuid_id',
                                   scheme='uuid')
             self.oeb.uid = self.oeb.metadata.identifier[-1]
         if mi.application_id is not None:
-            m.filter('identifier', lambda x:x.scheme=='calibre')
-            self.oeb.metadata.add('identifier', mi.application_id, scheme='calibre')
+            m.filter('identifier', lambda x: x.scheme == 'calibre')
+            self.oeb.metadata.add('identifier', mi.application_id,
+                                  scheme='calibre')
 
     def set_cover(self, mi, prefer_metadata_cover):
         cdata, ext = b'', 'jpg'
@@ -138,7 +137,8 @@ class MergeMetadata(object):
         if cdata:
             self.oeb.guide.remove('cover')
             self.oeb.guide.remove('titlepage')
-        elif self.oeb.plumber_output_format in {'mobi', 'azw3'} and old_cover is not None:
+        elif (self.oeb.plumber_output_format in {'mobi', 'azw3'} and
+                old_cover is not None):
             # The amazon formats dont support html cover pages, so remove them
             # even if no cover was specified.
             self.oeb.guide.remove('titlepage')
@@ -156,7 +156,9 @@ class MergeMetadata(object):
         new_cover_item = None
         if cdata:
             id, href = self.oeb.manifest.generate('cover', 'cover.'+ext)
-            new_cover_item = self.oeb.manifest.add(id, href, guess_type('cover.'+ext)[0], data=cdata)
+            new_cover_item = self.oeb.manifest.add(id, href,
+                                                   guess_type('cover.'+ext)[0],
+                                                   data=cdata)
             self.oeb.guide.add('cover', 'Cover', href)
         if do_remove_old_cover:
             self.remove_old_cover(item, new_cover_item.href)
@@ -186,7 +188,8 @@ class MergeMetadata(object):
                 if href == cover_item.href:
                     if new_cover_href is not None:
                         replacement_href = item.relhref(new_cover_href)
-                        attr = 'src' if img.tag.endswith('img') else XLINK('href')
+                        attr = ('src' if img.tag.endswith('img')
+                                else XLINK('href'))
                         img.set(attr, replacement_href)
                     else:
                         p = img.getparent()
@@ -202,13 +205,14 @@ class MergeMetadata(object):
         for item in affected_items:
             body = XPath('//h:body')(item.data)
             if body:
-                text = etree.tostring(body[0], method='text', encoding='unicode')
+                text = etree.tostring(body[0], method='text',
+                                      encoding='unicode')
             else:
                 text = ''
             text = re.sub(r'\s+', '', text)
             if not text and not XPath('//h:img|//svg:svg')(item.data):
-                self.log('Removing %s as it is a wrapper around'
-                        ' the cover image'%item.href)
+                self.log('Removing %s as it is a wrapper around the cover '
+                         'image' % item.href)
                 self.oeb.spine.remove(item)
                 self.oeb.manifest.remove(item)
                 self.oeb.guide.remove_by_href(item.href)

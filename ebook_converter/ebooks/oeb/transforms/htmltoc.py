@@ -1,46 +1,20 @@
 """
 HTML-TOC-adding transform.
 """
-from ebook_converter.ebooks.oeb.base import XML, XHTML, XHTML_NS
-from ebook_converter.ebooks.oeb.base import XHTML_MIME, CSS_MIME
-from ebook_converter.ebooks.oeb.base import element, XPath
+from ebook_converter import constants as const
+from ebook_converter.ebooks.oeb import base
 
-
-__all__ = ['HTMLTOCAdder']
-__license__ = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
 
 DEFAULT_TITLE = 'Table of Contents'
+STYLE_CSS = {'nested': '.calibre_toc_header {\n  text-align: center;\n}\n'
+             '.calibre_toc_block {\n  margin-left: 1.2em;\n  text-indent: '
+             '-1.2em;\n}\n.calibre_toc_block .calibre_toc_block {\n  '
+             'margin-left: 2.4em;\n}\n.calibre_toc_block .calibre_toc_block '
+             '.calibre_toc_block {\n  margin-left: 3.6em;\n}\n',
 
-STYLE_CSS = {
-    'nested': """
-.calibre_toc_header {
-  text-align: center;
-}
-.calibre_toc_block {
-  margin-left: 1.2em;
-  text-indent: -1.2em;
-}
-.calibre_toc_block .calibre_toc_block {
-  margin-left: 2.4em;
-}
-.calibre_toc_block .calibre_toc_block .calibre_toc_block {
-  margin-left: 3.6em;
-}
-""",
-
-    'centered': """
-.calibre_toc_header {
-  text-align: center;
-}
-.calibre_toc_block {
-  text-align: center;
-}
-body > .calibre_toc_block {
-  margin-top: 1.2em;
-}
-"""
-    }
+             'centered': '.calibre_toc_header {\n  text-align: center;\n}\n'
+             '.calibre_toc_block {\n  text-align: center;\n}\nbody > '
+             '.calibre_toc_block {\n  margin-top: 1.2em;\n}\n'}
 
 
 class HTMLTOCAdder(object):
@@ -71,7 +45,7 @@ class HTMLTOCAdder(object):
             if href in oeb.manifest.hrefs:
                 item = oeb.manifest.hrefs[href]
                 if (hasattr(item.data, 'xpath') and
-                    XPath('//h:a[@href]')(item.data)):
+                        base.XPath('//h:a[@href]')(item.data)):
                     if oeb.spine.index(item) < 0:
                         if self.position == 'end':
                             oeb.spine.add(item, linear=False)
@@ -91,23 +65,24 @@ class HTMLTOCAdder(object):
             oeb.logger.error('Unknown TOC style %r' % style)
             style = 'nested'
         id, css_href = oeb.manifest.generate('tocstyle', 'tocstyle.css')
-        oeb.manifest.add(id, css_href, CSS_MIME, data=STYLE_CSS[style])
+        oeb.manifest.add(id, css_href, base.CSS_MIME, data=STYLE_CSS[style])
         language = str(oeb.metadata.language[0])
-        contents = element(None, XHTML('html'), nsmap={None: XHTML_NS},
-                           attrib={XML('lang'): language})
-        head = element(contents, XHTML('head'))
-        htitle = element(head, XHTML('title'))
+        contents = base.element(None, base.tag('xhtml', 'html'),
+                                nsmap={None: const.XHTML_NS},
+                                attrib={base.tag('xml', 'lang'): language})
+        head = base.element(contents, base.tag('xhtml', 'head'))
+        htitle = base.element(head, base.tag('xhtml', 'title'))
         htitle.text = title
-        element(head, XHTML('link'), rel='stylesheet', type=CSS_MIME,
-                href=css_href)
-        body = element(contents, XHTML('body'),
-                       attrib={'class': 'calibre_toc'})
-        h1 = element(body, XHTML('h2'),
-                     attrib={'class': 'calibre_toc_header'})
+        base.element(head, base.tag('xhtml', 'link'), rel='stylesheet',
+                     type=base.CSS_MIME, href=css_href)
+        body = base.element(contents, base.tag('xhtml', 'body'),
+                            attrib={'class': 'calibre_toc'})
+        h1 = base.element(body, base.tag('xhtml', 'h2'),
+                          attrib={'class': 'calibre_toc_header'})
         h1.text = title
         self.add_toc_level(body, oeb.toc)
         id, href = oeb.manifest.generate('contents', 'contents.xhtml')
-        item = oeb.manifest.add(id, href, XHTML_MIME, data=contents)
+        item = oeb.manifest.add(id, href, base.XHTML_MIME, data=contents)
         if self.position == 'end':
             oeb.spine.add(item, linear=False)
         else:
@@ -116,10 +91,10 @@ class HTMLTOCAdder(object):
 
     def add_toc_level(self, elem, toc):
         for node in toc:
-            block = element(elem, XHTML('div'),
-                            attrib={'class': 'calibre_toc_block'})
-            line = element(block, XHTML('a'),
-                           attrib={'href': node.href,
-                                   'class': 'calibre_toc_line'})
+            block = base.element(elem, base.tag('xhtml', 'div'),
+                                 attrib={'class': 'calibre_toc_block'})
+            line = base.element(block, base.tag('xhtml', 'a'),
+                                attrib={'href': node.href,
+                                        'class': 'calibre_toc_line'})
             line.text = node.title
             self.add_toc_level(block, node)

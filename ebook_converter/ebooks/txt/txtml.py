@@ -5,10 +5,11 @@ import re
 
 from lxml import etree
 
+from ebook_converter import constants as const
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.ebooks.oeb import parse_utils
+from ebook_converter.ebooks.oeb.stylizer import Stylizer
 
-__license__ = 'GPL 3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
 
 BLOCK_TAGS = [
     'div',
@@ -60,9 +61,6 @@ class TXTMLizer(object):
         return self.mlize_spine()
 
     def mlize_spine(self):
-        from ebook_converter.ebooks.oeb.base import XHTML
-        from ebook_converter.ebooks.oeb.stylizer import Stylizer
-        from ebook_converter.utils.xml_parse import safe_xml_fromstring
         output = [u'']
         output.append(self.get_toc())
         for item in self.oeb_book.spine:
@@ -72,9 +70,11 @@ class TXTMLizer(object):
                     x.text = x.text.replace('--', '__')
             content = etree.tostring(item.data, encoding='unicode')
             content = self.remove_newlines(content)
-            content = safe_xml_fromstring(content)
-            stylizer = Stylizer(content, item.href, self.oeb_book, self.opts, self.opts.output_profile)
-            output += self.dump_text(content.find(XHTML('body')), stylizer, item)
+            content = etree.fromstring(content)
+            stylizer = Stylizer(content, item.href, self.oeb_book, self.opts,
+                                self.opts.output_profile)
+            output += self.dump_text(content.find(base.tag('xhtml', 'body')),
+                                     stylizer, item)
             output += '\n\n\n\n\n\n'
         output = ''.join(output)
         output = '\n'.join(l.rstrip() for l in output.splitlines())
@@ -130,8 +130,12 @@ class TXTMLizer(object):
         text = re.sub('\n[ ]+\n', '\n\n', text)
         if self.opts.remove_paragraph_spacing:
             text = re.sub('\n{2,}', '\n', text)
-            text = re.sub(r'(?msu)^(?P<t>[^\t\n]+?)$', lambda mo: u'%s\n\n' % mo.group('t'), text)
-            text = re.sub(r'(?msu)(?P<b>[^\n])\n+(?P<t>[^\t\n]+?)(?=\n)', lambda mo: '%s\n\n\n\n\n\n%s' % (mo.group('b'), mo.group('t')), text)
+            text = re.sub(r'(?msu)^(?P<t>[^\t\n]+?)$', lambda mo: u'%s\n\n' %
+                          mo.group('t'), text)
+            text = re.sub(r'(?msu)(?P<b>[^\n])\n+(?P<t>[^\t\n]+?)(?=\n)',
+                          lambda mo: '%s\n\n\n\n\n\n%s' % (mo.group('b'),
+                                                           mo.group('t')),
+                          text)
         else:
             text = re.sub('\n{7,}', '\n\n\n\n\n\n', text)
 
@@ -146,7 +150,8 @@ class TXTMLizer(object):
 
         if self.opts.max_line_length:
             max_length = self.opts.max_line_length
-            if self.opts.max_line_length < 25 and not self.opts.force_max_line_length:
+            if (self.opts.max_line_length < 25 and not
+                    self.opts.force_max_line_length):
                 max_length = 25
             short_lines = []
             lines = text.splitlines()
@@ -186,13 +191,13 @@ class TXTMLizer(object):
         @stylizer: The style information attached to the element.
         @page: OEB page used to determine absolute urls.
         '''
-        from ebook_converter.ebooks.oeb.base import XHTML_NS, barename, namespace
 
         if not isinstance(elem.tag, (str, bytes)) \
-           or namespace(elem.tag) != XHTML_NS:
+           or parse_utils.namespace(elem.tag) != const.XHTML_NS:
             p = elem.getparent()
-            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) == XHTML_NS \
-                    and elem.tail:
+            if (p is not None and isinstance(p.tag, (str, bytes)) and
+                    parse_utils.namespace(p.tag) == const.XHTML_NS and
+                    elem.tail):
                 return [elem.tail]
             return ['']
 
@@ -205,14 +210,15 @@ class TXTMLizer(object):
                 return [elem.tail]
             return ['']
 
-        tag = barename(elem.tag)
+        tag = parse_utils.barename(elem.tag)
         tag_id = elem.attrib.get('id', None)
         in_block = False
         in_heading = False
 
         # Are we in a heading?
         # This can either be a heading tag or a TOC item.
-        if tag in HEADING_TAGS or '%s#%s' % (page.href, tag_id) in self.toc_ids:
+        if tag in HEADING_TAGS or '%s#%s' % (page.href,
+                                             tag_id) in self.toc_ids:
             in_heading = True
             if not self.last_was_heading:
                 text.append('\n\n\n\n\n\n')
@@ -234,7 +240,7 @@ class TXTMLizer(object):
             ems = int(round((float(style.marginTop) / style.fontSize) - 1))
             if ems >= 1:
                 text.append('\n' * ems)
-        except:
+        except Exception:
             pass
 
         # Process tags that contain text.

@@ -1,66 +1,61 @@
 import textwrap
 import urllib.parse
 
+from lxml import etree
+
 from ebook_converter import guess_type
 from ebook_converter.utils.imghdr import identify
-from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.polyglot.urllib import unquote
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 
 class CoverManager(object):
 
     SVG_TEMPLATE = textwrap.dedent('''\
-        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-            <head>
-                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-                <meta name="calibre:cover" content="true" />
-                <title>Cover</title>
-                <style type="text/css" title="override_css">
-                    @page {padding: 0pt; margin:0pt}
-                    body { text-align: center; padding:0pt; margin: 0pt; }
-                </style>
-            </head>
-            <body>
-                <div>
-                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
-                        width="100%%" height="100%%" viewBox="__viewbox__"
-                        preserveAspectRatio="__ar__">
-                        <image width="__width__" height="__height__" xlink:href="%s"/>
-                    </svg>
-                </div>
-            </body>
-        </html>
-        ''')
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="calibre:cover" content="true" />
+        <title>Cover</title>
+        <style type="text/css" title="override_css">
+            @page {padding: 0pt; margin:0pt}
+            body { text-align: center; padding:0pt; margin: 0pt; }
+        </style>
+    </head>
+    <body>
+        <div>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100%%" height="100%%" viewBox="__viewbox__"
+                preserveAspectRatio="__ar__">
+                <image width="__width__" height="__height__" xlink:href="%s"/>
+            </svg>
+        </div>
+    </body>
+</html>''')
 
     NONSVG_TEMPLATE = textwrap.dedent('''\
-        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-            <head>
-                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-                <meta name="calibre:cover" content="true" />
-                <title>Cover</title>
-                <style type="text/css" title="override_css">
-                    @page {padding: 0pt; margin:0pt}
-                    body { text-align: center; padding:0pt; margin: 0pt }
-                    div { padding:0pt; margin: 0pt }
-                    img { padding:0pt; margin: 0pt }
-                </style>
-            </head>
-            <body>
-                <div>
-                    <img src="%s" alt="cover" __style__ />
-                </div>
-            </body>
-        </html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="calibre:cover" content="true" />
+        <title>Cover</title>
+        <style type="text/css" title="override_css">
+            @page {padding: 0pt; margin:0pt}
+            body { text-align: center; padding:0pt; margin: 0pt }
+            div { padding:0pt; margin: 0pt }
+            img { padding:0pt; margin: 0pt }
+        </style>
+    </head>
+    <body>
+        <div>
+            <img src="%s" alt="cover" __style__ />
+        </div>
+    </body>
+</html>
     ''')
 
     def __init__(self, no_default_cover=False, no_svg_cover=False,
-            preserve_aspect_ratio=False, fixed_size=None):
+                 preserve_aspect_ratio=False, fixed_size=None):
         self.no_default_cover = no_default_cover
         self.no_svg_cover = no_svg_cover
         self.preserve_aspect_ratio = preserve_aspect_ratio
@@ -72,9 +67,9 @@ class CoverManager(object):
             style = 'style="height: 100%%"'
         else:
             width, height = fixed_size
-            style = 'style="height: %s; width: %s"'%(height, width)
+            style = 'style="height: %s; width: %s"' % (height, width)
         self.non_svg_template = self.NONSVG_TEMPLATE.replace('__style__',
-                style)
+                                                             style)
 
     def __call__(self, oeb, opts, log):
         self.oeb = oeb
@@ -108,22 +103,23 @@ class CoverManager(object):
             # if self.preserve_aspect_ratio:
             #    width, height = 600, 800
             self.svg_template = self.svg_template.replace('__viewbox__',
-                    '0 0 %d %d'%(width, height))
+                                                          '0 0 %d %d' %
+                                                          (width, height))
             self.svg_template = self.svg_template.replace('__width__',
-                    str(width))
+                                                          str(width))
             self.svg_template = self.svg_template.replace('__height__',
-                    str(height))
+                                                          str(height))
 
             if href is not None:
                 templ = self.non_svg_template if self.no_svg_cover \
                         else self.svg_template
-                tp = templ%unquote(href)
+                tp = templ % unquote(href)
                 id, href = m.generate('titlepage', 'titlepage.xhtml')
                 item = m.add(id, href, guess_type('t.xhtml')[0],
-                        data=safe_xml_fromstring(tp))
+                             data=etree.fromstring(tp))
         else:
-            item = self.oeb.manifest.hrefs[
-                    urllib.parse.urldefrag(self.oeb.guide['titlepage'].href)[0]]
+            key = urllib.parse.urldefrag(self.oeb.guide['titlepage'].href)[0]
+            item = self.oeb.manifest.hrefs[key]
         if item is not None:
             self.oeb.spine.insert(0, item, True)
             if 'cover' not in self.oeb.guide.refs:

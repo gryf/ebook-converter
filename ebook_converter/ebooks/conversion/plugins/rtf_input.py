@@ -1,57 +1,58 @@
-import os, glob, re, textwrap
+import glob
+import os
 import pkg_resources
+import re
+import textwrap
 
-from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from lxml import etree
+
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter.polyglot.builtins import as_bytes
 
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
-border_style_map = {
-        'single' : 'solid',
-        'double-thickness-border' : 'double',
-        'shadowed-border': 'outset',
-        'double-border': 'double',
-        'dotted-border': 'dotted',
-        'dashed': 'dashed',
-        'hairline': 'solid',
-        'inset': 'inset',
-        'dash-small': 'dashed',
-        'dot-dash': 'dotted',
-        'dot-dot-dash': 'dotted',
-        'outset': 'outset',
-        'tripple': 'double',
-        'triple': 'double',
-        'thick-thin-small': 'solid',
-        'thin-thick-small': 'solid',
-        'thin-thick-thin-small': 'solid',
-        'thick-thin-medium': 'solid',
-        'thin-thick-medium': 'solid',
-        'thin-thick-thin-medium': 'solid',
-        'thick-thin-large': 'solid',
-        'thin-thick-thin-large': 'solid',
-        'wavy': 'ridge',
-        'double-wavy': 'ridge',
-        'striped': 'ridge',
-        'emboss': 'inset',
-        'engrave': 'inset',
-        'frame': 'ridge',
-}
+border_style_map = {'single': 'solid',
+                    'double-thickness-border': 'double',
+                    'shadowed-border': 'outset',
+                    'double-border': 'double',
+                    'dotted-border': 'dotted',
+                    'dashed': 'dashed',
+                    'hairline': 'solid',
+                    'inset': 'inset',
+                    'dash-small': 'dashed',
+                    'dot-dash': 'dotted',
+                    'dot-dot-dash': 'dotted',
+                    'outset': 'outset',
+                    'tripple': 'double',
+                    'triple': 'double',
+                    'thick-thin-small': 'solid',
+                    'thin-thick-small': 'solid',
+                    'thin-thick-thin-small': 'solid',
+                    'thick-thin-medium': 'solid',
+                    'thin-thick-medium': 'solid',
+                    'thin-thick-thin-medium': 'solid',
+                    'thick-thin-large': 'solid',
+                    'thin-thick-thin-large': 'solid',
+                    'wavy': 'ridge',
+                    'double-wavy': 'ridge',
+                    'striped': 'ridge',
+                    'emboss': 'inset',
+                    'engrave': 'inset',
+                    'frame': 'ridge'}
 
 
 class RTFInput(InputFormatPlugin):
 
-    name        = 'RTF Input'
-    author      = 'Kovid Goyal'
+    name = 'RTF Input'
+    author = 'Kovid Goyal'
     description = 'Convert RTF files to HTML'
-    file_types  = {'rtf'}
+    file_types = {'rtf'}
     commit_name = 'rtf_input'
 
-    options = {
-        OptionRecommendation(name='ignore_wmf', recommended_value=False,
-            help='Ignore WMF images instead of replacing them with a '
-                 'placeholder image.'),
-    }
+    options = {OptionRecommendation(name='ignore_wmf', recommended_value=False,
+                                    help='Ignore WMF images instead of '
+                                    'replacing them with a placeholder '
+                                    'image.')}
 
     def generate_xml(self, stream):
         from ebook_converter.ebooks.rtf2xml.ParseRtf import ParseRtf
@@ -64,7 +65,7 @@ class RTFInput(InputFormatPlugin):
                 run_lev = 4
                 indent_out = 1
                 self.log('Running RTFParser in debug mode')
-            except:
+            except Exception:
                 self.log.warn('Impossible to run RTFParser in debug mode')
         parser = ParseRtf(
             in_file=stream,
@@ -108,7 +109,8 @@ class RTFInput(InputFormatPlugin):
             deb_dir=debug_dir,
 
             # Default encoding
-            default_encoding=getattr(self.opts, 'input_encoding', 'cp1252') or 'cp1252',
+            default_encoding=getattr(self.opts, 'input_encoding',
+                                     'cp1252') or 'cp1252',
 
             # Run level
             run_level=run_lev,
@@ -151,7 +153,7 @@ class RTFInput(InputFormatPlugin):
         for count, val in imap.items():
             try:
                 imap[count] = self.convert_image(val)
-            except:
+            except Exception:
                 self.log.exception('Failed to convert', val)
         return imap
 
@@ -161,7 +163,7 @@ class RTFInput(InputFormatPlugin):
         try:
             return self.rasterize_wmf(name)
         except Exception:
-            self.log.exception('Failed to convert WMF image %r'%name)
+            self.log.exception('Failed to convert WMF image %r' % name)
         return self.replace_wmf(name)
 
     def replace_wmf(self, name):
@@ -170,9 +172,11 @@ class RTFInput(InputFormatPlugin):
             return '__REMOVE_ME__'
         from ebook_converter.ebooks.covers import message_image
         if self.default_img is None:
-            self.default_img = message_image('Conversion of WMF images is not supported.'
-            ' Use Microsoft Word or OpenOffice to save this RTF file'
-            ' as HTML and convert that in calibre.')
+            self.default_img = message_image('Conversion of WMF images is not '
+                                             'supported. Use Microsoft Word '
+                                             'or OpenOffice to save this RTF '
+                                             'file as HTML and convert that '
+                                             'in calibre.')
         name = name.replace('.wmf', '.jpg')
         with open(name, 'wb') as f:
             f.write(self.default_img)
@@ -189,10 +193,10 @@ class RTFInput(InputFormatPlugin):
         return name
 
     def write_inline_css(self, ic, border_styles):
-        font_size_classes = ['span.fs%d { font-size: %spt }'%(i, x) for i, x in
-                enumerate(ic.font_sizes)]
-        color_classes = ['span.col%d { color: %s }'%(i, x) for i, x in
-                enumerate(ic.colors) if x != 'false']
+        font_size_classes = ['span.fs%d { font-size: %spt }' % (i, x)
+                             for i, x in enumerate(ic.font_sizes)]
+        color_classes = ['span.col%d { color: %s }' % (i, x)
+                         for i, x in enumerate(ic.colors) if x != 'false']
         css = textwrap.dedent('''
         span.none {
             text-decoration: none; font-weight: normal;
@@ -210,11 +214,11 @@ class RTFInput(InputFormatPlugin):
         span.strike-through { text-decoration: line-through }
 
         ''')
-        css += '\n'+'\n'.join(font_size_classes)
-        css += '\n' +'\n'.join(color_classes)
+        css += '\n' + '\n'.join(font_size_classes)
+        css += '\n' + '\n'.join(color_classes)
 
         for cls, val in border_styles.items():
-            css += '\n\n.%s {\n%s\n}'%(cls, val)
+            css += '\n\n.%s {\n%s\n}' % (cls, val)
 
         with open(u'styles.css', 'ab') as f:
             f.write(css.encode('utf-8'))
@@ -224,35 +228,34 @@ class RTFInput(InputFormatPlugin):
         style_map = {}
         for elem in doc.xpath(r'//*[local-name()="cell"]'):
             style = ['border-style: hidden', 'border-width: 1px',
-                    'border-color: black']
+                     'border-color: black']
             for x in ('bottom', 'top', 'left', 'right'):
-                bs = elem.get('border-cell-%s-style'%x, None)
+                bs = elem.get('border-cell-%s-style' % x, None)
                 if bs:
                     cbs = border_style_map.get(bs, 'solid')
-                    style.append('border-%s-style: %s'%(x, cbs))
-                bw = elem.get('border-cell-%s-line-width'%x, None)
+                    style.append('border-%s-style: %s' % (x, cbs))
+                bw = elem.get('border-cell-%s-line-width' % x, None)
                 if bw:
-                    style.append('border-%s-width: %spt'%(x, bw))
-                bc = elem.get('border-cell-%s-color'%x, None)
+                    style.append('border-%s-width: %spt' % (x, bw))
+                bc = elem.get('border-cell-%s-color' % x, None)
                 if bc:
-                    style.append('border-%s-color: %s'%(x, bc))
+                    style.append('border-%s-color: %s' % (x, bc))
             style = ';\n'.join(style)
             if style not in border_styles:
                 border_styles.append(style)
             idx = border_styles.index(style)
-            cls = 'border_style%d'%idx
+            cls = 'border_style%d' % idx
             style_map[cls] = style
             elem.set('class', cls)
         return style_map
 
     def convert(self, stream, options, file_ext, log,
                 accelerators):
-        from lxml import etree
         from ebook_converter.ebooks.metadata.meta import get_metadata
         from ebook_converter.ebooks.metadata.opf2 import OPFCreator
-        from ebook_converter.ebooks.rtf2xml.ParseRtf import RtfInvalidCodeException
+        from ebook_converter.ebooks.rtf2xml.ParseRtf import \
+            RtfInvalidCodeException
         from ebook_converter.ebooks.rtf.input import InlineClass
-        from ebook_converter.utils.xml_parse import safe_xml_fromstring
         self.opts = options
         self.log = log
         self.log('Converting RTF to XML...')
@@ -269,14 +272,15 @@ class RTFInput(InputFormatPlugin):
             imap = {}
             try:
                 imap = self.extract_images(d[0])
-            except:
+            except Exception:
                 self.log.exception('Failed to extract images...')
 
         self.log('Parsing XML...')
-        doc = safe_xml_fromstring(xml)
+        doc = etree.fromstring(xml)
         border_styles = self.convert_borders(doc)
         for pict in doc.xpath('//rtf:pict[@num]',
-                namespaces={'rtf':'http://rtf2xml.sourceforge.net/'}):
+                              namespaces={'rtf':
+                                          'http://rtf2xml.sourceforge.net/'}):
             num = int(pict.get('num'))
             name = imap.get(num, None)
             if name is not None:
@@ -286,8 +290,8 @@ class RTFInput(InputFormatPlugin):
         inline_class = InlineClass(self.log)
         with open(pkg_resources.resource_filename('ebook_converter',
                                                   'data/rtf.xsl')) as fobj:
-            styledoc = safe_xml_fromstring(fobj.read())
-        extensions = {('calibre', 'inline-class') : inline_class}
+            styledoc = etree.fromstring(fobj.read())
+        extensions = {('calibre', 'inline-class'): inline_class}
         transform = etree.XSLT(styledoc, extensions=extensions)
         result = transform(doc)
         html = u'index.xhtml'
@@ -296,7 +300,8 @@ class RTFInput(InputFormatPlugin):
             # res = res[:100].replace('xmlns:html', 'xmlns') + res[100:]
             # clean multiple \n
             res = re.sub(b'\n+', b'\n', res)
-            # Replace newlines inserted by the 'empty_paragraphs' option in rtf2xml with html blank lines
+            # Replace newlines inserted by the 'empty_paragraphs' option in
+            # rtf2xml with html blank lines
             # res = re.sub('\s*<body>', '<body>', res)
             # res = re.sub('(?<=\n)\n{2}',
             # u'<p>\u00a0</p>\n'.encode('utf-8'), res)
@@ -316,7 +321,8 @@ class RTFInput(InputFormatPlugin):
 
     def postprocess_book(self, oeb, opts, log):
         for item in oeb.spine:
-            for img in item.data.xpath('//*[local-name()="img" and @src="__REMOVE_ME__"]'):
+            for img in item.data.xpath('//*[local-name()="img" and '
+                                       '@src="__REMOVE_ME__"]'):
                 p = img.getparent()
                 idx = p.index(img)
                 p.remove(img)

@@ -5,9 +5,9 @@ import string
 
 from lxml import etree
 
-from ebook_converter.ebooks.oeb.base import XHTML, XHTML_NS
-from ebook_converter.ebooks.oeb.base import CSS_MIME
-from ebook_converter.ebooks.oeb.base import namespace
+from ebook_converter import constants as const
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 
 
@@ -43,15 +43,16 @@ class CaseMangler(object):
 
     def mangle_spine(self):
         id, href = self.oeb.manifest.generate('manglecase', 'manglecase.css')
-        self.oeb.manifest.add(id, href, CSS_MIME, data=CASE_MANGLER_CSS)
+        self.oeb.manifest.add(id, href, base.CSS_MIME, data=CASE_MANGLER_CSS)
         for item in self.oeb.spine:
             html = item.data
             relhref = item.relhref(href)
-            etree.SubElement(html.find(XHTML('head')), XHTML('link'),
-                             rel='stylesheet', href=relhref, type=CSS_MIME)
+            etree.SubElement(html.find(base.tag('xhtml', 'head')),
+                             base.tag('xhtml', 'link'), rel='stylesheet',
+                             href=relhref, type=base.CSS_MIME)
             stylizer = Stylizer(html, item.href, self.oeb, self.opts,
                                 self.profile)
-            self.mangle_elem(html.find(XHTML('body')), stylizer)
+            self.mangle_elem(html.find(base.tag('xhtml', 'body')), stylizer)
 
     def text_transform(self, transform, text):
         if transform == 'capitalize':
@@ -85,7 +86,8 @@ class CaseMangler(object):
                 else:
                     last.tail = text
             else:
-                child = elem.makeelement(XHTML('span'), attrib=attrib)
+                child = elem.makeelement(base.tag('xhtml', 'span'),
+                                         attrib=attrib)
                 child.text = text.upper()
                 if last is None:
                     elem.insert(0, child)
@@ -99,7 +101,7 @@ class CaseMangler(object):
 
     def mangle_elem(self, elem, stylizer):
         if not isinstance(elem.tag, (str, bytes)) or \
-           namespace(elem.tag) != XHTML_NS:
+           parse_utils.namespace(elem.tag) != const.XHTML_NS:
             return
         children = list(elem)
         style = stylizer.style(elem)

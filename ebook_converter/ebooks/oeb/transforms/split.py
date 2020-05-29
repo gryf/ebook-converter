@@ -10,10 +10,11 @@ import urllib.parse
 from lxml.etree import XPath as _XPath
 from lxml import etree
 
+from ebook_converter import constants as const
 from ebook_converter import as_unicode, force_unicode
 from ebook_converter.ebooks.epub import rules
-from ebook_converter.ebooks.oeb.base import (OEB_STYLES, XPNSMAP as NAMESPACES,
-        rewrite_links, XHTML, urlnormalize)
+from ebook_converter.ebooks.oeb.base import \
+        OEB_STYLES, rewrite_links, urlnormalize
 from ebook_converter.ebooks.oeb.polish.split import do_split
 from ebook_converter.polyglot.urllib import unquote
 from ebook_converter.css_selectors import Select, SelectorError
@@ -22,7 +23,7 @@ from ebook_converter.css_selectors import Select, SelectorError
 __license__ = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
 __docformat__ = 'restructuredtext en'
-XPath = functools.partial(_XPath, namespaces=NAMESPACES)
+XPath = functools.partial(_XPath, namespaces=const.XPNSMAP)
 
 SPLIT_POINT_ATTR = 'csp'
 
@@ -104,7 +105,7 @@ class Split(object):
         select = Select(item.data)
         if not self.page_break_selectors:
             return [], []
-        body = item.data.xpath('//h:body', namespaces=NAMESPACES)
+        body = item.data.xpath('//h:body', namespaces=const.XPNSMAP)
         if not body:
             return [], []
         descendants = frozenset(body[0].iterdescendants('*'))
@@ -268,13 +269,13 @@ class FlowSplitter(object):
                     if body is not None:
                         existing_ids = frozenset(body.xpath('//*/@id'))
                         for x in ids - existing_ids:
-                            body.insert(0, body.makeelement(XHTML('div'), id=x, style='height:0pt'))
+                            body.insert(0, body.makeelement(const.XHTML_div, id=x, style='height:0pt'))
                 ids = set()
                 trees.append(tree)
         self.trees = trees
 
     def get_body(self, root):
-        body = root.xpath('//h:body', namespaces=NAMESPACES)
+        body = root.xpath('//h:body', namespaces=const.XPNSMAP)
         if not body:
             return None
         return body[0]
@@ -296,7 +297,7 @@ class FlowSplitter(object):
                 etree.tostring(body, method='text', encoding='unicode'))
         if len(txt) > 1:
             return False
-        for img in root.xpath('//h:img', namespaces=NAMESPACES):
+        for img in root.xpath('//h:img', namespaces=const.XPNSMAP):
             if img.get('style', '') != 'display:none':
                 return False
         if root.xpath('//*[local-name() = "svg"]'):
@@ -401,7 +402,7 @@ class FlowSplitter(object):
                      '//h:br',
                      '//h:li',
                      ):
-            elems = root.xpath(path, namespaces=NAMESPACES)
+            elems = root.xpath(path, namespaces=const.XPNSMAP)
             elem = pick_elem(elems)
             if elem is not None:
                 try:
@@ -436,7 +437,7 @@ class FlowSplitter(object):
         spine_pos = self.item.spine_position
 
         for current, tree in zip(*map(reversed, (self.files, self.trees))):
-            for a in tree.getroot().xpath('//h:a[@href]', namespaces=NAMESPACES):
+            for a in tree.getroot().xpath('//h:a[@href]', namespaces=const.XPNSMAP):
                 href = a.get('href').strip()
                 if href.startswith('#'):
                     anchor = href[1:]

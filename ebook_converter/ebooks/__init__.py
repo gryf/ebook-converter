@@ -1,12 +1,14 @@
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-
-'''
+"""
 Code for the conversion of ebook formats and the reading of metadata
 from various formats.
-'''
+"""
+import numbers
+import os
+import re
+import sys
 
-import os, re, numbers, sys
+from lxml import etree
+
 from ebook_converter import prints
 from ebook_converter.ebooks.chardet import xml_to_unicode
 
@@ -30,12 +32,15 @@ class ParserError(ValueError):
     pass
 
 
-BOOK_EXTENSIONS = ['lrf', 'rar', 'zip', 'rtf', 'lit', 'txt', 'txtz', 'text', 'htm', 'xhtm',
-                   'html', 'htmlz', 'xhtml', 'pdf', 'pdb', 'updb', 'pdr', 'prc', 'mobi', 'azw', 'doc',
-                   'epub', 'fb2', 'fbz', 'djv', 'djvu', 'lrx', 'cbr', 'cbz', 'cbc', 'oebzip',
-                   'rb', 'imp', 'odt', 'chm', 'tpz', 'azw1', 'pml', 'pmlz', 'mbp', 'tan', 'snb',
-                   'xps', 'oxps', 'azw4', 'book', 'zbf', 'pobi', 'docx', 'docm', 'md',
-                   'textile', 'markdown', 'ibook', 'ibooks', 'iba', 'azw3', 'ps', 'kepub', 'kfx', 'kpf']
+BOOK_EXTENSIONS = ['lrf', 'rar', 'zip', 'rtf', 'lit', 'txt', 'txtz', 'text',
+                   'htm', 'xhtm', 'html', 'htmlz', 'xhtml', 'pdf', 'pdb',
+                   'updb', 'pdr', 'prc', 'mobi', 'azw', 'doc', 'epub', 'fb2',
+                   'fbz', 'djv', 'djvu', 'lrx', 'cbr', 'cbz', 'cbc', 'oebzip',
+                   'rb', 'imp', 'odt', 'chm', 'tpz', 'azw1', 'pml', 'pmlz',
+                   'mbp', 'tan', 'snb', 'xps', 'oxps', 'azw4', 'book', 'zbf',
+                   'pobi', 'docx', 'docm', 'md', 'textile', 'markdown',
+                   'ibook', 'ibooks', 'iba', 'azw3', 'ps', 'kepub', 'kfx',
+                   'kpf']
 
 
 def return_raster_image(path):
@@ -49,8 +54,7 @@ def return_raster_image(path):
 
 def extract_cover_from_embedded_svg(html, base, log):
     from ebook_converter.ebooks.oeb.base import XPath, SVG, XLINK
-    from ebook_converter.utils.xml_parse import safe_xml_fromstring
-    root = safe_xml_fromstring(html)
+    root = etree.fromstring(html)
 
     svg = XPath('//svg:svg')(root)
     if len(svg) == 1 and len(svg[0]) == 1 and svg[0][0].tag == SVG('image'):
@@ -65,10 +69,10 @@ def extract_calibre_cover(raw, base, log):
     from ebook_converter.ebooks.BeautifulSoup import BeautifulSoup
     soup = BeautifulSoup(raw)
     matches = soup.find(name=['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span',
-        'font', 'br'])
+                              'font', 'br'])
     images = soup.findAll('img', src=True)
-    if matches is None and len(images) == 1 and \
-            images[0].get('alt', '').lower()=='cover':
+    if (matches is None and len(images) == 1 and
+            images[0].get('alt', '').lower() == 'cover'):
         img = images[0]
         img = os.path.join(base, *img['src'].split('/'))
         q = return_raster_image(img)
@@ -97,13 +101,14 @@ def render_html_svg_workaround(path_to_html, log, width=590, height=750):
     data = None
     if SVG_NS in raw:
         try:
-            data = extract_cover_from_embedded_svg(raw,
-                   os.path.dirname(path_to_html), log)
+            data = extract_cover_from_embedded_svg(
+                raw, os.path.dirname(path_to_html), log)
         except Exception:
             pass
     if data is None:
         try:
-            data = extract_calibre_cover(raw, os.path.dirname(path_to_html), log)
+            data = extract_calibre_cover(raw, os.path.dirname(path_to_html),
+                                         log)
         except Exception:
             pass
 
@@ -118,7 +123,8 @@ def render_html_data(path_to_html, width, height):
     result = {}
 
     def report_error(text=''):
-        prints('Failed to render', path_to_html, 'with errors:', file=sys.stderr)
+        prints('Failed to render', path_to_html, 'with errors:',
+               file=sys.stderr)
         if text:
             prints(text, file=sys.stderr)
         if result and result['stdout_stderr']:
@@ -127,7 +133,8 @@ def render_html_data(path_to_html, width, height):
 
     with TemporaryDirectory('-render-html') as tdir:
         try:
-            result = fork_job('ebook_converter.ebooks.render_html', 'main', args=(path_to_html, tdir, 'jpeg'))
+            result = fork_job('ebook_converter.ebooks.render_html', 'main',
+                              args=(path_to_html, tdir, 'jpeg'))
         except WorkerError as e:
             report_error(e.orig_tb)
         else:
@@ -156,17 +163,20 @@ def normalize(x):
 
 
 def calibre_cover(title, author_string, series_string=None,
-        output_format='jpg', title_size=46, author_size=36, logo_path=None):
+                  output_format='jpg', title_size=46, author_size=36,
+                  logo_path=None):
     title = normalize(title)
     author_string = normalize(author_string)
     series_string = normalize(series_string)
     from ebook_converter.ebooks.covers import calibre_cover2
     from ebook_converter.utils.img import image_to_data
-    ans = calibre_cover2(title, author_string or '', series_string or '', logo_path=logo_path, as_qimage=True)
+    ans = calibre_cover2(title, author_string or '', series_string or '',
+                         logo_path=logo_path, as_qimage=True)
     return image_to_data(ans, fmt=output_format)
 
 
-UNIT_RE = re.compile(r'^(-*[0-9]*[.]?[0-9]*)\s*(%|em|ex|en|px|mm|cm|in|pt|pc|rem|q)$')
+UNIT_RE = re.compile(r'^(-*[0-9]*[.]?[0-9]*)\s*(%|em|ex|en|px|mm|cm|in|pt|pc'
+                     r'|rem|q)$')
 
 
 def unit_convert(value, base, font, dpi, body_font_size=12):
@@ -175,7 +185,7 @@ def unit_convert(value, base, font, dpi, body_font_size=12):
         return value
     try:
         return float(value) * 72.0 / dpi
-    except:
+    except Exception:
         pass
     result = value
     m = UNIT_RE.match(value)
@@ -227,7 +237,8 @@ def generate_masthead(title, output_path=None, width=600, height=60):
     recs = load_defaults('mobi_output')
     masthead_font_family = recs.get('masthead_font', None)
     from ebook_converter.ebooks.covers import generate_masthead
-    return generate_masthead(title, output_path=output_path, width=width, height=height, font_family=masthead_font_family)
+    return generate_masthead(title, output_path=output_path, width=width,
+                             height=height, font_family=masthead_font_family)
 
 
 def escape_xpath_attr(value):

@@ -1,14 +1,19 @@
-import os, re, posixpath
-from itertools import cycle
+import hashlib
+import itertools
+import os
+import re
+import traceback
+import uuid
 
-from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from lxml import etree
+
+from ebook_converter.ebooks.metadata import opf2 as opf_meta
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.customize.conversion import OptionRecommendation
 
 
-__license__ = 'GPL 3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-ADOBE_OBFUSCATION =  'http://ns.adobe.com/pdf/enc#RC'
+ADOBE_OBFUSCATION = 'http://ns.adobe.com/pdf/enc#RC'
 IDPF_OBFUSCATION = 'http://www.idpf.org/2008/embedding'
 
 
@@ -16,8 +21,8 @@ def decrypt_font_data(key, data, algorithm):
     is_adobe = algorithm == ADOBE_OBFUSCATION
     crypt_len = 1024 if is_adobe else 1040
     crypt = bytearray(data[:crypt_len])
-    key = cycle(iter(bytearray(key)))
-    decrypt = bytes(bytearray(x^next(key) for x in crypt))
+    key = itertools.cycle(iter(bytearray(key)))
+    decrypt = bytes(bytearray(x ^ next(key) for x in crypt))
     return decrypt + data[crypt_len:]
 
 
@@ -29,18 +34,16 @@ def decrypt_font(key, path, algorithm):
 
 class EPUBInput(InputFormatPlugin):
 
-    name        = 'EPUB Input'
-    author      = 'Kovid Goyal'
+    name = 'EPUB Input'
+    author = 'Kovid Goyal'
     description = 'Convert EPUB files (.epub) to HTML'
-    file_types  = {'epub'}
+    file_types = {'epub'}
     output_encoding = None
     commit_name = 'epub_input'
 
     recommendations = {('page_breaks_before', '/', OptionRecommendation.MED)}
 
     def process_encryption(self, encfile, opf, log):
-        from lxml import etree
-        import uuid, hashlib
         idpf_key = opf.raw_unique_identifier
         if idpf_key:
             idpf_key = re.sub('[\u0020\u0009\u000d\u000a]', '', idpf_key)
@@ -56,27 +59,28 @@ class EPUBInput(InputFormatPlugin):
                 try:
                     key = item.text.rpartition(':')[-1]
                     key = uuid.UUID(key).bytes
-                except:
-                    import traceback
+                except Exception:
                     traceback.print_exc()
                     key = None
 
         try:
             root = etree.parse(encfile)
-            for em in root.xpath('descendant::*[contains(name(), "EncryptionMethod")]'):
+            for em in root.xpath('descendant::*[contains(name(), '
+                                 '"EncryptionMethod")]'):
                 algorithm = em.get('Algorithm', '')
                 if algorithm not in {ADOBE_OBFUSCATION, IDPF_OBFUSCATION}:
                     return False
-                cr = em.getparent().xpath('descendant::*[contains(name(), "CipherReference")]')[0]
+                cr = em.getparent().xpath('descendant::*[contains(name(), '
+                                          '"CipherReference")]')[0]
                 uri = cr.get('URI')
-                path = os.path.abspath(os.path.join(os.path.dirname(encfile), '..', *uri.split('/')))
+                path = os.path.abspath(os.path.join(os.path.dirname(encfile),
+                                                    '..', *uri.split('/')))
                 tkey = (key if algorithm == ADOBE_OBFUSCATION else idpf_key)
                 if (tkey and os.path.exists(path)):
                     self._encrypted_font_uris.append(uri)
                     decrypt_font(tkey, path, algorithm)
             return True
-        except:
-            import traceback
+        except Exception:
             traceback.print_exc()
         return False
 
@@ -97,8 +101,11 @@ class EPUBInput(InputFormatPlugin):
             return t
 
     def rationalize_cover3(self, opf, log):
-        ''' If there is a reference to the cover/titlepage via manifest properties, convert to
-        entries in the <guide> so that the rest of the pipeline picks it up. '''
+        """
+        If there is a reference to the cover/titlepage via manifest
+        properties, convert to entries in the <guide> so that the rest of the
+        pipeline picks it up.
+        """
         from ebook_converter.ebooks.metadata.opf3 import items_with_property
         removed = guide_titlepage_href = guide_titlepage_id = None
 
@@ -128,7 +135,8 @@ class EPUBInput(InputFormatPlugin):
                 titlepage_id, titlepage_href = tid, href.partition('#')[0]
                 break
         if titlepage_href is None:
-            titlepage_href, titlepage_id = guide_titlepage_href, guide_titlepage_id
+            titlepage_href = guide_titlepage_href
+            titlepage_id = guide_titlepage_id
         if titlepage_href is not None:
             self.set_guide_type(opf, 'titlepage', titlepage_href, 'Title Page')
             spine = list(opf.iterspine())
@@ -148,7 +156,6 @@ class EPUBInput(InputFormatPlugin):
         means, at most one entry with type="cover" that points to a raster
         cover and at most one entry with type="titlepage" that points to an
         HTML titlepage. '''
-        from ebook_converter.ebooks.oeb.base import OPF
         removed = None
         from lxml import etree
         guide_cover, guide_elem = None, None
@@ -160,12 +167,14 @@ class EPUBInput(InputFormatPlugin):
             raster_cover = opf.raster_cover
             if raster_cover:
                 if guide_elem is None:
-                    g = opf.root.makeelement(OPF('guide'))
+                    g = opf.root.makeelement(base.tag('opf', 'guide'))
                     opf.root.append(g)
                 else:
                     g = guide_elem.getparent()
                 guide_cover = raster_cover
-                guide_elem = g.makeelement(OPF('reference'), attrib={'href':raster_cover, 'type':'cover'})
+                guide_elem = g.makeelement(base.tag('opf', 'reference'),
+                                           attrib={'href': raster_cover,
+                                                   'type': 'cover'})
                 g.append(guide_elem)
             return
         spine = list(opf.iterspine())
@@ -186,7 +195,8 @@ class EPUBInput(InputFormatPlugin):
         # specially
         if not self.for_viewer:
             if len(spine) == 1:
-                log.warn('There is only a single spine item and it is marked as the cover. Removing cover marking.')
+                log.warn('There is only a single spine item and it is marked '
+                         'as the cover. Removing cover marking.')
                 for guide_elem in tuple(opf.iterguide()):
                     if guide_elem.get('type', '').lower() == 'cover':
                         guide_elem.getparent().remove(guide_elem)
@@ -215,8 +225,9 @@ class EPUBInput(InputFormatPlugin):
             # Render the titlepage to create a raster cover
             from ebook_converter.ebooks import render_html_svg_workaround
             guide_elem.set('href', 'calibre_raster_cover.jpg')
-            t = etree.SubElement(
-                elem[0].getparent(), OPF('item'), href=guide_elem.get('href'), id='calibre_raster_cover')
+            t = etree.SubElement(elem[0].getparent(), base.tag('opf', 'item'),
+                                 href=guide_elem.get('href'),
+                                 id='calibre_raster_cover')
             t.set('media-type', 'image/jpeg')
             if os.path.exists(guide_cover):
                 renderer = render_html_svg_workaround(guide_cover, log)
@@ -229,17 +240,16 @@ class EPUBInput(InputFormatPlugin):
         return removed
 
     def find_opf(self):
-        from ebook_converter.utils.xml_parse import safe_xml_fromstring
-
         def attr(n, attr):
             for k, v in n.attrib.items():
                 if k.endswith(attr):
                     return v
         try:
             with open('META-INF/container.xml', 'rb') as f:
-                root = safe_xml_fromstring(f.read())
+                root = etree.fromstring(f.read())
                 for r in root.xpath('//*[local-name()="rootfile"]'):
-                    if attr(r, 'media-type') != "application/oebps-package+xml":
+                    if (attr(r, 'media-type') !=
+                            "application/oebps-package+xml"):
                         continue
                     path = attr(r, 'full-path')
                     if not path:
@@ -248,20 +258,18 @@ class EPUBInput(InputFormatPlugin):
                     if os.path.exists(path):
                         return path
         except Exception:
-            import traceback
             traceback.print_exc()
 
     def convert(self, stream, options, file_ext, log, accelerators):
         from ebook_converter.utils.zipfile import ZipFile
         from ebook_converter import walk
         from ebook_converter.ebooks import DRMError
-        from ebook_converter.ebooks.metadata.opf2 import OPF
         try:
             zf = ZipFile(stream)
             zf.extractall(os.getcwd())
-        except:
+        except Exception:
             log.exception('EPUB appears to be invalid ZIP file, trying a'
-                    ' more forgiving ZIP parser')
+                          ' more forgiving ZIP parser')
             from ebook_converter.utils.localunzip import extractall
             stream.seek(0)
             extractall(stream)
@@ -276,11 +284,12 @@ class EPUBInput(InputFormatPlugin):
         path = getattr(stream, 'name', 'stream')
 
         if opf is None:
-            raise ValueError('%s is not a valid EPUB file (could not find opf)'%path)
+            raise ValueError('%s is not a valid EPUB file (could not find '
+                             'opf)' % path)
 
         opf = os.path.relpath(opf, os.getcwd())
-        parts = os.path.split(opf)
-        opf = OPF(opf, os.path.dirname(os.path.abspath(opf)))
+        # parts = os.path.split(opf)
+        opf = opf_meta.OPF(opf, os.path.dirname(os.path.abspath(opf)))
 
         self._encrypted_font_uris = []
         if os.path.exists(encfile):
@@ -288,18 +297,23 @@ class EPUBInput(InputFormatPlugin):
                 raise DRMError(os.path.basename(path))
         self.encrypted_fonts = self._encrypted_font_uris
 
-        if len(parts) > 1 and parts[0]:
-            delta = '/'.join(parts[:-1])+'/'
+        # XXX(gryf): this code would fail pretty ugly, thus, this part was
+        # never used.
+        # if len(parts) > 1 and parts[0]:
+        #    delta = '/'.join(parts[:-1])+'/'
 
-            def normpath(x):
-                return posixpath.normpath(delta + elem.get('href'))
+        #    def normpath(x):
+        #        return posixpath.normpath(delta + elem.get('href'))
 
-            for elem in opf.itermanifest():
-                elem.set('href', normpath(elem.get('href')))
-            for elem in opf.iterguide():
-                elem.set('href', normpath(elem.get('href')))
+        #    for elem in opf.itermanifest():
+        #        elem.set('href', normpath(elem.get('href')))
+        #    for elem in opf.iterguide():
+        #        elem.set('href', normpath(elem.get('href')))
 
-        f = self.rationalize_cover3 if opf.package_version >= 3.0 else self.rationalize_cover2
+        if opf.package_version >= 3.0:
+            f = self.rationalize_cover3
+        else:
+            f = self.rationalize_cover2
         self.removed_cover = f(opf, log)
         if self.removed_cover:
             self.removed_items_to_ignore = (self.removed_cover,)
@@ -352,15 +366,18 @@ class EPUBInput(InputFormatPlugin):
         from lxml import etree
         from ebook_converter.ebooks.chardet import xml_to_unicode
         from ebook_converter.ebooks.oeb.polish.parsing import parse
-        from ebook_converter.ebooks.oeb.base import EPUB_NS, XHTML, NCX_MIME, NCX, urlnormalize, urlunquote, serialize
+        from ebook_converter.ebooks.oeb.base import EPUB_NS, XHTML, NCX_MIME, \
+            NCX, urlnormalize, urlunquote, serialize
         from ebook_converter.ebooks.oeb.polish.toc import first_child
-        from ebook_converter.utils.xml_parse import safe_xml_fromstring
         from tempfile import NamedTemporaryFile
         with open(nav_path, 'rb') as f:
             raw = f.read()
-        raw = xml_to_unicode(raw, strip_encoding_pats=True, assume_utf8=True)[0]
+        raw = xml_to_unicode(raw, strip_encoding_pats=True,
+                             assume_utf8=True)[0]
         root = parse(raw, log=log)
-        ncx = safe_xml_fromstring('<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="eng"><navMap/></ncx>')
+        ncx = etree.fromstring('<ncx xmlns="http://www.daisy.org/z3986/2005/'
+                               'ncx/" version="2005-1" xml:lang="eng">'
+                               '<navMap/></ncx>')
         navmap = ncx[0]
         et = '{%s}type' % EPUB_NS
         bn = os.path.basename(nav_path)
@@ -368,8 +385,8 @@ class EPUBInput(InputFormatPlugin):
         def add_from_li(li, parent):
             href = text = None
             for x in li.iterchildren(XHTML('a'), XHTML('span')):
-                text = etree.tostring(
-                    x, method='text', encoding='unicode', with_tail=False).strip() or ' '.join(
+                text = etree.tostring(x, method='text', encoding='unicode',
+                                      with_tail=False).strip() or ' '.join(
                             x.xpath('descendant-or-self::*/@title')).strip()
                 href = x.get('href')
                 if href:
@@ -382,7 +399,7 @@ class EPUBInput(InputFormatPlugin):
             np[0].append(np.makeelement(NCX('text')))
             np[0][0].text = text
             if href:
-                np.append(np.makeelement(NCX('content'), attrib={'src':href}))
+                np.append(np.makeelement(NCX('content'), attrib={'src': href}))
             return np
 
         def process_nav_node(node, toc_parent):
@@ -401,20 +418,25 @@ class EPUBInput(InputFormatPlugin):
         else:
             return
 
-        with NamedTemporaryFile(suffix='.ncx', dir=os.path.dirname(nav_path), delete=False) as f:
+        with NamedTemporaryFile(suffix='.ncx', dir=os.path.dirname(nav_path),
+                                delete=False) as f:
             f.write(etree.tostring(ncx, encoding='utf-8'))
         ncx_href = os.path.relpath(f.name, os.getcwd()).replace(os.sep, '/')
-        ncx_id = opf.create_manifest_item(ncx_href, NCX_MIME, append=True).get('id')
+        ncx_id = opf.create_manifest_item(ncx_href, NCX_MIME,
+                                          append=True).get('id')
         for spine in opf.root.xpath('//*[local-name()="spine"]'):
             spine.set('toc', ncx_id)
-        opts.epub3_nav_href = urlnormalize(os.path.relpath(nav_path).replace(os.sep, '/'))
+        url = os.path.relpath(nav_path).replace(os.sep, '/')
+        opts.epub3_nav_href = urlnormalize(url)
         opts.epub3_nav_parsed = root
         if getattr(self, 'removed_cover', None):
             changed = False
             base_path = os.path.dirname(nav_path)
             for elem in root.xpath('//*[@href]'):
                 href, frag = elem.get('href').partition('#')[::2]
-                link_path = os.path.relpath(os.path.join(base_path, urlunquote(href)), base_path)
+                link_path = os.path.relpath(os.path.join(base_path,
+                                                         urlunquote(href)),
+                                            base_path)
                 abs_href = urlnormalize(link_path)
                 if abs_href == self.removed_cover:
                     changed = True

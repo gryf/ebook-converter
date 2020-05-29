@@ -1,7 +1,8 @@
 import numbers
 from collections import Counter
 
-from ebook_converter.ebooks.oeb.base import barename, XPath
+from ebook_converter.ebooks.oeb import parse_utils
+from ebook_converter.ebooks.oeb.base import XPath
 
 
 __license__ = 'GPL v3'
@@ -142,7 +143,7 @@ class RemoveFakeMargins(object):
 
             for p in paras(body):
                 level = level_of(p, body)
-                level = '%s_%d'%(barename(p.tag), level)
+                level = '%s_%d' % (parse_utils.barename(p.tag), level)
                 if level not in self.levels:
                     self.levels[level] = []
                 self.levels[level].append(p)

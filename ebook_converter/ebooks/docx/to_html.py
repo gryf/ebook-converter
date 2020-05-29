@@ -1,12 +1,13 @@
 import sys, os, re, math, errno, uuid, numbers
 from collections import OrderedDict, defaultdict
 
+from lxml import etree
 from lxml import html
 from lxml.html.builder import (
     HTML, HEAD, TITLE, BODY, LINK, META, P, SPAN, BR, DIV, A, DT, DL, DD, H1)
 
 from ebook_converter import guess_type
-from ebook_converter.ebooks.docx.container import DOCX, fromstring
+from ebook_converter.ebooks.docx.container import DOCX
 from ebook_converter.ebooks.docx.names import XML, generate_anchor
 from ebook_converter.ebooks.docx.styles import Styles, inherit, PageProperties
 from ebook_converter.ebooks.docx.numbering import Numbering
@@ -311,7 +312,7 @@ class Convert(object):
                     raise
                 self.log.warn('Settings %s file missing' % sename)
             else:
-                self.settings(fromstring(seraw))
+                self.settings(etree.fromstring(seraw))
 
         if foname is not None:
             try:
@@ -327,7 +328,7 @@ class Convert(object):
                 self.log.warn('Endnotes %s do not exist' % enname)
             else:
                 enrel = self.docx.get_relationships(enname)
-        footnotes(fromstring(foraw) if foraw else None, forel, fromstring(enraw) if enraw else None, enrel)
+        footnotes(etree.fromstring(foraw) if foraw else None, forel, etree.fromstring(enraw) if enraw else None, enrel)
 
         if fname is not None:
             embed_relationships = self.docx.get_relationships(fname)[0]
@@ -336,7 +337,7 @@ class Convert(object):
             except KeyError:
                 self.log.warn('Fonts table %s does not exist' % fname)
             else:
-                fonts(fromstring(raw), embed_relationships, self.docx, self.dest_dir)
+                fonts(etree.fromstring(raw), embed_relationships, self.docx, self.dest_dir)
 
         if tname is not None:
             try:
@@ -344,7 +345,7 @@ class Convert(object):
             except KeyError:
                 self.log.warn('Styles %s do not exist' % sname)
             else:
-                self.theme(fromstring(raw))
+                self.theme(etree.fromstring(raw))
 
         styles_loaded = False
         if sname is not None:
@@ -353,7 +354,7 @@ class Convert(object):
             except KeyError:
                 self.log.warn('Styles %s do not exist' % sname)
             else:
-                self.styles(fromstring(raw), fonts, self.theme)
+                self.styles(etree.fromstring(raw), fonts, self.theme)
                 styles_loaded = True
         if not styles_loaded:
             self.styles(None, fonts, self.theme)
@@ -364,7 +365,7 @@ class Convert(object):
             except KeyError:
                 self.log.warn('Numbering styles %s do not exist' % nname)
             else:
-                numbering(fromstring(raw), self.styles, self.docx.get_relationships(nname)[0])
+                numbering(etree.fromstring(raw), self.styles, self.docx.get_relationships(nname)[0])
 
         self.styles.resolve_numbering(numbering)
 

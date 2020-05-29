@@ -14,7 +14,9 @@ from itertools import count
 import urllib.parse
 
 from css_parser import getUrls, replaceUrls
+from lxml import etree
 
+from ebook_converter import constants as const
 from ebook_converter import CurrentDir, walk
 from ebook_converter.constants_old import iswindows
 from ebook_converter.customize.ui import plugin_for_input_format, plugin_for_output_format
@@ -34,7 +36,7 @@ from ebook_converter.ebooks.mobi import MobiError
 from ebook_converter.ebooks.mobi.reader.headers import MetadataHeader
 from ebook_converter.ebooks.mobi.tweak import set_cover
 from ebook_converter.ebooks.oeb.base import (
-    DC11_NS, OEB_DOCS, OEB_STYLES, OPF, OPF2_NS, Manifest, itercsslinks, iterlinks,
+    OEB_DOCS, OEB_STYLES, Manifest, itercsslinks, iterlinks,
     rewrite_links, serialize, urlquote, urlunquote
 )
 from ebook_converter.ebooks.oeb.parse_utils import NotHTML, parse_html
@@ -47,13 +49,11 @@ from ebook_converter.ptempfile import PersistentTemporaryDirectory, PersistentTe
 from ebook_converter.utils.filenames import hardlink_file, nlinks_file
 from ebook_converter.utils.ipc.simple_worker import WorkerError, fork_job
 from ebook_converter.utils.logging import default_log
-from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.zipfile import ZipFile
 
 exists, join, relpath = os.path.exists, os.path.join, os.path.relpath
 
 OEB_FONTS = {guess_type('a.ttf'), guess_type('b.otf'), guess_type('a.woff'), 'application/x-font-ttf', 'application/x-font-otf', 'application/font-sfnt'}
-OPF_NAMESPACES = {'opf':OPF2_NS, 'dc':DC11_NS}
 null = object()
 
 
@@ -195,7 +195,7 @@ class ContainerBase(object):  # {{{
         data, self.used_encoding = xml_to_unicode(
             data, strip_encoding_pats=True, assume_utf8=True, resolve_entities=True)
         data = unicodedata.normalize('NFC', data)
-        return safe_xml_fromstring(data)
+        return etree.fromstring(data)
 
     def parse_xhtml(self, data, fname='<string>', force_html5_parse=False):
         if self.tweak_mode:
@@ -324,7 +324,7 @@ class Container(ContainerBase):  # {{{
             item_id = 'id' + '%d'%c
         manifest = self.opf_xpath('//opf:manifest')[0]
         href = self.name_to_href(name, self.opf_name)
-        item = manifest.makeelement(OPF('item'),
+        item = manifest.makeelement(const.OPF_ITEM,
                                     id=item_id, href=href)
         item.set('media-type', self.mime_map[name])
         self.insert_into_xml(manifest, item)
@@ -380,7 +380,7 @@ class Container(ContainerBase):  # {{{
         if mt in OEB_DOCS:
             manifest = self.opf_xpath('//opf:manifest')[0]
             spine = self.opf_xpath('//opf:spine')[0]
-            si = manifest.makeelement(OPF('itemref'), idref=item_id)
+            si = manifest.makeelement(const.OPF_ITEMREF, idref=item_id)
             self.insert_into_xml(spine, si, index=spine_index)
         return name
 
@@ -533,7 +533,7 @@ class Container(ContainerBase):  # {{{
 
     def opf_xpath(self, expr):
         ' Convenience method to evaluate an XPath expression on the OPF file, has the opf: and dc: namespace prefixes pre-defined. '
-        return self.opf.xpath(expr, namespaces=OPF_NAMESPACES)
+        return self.opf.xpath(expr, namespaces=const.OPF_NAMESPACES)
 
     def has_name(self, name):
         ''' Return True iff a file with the same canonical name as that specified exists. Unlike :meth:`exists` this method is always case-sensitive. '''
@@ -813,7 +813,8 @@ class Container(ContainerBase):  # {{{
         spine = self.opf_xpath('//opf:spine')[0]
         spine.text = tail
         for name, linear in spine_items:
-            i = spine.makeelement('{%s}itemref' % OPF_NAMESPACES['opf'], nsmap={'opf':OPF_NAMESPACES['opf']})
+            i = spine.makeelement(const.OPF_ITEMREF,
+                                  nsmap={'opf': const.OPF2_NS})
             i.tail = tail
             i.set('idref', imap[name])
             spine.append(i)
@@ -944,7 +945,7 @@ class Container(ContainerBase):  # {{{
             item_id = id_prefix + '%d'%c
 
         manifest = self.opf_xpath('//opf:manifest')[0]
-        item = manifest.makeelement(OPF('item'),
+        item = manifest.makeelement(const.OPF_ITEM,
                                     id=item_id, href=href)
         item.set('media-type', media_type)
         self.insert_into_xml(manifest, item)
@@ -993,7 +994,7 @@ class Container(ContainerBase):  # {{{
             self.format_opf()
         data = serialize(data, self.mime_map[name], pretty_print=name in
                          self.pretty_print)
-        if name == self.opf_name and root.nsmap.get(None) == OPF2_NS:
+        if name == self.opf_name and root.nsmap.get(None) == const.OPF2_NS:
             # Needed as I can't get lxml to output opf:role and
             # not output <opf:metadata> as well
             data = re.sub(br'(<[/]{0,1})opf:', r'\1', data)
@@ -1172,7 +1173,7 @@ class EpubContainer(Container):
         container_path = join(self.root, 'META-INF', 'container.xml')
         if not exists(container_path):
             raise InvalidEpub('No META-INF/container.xml in epub')
-        container = safe_xml_fromstring(open(container_path, 'rb').read())
+        container = etree.fromstring(open(container_path, 'rb').read())
         opf_files = container.xpath((
             r'child::ocf:rootfiles/ocf:rootfile'
             '[@media-type="%s" and @full-path]'%guess_type('a.opf')

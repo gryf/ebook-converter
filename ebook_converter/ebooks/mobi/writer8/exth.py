@@ -2,6 +2,7 @@ import re
 from struct import pack
 from io import BytesIO
 
+from ebook_converter.ebooks.oeb import base
 from ebook_converter.constants_old import iswindows, isosx
 from ebook_converter.ebooks.mobi.utils import (utf8_text, to_base)
 from ebook_converter.utils.localization import lang_as_iso639_1
@@ -95,9 +96,8 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
 
     # Write UUID as ASIN
     uuid = None
-    from ebook_converter.ebooks.oeb.base import OPF
     for x in metadata['identifier']:
-        if (x.get(OPF('scheme'), None).lower() == 'uuid' or
+        if (x.get(base.tag('opf', 'scheme'), None).lower() == 'uuid' or
                 str(x).startswith('urn:uuid:')):
             uuid = str(x).split(':')[-1]
             break

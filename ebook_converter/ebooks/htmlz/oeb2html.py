@@ -9,8 +9,9 @@ from functools import partial
 from lxml import html
 
 from ebook_converter import prepare_string_for_xml
-from ebook_converter.ebooks.oeb.base import (
-    XHTML, XHTML_NS, SVG_NS, barename, namespace, OEB_IMAGES, XLINK, rewrite_links, urlnormalize)
+from ebook_converter import constants as const
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils.logging import default_log
 from ebook_converter.polyglot.builtins import as_bytes
@@ -61,9 +62,9 @@ class OEB2HTML(object):
         for item in oeb_book.spine:
             self.log.debug('Converting %s to HTML...' % item.href)
             self.rewrite_ids(item.data, item)
-            rewrite_links(item.data, partial(self.rewrite_link, page=item))
+            base.rewrite_links(item.data, partial(self.rewrite_link, page=item))
             stylizer = Stylizer(item.data, item.href, oeb_book, self.opts)
-            output += self.dump_text(item.data.find(XHTML('body')), stylizer, item)
+            output += self.dump_text(item.data.find(base.tag('xhtml', 'body')), stylizer, item)
             output.append('\n\n')
         output.append('</body></html>')
         return ''.join(output)
@@ -80,7 +81,7 @@ class OEB2HTML(object):
 
     def map_resources(self, oeb_book):
         for item in oeb_book.manifest:
-            if item.media_type in OEB_IMAGES:
+            if item.media_type in base.OEB_IMAGES:
                 if item.href not in self.images:
                     ext = os.path.splitext(item.href)[1]
                     fname = '%s%s' % (len(self.images), ext)
@@ -88,9 +89,9 @@ class OEB2HTML(object):
                     self.images[item.href] = fname
             if item in oeb_book.spine:
                 self.get_link_id(item.href)
-                root = item.data.find(XHTML('body'))
+                root = item.data.find(base.tag('xhtml', 'body'))
                 link_attrs = set(html.defs.link_attrs)
-                link_attrs.add(XLINK('href'))
+                link_attrs.add(base.tag('xlink', 'href'))
                 for el in root.iter():
                     attribs = el.attrib
                     try:
@@ -108,7 +109,7 @@ class OEB2HTML(object):
     def rewrite_link(self, url, page=None):
         if not page:
             return url
-        abs_url = page.abshref(urlnormalize(url))
+        abs_url = page.abshref(base.urlnormalize(url))
         if abs_url in self.images:
             return 'images/%s' % self.images[abs_url]
         if abs_url in self.links:
@@ -121,7 +122,7 @@ class OEB2HTML(object):
                 tag = el.tag
             except UnicodeDecodeError:
                 continue
-            if tag == XHTML('body'):
+            if tag == base.tag('xhtml', 'body'):
                 el.attrib['id'] = self.get_link_id(page.href)[1:]
                 continue
             if 'id' in el.attrib:
@@ -156,9 +157,9 @@ class OEB2HTMLNoCSSizer(OEB2HTML):
 
         # We can only processes tags. If there isn't a tag return any text.
         if not isinstance(elem.tag, (str, bytes)) \
-           or namespace(elem.tag) not in (XHTML_NS, SVG_NS):
+           or parse_utils.namespace(elem.tag) not in (const.XHTML_NS, const.SVG_NS):
             p = elem.getparent()
-            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) in (XHTML_NS, SVG_NS) \
+            if p is not None and isinstance(p.tag, (str, bytes)) and parse_utils.namespace(p.tag) in (const.XHTML_NS, const.SVG_NS) \
                     and elem.tail:
                 return [elem.tail]
             return ['']
@@ -167,7 +168,7 @@ class OEB2HTMLNoCSSizer(OEB2HTML):
         text = ['']
         style = stylizer.style(elem)
         tags = []
-        tag = barename(elem.tag)
+        tag = parse_utils.barename(elem.tag)
         attribs = elem.attrib
 
         if tag == 'body':
@@ -245,9 +246,9 @@ class OEB2HTMLInlineCSSizer(OEB2HTML):
 
         # We can only processes tags. If there isn't a tag return any text.
         if not isinstance(elem.tag, (str, bytes)) \
-           or namespace(elem.tag) not in (XHTML_NS, SVG_NS):
+           or parse_utils.namespace(elem.tag) not in (const.XHTML_NS, const.SVG_NS):
             p = elem.getparent()
-            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) in (XHTML_NS, SVG_NS) \
+            if p is not None and isinstance(p.tag, (str, bytes)) and parse_utils.namespace(p.tag) in (const.XHTML_NS, const.SVG_NS) \
                     and elem.tail:
                 return [elem.tail]
             return ['']
@@ -256,7 +257,7 @@ class OEB2HTMLInlineCSSizer(OEB2HTML):
         text = ['']
         style = stylizer.style(elem)
         tags = []
-        tag = barename(elem.tag)
+        tag = parse_utils.barename(elem.tag)
         attribs = elem.attrib
 
         style_a = '%s' % style
@@ -327,9 +328,9 @@ class OEB2HTMLClassCSSizer(OEB2HTML):
         for item in oeb_book.spine:
             self.log.debug('Converting %s to HTML...' % item.href)
             self.rewrite_ids(item.data, item)
-            rewrite_links(item.data, partial(self.rewrite_link, page=item))
+            base.rewrite_links(item.data, partial(self.rewrite_link, page=item))
             stylizer = Stylizer(item.data, item.href, oeb_book, self.opts)
-            output += self.dump_text(item.data.find(XHTML('body')), stylizer, item)
+            output += self.dump_text(item.data.find(base.tag('xhtml', 'body')), stylizer, item)
             output.append('\n\n')
         if self.opts.htmlz_class_style == 'external':
             css = u'<link href="style.css" rel="stylesheet" type="text/css" />'
@@ -348,9 +349,9 @@ class OEB2HTMLClassCSSizer(OEB2HTML):
 
         # We can only processes tags. If there isn't a tag return any text.
         if not isinstance(elem.tag, (str, bytes)) \
-           or namespace(elem.tag) not in (XHTML_NS, SVG_NS):
+           or parse_utils.namespace(elem.tag) not in (const.XHTML_NS, const.SVG_NS):
             p = elem.getparent()
-            if p is not None and isinstance(p.tag, (str, bytes)) and namespace(p.tag) in (XHTML_NS, SVG_NS) \
+            if p is not None and isinstance(p.tag, (str, bytes)) and parse_utils.namespace(p.tag) in (const.XHTML_NS, const.SVG_NS) \
                     and elem.tail:
                 return [elem.tail]
             return ['']
@@ -358,7 +359,7 @@ class OEB2HTMLClassCSSizer(OEB2HTML):
         # Setup our variables.
         text = ['']
         tags = []
-        tag = barename(elem.tag)
+        tag = parse_utils.barename(elem.tag)
         attribs = elem.attrib
 
         if tag == 'body':

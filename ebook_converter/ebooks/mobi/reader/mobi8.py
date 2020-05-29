@@ -8,6 +8,7 @@ import uuid
 
 from lxml import etree
 
+from ebook_converter import constants as const
 from ebook_converter.ebooks.mobi.reader.headers import NULL_INDEX
 from ebook_converter.ebooks.mobi.reader.index import read_index
 from ebook_converter.ebooks.mobi.reader.ncx import read_ncx, build_toc
@@ -17,7 +18,7 @@ from ebook_converter.ebooks.metadata.opf2 import Guide, OPFCreator
 from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.utils import read_font_record
 from ebook_converter.ebooks.oeb.parse_utils import parse_html
-from ebook_converter.ebooks.oeb.base import XPath, XHTML, xml2text
+from ebook_converter.ebooks.oeb.base import XPath, xml2text
 from ebook_converter.polyglot.builtins import as_unicode
 
 
@@ -553,8 +554,8 @@ class Mobi8Reader(object):
         seen = set()
         links = []
         for elem in root.iterdescendants(etree.Element):
-            if reached and elem.tag == XHTML('a') and elem.get('href',
-                    False):
+            if reached and elem.tag == const.XHTML_A and elem.get('href',
+                                                                  False):
                 href = elem.get('href')
                 href, frag = urllib.parse.urldefrag(href)
                 href = base_href + '/' + href

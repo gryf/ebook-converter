@@ -1,9 +1,12 @@
-import os, sys, shutil
+import os
+import shutil
+import sys
 
 from lxml import etree
 
 from ebook_converter import walk, guess_type
-from ebook_converter.ebooks.metadata import string_to_authors, authors_to_sort_string
+from ebook_converter.ebooks.metadata import authors_to_sort_string
+from ebook_converter.ebooks.metadata import string_to_authors
 from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.ebooks.docx import InvalidDOCX
 from ebook_converter.ebooks.docx.names import DOCXNamespace
@@ -11,21 +14,11 @@ from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils.localization import canonicalize_lang
 from ebook_converter.utils.logging import default_log
 from ebook_converter.utils.zipfile import ZipFile
-from ebook_converter.utils.xml_parse import safe_xml_fromstring
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
-
-def fromstring(raw, parser=None):
-    return safe_xml_fromstring(raw)
 
 # Read metadata {{{
-
-
 def read_doc_props(raw, mi, XPath):
-    root = fromstring(raw)
+    root = etree.fromstring(raw)
     titles = XPath('//dc:title')(root)
     if titles:
         title = titles[0].text
@@ -53,29 +46,31 @@ def read_doc_props(raw, mi, XPath):
     desc = XPath('//dc:description')(root)
     if desc:
         raw = etree.tostring(desc[0], method='text', encoding='unicode')
-        raw = raw.replace('_x000d_', '')  # Word 2007 mangles newlines in the summary
+        # Word 2007 mangles newlines in the summary
+        raw = raw.replace('_x000d_', '')
         mi.comments = raw.strip()
 
     langs = []
     for lang in XPath('//dc:language')(root):
         if lang.text and lang.text.strip():
-            l = canonicalize_lang(lang.text)
-            if l:
-                langs.append(l)
+            canonic_lang = canonicalize_lang(lang.text)
+            if canonic_lang:
+                langs.append(canonic_lang)
     if langs:
         mi.languages = langs
 
 
 def read_app_props(raw, mi):
-    root = fromstring(raw)
+    root = etree.fromstring(raw)
     company = root.xpath('//*[local-name()="Company"]')
     if company and company[0].text and company[0].text.strip():
         mi.publisher = company[0].text.strip()
 
 
 def read_default_style_language(raw, mi, XPath):
-    root = fromstring(raw)
-    for lang in XPath('/w:styles/w:docDefaults/w:rPrDefault/w:rPr/w:lang/@w:val')(root):
+    root = etree.fromstring(raw)
+    for lang in XPath('/w:styles/w:docDefaults/w:rPrDefault/w:rPr/w:lang/'
+                      '@w:val')(root):
         lang = canonicalize_lang(lang)
         if lang:
             mi.languages = [lang]
@@ -87,7 +82,9 @@ class DOCX(object):
 
     def __init__(self, path_or_stream, log=None, extract=True):
         self.docx_is_transitional = True
-        stream = path_or_stream if hasattr(path_or_stream, 'read') else open(path_or_stream, 'rb')
+        stream = path_or_stream
+        if not hasattr(path_or_stream, 'read'):
+            stream = open(path_or_stream, 'rb')
         self.name = getattr(stream, 'name', None) or '<stream>'
         self.log = log or default_log
         if extract:
@@ -107,9 +104,9 @@ class DOCX(object):
         try:
             zf = ZipFile(stream)
             zf.extractall(self.tdir)
-        except:
+        except Exception:
             self.log.exception('DOCX appears to be invalid ZIP file, trying a'
-                    ' more forgiving ZIP parser')
+                               ' more forgiving ZIP parser')
             from ebook_converter.utils.localunzip import extractall
             stream.seek(0)
             extractall(stream, self.tdir)
@@ -133,13 +130,17 @@ class DOCX(object):
         try:
             raw = self.read('[Content_Types].xml')
         except KeyError:
-            raise InvalidDOCX('The file %s docx file has no [Content_Types].xml' % self.name)
-        root = fromstring(raw)
+            raise InvalidDOCX('The file %s docx file has no '
+                              '[Content_Types].xml' % self.name)
+        root = etree.fromstring(raw)
         self.content_types = {}
         self.default_content_types = {}
-        for item in root.xpath('//*[local-name()="Types"]/*[local-name()="Default" and @Extension and @ContentType]'):
-            self.default_content_types[item.get('Extension').lower()] = item.get('ContentType')
-        for item in root.xpath('//*[local-name()="Types"]/*[local-name()="Override" and @PartName and @ContentType]'):
+        for item in root.xpath('//*[local-name()="Types"]/*[local-name()='
+                               '"Default" and @Extension and @ContentType]'):
+            self.default_content_types[item.get('Extension').lower()] = \
+                    item.get('ContentType')
+        for item in root.xpath('//*[local-name()="Types"]/*[local-name()='
+                               '"Override" and @PartName and @ContentType]'):
             name = item.get('PartName').lstrip('/')
             self.content_types[name] = item.get('ContentType')
 
@@ -155,15 +156,19 @@ class DOCX(object):
         try:
             raw = self.read('_rels/.rels')
         except KeyError:
-            raise InvalidDOCX('The file %s docx file has no _rels/.rels' % self.name)
-        root = fromstring(raw)
+            raise InvalidDOCX('The file %s docx file has no _rels/.rels' %
+                              self.name)
+        root = etree.fromstring(raw)
         self.relationships = {}
         self.relationships_rmap = {}
-        for item in root.xpath('//*[local-name()="Relationships"]/*[local-name()="Relationship" and @Type and @Target]'):
+        for item in root.xpath('//*[local-name()="Relationships"]/*[local-name'
+                               '()="Relationship" and @Type and @Target]'):
             target = item.get('Target').lstrip('/')
             typ = item.get('Type')
             if target == 'word/document.xml':
-                self.docx_is_transitional = typ != 'http://purl.oclc.org/ooxml/officeDocument/relationships/officeDocument'
+                self.docx_is_transitional = (typ != 'http://purl.oclc.org/'
+                                             'ooxml/officeDocument/'
+                                             'relationships/officeDocument')
             self.relationships[typ] = target
             self.relationships_rmap[target] = typ
 
@@ -171,15 +176,17 @@ class DOCX(object):
     def document_name(self):
         name = self.relationships.get(self.namespace.names['DOCUMENT'], None)
         if name is None:
-            names = tuple(n for n in self.names if n == 'document.xml' or n.endswith('/document.xml'))
+            names = tuple(n for n in self.names if n == 'document.xml' or
+                          n.endswith('/document.xml'))
             if not names:
-                raise InvalidDOCX('The file %s docx file has no main document' % self.name)
+                raise InvalidDOCX('The file %s docx file has no main '
+                                  'document' % self.name)
             name = names[0]
         return name
 
     @property
     def document(self):
-        return fromstring(self.read(self.document_name))
+        return etree.fromstring(self.read(self.document_name))
 
     @property
     def document_relationships(self):
@@ -195,10 +202,13 @@ class DOCX(object):
         except KeyError:
             pass
         else:
-            root = fromstring(raw)
-            for item in root.xpath('//*[local-name()="Relationships"]/*[local-name()="Relationship" and @Type and @Target]'):
+            root = etree.fromstring(raw)
+            for item in root.xpath('//*[local-name()="Relationships"]/*'
+                                   '[local-name()="Relationship" and @Type '
+                                   'and @Target]'):
                 target = item.get('Target')
-                if item.get('TargetMode', None) != 'External' and not target.startswith('#'):
+                if (item.get('TargetMode', None) != 'External' and not
+                        target.startswith('#')):
                     target = '/'.join((base, target.lstrip('/')))
                 typ = item.get('Type')
                 Id = item.get('Id')
@@ -209,13 +219,15 @@ class DOCX(object):
     def get_document_properties_names(self):
         name = self.relationships.get(self.namespace.names['DOCPROPS'], None)
         if name is None:
-            names = tuple(n for n in self.names if n.lower() == 'docprops/core.xml')
+            names = tuple(n for n in self.names
+                          if n.lower() == 'docprops/core.xml')
             if names:
                 name = names[0]
         yield name
         name = self.relationships.get(self.namespace.names['APPPROPS'], None)
         if name is None:
-            names = tuple(n for n in self.names if n.lower() == 'docprops/app.xml')
+            names = tuple(n for n in self.names
+                          if n.lower() == 'docprops/app.xml')
             if names:
                 name = names[0]
         yield name
@@ -239,7 +251,8 @@ class DOCX(object):
             else:
                 read_default_style_language(raw, mi, self.namespace.XPath)
 
-        ap_name = self.relationships.get(self.namespace.names['APPPROPS'], None)
+        ap_name = self.relationships.get(self.namespace.names['APPPROPS'],
+                                         None)
         if ap_name:
             try:
                 raw = self.read(ap_name)

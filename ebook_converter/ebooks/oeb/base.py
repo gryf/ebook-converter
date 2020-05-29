@@ -1,97 +1,45 @@
 """
 Basic support for manipulating OEB 1.x/2.0 content and metadata.
 """
-import os, re, logging, sys, numbers
-from collections import defaultdict
-from itertools import count
-from operator import attrgetter
-import urllib.parse
+import collections
+import itertools
+import logging
+import numbers
+import operator
+import os
+import re
 import string
+import sys
+import urllib.parse
 
-from lxml import etree, html
+from lxml import etree
+from lxml import html
+
+from ebook_converter import constants as const
 from ebook_converter import force_unicode
 from ebook_converter.constants_old import filesystem_encoding, __version__
-from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor
 from ebook_converter import (isbytestring, as_unicode, get_types_map)
-from ebook_converter.ebooks.oeb.parse_utils import barename, XHTML_NS, namespace, XHTML, parse_html, NotHTML
+from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
 from ebook_converter.polyglot.urllib import unquote as urlunquote
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
-__docformat__ = 'restructuredtext en'
-
-XML_NS       = 'http://www.w3.org/XML/1998/namespace'
-OEB_DOC_NS   = 'http://openebook.org/namespaces/oeb-document/1.0/'
-OPF1_NS      = 'http://openebook.org/namespaces/oeb-package/1.0/'
-OPF2_NS      = 'http://www.idpf.org/2007/opf'
-OPF_NSES     = {OPF1_NS, OPF2_NS}
-DC09_NS      = 'http://purl.org/metadata/dublin_core'
-DC10_NS      = 'http://purl.org/dc/elements/1.0/'
-DC11_NS      = 'http://purl.org/dc/elements/1.1/'
-DC_NSES      = {DC09_NS, DC10_NS, DC11_NS}
-XSI_NS       = 'http://www.w3.org/2001/XMLSchema-instance'
-DCTERMS_NS   = 'http://purl.org/dc/terms/'
-NCX_NS       = 'http://www.daisy.org/z3986/2005/ncx/'
-SVG_NS       = 'http://www.w3.org/2000/svg'
-XLINK_NS     = 'http://www.w3.org/1999/xlink'
-CALIBRE_NS   = 'http://calibre.kovidgoyal.net/2009/metadata'
-RE_NS        = 'http://exslt.org/regular-expressions'
-MBP_NS       = 'http://www.mobipocket.com'
-EPUB_NS      = 'http://www.idpf.org/2007/ops'
-MATHML_NS    = 'http://www.w3.org/1998/Math/MathML'
-
-XPNSMAP      = {
-        'h': XHTML_NS, 'o1': OPF1_NS, 'o2': OPF2_NS, 'd09': DC09_NS,
-        'd10': DC10_NS, 'd11': DC11_NS, 'xsi': XSI_NS, 'dt': DCTERMS_NS,
-        'ncx': NCX_NS, 'svg': SVG_NS, 'xl': XLINK_NS, 're': RE_NS,
-        'mathml': MATHML_NS, 'mbp': MBP_NS, 'calibre': CALIBRE_NS,
-        'epub':EPUB_NS
-}
-
-OPF1_NSMAP   = {'dc': DC11_NS, 'oebpackage': OPF1_NS}
-OPF2_NSMAP   = {'opf': OPF2_NS, 'dc': DC11_NS, 'dcterms': DCTERMS_NS,
-                'xsi': XSI_NS, 'calibre': CALIBRE_NS}
-
-
-def XML(name):
-    return '{%s}%s' % (XML_NS, name)
-
-
-def OPF(name):
-    return '{%s}%s' % (OPF2_NS, name)
-
-
-def DC(name):
-    return '{%s}%s' % (DC11_NS, name)
-
-
-def XSI(name):
-    return '{%s}%s' % (XSI_NS, name)
-
-
-def DCTERMS(name):
-    return '{%s}%s' % (DCTERMS_NS, name)
-
-
-def NCX(name):
-    return '{%s}%s' % (NCX_NS, name)
-
-
-def SVG(name):
-    return '{%s}%s' % (SVG_NS, name)
-
-
-def XLINK(name):
-    return '{%s}%s' % (XLINK_NS, name)
-
-
-def CALIBRE(name):
-    return '{%s}%s' % (CALIBRE_NS, name)
+def tag(tag_ns, name):
+    tag_map = {'calibre': const.CALIBRE_NS,
+               'dc': const.DC11_NS,
+               'dcterms': const.DCTERMS_NS,
+               'epub': const.EPUB_NS,
+               'ncx': const.NCX_NS,
+               'opf': const.OPF2_NS,
+               'svg': const.SVG_NS,
+               'xhtml': const.XHTML_NS,
+               'xlink': const.XLINK_NS,
+               'xml': const.XML_NS,
+               'xsi': const.XSI_NS}
+    return '{%s}%s' % (tag_map[tag_ns], name)
 
 
 _css_url_re = re.compile(r'url\s*\([\'"]{0,1}(.*?)[\'"]{0,1}\)', re.I)
@@ -99,14 +47,18 @@ _css_import_re = re.compile(r'@import "(.*?)"')
 _archive_re = re.compile(r'[^ ]+')
 
 # Tags that should not be self closed in epub output
-self_closing_bad_tags = {'a', 'abbr', 'address', 'article', 'aside', 'audio', 'b',
-'bdo', 'blockquote', 'body', 'button', 'cite', 'code', 'dd', 'del', 'details',
-'dfn', 'div', 'dl', 'dt', 'em', 'fieldset', 'figcaption', 'figure', 'footer',
-'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'i', 'iframe', 'ins', 'kbd',
-'label', 'legend', 'li', 'map', 'mark', 'meter', 'nav', 'ol', 'output', 'p',
-'pre', 'progress', 'q', 'rp', 'rt', 'samp', 'section', 'select', 'small',
-'span', 'strong', 'sub', 'summary', 'sup', 'textarea', 'time', 'ul', 'var',
-'video', 'title', 'script', 'style'}
+self_closing_bad_tags = {'a', 'abbr', 'address', 'article', 'aside', 'audio',
+                         'b', 'bdo', 'blockquote', 'body', 'button', 'cite',
+                         'code', 'dd', 'del', 'details', 'dfn', 'div', 'dl',
+                         'dt', 'em', 'fieldset', 'figcaption', 'figure',
+                         'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                         'header', 'hgroup', 'i', 'iframe', 'ins', 'kbd',
+                         'label', 'legend', 'li', 'map', 'mark', 'meter',
+                         'nav', 'ol', 'output', 'p', 'pre', 'progress', 'q',
+                         'rp', 'rt', 'samp', 'section', 'select', 'small',
+                         'span', 'strong', 'sub', 'summary', 'sup',
+                         'textarea', 'time', 'ul', 'var', 'video', 'title',
+                         'script', 'style'}
 
 
 def css_text(x):
@@ -157,7 +109,7 @@ def itercsslinks(raw):
         yield match.group(1), match.start(1)
 
 
-_link_attrs = set(html.defs.link_attrs) | {XLINK('href'), 'poster'}
+_link_attrs = set(html.defs.link_attrs) | {tag('xlink', 'href'), 'poster'}
 
 
 def iterlinks(root, find_links_in_css=True):
@@ -170,7 +122,7 @@ def iterlinks(root, find_links_in_css=True):
 
     for el in root.iter('*'):
         try:
-            tag = barename(el.tag).lower()
+            tag = parse_utils.barename(el.tag).lower()
         except Exception:
             continue
         attribs = el.attrib
@@ -225,7 +177,7 @@ def make_links_absolute(root, base_url):
 def resolve_base_href(root):
     base_href = None
     basetags = root.xpath('//base[@href]|//h:base[@href]',
-            namespaces=XPNSMAP)
+                          namespaces=const.XPNSMAP)
     for b in basetags:
         base_href = b.get('href')
         b.drop_tree()
@@ -278,20 +230,20 @@ def rewrite_links(root, link_repl_func, resolve_base_href=False):
                 el.attrib[attrib] = new
 
     parser = CSSParser(raiseExceptions=False, log=_css_logger,
-            fetcher=lambda x:(None, None))
+                       fetcher=lambda x: (None, None))
     for el in root.iter(etree.Element):
         try:
             tag = el.tag
         except UnicodeDecodeError:
             continue
 
-        if tag == XHTML('style') and el.text and \
+        if tag == parse_utils.XHTML('style') and el.text and \
                 (_css_url_re.search(el.text) is not None or '@import' in
-                        el.text):
+                 el.text):
             stylesheet = parser.parseString(el.text, validate=False)
             replaceUrls(stylesheet, link_repl_func)
             repl = css_text(stylesheet)
-            el.text = '\n'+ clean_xml_chars(repl) + '\n'
+            el.text = '\n' + clean_xml_chars(repl) + '\n'
 
         text = el.get('style')
         if text and _css_url_re.search(text) is not None:
@@ -301,43 +253,41 @@ def rewrite_links(root, link_repl_func, resolve_base_href=False):
                 # Parsing errors are raised by css_parser
                 continue
             replaceUrls(stext, link_repl_func)
-            repl = css_text(stext).replace('\n', ' ').replace('\r',
-                    ' ')
+            repl = css_text(stext).replace('\n', ' ').replace('\r', ' ')
             el.set('style', repl)
 
 
 types_map = get_types_map()
-EPUB_MIME      = types_map['.epub']
-XHTML_MIME     = types_map['.xhtml']
-CSS_MIME       = types_map['.css']
-NCX_MIME       = types_map['.ncx']
-OPF_MIME       = types_map['.opf']
-PAGE_MAP_MIME  = 'application/oebps-page-map+xml'
-OEB_DOC_MIME   = 'text/x-oeb1-document'
-OEB_CSS_MIME   = 'text/x-oeb1-css'
-OPENTYPE_MIME  = types_map['.otf']
-GIF_MIME       = types_map['.gif']
-JPEG_MIME      = types_map['.jpeg']
-PNG_MIME       = types_map['.png']
-SVG_MIME       = types_map['.svg']
-BINARY_MIME    = 'application/octet-stream'
+EPUB_MIME = types_map['.epub']
+XHTML_MIME = types_map['.xhtml']
+CSS_MIME = types_map['.css']
+NCX_MIME = types_map['.ncx']
+OPF_MIME = types_map['.opf']
+PAGE_MAP_MIME = 'application/oebps-page-map+xml'
+OEB_DOC_MIME = 'text/x-oeb1-document'
+OEB_CSS_MIME = 'text/x-oeb1-css'
+OPENTYPE_MIME = types_map['.otf']
+GIF_MIME = types_map['.gif']
+JPEG_MIME = types_map['.jpeg']
+PNG_MIME = types_map['.png']
+SVG_MIME = types_map['.svg']
+BINARY_MIME = 'application/octet-stream'
 
-XHTML_CSS_NAMESPACE = '@namespace "%s";\n' % XHTML_NS
+XHTML_CSS_NAMESPACE = '@namespace "%s";\n' % const.XHTML_NS
 
-OEB_STYLES        = {CSS_MIME, OEB_CSS_MIME, 'text/x-oeb-css', 'xhtml/css'}
-OEB_DOCS          = {XHTML_MIME, 'text/html', OEB_DOC_MIME,
-                         'text/x-oeb-document'}
+OEB_STYLES = {CSS_MIME, OEB_CSS_MIME, 'text/x-oeb-css', 'xhtml/css'}
+OEB_DOCS = {XHTML_MIME, 'text/html', OEB_DOC_MIME, 'text/x-oeb-document'}
 OEB_RASTER_IMAGES = {GIF_MIME, JPEG_MIME, PNG_MIME}
-OEB_IMAGES        = {GIF_MIME, JPEG_MIME, PNG_MIME, SVG_MIME}
+OEB_IMAGES = {GIF_MIME, JPEG_MIME, PNG_MIME, SVG_MIME}
 
 MS_COVER_TYPE = 'other.ms-coverimage-standard'
 
-ENTITY_RE     = re.compile(r'&([a-zA-Z_:][a-zA-Z0-9.-_:]+);')
-COLLAPSE_RE   = re.compile(r'[ \t\r\n\v]+')
-QNAME_RE      = re.compile(r'^[{][^{}]+[}][^{}]+$')
+ENTITY_RE = re.compile(r'&([a-zA-Z_:][a-zA-Z0-9.-_:]+);')
+COLLAPSE_RE = re.compile(r'[ \t\r\n\v]+')
+QNAME_RE = re.compile(r'^[{][^{}]+[}][^{}]+$')
 PREFIXNAME_RE = re.compile(r'^[^:]+[:][^:]+')
-XMLDECL_RE    = re.compile(r'^\s*<[?]xml.*?[?]>')
-CSSURL_RE     = re.compile(r'''url[(](?P<q>["']?)(?P<url>[^)]+)(?P=q)[)]''')
+XMLDECL_RE = re.compile(r'^\s*<[?]xml.*?[?]>')
+CSSURL_RE = re.compile(r'''url[(](?P<q>["']?)(?P<url>[^)]+)(?P=q)[)]''')
 
 
 def element(parent, *args, **kwargs):
@@ -349,13 +299,13 @@ def element(parent, *args, **kwargs):
 def prefixname(name, nsrmap):
     if not isqname(name):
         return name
-    ns = namespace(name)
+    ns = parse_utils.namespace(name)
     if ns not in nsrmap:
         return name
     prefix = nsrmap[ns]
     if not prefix:
-        return barename(name)
-    return ':'.join((prefix, barename(name)))
+        return parse_utils.barename(name)
+    return ':'.join((prefix, parse_utils.barename(name)))
 
 
 def isprefixname(name):
@@ -376,11 +326,11 @@ def isqname(name):
 
 
 def XPath(expr):
-    return etree.XPath(expr, namespaces=XPNSMAP)
+    return etree.XPath(expr, namespaces=const.XPNSMAP)
 
 
 def xpath(elem, expr):
-    return elem.xpath(expr, namespaces=XPNSMAP)
+    return elem.xpath(expr, namespaces=const.XPNSMAP)
 
 
 def xml2str(root, pretty_print=False, strip_comments=False, with_tail=True):
@@ -390,7 +340,7 @@ def xml2str(root, pretty_print=False, strip_comments=False, with_tail=True):
             if x.text and '--' in x.text:
                 x.text = x.text.replace('--', '__')
     ans = etree.tostring(root, encoding='utf-8', xml_declaration=True,
-                          pretty_print=pretty_print, with_tail=with_tail)
+                         pretty_print=pretty_print, with_tail=with_tail)
 
     if strip_comments:
         ans = re.compile(br'<!--.*?-->', re.DOTALL).sub(b'', ans)
@@ -399,12 +349,14 @@ def xml2str(root, pretty_print=False, strip_comments=False, with_tail=True):
 
 
 def xml2text(elem, pretty_print=False, method='text'):
-    return etree.tostring(elem, method=method, encoding='unicode', with_tail=False, pretty_print=pretty_print)
+    return etree.tostring(elem, method=method, encoding='unicode',
+                          with_tail=False, pretty_print=pretty_print)
 
 
 def escape_cdata(root):
     pat = re.compile(r'[<>&]')
-    for elem in root.iterdescendants('{%s}style' % XHTML_NS, '{%s}script' % XHTML_NS):
+    for elem in root.iterdescendants('{%s}style' % const.XHTML_NS,
+                                     '{%s}script' % const.XHTML_NS):
         if elem.text and pat.search(elem.text) is not None:
             elem.text = etree.CDATA(elem.text.replace(']]>', r'\]\]\>'))
 
@@ -431,12 +383,12 @@ def serialize(data, media_type, pretty_print=False):
     return bytes(data)
 
 
-ASCII_CHARS   = frozenset(chr(x) for x in range(128))
+ASCII_CHARS = frozenset(chr(x) for x in range(128))
 UNIBYTE_CHARS = frozenset(x.encode('ascii') for x in ASCII_CHARS)
-USAFE         = ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                 'abcdefghijklmnopqrstuvwxyz'
-                 '0123456789' '_.-/~')
-URL_SAFE      = frozenset(USAFE)
+USAFE = ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+         'abcdefghijklmnopqrstuvwxyz'
+         '0123456789' '_.-/~')
+URL_SAFE = frozenset(USAFE)
 URL_SAFE_BYTES = frozenset(USAFE.encode('ascii'))
 URL_UNSAFE = [ASCII_CHARS - URL_SAFE, UNIBYTE_CHARS - URL_SAFE_BYTES]
 del USAFE
@@ -466,7 +418,8 @@ def urlnormalize(href):
     try:
         parts = urllib.parse.urlparse(href)
     except ValueError as e:
-        raise ValueError('Failed to parse the URL: %r with underlying error: %s' % (href, as_unicode(e)))
+        raise ValueError('Failed to parse the URL: %r with underlying error: '
+                         '%s' % (href, as_unicode(e)))
     if not parts.scheme or parts.scheme == 'file':
         path, frag = urllib.parse.urldefrag(href)
         parts = ('', '', path, '', '', frag)
@@ -503,8 +456,10 @@ class DummyHandler(logging.Handler):
     def emit(self, record):
         if self.log is not None:
             msg = self.format(record)
-            f = self.log.error if record.levelno >= logging.ERROR \
-                    else self.log.warn
+            if record.levelno >= logging.ERROR:
+                f = self.log.error
+            else:
+                self.log.warn
             f(msg)
 
 
@@ -630,18 +585,21 @@ class Metadata(object):
     metadata items.
     """
 
-    DC_TERMS      = {'contributor', 'coverage', 'creator', 'date',
-                         'description', 'format', 'identifier', 'language',
-                         'publisher', 'relation', 'rights', 'source',
-                         'subject', 'title', 'type'}
+    DC_TERMS = {'contributor', 'coverage', 'creator', 'date', 'description',
+                'format', 'identifier', 'language', 'publisher', 'relation',
+                'rights', 'source', 'subject', 'title', 'type'}
     CALIBRE_TERMS = {'series', 'series_index', 'rating', 'timestamp',
-                         'publication_type', 'title_sort'}
-    OPF_ATTRS     = {'role': OPF('role'), 'file-as': OPF('file-as'),
-                     'scheme': OPF('scheme'), 'event': OPF('event'),
-                     'type': XSI('type'), 'lang': XML('lang'), 'id': 'id'}
-    OPF1_NSMAP    = {'dc': DC11_NS, 'oebpackage': OPF1_NS}
-    OPF2_NSMAP    = {'opf': OPF2_NS, 'dc': DC11_NS, 'dcterms': DCTERMS_NS,
-                     'xsi': XSI_NS, 'calibre': CALIBRE_NS}
+                     'publication_type', 'title_sort'}
+    OPF_ATTRS = {'role': tag('opf', 'role'), 'file-as': tag('opf', 'file-as'),
+                 'scheme': tag('opf', 'scheme'), 'event': tag('opf', 'event'),
+                 'type': tag('xsi', 'type'), 'lang': tag('xml', 'lang'),
+                 'id': 'id'}
+    OPF1_NSMAP = {'dc': const.DC11_NS, 'oebpackage': const.OPF1_NS}
+    OPF2_NSMAP = {'calibre': const.CALIBRE_NS,
+                  'dc': const.DC11_NS,
+                  'dcterms': const.DCTERMS_NS,
+                  'opf': const.OPF2_NS,
+                  'xsi': const.XSI_NS}
 
     class Item(object):
         """An item of OEB data model metadata.
@@ -667,13 +625,13 @@ class Metadata(object):
 
             def term_attr(self, obj):
                 term = obj.term
-                if namespace(term) != DC11_NS:
-                    term = OPF('meta')
+                if parse_utils.namespace(term) != const.DC11_NS:
+                    term = tag('opf', 'meta')
                 allowed = self.allowed
                 if allowed is not None and term not in allowed:
                     raise AttributeError(
                         'attribute %r not valid for metadata term %r' % (
-                            self.attr(term), barename(obj.term)))
+                            self.attr(term), parse_utils.barename(obj.term)))
                 return self.attr(term)
 
             def __get__(self, obj, cls):
@@ -688,23 +646,25 @@ class Metadata(object):
             self.attrib = attrib = dict(attrib)
             self.nsmap = nsmap = dict(nsmap)
             attrib.update(kwargs)
-            if namespace(term) == OPF2_NS:
-                term = barename(term)
-            ns = namespace(term)
-            local = barename(term).lower()
-            if local in Metadata.DC_TERMS and (not ns or ns in DC_NSES):
+            if parse_utils.namespace(term) == const.OPF2_NS:
+                term = parse_utils.barename(term)
+            ns = parse_utils.namespace(term)
+            local = parse_utils.barename(term).lower()
+            if local in Metadata.DC_TERMS and (not ns or ns in const.DC_NSES):
                 # Anything looking like Dublin Core is coerced
-                term = DC(local)
-            elif local in Metadata.CALIBRE_TERMS and ns in (CALIBRE_NS, ''):
+                term = tag('dc', local)
+            elif local in Metadata.CALIBRE_TERMS and ns in (const.CALIBRE_NS,
+                                                            ''):
                 # Ditto for Calibre-specific metadata
-                term = CALIBRE(local)
+                term = tag('calibre', local)
             self.term = term
             self.value = value
             for attr, value in tuple(attrib.items()):
                 if isprefixname(value):
                     attrib[attr] = qname(value, nsmap)
                 nsattr = Metadata.OPF_ATTRS.get(attr, attr)
-                if nsattr == OPF('scheme') and namespace(term) != DC11_NS:
+                if (nsattr == tag('opf', 'scheme') and
+                        parse_utils.namespace(term) != const.DC11_NS):
                     # The opf:meta element takes @scheme, not @opf:scheme
                     nsattr = 'scheme'
                 if attr != nsattr:
@@ -722,21 +682,29 @@ class Metadata(object):
         def content(self, value):
             self.value = value
 
-        scheme  = Attribute(lambda term: 'scheme' if
-                            term == OPF('meta') else OPF('scheme'),
-                            [DC('identifier'), OPF('meta')])
-        file_as = Attribute(OPF('file-as'), [DC('creator'), DC('contributor'),
-                                             DC('title')])
-        role    = Attribute(OPF('role'), [DC('creator'), DC('contributor')])
-        event   = Attribute(OPF('event'), [DC('date')])
-        id      = Attribute('id')
-        type    = Attribute(XSI('type'), [DC('date'), DC('format'),
-                                          DC('type')])
-        lang    = Attribute(XML('lang'), [DC('contributor'), DC('coverage'),
-                                          DC('creator'), DC('publisher'),
-                                          DC('relation'), DC('rights'),
-                                          DC('source'), DC('subject'),
-                                          OPF('meta')])
+        scheme = Attribute(lambda term: 'scheme' if
+                           term == tag('opf', 'meta') else
+                           tag('opf', 'scheme'),
+                           [tag('dc', 'identifier'), tag('opf', 'meta')])
+        file_as = Attribute(tag('opf', 'file-as'), [tag('dc', 'creator'),
+                                                    tag('dc', 'contributor'),
+                                                    tag('dc', 'title')])
+        role = Attribute(tag('opf', 'role'), [tag('dc', 'creator'),
+                                              tag('dc', 'contributor')])
+        event = Attribute(tag('opf', 'event'), [tag('dc', 'date')])
+        id = Attribute('id')
+        type = Attribute(tag('xsi', 'type'), [tag('dc', 'date'),
+                                              tag('dc', 'format'),
+                                              tag('dc', 'type')])
+        lang = Attribute(tag('xml', 'lang'), [tag('dc', 'contributor'),
+                                              tag('dc', 'coverage'),
+                                              tag('dc', 'creator'),
+                                              tag('dc', 'publisher'),
+                                              tag('dc', 'relation'),
+                                              tag('dc', 'rights'),
+                                              tag('dc', 'source'),
+                                              tag('dc', 'subject'),
+                                              tag('opf', 'meta')])
 
         def __getitem__(self, key):
             return self.attrib[key]
@@ -752,7 +720,7 @@ class Metadata(object):
 
         def __repr__(self):
             return 'Item(term=%r, value=%r, attrib=%r)' \
-                % (barename(self.term), self.value, self.attrib)
+                % (parse_utils.barename(self.term), self.value, self.attrib)
 
         def __str__(self):
             return as_unicode(self.value)
@@ -760,11 +728,12 @@ class Metadata(object):
         def to_opf1(self, dcmeta=None, xmeta=None, nsrmap={}):
             attrib = {}
             for key, value in self.attrib.items():
-                if namespace(key) == OPF2_NS:
-                    key = barename(key)
+                if parse_utils.namespace(key) == const.OPF2_NS:
+                    key = parse_utils.barename(key)
                 attrib[key] = prefixname(value, nsrmap)
-            if namespace(self.term) == DC11_NS:
-                name = DC(string.capwords(barename(self.term)))
+            if parse_utils.namespace(self.term) == const.DC11_NS:
+                name = tag('dc',
+                           string.capwords(parse_utils.barename(self.term)))
                 elem = element(dcmeta, name, attrib=attrib)
                 elem.text = self.value
             else:
@@ -777,27 +746,27 @@ class Metadata(object):
             attrib = {}
             for key, value in self.attrib.items():
                 attrib[key] = prefixname(value, nsrmap)
-            if namespace(self.term) == DC11_NS:
+            if parse_utils.namespace(self.term) == const.DC11_NS:
                 elem = element(parent, self.term, attrib=attrib)
                 try:
                     elem.text = self.value
-                except:
+                except Exception:
                     elem.text = repr(self.value)
             else:
-                elem = element(parent, OPF('meta'), attrib=attrib)
+                elem = element(parent, tag('opf', 'meta'), attrib=attrib)
                 elem.attrib['name'] = prefixname(self.term, nsrmap)
                 elem.attrib['content'] = prefixname(self.value, nsrmap)
             return elem
 
     def __init__(self, oeb):
         self.oeb = oeb
-        self.items = defaultdict(list)
+        self.items = collections.defaultdict(list)
         self.primary_writing_mode = None
 
     def add(self, term, value, attrib={}, nsmap={}, **kwargs):
         """Add a new metadata item."""
         item = self.Item(term, value, attrib, nsmap, **kwargs)
-        items = self.items[barename(item.term)]
+        items = self.items[parse_utils.barename(item.term)]
         items.append(item)
         return item
 
@@ -807,15 +776,15 @@ class Metadata(object):
     __iter__ = iterkeys
 
     def clear(self, key):
-        l = self.items[key]
-        for x in list(l):
-            l.remove(x)
+        val = self.items[key]
+        for x in list(val):
+            val.remove(x)
 
     def filter(self, key, predicate):
-        l = self.items[key]
-        for x in list(l):
+        val = self.items[key]
+        for x in list(val):
             if predicate(x):
-                l.remove(x)
+                val.remove(x)
 
     def __getitem__(self, key):
         return self.items[key]
@@ -838,21 +807,21 @@ class Metadata(object):
     def _opf1_nsmap(self):
         nsmap = self._nsmap
         for key, value in nsmap.items():
-            if value in OPF_NSES or value in DC_NSES:
+            if value in const.OPF_NSES or value in const.DC_NSES:
                 del nsmap[key]
         return nsmap
 
     @property
     def _opf2_nsmap(self):
         nsmap = self._nsmap
-        nsmap.update(OPF2_NSMAP)
+        nsmap.update(const.OPF2_NSMAP)
         return nsmap
 
     def to_opf1(self, parent=None):
         nsmap = self._opf1_nsmap
         nsrmap = {value: key for key, value in nsmap.items()}
         elem = element(parent, 'metadata', nsmap=nsmap)
-        dcmeta = element(elem, 'dc-metadata', nsmap=OPF1_NSMAP)
+        dcmeta = element(elem, 'dc-metadata', nsmap=const.OPF1_NSMAP)
         xmeta = element(elem, 'x-metadata')
         for term in self.items:
             for item in self.items[term]:
@@ -865,12 +834,16 @@ class Metadata(object):
     def to_opf2(self, parent=None):
         nsmap = self._opf2_nsmap
         nsrmap = {value: key for key, value in nsmap.items()}
-        elem = element(parent, OPF('metadata'), nsmap=nsmap)
+        elem = element(parent, tag('opf', 'metadata'), nsmap=nsmap)
         for term in self.items:
             for item in self.items[term]:
                 item.to_opf2(elem, nsrmap=nsrmap)
         if self.primary_writing_mode:
-            elem.append(elem.makeelement(OPF('meta'), attrib={'name':'primary-writing-mode', 'content':self.primary_writing_mode}))
+            elem.append(elem.makeelement(tag('opf', 'meta'),
+                                         attrib={'name':
+                                                 'primary-writing-mode',
+                                                 'content':
+                                                 self.primary_writing_mode}))
         return elem
 
 
@@ -936,8 +909,8 @@ class Manifest(object):
             if not data:
                 return
             data = xml_to_unicode(data, strip_encoding_pats=True,
-                    assume_utf8=True, resolve_entities=True)[0]
-            return safe_xml_fromstring(data)
+                                  assume_utf8=True, resolve_entities=True)[0]
+            return etree.fromstring(data)
 
         def _parse_xhtml(self, data):
             orig_data = data
@@ -945,11 +918,13 @@ class Manifest(object):
             self.oeb.log.debug('Parsing', fname, '...')
             self.oeb.html_preprocessor.current_href = self.href
             try:
-                data = parse_html(data, log=self.oeb.log,
-                        decoder=self.oeb.decode,
-                        preprocessor=self.oeb.html_preprocessor,
-                        filename=fname, non_html_file_tags={'ncx'})
-            except NotHTML:
+                data = parse_utils.parse_html(data, log=self.oeb.log,
+                                              decoder=self.oeb.decode,
+                                              preprocessor=self.oeb.
+                                              html_preprocessor,
+                                              filename=fname,
+                                              non_html_file_tags={'ncx'})
+            except parse_utils.NotHTML:
                 return self._parse_xml(orig_data)
             return data
 
@@ -981,7 +956,8 @@ class Manifest(object):
             data = self.oeb.decode(data)
             data = self.oeb.css_preprocessor(data, add_namespace=False)
             parser = CSSParser(loglevel=logging.WARNING,
-                               fetcher=self.override_css_fetch or self._fetch_css,
+                               fetcher=self.override_css_fetch or
+                               self._fetch_css,
                                log=_css_logger)
             data = parser.parseString(data, href=self.href, validate=False)
             data = resolveImports(data)
@@ -1013,8 +989,8 @@ class Manifest(object):
               convert and return as an lxml.etree element in the XHTML
               namespace.
             - XML content is parsed and returned as an lxml.etree element.
-            - CSS and CSS-variant content is parsed and returned as a css_parser
-              CSS DOM stylesheet.
+            - CSS and CSS-variant content is parsed and returned as a
+              css_parser CSS DOM stylesheet.
             - All other content is returned as a :class:`str` or :class:`bytes`
               object with no special parsing.
             """
@@ -1023,7 +999,7 @@ class Manifest(object):
                 if self._loader is None:
                     return None
                 data = self._loader(getattr(self, 'html_input_href',
-                    self.href))
+                                            self.href))
             try:
                 mt = self.media_type.lower()
             except Exception:
@@ -1037,8 +1013,8 @@ class Manifest(object):
             elif mt in OEB_STYLES:
                 data = self._parse_css(data)
             elif mt == 'text/plain':
-                self.oeb.log.warn('%s contains data in TXT format'%self.href,
-                        'converting to HTML')
+                self.oeb.log.warn('%s contains data in TXT format' % self.href,
+                                  'converting to HTML')
                 data = self._parse_txt(data)
                 self.media_type = XHTML_MIME
             self._data = data
@@ -1055,8 +1031,10 @@ class Manifest(object):
         def unload_data_from_memory(self, memory=None):
             if isinstance(self._data, bytes):
                 if memory is None:
-                    from ebook_converter.ptempfile import PersistentTemporaryFile
-                    pt = PersistentTemporaryFile(suffix='_oeb_base_mem_unloader.img')
+                    from ebook_converter.ptempfile import \
+                            PersistentTemporaryFile
+                    pt = PersistentTemporaryFile(suffix='_oeb_base_mem_'
+                                                 'unloader.img')
                     with pt:
                         pt.write(self._data)
                     self.oeb._temp_files.append(pt.name)
@@ -1088,7 +1066,8 @@ class Manifest(object):
 
         @property
         def bytes_representation(self):
-            return serialize(self.data, self.media_type, pretty_print=self.oeb.pretty_print)
+            return serialize(self.data, self.media_type,
+                             pretty_print=self.oeb.pretty_print)
 
         def __str__(self):
             return self.unicode_representation
@@ -1107,7 +1086,11 @@ class Manifest(object):
             href = self.href
             if isinstance(href, bytes):
                 href = force_unicode(href)
-            sp = self.spine_position if isinstance(self.spine_position, numbers.Number) else sys.maxsize
+
+            if isinstance(self.spine_position, numbers.Number):
+                sp = self.spine_position
+            else:
+                sp = sys.maxsize
 
             return sp, (self.media_type or '').lower(), href, self.id
 
@@ -1238,8 +1221,8 @@ class Manifest(object):
         return elem
 
     def to_opf2(self, parent=None):
-        elem = element(parent, OPF('manifest'))
-        for item in sorted(self.items, key=attrgetter('sort_key')):
+        elem = element(parent, tag('opf', 'manifest'))
+        for item in sorted(self.items, key=operator.attrgetter('sort_key')):
             media_type = item.media_type
             if media_type in OEB_DOCS:
                 media_type = XHTML_MIME
@@ -1249,7 +1232,7 @@ class Manifest(object):
                       'media-type': media_type}
             if item.fallback:
                 attrib['fallback'] = item.fallback
-            element(elem, OPF('item'), attrib=attrib)
+            element(elem, tag('opf', 'item'), attrib=attrib)
         return elem
 
     @property
@@ -1341,12 +1324,12 @@ class Spine(object):
         return elem
 
     def to_opf2(self, parent=None):
-        elem = element(parent, OPF('spine'))
+        elem = element(parent, tag('opf', 'spine'))
         for item in self.items:
             attrib = {'idref': item.id}
             if not item.linear:
                 attrib['linear'] = 'no'
-            element(elem, OPF('itemref'), attrib=attrib)
+            element(elem, tag('opf', 'itemref'), attrib=attrib)
         return elem
 
 
@@ -1394,8 +1377,7 @@ class Guide(object):
             self.oeb = oeb
             if type.lower() in self.TYPES:
                 type = type.lower()
-            elif type not in self.TYPES and \
-                 not type.startswith('other.'):
+            elif type not in self.TYPES and not type.startswith('other.'):
                 type = 'other.' + type
             if not title and type in self.TITLES:
                 title = oeb.translate(self.TITLES[type])
@@ -1440,7 +1422,8 @@ class Guide(object):
     __iter__ = iterkeys
 
     def values(self):
-        return sorted(self.refs.values(), key=lambda ref: ref.ORDER.get(ref.type, 10000))
+        return sorted(self.refs.values(),
+                      key=lambda ref: ref.ORDER.get(ref.type, 10000))
 
     def items(self):
         for type, ref in self.refs.items():
@@ -1473,12 +1456,12 @@ class Guide(object):
     def to_opf2(self, parent=None):
         if not len(self):
             return
-        elem = element(parent, OPF('guide'))
+        elem = element(parent, tag('opf', 'guide'))
         for ref in self.refs.values():
             attrib = {'type': ref.type, 'href': urlunquote(ref.href)}
             if ref.title:
                 attrib['title'] = ref.title
-            element(elem, OPF('reference'), attrib=attrib)
+            element(elem, tag('opf', 'reference'), attrib=attrib)
         return elem
 
 
@@ -1499,7 +1482,8 @@ class TOC(object):
     """
 
     def __init__(self, title=None, href=None, klass=None, id=None,
-            play_order=None, author=None, description=None, toc_thumbnail=None):
+                 play_order=None, author=None, description=None,
+                 toc_thumbnail=None):
         self.title = title
         self.href = urlnormalize(href) if href else href
         self.klass = klass
@@ -1513,9 +1497,11 @@ class TOC(object):
         self.description = description
         self.toc_thumbnail = toc_thumbnail
 
-    def add(self, title, href, klass=None, id=None, play_order=0, author=None, description=None, toc_thumbnail=None):
+    def add(self, title, href, klass=None, id=None, play_order=0, author=None,
+            description=None, toc_thumbnail=None):
         """Create and return a new sub-node of this node."""
-        node = TOC(title, href, klass, id, play_order, author, description, toc_thumbnail)
+        node = TOC(title, href, klass, id, play_order, author, description,
+                   toc_thumbnail)
         self.nodes.append(node)
         return node
 
@@ -1583,7 +1569,8 @@ class TOC(object):
         """
         prev = None
         for node in list(self.nodes):
-            if prev and urllib.parse.urldefrag(prev.href)[0] == urllib.parse.urldefrag(node.href)[0]:
+            if (prev and urllib.parse.urldefrag(prev.href)[0] ==
+                    urllib.parse.urldefrag(node.href)[0]):
                 self.nodes.remove(node)
                 prev.nodes.append(node)
             else:
@@ -1597,7 +1584,7 @@ class TOC(object):
             return 1
 
     def get_lines(self, lvl=0):
-        ans = [('\t'*lvl) + 'TOC: %s --> %s'%(self.title, self.href)]
+        ans = [('\t'*lvl) + 'TOC: %s --> %s' % (self.title, self.href)]
         for child in self:
             ans.extend(child.get_lines(lvl+1))
         return ans
@@ -1614,7 +1601,7 @@ class TOC(object):
 
     def to_ncx(self, parent=None):
         if parent is None:
-            parent = etree.Element(NCX('navMap'))
+            parent = etree.Element(tag('ncx', 'navMap'))
         for node in self.nodes:
             id = node.id or uuid_id()
             po = node.play_order
@@ -1623,15 +1610,15 @@ class TOC(object):
             attrib = {'id': id, 'playOrder': str(po)}
             if node.klass:
                 attrib['class'] = node.klass
-            point = element(parent, NCX('navPoint'), attrib=attrib)
-            label = etree.SubElement(point, NCX('navLabel'))
+            point = element(parent, tag('ncx', 'navPoint'), attrib=attrib)
+            label = etree.SubElement(point, tag('ncx', 'navLabel'))
             title = node.title
             if title:
                 title = re.sub(r'\s+', ' ', title)
-            element(label, NCX('text')).text = title
+            element(label, tag('ncx', 'text')).text = title
             # Do not unescape this URL as ADE requires it to be escaped to
             # handle semi colons and other special characters in the file names
-            element(point, NCX('content'), src=node.href)
+            element(point, tag('ncx', 'content'), src=node.href)
             node.to_ncx(point)
         return parent
 
@@ -1659,7 +1646,7 @@ class TOC(object):
             if y is not None:
                 if x.href != y.href:
                     x.play_order = getattr(href_node(x), 'play_order',
-                            self.next_play_order())
+                                           self.next_play_order())
             y = href_node(x)
             if y is not None:
                 x.play_order = y.play_order
@@ -1723,8 +1710,9 @@ class PageList(object):
         return self.pages.remove(page)
 
     def to_ncx(self, parent=None):
-        plist = element(parent, NCX('pageList'), id=uuid_id())
-        values = {t: count(1) for t in ('front', 'normal', 'special')}
+        plist = element(parent, tag('ncx', 'pageList'), id=uuid_id())
+        values = {t: itertools.count(1)
+                  for t in ('front', 'normal', 'special')}
         for page in self.pages:
             id = page.id or uuid_id()
             type = page.type
@@ -1732,30 +1720,31 @@ class PageList(object):
             attrib = {'id': id, 'value': value, 'type': type, 'playOrder': '0'}
             if page.klass:
                 attrib['class'] = page.klass
-            ptarget = element(plist, NCX('pageTarget'), attrib=attrib)
-            label = element(ptarget, NCX('navLabel'))
-            element(label, NCX('text')).text = page.name
-            element(ptarget, NCX('content'), src=page.href)
+            ptarget = element(plist, tag('ncx', 'pageTarget'), attrib=attrib)
+            label = element(ptarget, tag('ncx', 'navLabel'))
+            element(label, tag('ncx', 'text')).text = page.name
+            element(ptarget, tag('ncx', 'content'), src=page.href)
         return plist
 
     def to_page_map(self):
-        pmap = etree.Element(OPF('page-map'), nsmap={None: OPF2_NS})
+        pmap = etree.Element(tag('opf', 'page-map'),
+                             nsmap={None: const.OPF2_NS})
         for page in self.pages:
-            element(pmap, OPF('page'), name=page.name, href=page.href)
+            element(pmap, tag('opf', 'page'), name=page.name, href=page.href)
         return pmap
 
 
 class OEBBook(object):
     """Representation of a book in the IDPF OEB data model."""
 
-    COVER_SVG_XP    = XPath('h:body//svg:svg[position() = 1]')
+    COVER_SVG_XP = XPath('h:body//svg:svg[position() = 1]')
     COVER_OBJECT_XP = XPath('h:body//h:object[@data][position() = 1]')
 
     def __init__(self, logger,
-            html_preprocessor,
-            css_preprocessor=CSSPreProcessor(),
-            encoding='utf-8', pretty_print=False,
-            input_encoding='utf-8'):
+                 html_preprocessor,
+                 css_preprocessor=CSSPreProcessor(),
+                 encoding='utf-8', pretty_print=False,
+                 input_encoding='utf-8'):
         """Create empty book.  Arguments:
 
         :param:`encoding`: Default encoding for textual content read
@@ -1809,7 +1798,7 @@ class OEBBook(object):
         for path in self._temp_files:
             try:
                 os.remove(path)
-            except:
+            except Exception:
                 pass
 
     @classmethod
@@ -1831,11 +1820,12 @@ class OEBBook(object):
             return fix_data(data)
         bom_enc = None
         if data[:4] in (b'\0\0\xfe\xff', b'\xff\xfe\0\0'):
-            bom_enc = {b'\0\0\xfe\xff':'utf-32-be',
-                    b'\xff\xfe\0\0':'utf-32-le'}[data[:4]]
+            bom_enc = {b'\0\0\xfe\xff': 'utf-32-be',
+                       b'\xff\xfe\0\0': 'utf-32-le'}[data[:4]]
             data = data[4:]
         elif data[:2] in (b'\xff\xfe', b'\xfe\xff'):
-            bom_enc = {b'\xff\xfe':'utf-16-le', 'b\xfe\xff':'utf-16-be'}[data[:2]]
+            bom_enc = {b'\xff\xfe': 'utf-16-le',
+                       'b\xfe\xff': 'utf-16-be'}[data[:2]]
             data = data[2:]
         elif data[:3] == b'\xef\xbb\xbf':
             bom_enc = 'utf-8'
@@ -1864,13 +1854,13 @@ class OEBBook(object):
         are tuples of (default) filenames and lxml.etree element structures.
         """
         package = etree.Element('package',
-            attrib={'unique-identifier': self.uid.id})
+                                attrib={'unique-identifier': self.uid.id})
         self.metadata.to_opf1(package)
         self.manifest.to_opf1(package)
         self.spine.to_opf1(package)
         tours = element(package, 'tours')
         tour = element(tours, 'tour',
-            attrib={'id': 'chaptertour', 'title': 'Chapter Tour'})
+                       attrib={'id': 'chaptertour', 'title': 'Chapter Tour'})
         self.toc.to_opf1(tour)
         self.guide.to_opf1(package)
         return {OPF_MIME: ('content.opf', package)}
@@ -1898,7 +1888,8 @@ class OEBBook(object):
                 if added:
                     next += 1
         selector = XPath('ncx:content/@src')
-        for i, elem in enumerate(xpath(ncx, '//*[@playOrder and ./ncx:content[@src]]')):
+        for i, elem in enumerate(xpath(ncx, '//*[@playOrder and '
+                                       './ncx:content[@src]]')):
             href = urlnormalize(selector(elem)[0])
             order = playorder.get(href, i)
             elem.attrib['playOrder'] = str(order)
@@ -1907,25 +1898,26 @@ class OEBBook(object):
     def _to_ncx(self):
         lang = str(self.metadata.language[0])
         lang = lang.replace('_', '-')
-        ncx = etree.Element(NCX('ncx'),
-            attrib={'version': '2005-1', XML('lang'): lang},
-            nsmap={None: NCX_NS})
-        head = etree.SubElement(ncx, NCX('head'))
-        etree.SubElement(head, NCX('meta'),
-            name='dtb:uid', content=str(self.uid))
-        etree.SubElement(head, NCX('meta'),
-            name='dtb:depth', content=str(self.toc.depth()))
+        ncx = etree.Element(tag('ncx', 'ncx'),
+                            attrib={'version': '2005-1',
+                                    tag('xml', 'lang'): lang},
+                            nsmap={None: const.NCX_NS})
+        head = etree.SubElement(ncx, tag('ncx', 'head'))
+        etree.SubElement(head, tag('ncx', 'meta'),
+                         name='dtb:uid', content=str(self.uid))
+        etree.SubElement(head, tag('ncx', 'meta'),
+                         name='dtb:depth', content=str(self.toc.depth()))
         generator = ''.join(['calibre (', __version__, ')'])
-        etree.SubElement(head, NCX('meta'),
-            name='dtb:generator', content=generator)
-        etree.SubElement(head, NCX('meta'),
-            name='dtb:totalPageCount', content=str(len(self.pages)))
-        maxpnum = etree.SubElement(head, NCX('meta'),
-            name='dtb:maxPageNumber', content='0')
-        title = etree.SubElement(ncx, NCX('docTitle'))
-        text = etree.SubElement(title, NCX('text'))
+        etree.SubElement(head, tag('ncx', 'meta'),
+                         name='dtb:generator', content=generator)
+        etree.SubElement(head, tag('ncx', 'meta'), name='dtb:totalPageCount',
+                         content=str(len(self.pages)))
+        maxpnum = etree.SubElement(head, tag('ncx', 'meta'),
+                                   name='dtb:maxPageNumber', content='0')
+        title = etree.SubElement(ncx, tag('ncx', 'docTitle'))
+        text = etree.SubElement(title, tag('ncx', 'text'))
         text.text = str(self.metadata.title[0])
-        navmap = etree.SubElement(ncx, NCX('navMap'))
+        navmap = etree.SubElement(ncx, tag('ncx', 'navMap'))
         self.toc.to_ncx(navmap)
         if len(self.pages) > 0:
             plist = self.pages.to_ncx(ncx)
@@ -1941,27 +1933,29 @@ class OEBBook(object):
         are tuples of (default) filenames and lxml.etree element structures.
         """
         results = {}
-        package = etree.Element(OPF('package'),
-            attrib={'version': '2.0', 'unique-identifier': self.uid.id},
-            nsmap={None: OPF2_NS})
+        package = etree.Element(tag('opf', 'package'),
+                                attrib={'version': '2.0',
+                                        'unique-identifier': self.uid.id},
+                                nsmap={None: const.OPF2_NS})
         self.metadata.to_opf2(package)
         manifest = self.manifest.to_opf2(package)
         spine = self.spine.to_opf2(package)
         self.guide.to_opf2(package)
         results[OPF_MIME] = ('content.opf', package)
         id, href = self.manifest.generate('ncx', 'toc.ncx')
-        etree.SubElement(manifest, OPF('item'), id=id, href=href,
+        etree.SubElement(manifest, tag('opf', 'item'), id=id, href=href,
                          attrib={'media-type': NCX_MIME})
         spine.attrib['toc'] = id
         results[NCX_MIME] = (href, self._to_ncx())
         if page_map and len(self.pages) > 0:
             id, href = self.manifest.generate('page-map', 'page-map.xml')
-            etree.SubElement(manifest, OPF('item'), id=id, href=href,
+            etree.SubElement(manifest, tag('opf', 'item'), id=id, href=href,
                              attrib={'media-type': PAGE_MAP_MIME})
             spine.attrib['page-map'] = id
             results[PAGE_MAP_MIME] = (href, self.pages.to_page_map())
         if self.spine.page_progression_direction in {'ltr', 'rtl'}:
-            spine.attrib['page-progression-direction'] = self.spine.page_progression_direction
+            spine.attrib['page-progression-direction'] = \
+                    self.spine.page_progression_direction
         return results
 
 
@@ -1972,7 +1966,9 @@ def rel_href(base_href, href):
         return href
     if '/' not in base_href:
         return href
-    base = list(filter(lambda x: x and x != '.', os.path.dirname(os.path.normpath(base_href)).replace(os.sep, '/').split('/')))
+    base = list(filter(lambda x: x and x != '.',
+                       os.path.dirname(os.path.normpath(base_href))
+                       .replace(os.sep, '/').split('/')))
     while True:
         try:
             idx = base.index('..')

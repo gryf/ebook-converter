@@ -1,7 +1,11 @@
-import copy, os, re
+import copy
+import os
+import re
 import urllib.parse
 
-from ebook_converter.ebooks.oeb.base import barename, XPNSMAP, XPath, OPF, XHTML, OEB_DOCS
+from ebook_converter import constants as const
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.ebooks.oeb.polish.errors import MalformedMarkup
 from ebook_converter.ebooks.oeb.polish.toc import node_from_loc
 from ebook_converter.ebooks.oeb.polish.replace import LinkRebaser
@@ -35,7 +39,7 @@ def adjust_split_point(split_point, log):
         parent = sp.getparent()
         if (
             parent is None or
-            barename(parent.tag) in {'body', 'html'} or
+            parse_utils.barename(parent.tag) in {'body', 'html'} or
             (parent.text and parent.text.strip()) or
             parent.index(sp) > 0
         ):
@@ -49,7 +53,7 @@ def adjust_split_point(split_point, log):
 
 
 def get_body(root):
-    return root.find('h:body', namespaces=XPNSMAP)
+    return root.find('h:body', namespaces=const.XPNSMAP)
 
 
 def do_split(split_point, log, before=True):
@@ -113,7 +117,7 @@ def do_split(split_point, log, before=True):
             nix_element(elem)
 
     # Tree 2
-    ancestors = frozenset(XPath('ancestor::*')(split_point2))
+    ancestors = frozenset(base.XPath('ancestor::*')(split_point2))
     for elem in tuple(body2.iterdescendants()):
         if elem is split_point2:
             if not before:
@@ -251,7 +255,7 @@ def split(container, name, loc_or_xpath, before=True, totals=None):
             break
     index = spine.index(spine_item) + 1
 
-    si = spine.makeelement(OPF('itemref'), idref=manifest_item.get('id'))
+    si = spine.makeelement(base.tag('opf', 'itemref'), idref=manifest_item.get('id'))
     if not linear:
         si.set('linear', 'no')
     container.insert_into_xml(spine, si, index=index)
@@ -268,7 +272,7 @@ def multisplit(container, name, xpath, before=True):
     :param before: If True the splits occur before the identified element otherwise after it.
     '''
     root = container.parsed(name)
-    nodes = root.xpath(xpath, namespaces=XPNSMAP)
+    nodes = root.xpath(xpath, namespaces=const.XPNSMAP)
     if not nodes:
         raise AbortError('The expression %s did not match any nodes' % xpath)
     for split_point in nodes:
@@ -329,7 +333,7 @@ def all_anchors(root):
 
 
 def all_stylesheets(container, name):
-    for link in XPath('//h:head/h:link[@href]')(container.parsed(name)):
+    for link in base.XPath('//h:head/h:link[@href]')(container.parsed(name)):
         name = container.href_to_name(link.get('href'), name)
         typ = link.get('type', 'text/css')
         if typ == 'text/css':
@@ -358,14 +362,14 @@ def merge_html(container, names, master, insert_page_breaks=False):
     root = p(master)
 
     # Ensure master has a <head>
-    head = root.find('h:head', namespaces=XPNSMAP)
+    head = root.find('h:head', namespaces=const.XPNSMAP)
     if head is None:
-        head = root.makeelement(XHTML('head'))
+        head = root.makeelement(base.tag('xhtml', 'head'))
         container.insert_into_xml(root, head, 0)
 
     seen_anchors = all_anchors(root)
     seen_stylesheets = set(all_stylesheets(container, master))
-    master_body = p(master).findall('h:body', namespaces=XPNSMAP)[-1]
+    master_body = p(master).findall('h:body', namespaces=const.XPNSMAP)[-1]
     master_base = os.path.dirname(master)
     anchor_map = {n:{} for n in names if n != master}
     first_anchor_map = {}
@@ -377,7 +381,7 @@ def merge_html(container, names, master, insert_page_breaks=False):
         for sheet in all_stylesheets(container, name):
             if sheet not in seen_stylesheets:
                 seen_stylesheets.add(sheet)
-                link = head.makeelement(XHTML('link'), rel='stylesheet', type='text/css', href=container.name_to_href(sheet, master))
+                link = head.makeelement(base.tag('xhtml', 'link'), rel='stylesheet', type='text/css', href=container.name_to_href(sheet, master))
                 container.insert_into_xml(head, link)
 
         # Rebase links if master is in a different directory
@@ -386,7 +390,7 @@ def merge_html(container, names, master, insert_page_breaks=False):
 
         root = p(name)
         children = []
-        for body in p(name).findall('h:body', namespaces=XPNSMAP):
+        for body in p(name).findall('h:body', namespaces=const.XPNSMAP):
             children.append(body.text if body.text and body.text.strip() else '\n\n')
             children.extend(body)
 
@@ -396,7 +400,7 @@ def merge_html(container, names, master, insert_page_breaks=False):
                 break
         if isinstance(first_child, (str, bytes)):
             # body contained only text, no tags
-            first_child = body.makeelement(XHTML('p'))
+            first_child = body.makeelement(base.tag('xhtml', 'p'))
             first_child.text, children[0] = children[0], first_child
 
         amap = anchor_map[name]
@@ -424,7 +428,7 @@ def merge_html(container, names, master, insert_page_breaks=False):
         amap[''] = first_child.get('id')
 
         # Fix links that point to local changed anchors
-        for a in XPath('//h:a[starts-with(@href, "#")]')(root):
+        for a in base.XPath('//h:a[starts-with(@href, "#")]')(root):
             q = a.get('href')[1:]
             if q in amap:
                 a.set('href', '#' + amap[q])
@@ -472,10 +476,10 @@ def merge_css(container, names, master):
     # Remove links to merged stylesheets in the html files, replacing with a
     # link to the master sheet
     for name, mt in container.mime_map.items():
-        if mt in OEB_DOCS:
+        if mt in base.OEB_DOCS:
             removed = False
             root = p(name)
-            for link in XPath('//h:link[@href]')(root):
+            for link in base.XPath('//h:link[@href]')(root):
                 q = container.href_to_name(link.get('href'), name)
                 if q in merged:
                     container.remove_from_xml(link)
@@ -483,9 +487,9 @@ def merge_css(container, names, master):
             if removed:
                 container.dirty(name)
             if removed and master not in set(all_stylesheets(container, name)):
-                head = root.find('h:head', namespaces=XPNSMAP)
+                head = root.find('h:head', namespaces=const.XPNSMAP)
                 if head is not None:
-                    link = head.makeelement(XHTML('link'), type='text/css', rel='stylesheet', href=container.name_to_href(master, name))
+                    link = head.makeelement(base.tag('xhtml', 'link'), type='text/css', rel='stylesheet', href=container.name_to_href(master, name))
                     container.insert_into_xml(head, link)
 
 

@@ -5,10 +5,10 @@ import shutil
 import subprocess
 import sys
 
+from lxml import etree
+
 from ebook_converter import CurrentDir, xml_replace_entities, prints
-from ebook_converter.constants_old import (
-    filesystem_encoding, isbsd, islinux, isosx, iswindows
-)
+from ebook_converter.constants_old import isbsd, islinux, isosx, iswindows
 from ebook_converter.ebooks import ConversionError, DRMError
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ptempfile import PersistentTemporaryFile
@@ -26,10 +26,13 @@ def popen(cmd, **kw):
 
 
 if isosx and hasattr(sys, 'frameworks_dir'):
-    base = os.path.join(os.path.dirname(sys.frameworks_dir), 'utils.app', 'Contents', 'MacOS')
+    base = os.path.join(os.path.dirname(sys.frameworks_dir), 'utils.app',
+                        'Contents', 'MacOS')
     PDFTOHTML = os.path.join(base, PDFTOHTML)
 if iswindows and hasattr(sys, 'frozen'):
-    base = sys.extensions_location if hasattr(sys, 'new_app_layout') else os.path.dirname(sys.executable)
+    base = os.path.dirname(sys.executable)
+    if hasattr(sys, 'new_app_layout'):
+        base = sys.extensions_location
     PDFTOHTML = os.path.join(base, 'pdftohtml.exe')
 if (islinux or isbsd) and getattr(sys, 'frozen', False):
     PDFTOHTML = os.path.join(sys.executables_location, 'bin', 'pdftohtml')
@@ -55,7 +58,7 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
 
         exe = PDFTOHTML
         cmd = [exe, '-enc', 'UTF-8', '-noframes', '-p', '-nomerge',
-                '-nodrm', a(pdfsrc), a(index)]
+               '-nodrm', a(pdfsrc), a(index)]
 
         if isbsd:
             cmd.remove('-nodrm')
@@ -67,7 +70,7 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
         logf = PersistentTemporaryFile('pdftohtml_log')
         try:
             p = popen(cmd, stderr=logf._fd, stdout=logf._fd,
-                    stdin=subprocess.PIPE)
+                      stdin=subprocess.PIPE)
         except OSError as err:
             if err.errno == errno.ENOENT:
                 raise ConversionError('Could not find pdftohtml, check it is '
@@ -79,7 +82,8 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
         logf.close()
         out = open(logf.name, 'rb').read().decode('utf-8', 'replace').strip()
         if ret != 0:
-            raise ConversionError('pdftohtml failed with return code: %d\n%s' % (ret, out))
+            raise ConversionError('pdftohtml failed with return code: '
+                                  '%d\n%s' % (ret, out))
         if out:
             prints("pdftohtml log:")
             prints(out)
@@ -90,22 +94,27 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
             with open(index, 'r+b') as i:
                 raw = i.read().decode('utf-8', 'replace')
                 raw = flip_images(raw)
-                raw = raw.replace('<head', '<!-- created by ebook-converter\'s pdftohtml -->\n  <head', 1)
+                raw = raw.replace('<head', '<!-- created by ebook-converter\'s'
+                                  ' pdftohtml -->\n  <head', 1)
                 i.seek(0)
                 i.truncate()
-                # versions of pdftohtml >= 0.20 output self closing <br> tags, this
-                # breaks the pdf heuristics regexps, so replace them
+                # versions of pdftohtml >= 0.20 output self closing <br> tags,
+                # this breaks the pdf heuristics regexps, so replace them
                 raw = raw.replace('<br/>', '<br>')
-                raw = re.sub(r'<a\s+name=(\d+)', r'<a id="\1"', raw, flags=re.I)
-                raw = re.sub(r'<a id="(\d+)"', r'<a id="p\1"', raw, flags=re.I)
-                raw = re.sub(r'<a href="index.html#(\d+)"', r'<a href="#p\1"', raw, flags=re.I)
+                raw = re.sub(r'<a\s+name=(\d+)', r'<a id="\1"', raw,
+                             flags=re.I)
+                raw = re.sub(r'<a id="(\d+)"', r'<a id="p\1"', raw,
+                             flags=re.I)
+                raw = re.sub(r'<a href="index.html#(\d+)"', r'<a href="#p\1"',
+                             raw, flags=re.I)
                 raw = xml_replace_entities(raw)
                 raw = raw.replace('\u00a0', ' ')
 
                 i.write(raw.encode('utf-8'))
 
-            cmd = [exe, '-f', '1', '-l', '1', '-xml', '-i', '-enc', 'UTF-8', '-noframes', '-p', '-nomerge',
-                    '-nodrm', '-q', '-stdout', a(pdfsrc)]
+            cmd = [exe, '-f', '1', '-l', '1', '-xml', '-i', '-enc', 'UTF-8',
+                   '-noframes', '-p', '-nomerge', '-nodrm', '-q', '-stdout',
+                   a(pdfsrc)]
             if isbsd:
                 cmd.remove('-nodrm')
             p = popen(cmd, stdout=subprocess.PIPE)
@@ -115,15 +124,14 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
 
         try:
             os.remove(pdfsrc)
-        except:
+        except Exception:
             pass
 
 
 def parse_outline(raw, output_dir):
-    from lxml import etree
-    from ebook_converter.utils.xml_parse import safe_xml_fromstring
-    raw = clean_xml_chars(xml_to_unicode(raw, strip_encoding_pats=True, assume_utf8=True)[0])
-    outline = safe_xml_fromstring(raw).xpath('(//outline)[1]')
+    raw = clean_xml_chars(xml_to_unicode(raw, strip_encoding_pats=True,
+                                         assume_utf8=True)[0])
+    outline = etree.fromstring(raw).xpath('(//outline)[1]')
     if outline:
         from ebook_converter.ebooks.oeb.polish.toc import TOC, create_ncx
         outline = outline[0]
@@ -142,13 +150,18 @@ def parse_outline(raw, output_dir):
                         count[0] += 1
         process_node(outline, toc)
         if count[0] > 2:
-            root = create_ncx(toc, (lambda x:x), 'pdftohtml', 'en', 'pdftohtml')
+            root = create_ncx(toc, (lambda x: x), 'pdftohtml', 'en',
+                              'pdftohtml')
             with open(os.path.join(output_dir, 'toc.ncx'), 'wb') as f:
-                f.write(etree.tostring(root, pretty_print=True, with_tail=False, encoding='utf-8', xml_declaration=True))
+                f.write(etree.tostring(root, pretty_print=True,
+                                       with_tail=False, encoding='utf-8',
+                                       xml_declaration=True))
 
 
 def flip_image(img, flip):
-    from ebook_converter.utils.img import flip_image, image_and_format_from_data, image_to_data
+    from ebook_converter.utils.img import image_to_data
+    from ebook_converter.utils.img import image_and_format_from_data
+    from ebook_converter.utils.img import flip_image
     with open(img, 'r+b') as f:
         img, fmt = image_and_format_from_data(f.read())
         img = flip_image(img, horizontal='x' in flip, vertical='y' in flip)
@@ -170,5 +183,5 @@ def flip_images(raw):
         if not os.path.exists(img):
             continue
         flip_image(img, flip)
-    raw = re.sub(r'<STYLE.+?</STYLE>\s*', '', raw, flags=re.I|re.DOTALL)
+    raw = re.sub(r'<STYLE.+?</STYLE>\s*', '', raw, flags=re.I | re.DOTALL)
     return raw

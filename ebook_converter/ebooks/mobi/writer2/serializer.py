@@ -4,16 +4,11 @@ import re
 import unicodedata
 import urllib.parse
 
+from ebook_converter import constants as const
 from ebook_converter.ebooks.mobi.mobiml import MBP_NS
 from ebook_converter.ebooks.mobi.utils import is_guide_ref_start
-from ebook_converter.ebooks.oeb.base import (
-    OEB_DOCS, XHTML, XHTML_NS, XML_NS, namespace, prefixname, urlnormalize
-)
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.ebooks.oeb import parse_utils
 
 
 class Buf(io.BytesIO):
@@ -25,9 +20,14 @@ class Buf(io.BytesIO):
 
 
 class Serializer(object):
-    NSRMAP = {'': None, XML_NS: 'xml', XHTML_NS: '', MBP_NS: 'mbp'}
+    NSRMAP = {'': None,
+              const.XML_NS: 'xml',
+              const.XHTML_NS: '',
+              MBP_NS: 'mbp'}  # TODO(gryf): check why this is different than
+                              # MBP_NS from const.
 
-    def __init__(self, oeb, images, is_periodical, write_page_breaks_after_item=True):
+    def __init__(self, oeb, images, is_periodical,
+                 write_page_breaks_after_item=True):
         '''
         Write all the HTML markup in oeb into a single in memory buffer
         containing a single html document with links replaced by offsets into
@@ -157,7 +157,8 @@ class Serializer(object):
         buf.write(b'<guide>')
         for ref in self.oeb.guide.values():
             path = urllib.parse.urldefrag(ref.href)[0]
-            if path not in hrefs or hrefs[path].media_type not in OEB_DOCS:
+            if (path not in hrefs or
+                    hrefs[path].media_type not in base.OEB_DOCS):
                 continue
 
             buf.write(b'<reference type="')
@@ -178,28 +179,28 @@ class Serializer(object):
 
         buf.write(b'</guide>')
 
-    def serialize_href(self, href, base=None):
-        '''
+    def serialize_href(self, href, _base=None):
+        """
         Serialize the href attribute of an <a> or <reference> tag. It is
         serialized as filepos="000000000" and a pointer to its location is
         stored in self.href_offsets so that the correct value can be filled in
         at the end.
-        '''
+        """
         hrefs = self.oeb.manifest.hrefs
         try:
-            path, frag = urllib.parse.urldefrag(urlnormalize(href))
+            path, frag = urllib.parse.urldefrag(base.urlnormalize(href))
         except ValueError:
             # Unparseable URL
             return False
-        if path and base:
-            path = base.abshref(path)
+        if path and _base:
+            path = _base.abshref(path)
         if path and path not in hrefs:
             return False
         buf = self.buf
         item = hrefs[path] if path else None
         if item and item.spine_position is None:
             return False
-        path = item.href if item else base.href
+        path = item.href if item else _base.href
         href = '#'.join((path, frag)) if frag else path
         buf.write(b'filepos=')
         self.href_offsets[href].append(buf.tell())
@@ -219,7 +220,7 @@ class Serializer(object):
             if href is not None:
                 # resolve the section url in id_offsets
                 buf.write(b'<mbp:pagebreak />')
-                self.id_offsets[urlnormalize(href)] = buf.tell()
+                self.id_offsets[base.urlnormalize(href)] = buf.tell()
 
             if tocref.klass == "periodical":
                 buf.write(b'<div> <div height="1em"></div>')
@@ -267,7 +268,7 @@ class Serializer(object):
 
             if self.is_periodical and item.is_section_start:
                 for section_toc in top_toc.nodes:
-                    if urlnormalize(item.href) == section_toc.href:
+                    if base.urlnormalize(item.href) == section_toc.href:
                         # create section url of the form r'feed_\d+/index.html'
                         section_url = re.sub(r'article_\d+/', '', section_toc.href)
                         serialize_toc_level(section_toc, section_url)
@@ -287,12 +288,12 @@ class Serializer(object):
         buf = self.buf
         if not item.linear:
             self.breaks.append(buf.tell() - 1)
-        self.id_offsets[urlnormalize(item.href)] = buf.tell()
+        self.id_offsets[base.urlnormalize(item.href)] = buf.tell()
         if item.is_section_start:
             buf.write(b'<a ></a> ')
         if item.is_article_start:
             buf.write(b'<a ></a> <a ></a>')
-        for elem in item.data.find(XHTML('body')):
+        for elem in item.data.find(base.tag('xhtml', 'body')):
             self.serialize_elem(elem, item)
         if self.write_page_breaks_after_item:
             buf.write(b'<mbp:pagebreak/>')
@@ -306,15 +307,15 @@ class Serializer(object):
     def serialize_elem(self, elem, item, nsrmap=NSRMAP):
         buf = self.buf
         if not isinstance(elem.tag, (str, bytes)) \
-            or namespace(elem.tag) not in nsrmap:
+            or parse_utils.namespace(elem.tag) not in nsrmap:
             return
-        tag = prefixname(elem.tag, nsrmap)
+        tag = base.prefixname(elem.tag, nsrmap)
         # Previous layers take care of @name
         id_ = elem.attrib.pop('id', None)
         if id_:
             href = '#'.join((item.href, id_))
             offset = self.anchor_offset or buf.tell()
-            key = urlnormalize(href)
+            key = base.urlnormalize(href)
             # Only set this id_offset if it wasn't previously seen
             self.id_offsets[key] = self.id_offsets.get(key, offset)
         if self.anchor_offset is not None and \
@@ -326,15 +327,15 @@ class Serializer(object):
         buf.write(tag.encode('utf-8'))
         if elem.attrib:
             for attr, val in elem.attrib.items():
-                if namespace(attr) not in nsrmap:
+                if parse_utils.namespace(attr) not in nsrmap:
                     continue
-                attr = prefixname(attr, nsrmap)
+                attr = base.prefixname(attr, nsrmap)
                 buf.write(b' ')
                 if attr == 'href':
                     if self.serialize_href(val, item):
                         continue
                 elif attr == 'src':
-                    href = urlnormalize(item.abshref(val))
+                    href = base.urlnormalize(item.abshref(val))
                     if href in self.images:
                         index = self.images[href]
                         self.used_images.add(href)

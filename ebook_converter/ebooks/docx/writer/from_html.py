@@ -1,20 +1,17 @@
+import collections
 import re
-from collections import Counter
 
 from ebook_converter.ebooks.docx.writer.container import create_skeleton, page_size, page_effective_area
-from ebook_converter.ebooks.docx.writer.styles import StylesManager, FloatSpec
-from ebook_converter.ebooks.docx.writer.links import LinksManager
-from ebook_converter.ebooks.docx.writer.images import ImagesManager
 from ebook_converter.ebooks.docx.writer.fonts import FontsManager
-from ebook_converter.ebooks.docx.writer.tables import Table
+from ebook_converter.ebooks.docx.writer.images import ImagesManager
+from ebook_converter.ebooks.docx.writer.links import LinksManager
 from ebook_converter.ebooks.docx.writer.lists import ListsManager
+from ebook_converter.ebooks.docx.writer.styles import StylesManager, FloatSpec
+from ebook_converter.ebooks.docx.writer.tables import Table
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.ebooks.oeb.stylizer import Stylizer as Sz, Style as St
-from ebook_converter.ebooks.oeb.base import XPath, barename
 from ebook_converter.utils.localization import lang_as_iso639_1
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 def lang_for_tag(tag):
@@ -140,7 +137,7 @@ class Block(object):
         self.numbering_id = None
         self.parent_items = None
         self.html_block = html_block
-        self.html_tag = barename(html_block.tag)
+        self.html_tag = parse_utils.barename(html_block.tag)
         self.float_spec = float_spec
         if float_spec is not None:
             float_spec.blocks.append(self)
@@ -387,7 +384,7 @@ class Blocks(object):
     def resolve_language(self):
         default_lang = self.styles_manager.document_lang
         for block in self.all_blocks:
-            count = Counter()
+            count = collections.Counter()
             for run in block.runs:
                 count[run.lang] += 1
             if count:
@@ -473,13 +470,13 @@ class Convert(object):
         self.abshref = self.images_manager.abshref = item.abshref
 
         self.current_lang = lang_for_tag(item.data) or self.styles_manager.document_lang
-        for i, body in enumerate(XPath('//h:body')(item.data)):
+        for i, body in enumerate(base.XPath('//h:body')(item.data)):
             with self.blocks:
                 self.blocks.top_bookmark = self.links_manager.bookmark_for_anchor(self.links_manager.top_anchor, self.current_item, body)
                 self.process_tag(body, stylizer, is_first_tag=i == 0)
 
     def process_tag(self, html_tag, stylizer, is_first_tag=False, float_spec=None):
-        tagname = barename(html_tag.tag)
+        tagname = parse_utils.barename(html_tag.tag)
         tag_style = stylizer.style(html_tag)
         ignore_tag_contents = tagname in {'script', 'style', 'title', 'meta'} or tag_style.is_hidden
         display = tag_style._get('display')
@@ -573,7 +570,7 @@ class Convert(object):
             text = html_tag.text
             if text:
                 block.add_text(text, tag_style, ignore_leading_whitespace=True, is_parent_style=True, link=self.current_link, lang=self.current_lang)
-            elif tagname == 'li' and len(html_tag) and barename(html_tag[0].tag) in ('ul', 'ol') and len(html_tag[0]):
+            elif tagname == 'li' and len(html_tag) and parse_utils.barename(html_tag[0].tag) in ('ul', 'ol') and len(html_tag[0]):
                 block.force_not_empty = True
 
     def add_inline_tag(self, tagname, html_tag, tag_style, stylizer):

@@ -2,10 +2,10 @@ import textwrap
 
 # from lxml.etree import Element
 
+from ebook_converter import constants as const
 from ebook_converter import force_unicode
-from ebook_converter.ebooks.oeb.base import (
-    serialize, OEB_DOCS, barename, OEB_STYLES, XPNSMAP, XHTML, SVG)
-from ebook_converter.ebooks.oeb.polish.container import OPF_NAMESPACES
+from ebook_converter.ebooks.oeb import parse_utils
+from ebook_converter.ebooks.oeb.base import serialize, OEB_DOCS, OEB_STYLES
 from ebook_converter.ebooks.oeb.polish.utils import guess_type
 from ebook_converter.utils.icu import sort_key
 
@@ -38,15 +38,15 @@ def pretty_opf(root):
     # Put all dc: tags first starting with title and author. Preserve order for
     # the rest.
     def dckey(x):
-        return {'title':0, 'creator':1}.get(barename(x.tag), 2)
-    for metadata in root.xpath('//opf:metadata', namespaces=OPF_NAMESPACES):
-        dc_tags = metadata.xpath('./*[namespace-uri()="%s"]' % OPF_NAMESPACES['dc'])
+        return {'title':0, 'creator':1}.get(parse_utils.barename(x.tag), 2)
+    for metadata in root.xpath('//opf:metadata', namespaces=const.OPF_NAMESPACES):
+        dc_tags = metadata.xpath('./*[namespace-uri()="%s"]' % const.DC11_NS)
         dc_tags.sort(key=dckey)
         for x in reversed(dc_tags):
             metadata.insert(0, x)
 
     # Group items in the manifest
-    spine_ids = root.xpath('//opf:spine/opf:itemref/@idref', namespaces=OPF_NAMESPACES)
+    spine_ids = root.xpath('//opf:spine/opf:itemref/@idref', namespaces=const.OPF_NAMESPACES)
     spine_ids = {x:i for i, x in enumerate(spine_ids)}
 
     def manifest_key(x):
@@ -75,7 +75,7 @@ def pretty_opf(root):
             i = sort_key(href)
         return (cat, i)
 
-    for manifest in root.xpath('//opf:manifest', namespaces=OPF_NAMESPACES):
+    for manifest in root.xpath('//opf:manifest', namespaces=const.OPF_NAMESPACES):
         try:
             children = sorted(manifest, key=manifest_key)
         except AttributeError:
@@ -84,19 +84,11 @@ def pretty_opf(root):
             manifest.insert(0, x)
 
 
-SVG_TAG = SVG('svg')
-BLOCK_TAGS = frozenset(map(XHTML, (
-    'address', 'article', 'aside', 'audio', 'blockquote', 'body', 'canvas', 'col', 'colgroup', 'dd',
-    'div', 'dl', 'dt', 'fieldset', 'figcaption', 'figure', 'footer', 'form',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'li',
-    'noscript', 'ol', 'output', 'p', 'pre', 'script', 'section', 'style', 'table', 'tbody', 'td',
-    'tfoot', 'th', 'thead', 'tr', 'ul', 'video', 'img'))) | {SVG_TAG}
-
 
 def isblock(x):
     if callable(x.tag) or not x.tag:
         return True
-    if x.tag in BLOCK_TAGS:
+    if x.tag in const.XHTML_BLOCK_TAGS | {const.SVG_SVG}:
         return True
     return False
 
@@ -141,12 +133,12 @@ def pretty_block(parent, level=1, indent='  '):
     that contain only other block tags '''
     if not parent.text or isspace(parent.text):
         parent.text = ''
-    nn = '\n' if hasattr(parent.tag, 'strip') and barename(parent.tag) in {'tr', 'td', 'th'} else '\n\n'
+    nn = '\n' if hasattr(parent.tag, 'strip') and parse_utils.barename(parent.tag) in {'tr', 'td', 'th'} else '\n\n'
     parent.text = parent.text + nn + (indent * level)
     for i, child in enumerate(parent):
         if isblock(child) and has_only_blocks(child):
             pretty_block(child, level=level+1, indent=indent)
-        elif child.tag == SVG_TAG:
+        elif child.tag == const.SVG_SVG:
             pretty_xml_tree(child, level=level, indent=indent)
         l = level
         if i == len(parent) - 1:
@@ -172,13 +164,13 @@ def pretty_html_tree(container, root):
         child.tail = '\n\n'
         if hasattr(child.tag, 'endswith') and child.tag.endswith('}head'):
             pretty_xml_tree(child)
-    for body in root.findall('h:body', namespaces=XPNSMAP):
+    for body in root.findall('h:body', namespaces=const.XPNSMAP):
         pretty_block(body)
         # Special case the handling of a body that contains a single block tag
         # with all content. In this case we prettify the containing block tag
         # even if it has non block children.
         if (len(body) == 1 and not callable(body[0].tag) and isblock(body[0]) and not has_only_blocks(
-            body[0]) and barename(body[0].tag) not in (
+            body[0]) and parse_utils.barename(body[0].tag) not in (
                     'pre', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6') and len(body[0]) > 0):
             pretty_block(body[0], level=2)
 

@@ -5,10 +5,8 @@ import os
 import re
 import urllib.parse
 
-# from PyQt5.Qt import (
-    # Qt, QByteArray, QBuffer, QIODevice, QColor, QImage, QPainter, QSvgRenderer)
-
-from ebook_converter.ebooks.oeb.base import XHTML, XLINK
+from ebook_converter import constants as const
+from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.base import SVG_MIME, PNG_MIME
 from ebook_converter.ebooks.oeb.base import xml2str, xpath
 from ebook_converter.ebooks.oeb.base import urlnormalize
@@ -17,10 +15,7 @@ from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils.imghdr import what
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
-
-IMAGE_TAGS = {XHTML('img'), XHTML('object')}
+IMAGE_TAGS = {base.tag('xhtml', 'img'), base.tag('xhtml', 'object')}
 KEEP_ATTRS = {'class', 'style', 'width', 'height', 'align'}
 
 
@@ -113,7 +108,7 @@ class SVGRasterizer(object):
             svg = item.data
         hrefs = self.oeb.manifest.hrefs
         for elem in xpath(svg, '//svg:*[@xl:href]'):
-            href = urlnormalize(elem.attrib[XLINK('href')])
+            href = urlnormalize(elem.attrib[base.tag('xlink', 'href')])
             path = urllib.parse.urldefrag(href)[0]
             if not path:
                 continue
@@ -126,7 +121,7 @@ class SVGRasterizer(object):
             with PersistentTemporaryFile(suffix='.'+ext) as pt:
                 pt.write(data)
                 self.temp_files.append(pt.name)
-            elem.attrib[XLINK('href')] = pt.name
+            elem.attrib[base.tag('xlink', 'href')] = pt.name
         return svg
 
     def stylizer(self, item):
@@ -171,7 +166,7 @@ class SVGRasterizer(object):
         href = os.path.splitext(item.href)[0] + '.png'
         id, href = manifest.generate(item.id, href)
         manifest.add(id, href, PNG_MIME, data=data)
-        img = elem.makeelement(XHTML('img'), src=item.relhref(href))
+        img = elem.makeelement(base.tag('xhtml', 'img'), src=item.relhref(href))
         elem.getparent().replace(elem, img)
         for prop in ('width', 'height'):
             if prop in elem.attrib:
@@ -208,7 +203,7 @@ class SVGRasterizer(object):
             id, href = manifest.generate(svgitem.id, href)
             manifest.add(id, href, PNG_MIME, data=data)
             self.images[key] = href
-        elem.tag = XHTML('img')
+        elem.tag = base.tag('xhtml', 'img')
         for attr in elem.attrib:
             if attr not in KEEP_ATTRS:
                 del elem.attrib[attr]

@@ -1,20 +1,16 @@
 import re
 
-from lxml import etree, html
+from lxml import etree
+from lxml import html
 
+from ebook_converter import constants as const
 from ebook_converter import xml_replace_entities, force_unicode
-from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-RECOVER_PARSER = etree.XMLParser(recover=True, no_network=True, resolve_entities=False)
-XHTML_NS     = 'http://www.w3.org/1999/xhtml'
-XMLNS_NS     = 'http://www.w3.org/2000/xmlns/'
+RECOVER_PARSER = etree.XMLParser(recover=True, no_network=True,
+                                 resolve_entities=False)
 
 
 class NotHTML(Exception):
@@ -33,15 +29,15 @@ def namespace(name):
 
 
 def XHTML(name):
-    return '{%s}%s' % (XHTML_NS, name)
+    return '{%s}%s' % (const.XHTML_NS, name)
 
 
 def xpath(elem, expr):
-    return elem.xpath(expr, namespaces={'h':XHTML_NS})
+    return elem.xpath(expr, namespaces={'h':const.XHTML_NS})
 
 
 def XPath(expr):
-    return etree.XPath(expr, namespaces={'h':XHTML_NS})
+    return etree.XPath(expr, namespaces={'h':const.XHTML_NS})
 
 
 META_XP = XPath('/h:html/h:head/h:meta[@http-equiv="Content-Type"]')
@@ -111,7 +107,7 @@ def _html4_parse(data):
             elem.text = elem.text.strip('-')
     data = etree.tostring(data, encoding='unicode')
 
-    data = safe_xml_fromstring(data)
+    data = etree.fromstring(data)
     return data
 
 
@@ -204,14 +200,14 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
 
     # Try with more & more drastic measures to parse
     try:
-        data = safe_xml_fromstring(data, recover=False)
+        data = etree.fromstring(data)
         check_for_html5(pre, data)
     except (HTML5Doc, etree.XMLSyntaxError):
         log.debug('Initial parse failed, using more'
                 ' forgiving parsers')
         raw = data = xml_replace_entities(raw)
         try:
-            data = safe_xml_fromstring(data, recover=False)
+            data = etree.fromstring(data)
             check_for_html5(pre, data)
         except (HTML5Doc, etree.XMLSyntaxError):
             log.debug('Parsing %s as HTML' % filename)
@@ -240,7 +236,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
         if barename(data.tag) in non_html_file_tags:
             raise NotHTML(data.tag)
         log.warn('File %r does not appear to be (X)HTML'%filename)
-        nroot = safe_xml_fromstring('<html></html>')
+        nroot = etree.fromstring('<html></html>')
         has_body = False
         for child in list(data):
             if isinstance(child.tag, (str, bytes)) and barename(child.tag) == 'body':
@@ -249,7 +245,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
         parent = nroot
         if not has_body:
             log.warn('File %r appears to be a HTML fragment'%filename)
-            nroot = safe_xml_fromstring('<html><body/></html>')
+            nroot = etree.fromstring('<html><body/></html>')
             parent = nroot[0]
         for child in list(data.iter()):
             oparent = child.getparent()
@@ -261,16 +257,16 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
     # Force into the XHTML namespace
     if not namespace(data.tag):
         log.warn('Forcing', filename, 'into XHTML namespace')
-        data.attrib['xmlns'] = XHTML_NS
+        data.attrib['xmlns'] = const.XHTML_NS
         data = etree.tostring(data, encoding='unicode')
 
         try:
-            data = safe_xml_fromstring(data, recover=False)
+            data = etree.fromstring(data)
         except:
             data = data.replace(':=', '=').replace(':>', '>')
             data = data.replace('<http:/>', '')
             try:
-                data = safe_xml_fromstring(data, recover=False)
+                data = etree.fromstring(data)
             except etree.XMLSyntaxError:
                 log.warn('Stripping comments from %s'%
                         filename)
@@ -281,17 +277,17 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
                     '')
                 data = data.replace("<?xml version='1.0' encoding='utf-8'??>", '')
                 try:
-                    data = safe_xml_fromstring(data)
+                    data = etree.fromstring(data)
                 except etree.XMLSyntaxError:
                     log.warn('Stripping meta tags from %s'% filename)
                     data = re.sub(r'<meta\s+[^>]+?>', '', data)
-                    data = safe_xml_fromstring(data)
-    elif namespace(data.tag) != XHTML_NS:
+                    data = etree.fromstring(data)
+    elif namespace(data.tag) != const.XHTML_NS:
         # OEB_DOC_NS, but possibly others
         ns = namespace(data.tag)
         attrib = dict(data.attrib)
         nroot = etree.Element(XHTML('html'),
-            nsmap={None: XHTML_NS}, attrib=attrib)
+            nsmap={None: const.XHTML_NS}, attrib=attrib)
         for elem in data.iterdescendants():
             if isinstance(elem.tag, (str, bytes)) and \
                 namespace(elem.tag) == ns:
@@ -301,7 +297,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
         data = nroot
 
     # Remove non default prefixes referring to the XHTML namespace
-    data = ensure_namespace_prefixes(data, {None: XHTML_NS})
+    data = ensure_namespace_prefixes(data, {None: const.XHTML_NS})
 
     data = merge_multiple_html_heads_and_bodies(data, log)
     # Ensure has a <head/>

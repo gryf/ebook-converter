@@ -2,7 +2,11 @@ import os
 import re
 import shutil
 import urllib.parse
+import uuid
 
+from ebook_converter import constants as const
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.customize.conversion import OutputFormatPlugin
 from ebook_converter.customize.conversion import OptionRecommendation
 
@@ -132,39 +136,37 @@ class EPUBOutput(OutputFormatPlugin):
     recommendations = {('pretty_print', True, OptionRecommendation.HIGH)}
 
     def workaround_webkit_quirks(self):  # {{{
-        from ebook_converter.ebooks.oeb.base import XPath
         for x in self.oeb.spine:
             root = x.data
-            body = XPath('//h:body')(root)
+            body = base.XPath('//h:body')(root)
             if body:
                 body = body[0]
 
             if not hasattr(body, 'xpath'):
                 continue
 
-            for pre in XPath('//h:pre')(body):
+            for pre in base.XPath('//h:pre')(body):
                 if not pre.text and len(pre) == 0:
                     pre.tag = 'div'
     # }}}
 
     def upshift_markup(self):  # {{{
         'Upgrade markup to comply with XHTML 1.1 where possible'
-        from ebook_converter.ebooks.oeb.base import XPath, XML
         for x in self.oeb.spine:
             root = x.data
-            if (not root.get(XML('lang'))) and (root.get('lang')):
-                root.set(XML('lang'), root.get('lang'))
-            body = XPath('//h:body')(root)
+            if (not root.get(base.tag('xml', 'lang'))) and (root.get('lang')):
+                root.set(base.tag('xml', 'lang'), root.get('lang'))
+            body = base.XPath('//h:body')(root)
             if body:
                 body = body[0]
 
             if not hasattr(body, 'xpath'):
                 continue
-            for u in XPath('//h:u')(root):
+            for u in base.XPath('//h:u')(root):
                 u.tag = 'span'
 
             seen_ids, seen_names = set(), set()
-            for x in XPath('//*[@id or @name]')(root):
+            for x in base.XPath('//*[@id or @name]')(root):
                 eid, name = x.get('id', None), x.get('name', None)
                 if eid:
                     if eid in seen_ids:
@@ -223,28 +225,27 @@ class EPUBOutput(OutputFormatPlugin):
             first = next(iter(self.oeb.spine))
             self.oeb.toc.add('Start', first.href)
 
-        from ebook_converter.ebooks.oeb.base import OPF
         identifiers = oeb.metadata['identifier']
-        uuid = None
+        _uuid = None
         for x in identifiers:
-            if x.get(OPF('scheme'), None).lower() == 'uuid' or str(x).startswith('urn:uuid:'):
-                uuid = str(x).split(':')[-1]
+            if (x.get(base.tag('opf', 'scheme'), None).lower() == 'uuid' or
+                    str(x).startswith('urn:uuid:')):
+                _uuid = str(x).split(':')[-1]
                 break
         encrypted_fonts = getattr(input_plugin, 'encrypted_fonts', [])
 
-        if uuid is None:
+        if _uuid is None:
             self.log.warn('No UUID identifier found')
-            from uuid import uuid4
-            uuid = str(uuid4())
-            oeb.metadata.add('identifier', uuid, scheme='uuid', id=uuid)
+            _uuid = str(uuid.uuid4())
+            oeb.metadata.add('identifier', _uuid, scheme='uuid', id=_uuid)
 
-        if encrypted_fonts and not uuid.startswith('urn:uuid:'):
+        if encrypted_fonts and not _uuid.startswith('urn:uuid:'):
             # Apparently ADE requires this value to start with urn:uuid:
             # for some absurd reason, or it will throw a hissy fit and refuse
             # to use the obfuscated fonts.
             for x in identifiers:
-                if str(x) == uuid:
-                    x.content = 'urn:uuid:'+uuid
+                if str(x) == _uuid:
+                    x.content = 'urn:uuid:' + _uuid
 
         with TemporaryDirectory('_epub_output') as tdir:
             from ebook_converter.customize.ui import plugin_for_output_format
@@ -264,7 +265,7 @@ class EPUBOutput(OutputFormatPlugin):
                 self.upgrade_to_epub3(tdir, opf)
             encryption = None
             if encrypted_fonts:
-                encryption = self.encrypt_fonts(encrypted_fonts, tdir, uuid)
+                encryption = self.encrypt_fonts(encrypted_fonts, tdir, _uuid)
 
             from ebook_converter.ebooks.epub import initialize_container
             with initialize_container(output_path, os.path.basename(opf),
@@ -312,12 +313,12 @@ class EPUBOutput(OutputFormatPlugin):
         except EnvironmentError:
             pass
 
-    def encrypt_fonts(self, uris, tdir, uuid):  # {{{
+    def encrypt_fonts(self, uris, tdir, _uuid):  # {{{
         from ebook_converter.polyglot.binary import from_hex_bytes
 
-        key = re.sub(r'[^a-fA-F0-9]', '', uuid)
+        key = re.sub(r'[^a-fA-F0-9]', '', _uuid)
         if len(key) < 16:
-            raise ValueError('UUID identifier %r is invalid'%uuid)
+            raise ValueError('UUID identifier %r is invalid'% _uuid)
         key = bytearray(from_hex_bytes((key + key)[:32]))
         paths = []
         with CurrentDir(tdir):
@@ -335,7 +336,8 @@ class EPUBOutput(OutputFormatPlugin):
                     if len(data) >= 1024:
                         data = bytearray(data)
                         f.seek(0)
-                        f.write(bytes(bytearray(data[i] ^ key[i%16] for i in range(1024))))
+                        f.write(bytes(bytearray(data[i] ^ key[i%16]
+                                                for i in range(1024))))
                     else:
                         self.log.warn('Font', path, 'is invalid, ignoring')
                 if not isinstance(uri, str):
@@ -374,11 +376,10 @@ class EPUBOutput(OutputFormatPlugin):
     # }}}
 
     def workaround_ade_quirks(self):  # {{{
-        '''
+        """
         Perform various markup transforms to get the output to render correctly
         in the quirky ADE.
-        '''
-        from ebook_converter.ebooks.oeb.base import XPath, XHTML, barename, urlunquote
+        """
 
         stylesheet = self.oeb.manifest.main_stylesheet
 
@@ -388,23 +389,23 @@ class EPUBOutput(OutputFormatPlugin):
         for node in self.oeb.toc.iter():
             href = getattr(node, 'href', None)
             if hasattr(href, 'partition'):
-                base, _, frag = href.partition('#')
-                frag = urlunquote(frag)
+                _base, _, frag = href.partition('#')
+                frag = base.urlunquote(frag)
                 if frag and frag_pat.match(frag) is None:
                     self.log.warn(
                             'Removing fragment identifier %r from TOC as Adobe Digital Editions cannot handle it'%frag)
-                    node.href = base
+                    node.href = _base
 
         for x in self.oeb.spine:
             root = x.data
-            body = XPath('//h:body')(root)
+            body = base.XPath('//h:body')(root)
             if body:
                 body = body[0]
 
             if hasattr(body, 'xpath'):
                 # remove <img> tags with empty src elements
                 bad = []
-                for x in XPath('//h:img')(body):
+                for x in base.XPath('//h:img')(body):
                     src = x.get('src', '').strip()
                     if src in ('', '#') or src.startswith('http:'):
                         bad.append(x)
@@ -412,7 +413,7 @@ class EPUBOutput(OutputFormatPlugin):
                     img.getparent().remove(img)
 
                 # Add id attribute to <a> tags that have name
-                for x in XPath('//h:a[@name]')(body):
+                for x in base.XPath('//h:a[@name]')(body):
                     if not x.get('id', False):
                         x.set('id', x.get('name'))
                     # The delightful epubcheck has started complaining about <a> tags that
@@ -420,19 +421,19 @@ class EPUBOutput(OutputFormatPlugin):
                     x.attrib.pop('name')
 
                 # Replace <br> that are children of <body> as ADE doesn't handle them
-                for br in XPath('./h:br')(body):
+                for br in base.XPath('./h:br')(body):
                     if br.getparent() is None:
                         continue
                     try:
                         prior = next(br.itersiblings(preceding=True))
-                        priortag = barename(prior.tag)
+                        priortag = parse_utils.barename(prior.tag)
                         priortext = prior.tail
                     except:
                         priortag = 'body'
                         priortext = body.text
                     if priortext:
                         priortext = priortext.strip()
-                    br.tag = XHTML('p')
+                    br.tag = base.tag('xhtml', 'p')
                     br.text = '\u00a0'
                     style = br.get('style', '').split(';')
                     style = list(filter(None, map(lambda x: x.strip(), style)))
@@ -446,44 +447,44 @@ class EPUBOutput(OutputFormatPlugin):
                         style.append('height:0pt')
                     br.set('style', '; '.join(style))
 
-            for tag in XPath('//h:embed')(root):
+            for tag in base.XPath('//h:embed')(root):
                 tag.getparent().remove(tag)
-            for tag in XPath('//h:object')(root):
+            for tag in base.XPath('//h:object')(root):
                 if tag.get('type', '').lower().strip() in {'image/svg+xml', 'application/svg+xml'}:
                     continue
                 tag.getparent().remove(tag)
 
-            for tag in XPath('//h:title|//h:style')(root):
+            for tag in base.XPath('//h:title|//h:style')(root):
                 if not tag.text:
                     tag.getparent().remove(tag)
-            for tag in XPath('//h:script')(root):
+            for tag in base.XPath('//h:script')(root):
                 if (not tag.text and not tag.get('src', False) and tag.get('type', None) != 'text/x-mathjax-config'):
                     tag.getparent().remove(tag)
-            for tag in XPath('//h:body/descendant::h:script')(root):
+            for tag in base.XPath('//h:body/descendant::h:script')(root):
                 tag.getparent().remove(tag)
 
-            formchildren = XPath('./h:input|./h:button|./h:textarea|'
+            formchildren = base.XPath('./h:input|./h:button|./h:textarea|'
                     './h:label|./h:fieldset|./h:legend')
-            for tag in XPath('//h:form')(root):
+            for tag in base.XPath('//h:form')(root):
                 if formchildren(tag):
                     tag.getparent().remove(tag)
                 else:
                     # Not a real form
-                    tag.tag = XHTML('div')
+                    tag.tag = base.tag('xhtml', 'div')
 
-            for tag in XPath('//h:center')(root):
-                tag.tag = XHTML('div')
+            for tag in base.XPath('//h:center')(root):
+                tag.tag = base.tag('xhtml', 'div')
                 tag.set('style', 'text-align:center')
             # ADE can't handle &amp; in an img url
-            for tag in XPath('//h:img[@src]')(root):
+            for tag in base.XPath('//h:img[@src]')(root):
                 tag.set('src', tag.get('src', '').replace('&', ''))
 
             # ADE whimpers in fright when it encounters a <td> outside a
             # <table>
-            in_table = XPath('ancestor::h:table')
-            for tag in XPath('//h:td|//h:tr|//h:th')(root):
+            in_table = base.XPath('ancestor::h:table')
+            for tag in base.XPath('//h:td|//h:tr|//h:th')(root):
                 if not in_table(tag):
-                    tag.tag = XHTML('div')
+                    tag.tag = base.tag('xhtml', 'div')
 
             # ADE fails to render non breaking hyphens/soft hyphens/zero width spaces
             special_chars = re.compile('[\u200b\u00ad]')
@@ -498,7 +499,7 @@ class EPUBOutput(OutputFormatPlugin):
             if stylesheet is not None:
                 # ADE doesn't render lists correctly if they have left margins
                 from css_parser.css import CSSRule
-                for lb in XPath('//h:ul[@class]|//h:ol[@class]')(root):
+                for lb in base.XPath('//h:ul[@class]|//h:ol[@class]')(root):
                     sel = '.'+lb.get('class')
                     for rule in stylesheet.data.cssRules.rulesOfType(CSSRule.STYLE_RULE):
                         if sel == rule.selectorList.selectorText:
@@ -519,11 +520,10 @@ class EPUBOutput(OutputFormatPlugin):
         '''
         Perform toc link transforms to alleviate slow loading.
         '''
-        from ebook_converter.ebooks.oeb.base import XPath
         from ebook_converter.ebooks.oeb.polish.toc import item_at_top
 
         def frag_is_at_top(root, frag):
-            elem = XPath('//*[@id="%s" or @name="%s"]'%(frag, frag))(root)
+            elem = base.XPath('//*[@id="%s" or @name="%s"]'%(frag, frag))(root)
             if elem:
                 elem = elem[0]
             else:

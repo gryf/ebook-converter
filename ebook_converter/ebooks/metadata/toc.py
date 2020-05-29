@@ -10,17 +10,13 @@ from lxml.builder import ElementMaker
 
 from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter.ebooks.chardet import xml_to_unicode
-from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.polyglot.urllib import unquote
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2010, Kovid Goyal <kovid at kovidgoyal.net>'
-
 NCX_NS = "http://www.daisy.org/z3986/2005/ncx/"
 CALIBRE_NS = "http://calibre.kovidgoyal.net/2009/metadata"
-NSMAP = {None: NCX_NS, 'calibre':CALIBRE_NS}
+NSMAP = {None: NCX_NS, 'calibre': CALIBRE_NS}
 E = ElementMaker(namespace=NCX_NS, nsmap=NSMAP)
 C = ElementMaker(namespace=CALIBRE_NS, nsmap=NSMAP)
 
@@ -30,8 +26,10 @@ def parse_html_toc(data):
     from ebook_converter.utils.cleantext import clean_xml_chars
     from lxml import etree
     if isinstance(data, bytes):
-        data = xml_to_unicode(data, strip_encoding_pats=True, resolve_entities=True)[0]
-    root = parse(clean_xml_chars(data), maybe_xhtml=True, keep_doctype=False, sanitize_names=True)
+        data = xml_to_unicode(data, strip_encoding_pats=True,
+                              resolve_entities=True)[0]
+    root = parse(clean_xml_chars(data), maybe_xhtml=True, keep_doctype=False,
+                 sanitize_names=True)
     for a in root.xpath('//*[@href and local-name()="a"]'):
         purl = urllib.parse.urlparse(unquote(a.get('href')))
         href, fragment = purl[2], purl[5]
@@ -48,8 +46,8 @@ def parse_html_toc(data):
 class TOC(list):
 
     def __init__(self, href=None, fragment=None, text=None, parent=None,
-            play_order=0, base_path=os.getcwd(), type='unknown', author=None,
-            description=None, toc_thumbnail=None):
+                 play_order=0, base_path=os.getcwd(), type='unknown',
+                 author=None, description=None, toc_thumbnail=None):
         self.href = href
         self.fragment = fragment
         if not self.fragment:
@@ -64,7 +62,7 @@ class TOC(list):
         self.toc_thumbnail = toc_thumbnail
 
     def __str__(self):
-        lines = ['TOC: %s#%s %s'%(self.href, self.fragment, self.text)]
+        lines = ['TOC: %s#%s %s' % (self.href, self.fragment, self.text)]
         for child in self:
             c = str(child).splitlines()
             for l in c:
@@ -91,12 +89,14 @@ class TOC(list):
         entry.parent = None
 
     def add_item(self, href, fragment, text, play_order=None, type='unknown',
-            author=None, description=None, toc_thumbnail=None):
+                 author=None, description=None, toc_thumbnail=None):
         if play_order is None:
-            play_order = (self[-1].play_order if len(self) else self.play_order) + 1
+            play_order = (self[-1].play_order
+                          if len(self) else self.play_order) + 1
         self.append(TOC(href=href, fragment=fragment, text=text, parent=self,
                         base_path=self.base_path, play_order=play_order,
-                        type=type, author=author, description=description, toc_thumbnail=toc_thumbnail))
+                        type=type, author=author, description=description,
+                        toc_thumbnail=toc_thumbnail))
         return self[-1]
 
     def top_level_items(self):
@@ -121,7 +121,10 @@ class TOC(list):
 
     @property
     def abspath(self):
-        'Return the file this toc entry points to as a absolute path to a file on the system.'
+        """
+        Return the file this toc entry points to as a absolute path to a file
+        on the system.
+        """
 
         if self.href is None:
             return None
@@ -136,8 +139,9 @@ class TOC(list):
             toc = toc['toc']
         if toc is None:
             try:
-                toc = opfreader.soup.find('guide').find('reference', attrs={'type':'toc'})['href']
-            except:
+                toc = (opfreader.soup.find('guide')
+                       .find('reference', attrs={'type': 'toc'})['href'])
+            except Exception:
                 for item in opfreader.manifest:
                     if 'toc' in item.href().lower():
                         toc = item.href()
@@ -151,13 +155,15 @@ class TOC(list):
                     toc = os.path.join(self.base_path, toc)
                 try:
                     if not os.path.exists(toc):
-                        bn  = os.path.basename(toc)
-                        bn  = bn.replace('_top.htm', '_toc.htm')  # Bug in BAEN OPF files
+                        bn = os.path.basename(toc)
+                        # Bug in BAEN OPF files
+                        bn = bn.replace('_top.htm', '_toc.htm')
                         toc = os.path.join(os.path.dirname(toc), bn)
 
                     self.read_html_toc(toc)
-                except:
-                    print('WARNING: Could not read Table of Contents. Continuing anyway.')
+                except Exception:
+                    print('WARNING: Could not read Table of Contents. '
+                          'Continuing anyway.')
             else:
                 path = opfreader.manifest.item(toc.lower())
                 path = getattr(path, 'path', path)
@@ -177,9 +183,9 @@ class TOC(list):
         self.base_path = os.path.dirname(toc)
         if root is None:
             with open(toc, 'rb') as f:
-                raw  = xml_to_unicode(f.read(), assume_utf8=True,
-                        strip_encoding_pats=True)[0]
-            root = safe_xml_fromstring(raw)
+                raw = xml_to_unicode(f.read(), assume_utf8=True,
+                                     strip_encoding_pats=True)[0]
+            root = etree.fromstring(raw)
         xpn = {'re': 'http://exslt.org/regular-expressions'}
         XPath = functools.partial(etree.XPath, namespaces=xpn)
 
@@ -197,7 +203,7 @@ class TOC(list):
         def process_navpoint(np, dest):
             try:
                 play_order = int(get_attr(np, 1))
-            except:
+            except Exception:
                 play_order = 1
             href = fragment = text = None
             nd = dest
@@ -207,7 +213,7 @@ class TOC(list):
                 text = ''
                 for txt in txt_path(nl):
                     text += etree.tostring(txt, method='text',
-                            encoding='unicode', with_tail=False)
+                                           encoding='unicode', with_tail=False)
                 content = content_path(np)
                 if content and text:
                     content = content[0]
@@ -242,17 +248,14 @@ class TOC(list):
                 self.add_item(href, fragment, txt)
 
     def render(self, stream, uid):
-        root = E.ncx(
-                E.head(
-                    E.meta(name='dtb:uid', content=str(uid)),
-                    E.meta(name='dtb:depth', content=str(self.depth())),
-                    E.meta(name='dtb:generator', content='%s (%s)'%(__appname__,
-                        __version__)),
-                    E.meta(name='dtb:totalPageCount', content='0'),
-                    E.meta(name='dtb:maxPageNumber', content='0'),
-                ),
-                E.docTitle(E.text('Table of Contents')),
-        )
+        root = E.ncx(E.head(E.meta(name='dtb:uid', content=str(uid)),
+                            E.meta(name='dtb:depth',
+                                   content=str(self.depth())),
+                            E.meta(name='dtb:generator', content='%s (%s)' %
+                                   (__appname__, __version__)),
+                            E.meta(name='dtb:totalPageCount', content='0'),
+                            E.meta(name='dtb:maxPageNumber', content='0')),
+                     E.docTitle(E.text('Table of Contents')))
         navmap = E.navMap()
         root.append(navmap)
         root.set('{http://www.w3.org/XML/1998/namespace}lang', 'en')
@@ -263,12 +266,12 @@ class TOC(list):
             if not text:
                 text = ''
             c[1] += 1
-            item_id = 'num_%d'%c[1]
+            item_id = 'num_%d' % c[1]
             text = clean_xml_chars(text)
             elem = E.navPoint(
                     E.navLabel(E.text(re.sub(r'\s+', ' ', text))),
                     E.content(src=str(np.href)+(('#' + str(np.fragment))
-                        if np.fragment else '')),
+                                                if np.fragment else '')),
                     id=item_id,
                     playOrder=str(np.play_order)
             )
@@ -282,7 +285,8 @@ class TOC(list):
                 try:
                     elem.append(C.meta(desc, name='description'))
                 except ValueError:
-                    elem.append(C.meta(clean_xml_chars(desc), name='description'))
+                    elem.append(C.meta(clean_xml_chars(desc),
+                                       name='description'))
             idx = getattr(np, 'toc_thumbnail', None)
             if idx:
                 elem.append(C.meta(idx, name='toc_thumbnail'))
@@ -293,5 +297,5 @@ class TOC(list):
         for np in self:
             navpoint(navmap, np)
         raw = etree.tostring(root, encoding='utf-8', xml_declaration=True,
-                pretty_print=True)
+                             pretty_print=True)
         stream.write(raw)

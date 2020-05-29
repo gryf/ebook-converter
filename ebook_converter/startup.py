@@ -10,7 +10,7 @@ import builtins
 import locale
 import sys
 
-from ebook_converter import constants
+from ebook_converter import constants_old
 
 # For backwards compat with some third party plugins
 builtins.__dict__['dynamic_property'] = lambda func: func(None)
@@ -41,8 +41,8 @@ if not _run_once:
 
     #
     # Platform specific modules
-    if constants.iswindows:
-        winutil, winutilerror = constants.plugins['winutil']
+    if constants_old.iswindows:
+        winutil, winutilerror = constants_old.plugins['winutil']
         if not winutil:
             raise RuntimeError('Failed to load the winutil plugin: %s'%winutilerror)
         if len(sys.argv) > 1 and not isinstance(sys.argv[1], str):
@@ -57,8 +57,8 @@ if not _run_once:
 
     #
     # Convert command line arguments to unicode
-    enc = constants.preferred_encoding
-    if constants.isosx:
+    enc = constants_old.preferred_encoding
+    if constants_old.isosx:
         enc = 'utf-8'
     for i in range(1, len(sys.argv)):
         if not isinstance(sys.argv[i], str):
@@ -66,7 +66,7 @@ if not _run_once:
 
     #
     # Ensure that the max number of open files is at least 1024
-    if constants.iswindows:
+    if constants_old.iswindows:
         # See https://msdn.microsoft.com/en-us/library/6e3b887c.aspx
         if hasattr(winutil, 'setmaxstdio'):
             winutil.setmaxstdio(max(1024, winutil.getmaxstdio()))
@@ -77,7 +77,7 @@ if not _run_once:
             try:
                 resource.setrlimit(resource.RLIMIT_NOFILE, (min(1024, hard), hard))
             except Exception:
-                if constants.DEBUG:
+                if constants_old.DEBUG:
                     import traceback
                     traceback.print_exc()
 
@@ -122,7 +122,7 @@ if not _run_once:
         bound_signal.connect(slot, **kw)
     builtins.__dict__['connect_lambda'] = connect_lambda
 
-    if constants.islinux or constants.isosx or constants.isfreebsd:
+    if constants_old.islinux or constants_old.isosx or constants_old.isfreebsd:
         # Name all threads at the OS level created using the threading module, see
         # http://bugs.python.org/issue15500
         import threading
@@ -140,7 +140,7 @@ if not _run_once:
                 if name:
                     if isinstance(name, str):
                         name = name.encode('ascii', 'replace').decode('ascii')
-                    constants.plugins['speedup'][0].set_thread_name(name[:15])
+                    constants_old.plugins['speedup'][0].set_thread_name(name[:15])
             except Exception:
                 pass  # Don't care about failure to set name
         threading.Thread.start = new_start
@@ -152,7 +152,7 @@ def test_lopen():
     n = 'f\xe4llen'
     print('testing open()')
 
-    if constants.iswindows:
+    if constants_old.iswindows:
         import msvcrt, win32api
 
         def assert_not_inheritable(f):

@@ -1,11 +1,12 @@
 """
 Convert an ODT file into a Open Ebook
 """
-import os, logging
+import logging
+import os
 
-from lxml import etree
 from css_parser import CSSParser
 from css_parser.css import CSSRule
+from lxml import etree
 
 from odf.odf2xhtml import ODF2XHTML
 from odf.opendocument import load as odLoad
@@ -14,13 +15,7 @@ from odf.namespaces import TEXTNS as odTEXTNS
 
 from ebook_converter import CurrentDir, walk
 from ebook_converter.ebooks.oeb.base import _css_logger
-from ebook_converter.utils.xml_parse import safe_xml_fromstring
 from ebook_converter.polyglot.builtins import as_bytes
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
 
 
 class Extract(ODF2XHTML):
@@ -46,7 +41,7 @@ class Extract(ODF2XHTML):
                 ol.set('start', val)
 
     def fix_markup(self, html, log):
-        root = safe_xml_fromstring(html)
+        root = etree.fromstring(html)
         self.filter_css(root, log)
         self.extract_css(root, log)
         self.epubify_markup(root, log)

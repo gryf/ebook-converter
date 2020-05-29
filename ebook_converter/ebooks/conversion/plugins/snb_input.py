@@ -1,27 +1,33 @@
 import os
 
+from lxml import etree
+
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.utils.filenames import ascii_filename
 
 
-__license__ = 'GPL 3'
-__copyright__ = '2010, Li Fanxi <lifanxi@freemindworld.com>'
-__docformat__ = 'restructuredtext en'
-
-HTML_TEMPLATE = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>%s</title></head><body>\n%s\n</body></html>'
+HTML_TEMPLATE = ('<html><head><meta http-equiv="Content-Type" '
+                 'content="text/html; charset=utf-8"/><title>%s</title>'
+                 '</head><body>\n%s\n</body></html>')
 
 
 def html_encode(s):
-    return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&apos;').replace('\n', '<br/>').replace(' ', '&nbsp;')  # noqa
+    return (s.replace('&', '&amp;')
+            .replace('<', '&lt;')
+            .replace('>', '&gt;')
+            .replace('"', '&quot;')
+            .replace("'", '&apos;')
+            .replace('\n', '<br/>')
+            .replace(' ', '&nbsp;'))
 
 
 class SNBInput(InputFormatPlugin):
 
-    name        = 'SNB Input'
-    author      = 'Li Fanxi'
+    name = 'SNB Input'
+    author = 'Li Fanxi'
     description = 'Convert SNB files to OEB'
-    file_types  = {'snb'}
+    file_types = {'snb'}
     commit_name = 'snb_input'
 
     options = set()
@@ -32,13 +38,12 @@ class SNBInput(InputFormatPlugin):
 
         from ebook_converter.ebooks.oeb.base import DirContainer
         from ebook_converter.ebooks.snb.snbfile import SNBFile
-        from ebook_converter.utils.xml_parse import safe_xml_fromstring
 
         log.debug("Parsing SNB file...")
         snbFile = SNBFile()
         try:
             snbFile.Parse(stream)
-        except:
+        except Exception:
             raise ValueError("Invalid SNB file")
         if not snbFile.IsValid():
             log.debug("Invalid SNB file")
@@ -46,27 +51,28 @@ class SNBInput(InputFormatPlugin):
         log.debug("Handle meta data ...")
         from ebook_converter.ebooks.conversion.plumber import create_oebbook
         oeb = create_oebbook(log, None, options,
-                encoding=options.input_encoding, populate=False)
+                             encoding=options.input_encoding, populate=False)
         meta = snbFile.GetFileStream('snbf/book.snbf')
         if meta is not None:
-            meta = safe_xml_fromstring(meta)
-            l = {'title'    : './/head/name',
-                  'creator'  : './/head/author',
-                  'language' : './/head/language',
-                  'generator': './/head/generator',
-                  'publisher': './/head/publisher',
-                  'cover'    : './/head/cover', }
+            meta = etree.fromstring(meta)
+            item_map = {'title': './/head/name',
+                        'creator': './/head/author',
+                        'language': './/head/language',
+                        'generator': './/head/generator',
+                        'publisher': './/head/publisher',
+                        'cover': './/head/cover'}
             d = {}
-            for item in l:
-                node = meta.find(l[item])
+            for key, item in item_map.items():
+                node = meta.find(item)
                 if node is not None:
-                    d[item] = node.text if node.text is not None else ''
+                    d[key] = node.text if node.text is not None else ''
                 else:
-                    d[item] = ''
+                    d[key] = ''
 
             oeb.metadata.add('title', d['title'])
-            oeb.metadata.add('creator', d['creator'], attrib={'role':'aut'})
-            oeb.metadata.add('language', d['language'].lower().replace('_', '-'))
+            oeb.metadata.add('creator', d['creator'], attrib={'role': 'aut'})
+            oeb.metadata.add('language',
+                             d['language'].lower().replace('_', '-'))
             oeb.metadata.add('generator', d['generator'])
             oeb.metadata.add('publisher', d['publisher'])
             if d['cover'] != '':
@@ -84,7 +90,7 @@ class SNBInput(InputFormatPlugin):
             toc = snbFile.GetFileStream('snbf/toc.snbf')
             oeb.container = DirContainer(tdir, log)
             if toc is not None:
-                toc = safe_xml_fromstring(toc)
+                toc = etree.fromstring(toc)
                 i = 1
                 for ch in toc.find('.//body'):
                     chapterName = ch.text
@@ -93,18 +99,22 @@ class SNBInput(InputFormatPlugin):
                     data = snbFile.GetFileStream('snbc/' + chapterSrc)
                     if data is None:
                         continue
-                    snbc = safe_xml_fromstring(data)
+                    snbc = etree.fromstring(data)
                     lines = []
                     for line in snbc.find('.//body'):
                         if line.tag == 'text':
                             lines.append('<p>%s</p>' % html_encode(line.text))
                         elif line.tag == 'img':
-                            lines.append('<p><img src="%s" /></p>' % html_encode(line.text))
+                            lines.append('<p><img src="%s" /></p>' %
+                                         html_encode(line.text))
                     with open(os.path.join(tdir, fname), 'wb') as f:
-                        f.write((HTML_TEMPLATE % (chapterName, '\n'.join(lines))).encode('utf-8', 'replace'))
+                        f.write((HTML_TEMPLATE %
+                                 (chapterName,
+                                  '\n'.join(lines))).encode('utf-8',
+                                                            'replace'))
                     oeb.toc.add(ch.text, fname)
-                    id, href = oeb.manifest.generate(id='html',
-                        href=ascii_filename(fname))
+                    id, href = oeb.manifest.generate(
+                        id='html', href=ascii_filename(fname))
                     item = oeb.manifest.add(id, href, 'text/html')
                     item.html_input_href = fname
                     oeb.spine.add(item, True)
@@ -112,7 +122,7 @@ class SNBInput(InputFormatPlugin):
                 imageFiles = snbFile.OutputImageFiles(tdir)
                 for f, m in imageFiles:
                     id, href = oeb.manifest.generate(id='image',
-                        href=ascii_filename(f))
+                                                     href=ascii_filename(f))
                     item = oeb.manifest.add(id, href, m)
                     item.html_input_href = f
 

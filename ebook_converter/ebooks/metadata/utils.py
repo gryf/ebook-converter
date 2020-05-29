@@ -1,12 +1,13 @@
 from collections import namedtuple
 
+from lxml import etree
+
 from ebook_converter.ebooks.chardet import xml_to_unicode
-from ebook_converter.ebooks.oeb.base import OPF
+from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.polish.utils import guess_type
 from ebook_converter.spell import parse_lang_code
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.localization import lang_as_iso639_1
-from ebook_converter.utils.xml_parse import safe_xml_fromstring
 
 
 OPFVersion = namedtuple('OPFVersion', 'major minor patch')
@@ -35,23 +36,26 @@ def parse_opf(stream_or_path):
     raw = stream.read()
     if not raw:
         raise ValueError('Empty file: '+getattr(stream, 'name', 'stream'))
-    raw, encoding = xml_to_unicode(raw, strip_encoding_pats=True, resolve_entities=True, assume_utf8=True)
+    raw, encoding = xml_to_unicode(raw, strip_encoding_pats=True,
+                                   resolve_entities=True, assume_utf8=True)
     raw = raw[raw.find('<'):]
-    root = safe_xml_fromstring(clean_xml_chars(raw))
+    root = etree.fromstring(clean_xml_chars(raw))
     if root is None:
         raise ValueError('Not an OPF file')
     return root
 
 
 def normalize_languages(opf_languages, mi_languages):
-    ' Preserve original country codes and use 2-letter lang codes where possible '
+    """
+    Preserve original country codes and use 2-letter lang codes where possible
+    """
     def parse(x):
         try:
             return parse_lang_code(x)
         except ValueError:
             return None
     opf_languages = filter(None, map(parse, opf_languages))
-    cc_map = {c.langcode:c.countrycode for c in opf_languages}
+    cc_map = {c.langcode: c.countrycode for c in opf_languages}
     mi_languages = filter(None, map(parse, mi_languages))
 
     def norm(x):
@@ -83,9 +87,9 @@ def create_manifest_item(root, href_template, id_template, media_type=None):
     all_hrefs = frozenset(root.xpath('//*/@href'))
     href = ensure_unique(href_template, all_hrefs)
     item_id = ensure_unique(id_template, all_ids)
-    manifest = root.find(OPF('manifest'))
+    manifest = root.find(base.tag('opf', 'manifest'))
     if manifest is not None:
-        i = manifest.makeelement(OPF('item'))
+        i = manifest.makeelement(base.tag('opf', 'item'))
         i.set('href', href), i.set('id', item_id)
         i.set('media-type', media_type or guess_type(href_template))
         manifest.append(i)
@@ -93,6 +97,7 @@ def create_manifest_item(root, href_template, id_template, media_type=None):
 
 
 def pretty_print_opf(root):
-    from ebook_converter.ebooks.oeb.polish.pretty import pretty_opf, pretty_xml_tree
+    from ebook_converter.ebooks.oeb.polish.pretty import pretty_opf, \
+            pretty_xml_tree
     pretty_opf(root)
     pretty_xml_tree(root)

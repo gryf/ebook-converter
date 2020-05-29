@@ -8,7 +8,7 @@ from contextlib import closing
 from tempfile import SpooledTemporaryFile
 
 from ebook_converter import sanitize_file_name
-from ebook_converter.constants import filesystem_encoding
+from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.ebooks.chardet import detect
 from ebook_converter.polyglot.builtins import as_bytes
 

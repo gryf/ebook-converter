@@ -1,22 +1,19 @@
+import collections
 import re
-import uuid
 import urllib.parse
+import uuid
 
 from lxml import etree
-from collections import OrderedDict, Counter
 
-from ebook_converter.ebooks.oeb.base import XPNSMAP, TOC, XHTML, xml2text, barename
+from ebook_converter import constants as const
+from ebook_converter.ebooks.oeb import parse_utils
+from ebook_converter.ebooks.oeb.base import TOC, xml2text
 from ebook_converter.ebooks import ConversionError
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 
 def XPath(x):
     try:
-        return etree.XPath(x, namespaces=XPNSMAP)
+        return etree.XPath(x, namespaces=const.XPNSMAP)
     except etree.XPathSyntaxError:
         raise ConversionError(
         'The syntax of the XPath expression %s is invalid.' % repr(x))
@@ -84,7 +81,7 @@ class DetectStructure(object):
                     try:
                         prev = next(elem.itersiblings(tag=etree.Element,
                                 preceding=True))
-                        if (barename(elem.tag) in {'h1', 'h2'} and barename(
+                        if (parse_utils.barename(elem.tag) in {'h1', 'h2'} and parse_utils.barename(
                                 prev.tag) in {'h1', 'h2'} and (not prev.tail or
                                     not prev.tail.split())):
                             # We have two adjacent headings, do not put a page
@@ -165,7 +162,7 @@ class DetectStructure(object):
             chapter_mark = self.opts.chapter_mark
             page_break_before = 'display: block; page-break-before: always'
             page_break_after = 'display: block; page-break-after: always'
-            c = Counter()
+            c = collections.Counter()
             for item, elem in self.detected_chapters:
                 c[item] += 1
                 text = xml2text(elem).strip()
@@ -174,7 +171,7 @@ class DetectStructure(object):
                 if chapter_mark == 'none':
                     continue
                 if chapter_mark == 'rule':
-                    mark = elem.makeelement(XHTML('hr'))
+                    mark = elem.makeelement(const.XHTML_HR)
                 elif chapter_mark == 'pagebreak':
                     if c[item] < 3 and at_start(elem):
                         # For the first two elements in this item, check if they
@@ -184,9 +181,9 @@ class DetectStructure(object):
                         # feedbooks epubs match both a heading tag and its
                         # containing div with the default chapter expression.
                         continue
-                    mark = elem.makeelement(XHTML('div'), style=page_break_after)
+                    mark = elem.makeelement(const.XHTML_DIV, style=page_break_after)
                 else:  # chapter_mark == 'both':
-                    mark = elem.makeelement(XHTML('hr'), style=page_break_before)
+                    mark = elem.makeelement(const.XHTML_HR, style=page_break_before)
                 try:
                     elem.addprevious(mark)
                 except TypeError:
@@ -254,8 +251,8 @@ class DetectStructure(object):
         return text, href
 
     def add_leveled_toc_items(self):
-        added = OrderedDict()
-        added2 = OrderedDict()
+        added = collections.OrderedDict()
+        added2 = collections.OrderedDict()
         counter = 1
 
         def find_matches(expr, doc):
