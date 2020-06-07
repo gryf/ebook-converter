@@ -1,6 +1,7 @@
 from lxml import etree
 
 from ebook_converter import constants as const
+from ebook_converter.ebooks.oeb import base
 from ebook_converter.utils.localization import canonicalize_lang
 
 
@@ -14,7 +15,7 @@ def get_book_language(container):
 
 
 def set_guide_item(container, item_type, title, name, frag=None):
-    ref_tag = const.OPF_REFERENCE
+    ref_tag = base.tag('opf', 'reference')
     href = None
     if name:
         href = container.name_to_href(name, container.opf_name)
@@ -23,7 +24,7 @@ def set_guide_item(container, item_type, title, name, frag=None):
 
     guides = container.opf_xpath('//opf:guide')
     if not guides and href:
-        g = container.opf.makeelement(const.OPF_GUIDE,
+        g = container.opf.makeelement(base.tag('opf', 'guide'),
                                       nsmap={'opf': const.OPF2_NS})
         container.insert_into_xml(container.opf, g)
         guides = [g]

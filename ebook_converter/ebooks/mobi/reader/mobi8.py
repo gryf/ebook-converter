@@ -8,37 +8,28 @@ import uuid
 
 from lxml import etree
 
-from ebook_converter import constants as const
 from ebook_converter.ebooks.mobi.reader.headers import NULL_INDEX
 from ebook_converter.ebooks.mobi.reader.index import read_index
 from ebook_converter.ebooks.mobi.reader.ncx import read_ncx, build_toc
 from ebook_converter.ebooks.mobi.reader.markup import expand_mobi8_markup
-from ebook_converter.ebooks.mobi.reader.containers import Container, find_imgtype
+from ebook_converter.ebooks.mobi.reader import containers
 from ebook_converter.ebooks.metadata.opf2 import Guide, OPFCreator
 from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.utils import read_font_record
 from ebook_converter.ebooks.oeb.parse_utils import parse_html
-from ebook_converter.ebooks.oeb.base import XPath, xml2text
+from ebook_converter.ebooks.oeb import base
 from ebook_converter.polyglot.builtins import as_unicode
 
+ID_RE = re.compile(br'''<[^>]+\s(?:id|ID)\s*=\s*['"]([^'"]+)['"]''')
+NAME_RE = re.compile(br'''<\s*a\s*\s(?:name|NAME)\s*=\s*['"]([^'"]+)['"]''')
+AID_RE = re.compile(br'''<[^>]+\s(?:aid|AID)\s*=\s*['"]([^'"]+)['"]''')
+Part = collections.namedtuple('Part', 'num type filename start end aid')
+Elem = collections.namedtuple('Elem', 'insert_pos toc_text file_number '
+                              'sequence_number start_pos length')
+FlowInfo = collections.namedtuple('FlowInfo', 'type format dir fname')
 
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-Part = collections.namedtuple('Part',
-    'num type filename start end aid')
-
-Elem = collections.namedtuple('Elem',
-    'insert_pos toc_text file_number sequence_number start_pos '
-    'length')
-
-FlowInfo = collections.namedtuple('FlowInfo',
-        'type format dir fname')
 
 # locate beginning and ending positions of tag with specific aid attribute
-
-
 def locate_beg_end_of_tag(ml, aid):
     pattern = br'''<[^>]*\said\s*=\s*['"]%s['"][^>]*>''' % aid
     aid_pattern = re.compile(pattern, re.IGNORECASE)
@@ -64,7 +55,8 @@ def reverse_tag_iter(block):
         end = plt
 
 
-def get_first_resource_index(first_image_index, num_of_text_records, first_text_record_number):
+def get_first_resource_index(first_image_index, num_of_text_records,
+                             first_text_record_number):
     first_resource_index = first_image_index
     if first_resource_index in {-1, NULL_INDEX}:
         first_resource_index = num_of_text_records + first_text_record_number
@@ -78,23 +70,27 @@ class Mobi8Reader(object):
         self.mobi6_reader, self.log = mobi6_reader, log
         self.header = mobi6_reader.book_header
         self.encrypted_fonts = []
-        self.id_re = re.compile(br'''<[^>]+\s(?:id|ID)\s*=\s*['"]([^'"]+)['"]''')
-        self.name_re = re.compile(br'''<\s*a\s*\s(?:name|NAME)\s*=\s*['"]([^'"]+)['"]''')
-        self.aid_re = re.compile(br'''<[^>]+\s(?:aid|AID)\s*=\s*['"]([^'"]+)['"]''')
+        self.id_re = ID_RE
+        self.name_re = NAME_RE
+        self.aid_re = AID_RE
 
     def __call__(self):
         self.mobi6_reader.check_for_drm()
         self.aid_anchor_suffix = uuid.uuid4().hex.encode('utf-8')
         bh = self.mobi6_reader.book_header
+        _gfri = get_first_resource_index
         if self.mobi6_reader.kf8_type == 'joint':
             offset = self.mobi6_reader.kf8_boundary + 2
-            self.resource_offsets = [
-                (get_first_resource_index(bh.first_image_index, bh.mobi6_records, 1), offset - 2),
-                (get_first_resource_index(bh.kf8_first_image_index, bh.records, offset), len(self.mobi6_reader.sections)),
-            ]
+            self.resource_offsets = [(_gfri(bh.first_image_index,
+                                            bh.mobi6_records, 1), offset - 2),
+                                     (_gfri(bh.kf8_first_image_index,
+                                            bh.records, offset),
+                                      len(self.mobi6_reader.sections))]
         else:
             offset = 1
-            self.resource_offsets = [(get_first_resource_index(bh.first_image_index, bh.records, offset), len(self.mobi6_reader.sections))]
+            self.resource_offsets = [(_gfri(bh.first_image_index, bh.records,
+                                            offset),
+                                      len(self.mobi6_reader.sections))]
 
         self.processed_records = self.mobi6_reader.extract_text(offset=offset)
         self.raw_ml = self.mobi6_reader.mobi_html
@@ -123,37 +119,37 @@ class Mobi8Reader(object):
                 raise ValueError('KF8 does not have a valid FDST record')
             sec_start, num_sections = struct.unpack_from(b'>LL', header, 4)
             secs = struct.unpack_from(b'>%dL' % (num_sections*2),
-                    header, sec_start)
+                                      header, sec_start)
             self.flow_table = tuple(zip(secs[::2], secs[1::2]))
 
         self.files = []
         if self.header.skelidx != NULL_INDEX:
             table = read_index(self.kf8_sections, self.header.skelidx,
-                    self.header.codec)[0]
-            File = collections.namedtuple('File',
-                'file_number name divtbl_count start_position length')
+                               self.header.codec)[0]
+            File = collections.namedtuple('File', 'file_number name '
+                                          'divtbl_count start_position length')
 
             for i, text in enumerate(table):
                 tag_map = table[text]
                 self.files.append(File(i, text, tag_map[1][0],
-                    tag_map[6][0], tag_map[6][1]))
+                                       tag_map[6][0], tag_map[6][1]))
 
         self.elems = []
         if self.header.dividx != NULL_INDEX:
             table, cncx = read_index(self.kf8_sections, self.header.dividx,
-                    self.header.codec)
+                                     self.header.codec)
             for i, text in enumerate(table):
                 tag_map = table[text]
                 toc_text = cncx[tag_map[2][0]]
                 self.elems.append(Elem(int(text), toc_text, tag_map[3][0],
-                    tag_map[4][0], tag_map[6][0], tag_map[6][1]))
+                                       tag_map[4][0], tag_map[6][0],
+                                       tag_map[6][1]))
 
         self.guide = []
         if self.header.othidx != NULL_INDEX:
             table, cncx = read_index(self.kf8_sections, self.header.othidx,
-                    self.header.codec)
-            Item = collections.namedtuple('Item',
-                'type title pos_fid')
+                                     self.header.codec)
+            Item = collections.namedtuple('Item', 'type title pos_fid')
 
             for i, ref_type in enumerate(table):
                 tag_map = table[ref_type]
@@ -161,7 +157,7 @@ class Mobi8Reader(object):
                 title = cncx[tag_map[1][0]]
                 fileno = None
                 if 3 in list(tag_map.keys()):
-                    fileno  = tag_map[3][0]
+                    fileno = tag_map[3][0]
                 if 6 in list(tag_map.keys()):
                     fileno = tag_map[6]
                 if isinstance(ref_type, bytes):
@@ -205,17 +201,19 @@ class Mobi8Reader(object):
                 head = skeleton[:insertpos]
                 tail = skeleton[insertpos:]
                 if (tail.find(b'>') < tail.find(b'<') or head.rfind(b'>') <
-                    head.rfind(b'<')):
+                        head.rfind(b'<')):
                     # There is an incomplete tag in either the head or tail.
                     # This can happen for some badly formed KF8 files, see for
                     # example, https://bugs.launchpad.net/bugs/1082669
                     if not inspos_warned:
-                        self.log.warn(
-                            'The div table for %s has incorrect insert '
-                            'positions. Calculating manually.'%skelname)
+                        self.log.warn('The div table for %s has incorrect '
+                                      'insert positions. Calculating '
+                                      'manually.' % skelname)
                         inspos_warned = True
                     bp, ep = locate_beg_end_of_tag(skeleton, aidtext if
-                        isinstance(aidtext, bytes) else aidtext.encode('utf-8'))
+                                                   isinstance(aidtext, bytes)
+                                                   else
+                                                   aidtext.encode('utf-8'))
                     if bp != ep:
                         insertpos = ep + 1 + startpos
 
@@ -228,7 +226,7 @@ class Mobi8Reader(object):
                 aidtext = str(uuid.uuid4())
                 filename = aidtext + '.html'
             self.partinfo.append(Part(skelnum, 'text', filename, skelpos,
-                baseptr, aidtext))
+                                      baseptr, aidtext))
 
         # The primary css style sheet is typically stored next followed by any
         # snippets of code that were previously inlined in the
@@ -238,10 +236,10 @@ class Mobi8Reader(object):
         # The problem is that for most browsers and ereaders, you can not
         # use <img src="imageXXXX.svg" /> to import any svg image that itself
         # properly uses an <image/> tag to import some raster image - it
-        # should work according to the spec but does not for almost all browsers
-        # and ereaders and causes epub validation issues because those  raster
-        # images are in manifest but not in xhtml text - since they only
-        # referenced from an svg image
+        # should work according to the spec but does not for almost all
+        # browsers and ereaders and causes epub validation issues because
+        # those  raster images are in manifest but not in xhtml text - since
+        # they only referenced from an svg image
 
         # So we need to check the remaining flow pieces to see if they are css
         # or svg images.  if svg images, we must check if they have an <image/>
@@ -252,7 +250,8 @@ class Mobi8Reader(object):
 
         self.flowinfo.append(FlowInfo(None, None, None, None))
         svg_tag_pattern = re.compile(br'''(<svg[^>]*>)''', re.IGNORECASE)
-        image_tag_pattern = re.compile(br'''(<(?:svg:)?image[^>]*>)''', re.IGNORECASE)
+        image_tag_pattern = re.compile(br'''(<(?:svg:)?image[^>]*>)''',
+                                       re.IGNORECASE)
         for j in range(1, len(self.flows)):
             flowpart = self.flows[j]
             nstr = '%04d' % j
@@ -276,7 +275,8 @@ class Mobi8Reader(object):
                 # search for CDATA and if exists inline it
                 if flowpart.find(b'[CDATA[') >= 0:
                     typ = 'css'
-                    flowpart = b'<style type="text/css">\n' + flowpart + b'\n</style>\n'
+                    flowpart = (b'<style type="text/css">\n' + flowpart +
+                                b'\n</style>\n')
                     format = 'inline'
                     dir = None
                     fname = None
@@ -300,7 +300,8 @@ class Mobi8Reader(object):
 
     def get_id_tag_by_pos_fid(self, posfid, offset):
         # first convert kindle:pos:fid and offset info to position in file
-        insertpos, idtext, filenum, seqnm, startpos, length = self.elems[posfid]
+        (insertpos, idtext, filenum,
+         seqnm, startpos, length) = self.elems[posfid]
         pos = insertpos + offset
         fi = self.get_file_info(pos)
         # an existing "id=" must exist in original xhtml otherwise it would not
@@ -311,20 +312,20 @@ class Mobi8Reader(object):
         # so find the closest "id=" before position the file by actually
         # searching in that file
         idtext = self.get_id_tag(pos)
-        return '%s/%s'%(fi.type, fi.filename), idtext
+        return '%s/%s' % (fi.type, fi.filename), idtext
 
     def get_id_tag(self, pos):
         # Find the first tag with a named anchor (name or id attribute) before
         # pos
         fi = self.get_file_info(pos)
         if fi.num is None and fi.start is None:
-            raise ValueError('No file contains pos: %d'%pos)
+            raise ValueError('No file contains pos: %d' % pos)
         textblock = self.parts[fi.num]
         npos = pos - fi.start
         pgt = textblock.find(b'>', npos)
         plt = textblock.find(b'<', npos)
-        # if npos inside a tag then search all text before the its end of tag marker
-        # else not in a tag need to search the preceding tag
+        # if npos inside a tag then search all text before the its end of tag
+        # marker else not in a tag need to search the preceding tag
         if plt == npos or pgt < plt:
             npos = pgt + 1
         textblock = textblock[0:npos]
@@ -371,7 +372,7 @@ class Mobi8Reader(object):
                 linktgt = fi.filename
                 if idtext:
                     linktgt += '#' + idtext
-                g = Guide.Reference('%s/%s'%(fi.type, linktgt), os.getcwd())
+                g = Guide.Reference('%s/%s' % (fi.type, linktgt), os.getcwd())
                 g.title, g.type = 'start', 'text'
                 guide.append(g)
 
@@ -379,7 +380,7 @@ class Mobi8Reader(object):
 
     def create_ncx(self):
         index_entries = read_ncx(self.kf8_sections, self.header.ncxidx,
-                self.header.codec)
+                                 self.header.codec)
         remove = []
 
         # Add href and anchor info to the index entries
@@ -389,15 +390,15 @@ class Mobi8Reader(object):
                 pos = entry['pos']
                 fi = self.get_file_info(pos)
                 if fi.filename is None:
-                    raise ValueError('Index entry has invalid pos: %d'%pos)
+                    raise ValueError('Index entry has invalid pos: %d' % pos)
                 idtag = self.get_id_tag(pos)
-                href = '%s/%s'%(fi.type, fi.filename)
+                href = '%s/%s' % (fi.type, fi.filename)
             else:
                 try:
                     href, idtag = self.get_id_tag_by_pos_fid(*pos_fid)
                 except ValueError:
-                    self.log.warn('Invalid entry in NCX (title: %s), ignoring'
-                                  %entry['text'])
+                    self.log.warn('Invalid entry in NCX (title: %s), '
+                                  'ignoring' % entry['text'])
                     remove.append(entry)
                     continue
 
@@ -411,7 +412,8 @@ class Mobi8Reader(object):
         return build_toc(index_entries)
 
     def extract_resources(self, sections):
-        from ebook_converter.ebooks.mobi.writer2.resources import PLACEHOLDER_GIF
+        from ebook_converter.ebooks.mobi.writer2.resources import \
+                PLACEHOLDER_GIF
         resource_map = []
         container = None
         for x in ('fonts', 'images'):
@@ -424,16 +426,18 @@ class Mobi8Reader(object):
                 typ = data[:4]
                 href = None
                 if typ in {b'FLIS', b'FCIS', b'SRCS', b'\xe9\x8e\r\n', b'BOUN',
-                        b'FDST', b'DATP', b'AUDI', b'VIDE', b'RESC', b'CMET', b'PAGE'}:
+                           b'FDST', b'DATP', b'AUDI', b'VIDE', b'RESC',
+                           b'CMET', b'PAGE'}:
                     pass  # Ignore these records
                 elif typ == b'FONT':
                     font = read_font_record(data)
                     href = "fonts/%05d.%s" % (fname_idx, font['ext'])
                     if font['err']:
-                        self.log.warn('Reading font record %d failed: %s'%(
-                            fname_idx, font['err']))
+                        self.log.warn('Reading font record %d failed: %s' %
+                                      (fname_idx, font['err']))
                         if font['headers']:
-                            self.log.debug('Font record headers: %s'%font['headers'])
+                            self.log.debug('Font record headers: %s' %
+                                           font['headers'])
                     with open(href.replace('/', os.sep), 'wb') as f:
                         f.write(font['font_data'] if font['font_data'] else
                                 font['raw_data'])
@@ -443,19 +447,23 @@ class Mobi8Reader(object):
                     if data == b'CONTBOUNDARY':
                         container = None
                         continue
-                    container = Container(data)
+                    container = containers.Container(data)
                 elif typ == b'CRES':
                     data, imgtype = container.load_image(data)
                     if data is not None:
-                        href = 'images/%05d.%s'%(container.resource_index, imgtype)
+                        href = 'images/%05d.%s' % (container.resource_index,
+                                                   imgtype)
                         with open(href.replace('/', os.sep), 'wb') as f:
                             f.write(data)
-                elif typ == b'\xa0\xa0\xa0\xa0' and len(data) == 4 and container is not None:
+                elif (typ == b'\xa0\xa0\xa0\xa0' and
+                      len(data) == 4 and
+                      container is not None):
                     container.resource_index += 1
                 elif container is None:
-                    if not (len(data) == len(PLACEHOLDER_GIF) and data == PLACEHOLDER_GIF):
-                        imgtype = find_imgtype(data)
-                        href = 'images/%05d.%s'%(fname_idx, imgtype)
+                    if not (len(data) == len(PLACEHOLDER_GIF) and
+                            data == PLACEHOLDER_GIF):
+                        imgtype = containers.find_imgtype(data)
+                        href = 'images/%05d.%s' % (fname_idx, imgtype)
                         with open(href.replace('/', os.sep), 'wb') as f:
                             f.write(data)
 
@@ -482,7 +490,7 @@ class Mobi8Reader(object):
                     if os.path.exists(href.replace('/', os.sep)):
                         try:
                             toc = self.read_inline_toc(href, frag)
-                        except:
+                        except Exception:
                             self.log.exception('Failed to read inline ToC')
 
         opf = OPFCreator(os.getcwd(), mi)
@@ -493,7 +501,8 @@ class Mobi8Reader(object):
 
         # If there are no images then the azw3 input plugin dumps all
         # binary records as .unknown images, remove them
-        if self.for_tweak and os.path.exists('images') and os.path.isdir('images'):
+        if (self.for_tweak and os.path.exists('images') and
+                os.path.isdir('images')):
             files = os.listdir('images')
             unknown = [x for x in files if x.endswith('.unknown')]
             if len(files) == len(unknown):
@@ -502,7 +511,7 @@ class Mobi8Reader(object):
         if self.for_tweak:
             try:
                 os.remove('debug-raw.html')
-            except:
+            except Exception:
                 pass
 
         opf.create_manifest_from_files_in([os.getcwd()], exclude=exclude)
@@ -528,7 +537,7 @@ class Mobi8Reader(object):
         with open(href.replace('/', os.sep), 'rb') as f:
             raw = f.read().decode(self.header.codec)
         root = parse_html(raw, log=self.log)
-        body = XPath('//h:body')(root)
+        body = base.XPath('//h:body')(root)
         reached = False
         if body:
             start = body[0]
@@ -536,7 +545,7 @@ class Mobi8Reader(object):
             start = None
             reached = True
         if frag:
-            elems = XPath('//*[@id="%s"]'%frag)(root)
+            elems = base.XPath('//*[@id="%s"]' % frag)(root)
             if elems:
                 start = elems[0]
 
@@ -554,12 +563,13 @@ class Mobi8Reader(object):
         seen = set()
         links = []
         for elem in root.iterdescendants(etree.Element):
-            if reached and elem.tag == const.XHTML_A and elem.get('href',
+            if reached and elem.tag == base.tag('xhtml',
+                                                'a') and elem.get('href',
                                                                   False):
                 href = elem.get('href')
                 href, frag = urllib.parse.urldefrag(href)
                 href = base_href + '/' + href
-                text = xml2text(elem).strip()
+                text = base.xml2text(elem).strip()
                 if (text, href, frag) in seen:
                     continue
                 seen.add((text, href, frag))
@@ -568,7 +578,7 @@ class Mobi8Reader(object):
                 reached = True
 
         depths = sorted(set(x[-1] for x in links))
-        depth_map = {x:i for i, x in enumerate(depths)}
+        depth_map = {x: i for i, x in enumerate(depths)}
         for text, href, frag, depth in links:
             depth = depth_map[depth]
             if current_depth is None:

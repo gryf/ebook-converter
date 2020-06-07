@@ -7,6 +7,7 @@ import urllib.parse
 from ebook_converter import constants as const
 from ebook_converter import guess_type, strftime
 from ebook_converter.constants_old import iswindows
+from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.base import XPath, xml2text, urlnormalize
 from ebook_converter.library.comments import comments_to_html, markdown
 from ebook_converter.utils.date import is_date_undefined, as_local_time
@@ -371,7 +372,7 @@ def render_jacket(mi, output_profile,
         # We cannot use data-calibre-rescale 100 on the body tag as that will just
         # give the body tag a font size of 1em, which is useless.
         for body in root.xpath('//*[local-name()="body"]'):
-            fw = body.makeelement(const.XHTML_DIV)
+            fw = body.makeelement(base.tag('xhtml', 'div'))
             fw.set('data-calibre-rescale', '100')
             for child in body:
                 fw.append(child)
@@ -388,9 +389,9 @@ def linearize_jacket(oeb):
     for x in oeb.spine[:4]:
         if XPath(JACKET_XPATH)(x.data):
             for e in XPath('//h:table|//h:tr|//h:th')(x.data):
-                e.tag = const.XHTML_DIV
+                e.tag = base.tag('xhtml', 'div')
             for e in XPath('//h:td')(x.data):
-                e.tag = const.XHTML_SPAN
+                e.tag = base.tag('xhtml', 'span')
             break
 
 

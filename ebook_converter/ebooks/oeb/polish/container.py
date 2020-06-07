@@ -1,5 +1,8 @@
+import collections
 import errno
 import hashlib
+import io
+import itertools
 import logging
 import os
 import re
@@ -7,13 +10,10 @@ import shutil
 import sys
 import time
 import unicodedata
-import uuid
-from collections import defaultdict
-from io import BytesIO
-from itertools import count
 import urllib.parse
+import uuid
 
-from css_parser import getUrls, replaceUrls
+import css_parser
 from lxml import etree
 
 from ebook_converter import constants as const
@@ -35,10 +35,7 @@ from ebook_converter.ebooks.metadata.utils import parse_opf_version
 from ebook_converter.ebooks.mobi import MobiError
 from ebook_converter.ebooks.mobi.reader.headers import MetadataHeader
 from ebook_converter.ebooks.mobi.tweak import set_cover
-from ebook_converter.ebooks.oeb.base import (
-    OEB_DOCS, OEB_STYLES, Manifest, itercsslinks, iterlinks,
-    rewrite_links, serialize, urlquote, urlunquote
-)
+from ebook_converter.ebooks.oeb import base as oeb_base
 from ebook_converter.ebooks.oeb.parse_utils import NotHTML, parse_html
 from ebook_converter.ebooks.oeb.polish.errors import DRMError, InvalidBook
 from ebook_converter.ebooks.oeb.polish.parsing import parse as parse_html_tweak
@@ -96,7 +93,7 @@ def abspath_to_name(path, root):
     return relpath(os.path.abspath(path), root).replace(os.sep, '/')
 
 
-def name_to_href(name, root, base=None, quote=urlquote):
+def name_to_href(name, root, base=None, quote=oeb_base.urlquote):
     fullpath = name_to_abspath(name, root)
     basepath = root if base is None else os.path.dirname(name_to_abspath(base, root))
     path = relpath(fullpath, basepath).replace(os.sep, '/')
@@ -111,7 +108,7 @@ def href_to_name(href, root, base=None):
         return None
     if purl.scheme or not purl.path:
         return None
-    href = urlunquote(purl.path)
+    href = oeb_base.urlunquote(purl.path)
     if iswindows and ':' in href:
         # path manipulations on windows fail for paths with : in them, so we
         # assume all such paths are invalid/absolute paths.
@@ -324,7 +321,7 @@ class Container(ContainerBase):  # {{{
             item_id = 'id' + '%d'%c
         manifest = self.opf_xpath('//opf:manifest')[0]
         href = self.name_to_href(name, self.opf_name)
-        item = manifest.makeelement(const.OPF_ITEM,
+        item = manifest.makeelement(oeb_base.tag('opf', 'item'),
                                     id=item_id, href=href)
         item.set('media-type', self.mime_map[name])
         self.insert_into_xml(manifest, item)
@@ -340,7 +337,7 @@ class Container(ContainerBase):  # {{{
 
     def make_name_unique(self, name):
         ''' Ensure that `name` does not already exist in this book. If it does, return a modified version that does not exist. '''
-        counter = count()
+        counter = itertools.count()
         while self.has_name_case_insensitive(name) or self.manifest_has_name(name):
             c = next(counter) + 1
             base, ext = name.rpartition('.')[::2]
@@ -377,10 +374,10 @@ class Container(ContainerBase):  # {{{
         if self.ok_to_be_unmanifested(name):
             return name
         item_id = self.add_name_to_manifest(name, process_manifest_item=process_manifest_item)
-        if mt in OEB_DOCS:
+        if mt in oeb_base.OEB_DOCS:
             manifest = self.opf_xpath('//opf:manifest')[0]
             spine = self.opf_xpath('//opf:spine')[0]
-            si = manifest.makeelement(const.OPF_ITEMREF, idref=item_id)
+            si = manifest.makeelement(oeb_base.tag('opf', 'itemref'), idref=item_id)
             self.insert_into_xml(spine, si, index=spine_index)
         return name
 
@@ -442,12 +439,12 @@ class Container(ContainerBase):  # {{{
             replace_func.file_type = 'opf'
             for elem in self.opf_xpath('//*[@href]'):
                 elem.set('href', replace_func(elem.get('href')))
-        elif media_type.lower() in OEB_DOCS:
+        elif media_type.lower() in oeb_base.OEB_DOCS:
             replace_func.file_type = 'text'
-            rewrite_links(self.parsed(name), replace_func)
-        elif media_type.lower() in OEB_STYLES:
+            oeb_base.rewrite_links(self.parsed(name), replace_func)
+        elif media_type.lower() in oeb_base.OEB_STYLES:
             replace_func.file_type = 'style'
-            replaceUrls(self.parsed(name), replace_func)
+            css_parser.replaceUrls(self.parsed(name), replace_func)
         elif media_type.lower() == guess_type('toc.ncx'):
             replace_func.file_type = 'ncx'
             for elem in self.parsed(name).xpath('//*[@src]'):
@@ -467,21 +464,21 @@ class Container(ContainerBase):  # {{{
         if name == self.opf_name:
             for elem in self.opf_xpath('//*[@href]'):
                 yield (elem.get('href'), elem.sourceline, 0) if get_line_numbers else elem.get('href')
-        elif media_type.lower() in OEB_DOCS:
-            for el, attr, link, pos in iterlinks(self.parsed(name)):
+        elif media_type.lower() in oeb_base.OEB_DOCS:
+            for el, attr, link, pos in oeb_base.iterlinks(self.parsed(name)):
                 yield (link, el.sourceline, pos) if get_line_numbers else link
-        elif media_type.lower() in OEB_STYLES:
+        elif media_type.lower() in oeb_base.OEB_STYLES:
             if get_line_numbers:
                 with self.open(name, 'rb') as f:
                     raw = self.decode(f.read()).replace('\r\n', '\n').replace('\r', '\n')
                     position = PositionFinder(raw)
                     is_in_comment = CommentFinder(raw)
-                    for link, offset in itercsslinks(raw):
+                    for link, offset in oeb_base.itercsslinks(raw):
                         if not is_in_comment(offset):
                             lnum, col = position(offset)
                             yield link, lnum, col
             else:
-                for link in getUrls(self.parsed(name)):
+                for link in css_parser.getUrls(self.parsed(name)):
                     yield link
         elif media_type.lower() == guess_type('toc.ncx'):
             for elem in self.parsed(name).xpath('//*[@src]'):
@@ -533,7 +530,7 @@ class Container(ContainerBase):  # {{{
 
     def opf_xpath(self, expr):
         ' Convenience method to evaluate an XPath expression on the OPF file, has the opf: and dc: namespace prefixes pre-defined. '
-        return self.opf.xpath(expr, namespaces=const.OPF_NAMESPACES)
+        return self.opf.xpath(expr, namespaces=oeb_base.tag('opf', 'namespaces'))
 
     def has_name(self, name):
         ''' Return True iff a file with the same canonical name as that specified exists. Unlike :meth:`exists` this method is always case-sensitive. '''
@@ -580,11 +577,11 @@ class Container(ContainerBase):  # {{{
     def parse(self, path, mime):
         with open(path, 'rb') as src:
             data = src.read()
-        if mime in OEB_DOCS:
+        if mime in oeb_base.OEB_DOCS:
             data = self.parse_xhtml(data, self.relpath(path))
         elif mime[-4:] in {'+xml', '/xml'}:
             data = self.parse_xml(data)
-        elif mime in OEB_STYLES:
+        elif mime in oeb_base.OEB_STYLES:
             data = self.parse_css(data, self.relpath(path))
         return data
 
@@ -597,7 +594,7 @@ class Container(ContainerBase):  # {{{
         '''
         ans = self.open(name).read()
         mime = self.mime_map.get(name, guess_type(name))
-        if decode and (mime in OEB_STYLES or mime in OEB_DOCS or mime == 'text/plain' or mime[-4:] in {'+xml', '/xml'}):
+        if decode and (mime in oeb_base.OEB_STYLES or mime in oeb_base.OEB_DOCS or mime == 'text/plain' or mime[-4:] in {'+xml', '/xml'}):
             ans = self.decode(ans, normalize_to_nfc=normalize_to_nfc)
         return ans
 
@@ -637,7 +634,7 @@ class Container(ContainerBase):  # {{{
         so use it sparingly. '''
         from ebook_converter.ebooks.metadata.opf2 import OPF as O
         mi = self.serialize_item(self.opf_name)
-        return O(BytesIO(mi), basedir=self.opf_dir, unquote_urls=False,
+        return O(io.BytesIO(mi), basedir=self.opf_dir, unquote_urls=False,
                 populate_spine=False).to_book_metadata()
 
     @property
@@ -662,7 +659,7 @@ class Container(ContainerBase):  # {{{
     @property
     def manifest_type_map(self):
         ' Mapping of manifest media-type to list of canonical names of that media-type '
-        ans = defaultdict(list)
+        ans = collections.defaultdict(list)
         for item in self.opf_xpath('//opf:manifest/opf:item[@href and @media-type]'):
             ans[item.get('media-type').lower()].append(self.href_to_name(
                 item.get('href'), self.opf_name))
@@ -813,7 +810,7 @@ class Container(ContainerBase):  # {{{
         spine = self.opf_xpath('//opf:spine')[0]
         spine.text = tail
         for name, linear in spine_items:
-            i = spine.makeelement(const.OPF_ITEMREF,
+            i = spine.makeelement(oeb_base.tag('opf', 'itemref'),
                                   nsmap={'opf': const.OPF2_NS})
             i.tail = tail
             i.set('idref', imap[name])
@@ -922,7 +919,7 @@ class Container(ContainerBase):  # {{{
             return ans[0]
         self.dirty(self.opf_name)
         package = self.opf_xpath('//opf:package')[0]
-        item = package.makeelement(OPF(name))
+        item = package.makeelement(oeb_base.tag('opf', name))
         item.tail = '\n'
         package.append(item)
         return item
@@ -945,7 +942,7 @@ class Container(ContainerBase):  # {{{
             item_id = id_prefix + '%d'%c
 
         manifest = self.opf_xpath('//opf:manifest')[0]
-        item = manifest.makeelement(const.OPF_ITEM,
+        item = manifest.makeelement(oeb_base.tag('opf', 'item'),
                                     id=item_id, href=href)
         item.set('media-type', media_type)
         self.insert_into_xml(manifest, item)
@@ -992,7 +989,7 @@ class Container(ContainerBase):  # {{{
         data = root = self.parsed(name)
         if name == self.opf_name:
             self.format_opf()
-        data = serialize(data, self.mime_map[name], pretty_print=name in
+        data = oeb_base.serialize(data, self.mime_map[name], pretty_print=name in
                          self.pretty_print)
         if name == self.opf_name and root.nsmap.get(None) == const.OPF2_NS:
             # Needed as I can't get lxml to output opf:role and
@@ -1181,7 +1178,7 @@ class EpubContainer(Container):
         )
         if not opf_files:
             raise InvalidEpub('META-INF/container.xml contains no link to OPF file')
-        opf_path = os.path.join(self.root, *(urlunquote(opf_files[0].get('full-path')).split('/')))
+        opf_path = os.path.join(self.root, *(oeb_base.urlunquote(opf_files[0].get('full-path')).split('/')))
         if not exists(opf_path):
             raise InvalidEpub('OPF file does not exist at location pointed to'
                     ' by META-INF/container.xml')
@@ -1412,7 +1409,7 @@ def do_explode(path, dest):
 def opf_to_azw3(opf, outpath, container):
     from ebook_converter.ebooks.conversion.plumber import Plumber, create_oebbook
 
-    class Item(Manifest.Item):
+    class Item(oeb_base.Manifest.Item):
 
         def _parse_css(self, data):
             # The default CSS parser used by oeb.base inserts the h namespace
