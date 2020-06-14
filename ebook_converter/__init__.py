@@ -458,26 +458,3 @@ def human_readable(size, sep=' '):
     if size.endswith('.0'):
         size = size[:-2]
     return size + sep + suffix
-
-
-def fsync(fileobj):
-    fileobj.flush()
-    os.fsync(fileobj.fileno())
-    if islinux and getattr(fileobj, 'name', None):
-        # On Linux kernels after 5.1.9 and 4.19.50 using fsync without any
-        # following activity causes Kindles to eject. Instead of fixing this in
-        # the obvious way, which is to have the kernel send some harmless
-        # filesystem activity after the FSYNC, the kernel developers seem to
-        # think the correct solution is to disable FSYNC using a mount flag
-        # which users will have to turn on manually. So instead we create some
-        # harmless filesystem activity, and who cares about performance.
-        # See https://bugs.launchpad.net/calibre/+bug/1834641
-        # and https://bugzilla.kernel.org/show_bug.cgi?id=203973
-        # To check for the existence of the bug, simply run:
-        # python -c "p = '/run/media/kovid/Kindle/driveinfo.calibre'; f = open(p, 'r+b'); os.fsync(f.fileno());"
-        # this will cause the Kindle to disconnect.
-        try:
-            os.utime(fileobj.name, None)
-        except Exception:
-            import traceback
-            traceback.print_exc()
