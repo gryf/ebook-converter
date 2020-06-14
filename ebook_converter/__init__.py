@@ -1,12 +1,10 @@
 import math
 import os
 import pkg_resources
-import random
 import re
 import sys
 import time
-import urllib.parse
-import urllib.request
+import mimetypes
 
 from functools import partial
 
@@ -28,35 +26,17 @@ if False:
     fcntl, win32event, isfrozen, __author__
     winerror, win32api, isbsd, config_dir
 
-_mt_inited = False
 
-
-def _init_mimetypes():
-    global _mt_inited
-    import mimetypes
+def init_mimetypes():
     mimetypes.init([pkg_resources.resource_filename('ebook_converter',
                                                     'data/mime.types')])
-    _mt_inited = True
-
-
-def guess_type(*args, **kwargs):
-    import mimetypes
-    if not _mt_inited:
-        _init_mimetypes()
-    return mimetypes.guess_type(*args, **kwargs)
 
 
 def guess_all_extensions(*args, **kwargs):
-    import mimetypes
-    if not _mt_inited:
-        _init_mimetypes()
     return mimetypes.guess_all_extensions(*args, **kwargs)
 
 
 def guess_extension(*args, **kwargs):
-    import mimetypes
-    if not _mt_inited:
-        _init_mimetypes()
     ext = mimetypes.guess_extension(*args, **kwargs)
     if not ext and args and args[0] == 'application/x-palmreader':
         ext = '.pdb'
@@ -64,9 +44,6 @@ def guess_extension(*args, **kwargs):
 
 
 def get_types_map():
-    import mimetypes
-    if not _mt_inited:
-        _init_mimetypes()
     return mimetypes.types_map
 
 

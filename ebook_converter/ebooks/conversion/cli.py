@@ -11,6 +11,7 @@ from ebook_converter.utils.config import OptionParser
 from ebook_converter.utils.logging import Log
 from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter import patheq
+from ebook_converter import init_mimetypes
 from ebook_converter.utils.localization import localize_user_manual_link
 
 
@@ -361,6 +362,7 @@ def read_sr_patterns(path, log=None):
 
 def main(args=sys.argv):
     log = Log()
+    init_mimetypes()
     parser, plumber = create_option_parser(args, log)
     opts, leftover_args = parser.parse_args(args)
     if len(leftover_args) > 3:

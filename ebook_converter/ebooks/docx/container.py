@@ -1,10 +1,11 @@
+import mimetypes
 import os
 import shutil
 import sys
 
 from lxml import etree
 
-from ebook_converter import walk, guess_type
+from ebook_converter import walk
 from ebook_converter.ebooks.metadata import authors_to_sort_string
 from ebook_converter.ebooks.metadata import string_to_authors
 from ebook_converter.ebooks.metadata.book.base import Metadata
@@ -150,7 +151,7 @@ class DOCX(object):
         ext = name.rpartition('.')[-1].lower()
         if ext in self.default_content_types:
             return self.default_content_types[ext]
-        return guess_type(name)[0]
+        return mimetypes.guess_type(name)[0]
 
     def read_package_relationships(self):
         try:

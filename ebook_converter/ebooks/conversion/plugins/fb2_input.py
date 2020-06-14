@@ -1,6 +1,7 @@
 """
 Convert .fb2 files to .lrf
 """
+import mimetypes
 import os
 import pkg_resources
 import re
@@ -10,7 +11,6 @@ from lxml import etree
 from ebook_converter import constants as const
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.customize.conversion import OptionRecommendation
-from ebook_converter import guess_type
 
 
 FB2NS = 'http://www.gribuser.ru/xml/fictionbook/2.0'
@@ -152,7 +152,8 @@ class FB2Input(InputFormatPlugin):
                     break
 
         opf = OPFCreator(os.getcwd(), mi)
-        entries = [(f2, guess_type(f2)[0]) for f2 in os.listdir(u'.')]
+        entries = [(f2, mimetypes.guess_type(f2)[0])
+                   for f2 in os.listdir(u'.')]
         opf.create_manifest(entries)
         opf.create_spine(['index.xhtml'])
         if cpath:

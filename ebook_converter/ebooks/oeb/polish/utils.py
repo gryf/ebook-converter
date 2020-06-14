@@ -1,12 +1,9 @@
 import bisect
 import os
 import re
+import mimetypes
 
-from ebook_converter import guess_type as _guess_type, replace_entities
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
+from ebook_converter import replace_entities
 
 
 def _upper(string):
@@ -14,7 +11,7 @@ def _upper(string):
 
 
 def guess_type(x):
-    return _guess_type(x)[0] or 'application/octet-stream'
+    return mimetypes.guess_type(x)[0] or 'application/octet-stream'
 
 
 def setup_css_parser_serialization(tab_width=2):

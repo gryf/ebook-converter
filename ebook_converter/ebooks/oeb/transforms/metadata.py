@@ -1,9 +1,9 @@
+import mimetypes
 import os
 import re
 
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.utils.date import isoformat, now
-from ebook_converter import guess_type
 
 
 def meta_info_to_oeb_metadata(mi, m, log, override_input_metadata=False):
@@ -156,9 +156,8 @@ class MergeMetadata(object):
         new_cover_item = None
         if cdata:
             id, href = self.oeb.manifest.generate('cover', 'cover.'+ext)
-            new_cover_item = self.oeb.manifest.add(id, href,
-                                                   guess_type('cover.'+ext)[0],
-                                                   data=cdata)
+            new_cover_item = self.oeb.manifest.add(
+                id, href, mimetypes.guess_type('cover.'+ext)[0], data=cdata)
             self.oeb.guide.add('cover', 'Cover', href)
         if do_remove_old_cover:
             self.remove_old_cover(item, new_cover_item.href)

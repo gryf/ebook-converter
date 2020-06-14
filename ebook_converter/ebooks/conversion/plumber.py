@@ -14,7 +14,7 @@ from ebook_converter.ebooks.conversion.preprocess import HTMLPreProcessor
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils.date import parse_date
 from ebook_converter.utils.zipfile import ZipFile
-from ebook_converter import extract, walk, filesystem_encoding, get_types_map
+from ebook_converter import extract, walk, filesystem_encoding
 from ebook_converter.constants_old import __version__
 
 
@@ -1010,7 +1010,6 @@ OptionRecommendation(name='search_replace',
             from ebook_converter.utils.fonts.scanner import font_scanner  # noqa
         import css_parser, logging
         css_parser.log.setLevel(logging.WARN)
-        get_types_map()  # Ensure the mimetypes module is intialized
 
         if self.opts.debug_pipeline is not None:
             self.opts.verbose = max(self.opts.verbose, 4)

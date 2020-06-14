@@ -6,6 +6,7 @@ import functools
 import glob
 import io
 import json
+import mimetypes
 import os
 import re
 import sys
@@ -74,7 +75,7 @@ class Resource(object):  # {{{
         self.path = None
         self.fragment = ''
         try:
-            self.mime_type = guess_type(href_or_path)[0]
+            self.mime_type = mimetypes.guess_type(href_or_path)[0]
         except Exception:
             self.mime_type = None
         if self.mime_type is None:
@@ -1304,8 +1305,8 @@ class OPF(object):  # {{{
                       'other.ms-coverimage'):
                 for item in self.guide:
                     if item.type.lower() == t:
-                        self.create_manifest_item(item.href(),
-                                                  guess_type(path)[0])
+                        self.create_manifest_item(
+                            item.href(), mimetypes.guess_type(path)[0])
 
     def get_metadata_element(self, name):
         matches = self.metadata_elem_path(self.metadata, name=name)

@@ -1,12 +1,7 @@
+import mimetypes
 import os
 
-from ebook_converter import guess_type
 from ebook_converter.customize.conversion import InputFormatPlugin
-
-
-__license__ = 'GPL 3'
-__copyright__ = '2011, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
 
 
 class HTMLZInput(InputFormatPlugin):
@@ -124,7 +119,8 @@ class HTMLZInput(InputFormatPlugin):
                 cdata = cf.read()
             cover_name = os.path.basename(cover_path)
             id, href = oeb.manifest.generate('cover', cover_name)
-            oeb.manifest.add(id, href, guess_type(cover_name)[0], data=cdata)
+            oeb.manifest.add(id, href, mimetypes.guess_type(cover_name)[0],
+                             data=cdata)
             oeb.guide.add('cover', 'Cover', href)
 
         return oeb

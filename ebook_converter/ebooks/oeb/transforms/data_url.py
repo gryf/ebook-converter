@@ -1,3 +1,4 @@
+import mimetypes
 import re
 from ebook_converter.ebooks.oeb.base import XPath, urlunquote
 from ebook_converter.polyglot.builtins import as_bytes
@@ -45,5 +46,6 @@ class DataURL(object):
         self.log('Found image encoded as data URI converting it to normal image')
         from ebook_converter import guess_type
         item_id, item_href = oeb.manifest.generate('data-url-image', 'data-url-image.' + fmt)
-        oeb.manifest.add(item_id, item_href, guess_type(item_href)[0], data=data)
+        oeb.manifest.add(item_id, item_href,
+                         mimetypes.guess_type(item_href)[0], data=data)
         return item_href

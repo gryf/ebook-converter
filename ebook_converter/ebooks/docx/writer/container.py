@@ -1,9 +1,9 @@
+import mimetypes
 import textwrap, os
 
 from lxml import etree
 from lxml.builder import ElementMaker
 
-from ebook_converter import guess_type
 from ebook_converter.constants_old import numeric_version, __appname__
 from ebook_converter.ebooks.docx.names import DOCXNamespace
 from ebook_converter.ebooks.metadata import authors_to_string
@@ -179,16 +179,20 @@ class DOCX(object):
             types.append(E.Override(PartName=partname, ContentType=mt))
         added = {'png', 'gif', 'jpeg', 'jpg', 'svg', 'xml'}
         for ext in added:
-            types.append(E.Default(Extension=ext, ContentType=guess_type('a.'+ext)[0]))
-        for ext, mt in {"rels": "application/vnd.openxmlformats-package.relationships+xml",
-                        "odttf": "application/vnd.openxmlformats-officedocument.obfuscatedFont"}.items():
+            types.append(E.Default(Extension=ext,
+                                   ContentType=mimetypes.guess_type('a.' +
+                                                                    ext)[0]))
+        for ext, mt in {"rels": "application/vnd.openxmlformats-package"
+                        ".relationships+xml",
+                        "odttf": "application/vnd.openxmlformats-"
+                        "officedocument.obfuscatedFont"}.items():
             added.add(ext)
             types.append(E.Default(Extension=ext, ContentType=mt))
         for fname in self.images:
             ext = fname.rpartition(os.extsep)[-1]
             if ext not in added:
                 added.add(ext)
-                mt = guess_type('a.' + ext)[0]
+                mt = mimetypes.guess_type('a.' + ext)[0]
                 if mt:
                     types.append(E.Default(Extension=ext, ContentType=mt))
         return xml2str(types)

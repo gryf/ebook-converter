@@ -1,5 +1,6 @@
 import sys, os, re, math, errno, uuid, numbers
 from collections import OrderedDict, defaultdict
+import mimetypes
 
 from lxml import etree
 from lxml import html
@@ -24,8 +25,6 @@ from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
 
 NBSP = '\xa0'
 
@@ -384,7 +383,7 @@ class Convert(object):
         opf.create_manifest_from_files_in([self.dest_dir])
         for item in opf.manifest:
             if item.media_type == 'text/html':
-                item.media_type = guess_type('a.xhtml')[0]
+                item.media_type = mimetypes.guess_type('a.xhtml')[0]
         opf.create_spine(['index.html'])
         if self.cover_image is not None:
             opf.guide.set_cover(self.cover_image)

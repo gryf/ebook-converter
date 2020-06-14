@@ -3,6 +3,7 @@ CSS flattening transform.
 """
 import collections
 import math
+import mimetypes
 import numbers
 import operator
 import re
@@ -13,7 +14,6 @@ import css_parser
 from css_parser import css as cp_css
 
 from ebook_converter import constants as const
-from ebook_converter import guess_type
 from ebook_converter.ebooks import unit_convert
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb import parse_utils
@@ -125,8 +125,9 @@ class EmbedFontsCSSRules(object):
             rules = [base.css_text(x) for x in self.rules]
             rules = '\n\n'.join(rules)
             sheet = css_parser.parseString(rules, validate=False)
-            self.href = oeb.manifest.add(iid, href, guess_type(href)[0],
-                    data=sheet).href
+            self.href = oeb.manifest.add(iid, href,
+                                         mimetypes.guess_type(href)[0],
+                                         data=sheet).href
         return self.href
 
 
@@ -244,7 +245,7 @@ class CSSFlattener(object):
             fid, href = self.oeb.manifest.generate(id=u'font',
                 href='fonts/%s.%s'%(ascii_filename(font['full_name']).replace(' ', '-'), ext))
             item = self.oeb.manifest.add(fid, href,
-                    guess_type('dummy.'+ext)[0],
+                    mimetypes.guess_type('dummy.'+ext)[0],
                     data=font_scanner.get_font_data(font))
             item.unload_data_from_memory()
 

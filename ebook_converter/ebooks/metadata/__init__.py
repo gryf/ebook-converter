@@ -2,20 +2,16 @@
 Provides abstraction for metadata reading.writing from a variety of ebook
 formats.
 """
+import mimetypes
 import os
 import re
 import sys
 import urllib.parse
 
-from ebook_converter import relpath, guess_type, prints, force_unicode
+from ebook_converter import relpath, prints, force_unicode
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.polyglot.builtins import as_unicode
 from ebook_converter.polyglot.urllib import unquote
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
 
 
 try:
@@ -231,7 +227,7 @@ class Resource(object):
         self.path = None
         self.fragment = ''
         try:
-            self.mime_type = guess_type(href_or_path)[0]
+            self.mime_type = mimetypes.guess_type(href_or_path)[0]
         except:
             self.mime_type = None
         if self.mime_type is None:

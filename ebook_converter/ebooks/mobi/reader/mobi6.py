@@ -1,5 +1,6 @@
 import shutil, os, re, struct, textwrap, io
 import logging
+import mimetypes
 
 from lxml import html, etree
 
@@ -674,7 +675,8 @@ class MobiReader(object):
         for i in getattr(self, 'image_names', []):
             path = os.path.join(bp, 'images', i)
             added.add(path)
-            manifest.append((path, guess_type(path)[0] or 'image/jpeg'))
+            manifest.append((path,
+                             mimetypes.guess_type(path)[0] or 'image/jpeg'))
         if cover_copied is not None:
             manifest.append((cover_copied, 'image/jpeg'))
 

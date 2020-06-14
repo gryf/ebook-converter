@@ -1,6 +1,7 @@
 """
 Read meta information from fb2 files
 """
+import mimetypes
 import functools
 import os
 import random
@@ -225,7 +226,7 @@ def _parse_cover_data(root, imgid, mi, ctx):
         mime_extensions = guess_all_extensions(mimetype)
 
         if not mime_extensions and mimetype.startswith('image/'):
-            mimetype_fromid = guess_type(imgid)[0]
+            mimetype_fromid = mimetypes.guess_type(imgid)[0]
             if mimetype_fromid and mimetype_fromid.startswith('image/'):
                 mime_extensions = guess_all_extensions(mimetype_fromid)
 

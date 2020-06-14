@@ -1,9 +1,9 @@
+import mimetypes
 import textwrap
 import urllib.parse
 
 from lxml import etree
 
-from ebook_converter import guess_type
 from ebook_converter.utils.imghdr import identify
 from ebook_converter.polyglot.urllib import unquote
 
@@ -115,7 +115,7 @@ class CoverManager(object):
                         else self.svg_template
                 tp = templ % unquote(href)
                 id, href = m.generate('titlepage', 'titlepage.xhtml')
-                item = m.add(id, href, guess_type('t.xhtml')[0],
+                item = m.add(id, href, mimetypes.guess_type('t.xhtml')[0],
                              data=etree.fromstring(tp))
         else:
             key = urllib.parse.urldefrag(self.oeb.guide['titlepage'].href)[0]

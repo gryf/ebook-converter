@@ -1,15 +1,18 @@
-import os, glob, re
+import glob
+import mimetypes
+import os
+import re
 
-from ebook_converter import guess_type
-from ebook_converter.customize import (FileTypePlugin, MetadataReaderPlugin,
-    MetadataWriterPlugin, PreferencesPlugin, InterfaceActionBase, StoreBase)
 from ebook_converter.constants_old import numeric_version
-from ebook_converter.ebooks.metadata.archive import ArchiveExtract, KPFExtract, get_comic_metadata
+from ebook_converter.customize import FileTypePlugin
+from ebook_converter.customize import InterfaceActionBase
+from ebook_converter.customize import MetadataReaderPlugin
+from ebook_converter.customize import MetadataWriterPlugin
 from ebook_converter.ebooks.html.to_zip import HTML2ZIP
+from ebook_converter.ebooks.metadata.archive import ArchiveExtract
+from ebook_converter.ebooks.metadata.archive import KPFExtract
+from ebook_converter.ebooks.metadata.archive import get_comic_metadata
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 plugins = []
 
@@ -36,12 +39,13 @@ class PML2PMLZ(FileTypePlugin):
         pmlz.write(pmlfile, os.path.basename(pmlfile), zipfile.ZIP_DEFLATED)
 
         pml_img = os.path.splitext(pmlfile)[0] + '_img'
-        i_img = os.path.join(os.path.dirname(pmlfile),'images')
+        i_img = os.path.join(os.path.dirname(pmlfile), 'images')
         img_dir = pml_img if os.path.isdir(pml_img) else i_img if \
             os.path.isdir(i_img) else ''
         if img_dir:
             for image in glob.glob(os.path.join(img_dir, '*.png')):
-                pmlz.write(image, os.path.join('images', (os.path.basename(image))))
+                pmlz.write(image, os.path.join('images',
+                                               (os.path.basename(image))))
         pmlz.close()
 
         return of.name
@@ -67,13 +71,13 @@ class TXT2TXTZ(FileTypePlugin):
         # Textile
         for m in re.finditer(r'(?mu)(?:[\[{])?\!(?:\. )?(?P<path>[^\s(!]+)\s?(?:\(([^\)]+)\))?\!(?::(\S+))?(?:[\]}]|(?=\s|$))', txt):
             path = m.group('path')
-            if path and not os.path.isabs(path) and guess_type(path)[0] in OEB_IMAGES and os.path.exists(os.path.join(base_dir, path)):
+            if path and not os.path.isabs(path) and mimetypes.guess_type(path)[0] in OEB_IMAGES and os.path.exists(os.path.join(base_dir, path)):
                 images.append(path)
 
         # Markdown inline
         for m in re.finditer(r'(?mu)\!\[([^\]\[]*(\[[^\]\[]*(\[[^\]\[]*(\[[^\]\[]*(\[[^\]\[]*(\[[^\]\[]*(\[[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*)\]\s*\((?P<path>[^\)]*)\)', txt):  # noqa
             path = m.group('path')
-            if path and not os.path.isabs(path) and guess_type(path)[0] in OEB_IMAGES and os.path.exists(os.path.join(base_dir, path)):
+            if path and not os.path.isabs(path) and mimetypes.guess_type(path)[0] in OEB_IMAGES and os.path.exists(os.path.join(base_dir, path)):
                 images.append(path)
 
         # Markdown reference
@@ -83,7 +87,7 @@ class TXT2TXTZ(FileTypePlugin):
                 refs[m.group('id')] = m.group('path')
         for m in re.finditer(r'(?mu)\!\[([^\]\[]*(\[[^\]\[]*(\[[^\]\[]*(\[[^\]\[]*(\[[^\]\[]*(\[[^\]\[]*(\[[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*\])*[^\]\[]*)\]\s*\[(?P<id>[^\]]*)\]', txt):  # noqa
             path = refs.get(m.group('id'), None)
-            if path and not os.path.isabs(path) and guess_type(path)[0] in OEB_IMAGES and os.path.exists(os.path.join(base_dir, path)):
+            if path and not os.path.isabs(path) and mimetypes.guess_type(path)[0] in OEB_IMAGES and os.path.exists(os.path.join(base_dir, path)):
                 images.append(path)
 
         # Remove duplicates

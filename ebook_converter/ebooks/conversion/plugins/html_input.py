@@ -1,21 +1,17 @@
 import functools
+import mimetypes
 import os
 import re
 import tempfile
 import urllib.parse
 
 from ebook_converter.constants_old import islinux, isbsd
-from ebook_converter.customize.conversion import (InputFormatPlugin,
-        OptionRecommendation)
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter.utils.localization import get_lang
 from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.imghdr import what
 from ebook_converter.polyglot.builtins import as_unicode
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 
 def sanitize_file_name(x):
@@ -99,7 +95,6 @@ class HTMLInput(InputFormatPlugin):
         from ebook_converter.ebooks.oeb.base import (DirContainer,
             rewrite_links, urlnormalize, BINARY_MIME, OEB_STYLES,
             xpath, urlquote)
-        from ebook_converter import guess_type
         from ebook_converter.ebooks.oeb.transforms.metadata import \
             meta_info_to_oeb_metadata
         from ebook_converter.ebooks.html.input import get_filelist
@@ -164,7 +159,7 @@ class HTMLInput(InputFormatPlugin):
             self.added_resources[path] = href
         self.urlnormalize, self.DirContainer = urlnormalize, DirContainer
         self.urldefrag = urllib.parse.urldefrag
-        self.guess_type, self.BINARY_MIME = guess_type, BINARY_MIME
+        self.BINARY_MIME = BINARY_MIME
 
         self.log('Rewriting HTML links')
         for f in filelist:
@@ -262,7 +257,7 @@ class HTMLInput(InputFormatPlugin):
         if link not in self.added_resources:
             bhref = os.path.basename(link)
             id, href = self.oeb.manifest.generate(id='added', href=sanitize_file_name(bhref))
-            guessed = self.guess_type(href)[0]
+            guessed = mimetypes.guess_type(href)[0]
             media_type = guessed or self.BINARY_MIME
             if media_type == 'text/plain':
                 self.log.warn('Ignoring link to text file %r'%link_)
@@ -275,7 +270,7 @@ class HTMLInput(InputFormatPlugin):
                     pass
                 else:
                     if img:
-                        media_type = self.guess_type('dummy.'+img)[0] or self.BINARY_MIME
+                        media_type = mimetypes.guess_type('dummy.'+img)[0] or self.BINARY_MIME
 
             self.oeb.log.debug('Added', link)
             self.oeb.container = self.DirContainer(os.path.dirname(link),

@@ -1,9 +1,10 @@
-import textwrap, operator
-from copy import deepcopy, copy
+import copy
+import mimetypes
+import operator
+import textwrap
 
 from lxml import etree
 
-from ebook_converter import guess_type
 from ebook_converter.polyglot.builtins import as_bytes
 
 
@@ -87,7 +88,7 @@ class MediaType(etree.XSLTExtension):
 
     def execute(self, context, self_node, input_node, output_parent):
         name = input_node.get('file', None)
-        typ = guess_type(name)[0]
+        typ = mimetypes.guess_type(name)[0]
         if not typ:
             typ = 'application/octet-stream'
         output_parent.text = typ
@@ -120,7 +121,7 @@ class TextBlock(etree.XSLTExtension):
         self.plot_map = plot_map
 
     def execute(self, context, self_node, input_node, output_parent):
-        input_node = deepcopy(input_node)
+        input_node = copy.deepcopy(input_node)
         div = etree.Element('div')
         self.render_block(input_node, div)
         output_parent.append(div)
@@ -190,7 +191,7 @@ class TextBlock(etree.XSLTExtension):
             for child in children:
                 p.remove(child)
                 if pattrib and child.tag == "Span":
-                    attrib = copy(pattrib)
+                    attrib = copy.copy(pattrib)
                     attrib.update(child.attrib)
                     child.attrib.update(attrib)
 

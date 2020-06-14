@@ -4,6 +4,7 @@ Container-/OPF-based input OEBBook reader.
 import collections
 import copy
 import io
+import mimetypes
 import os
 import re
 import sys
@@ -22,7 +23,7 @@ from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.localization import get_lang
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants_old import __appname__, __version__
-from ebook_converter import guess_type, xml_replace_entities
+from ebook_converter import xml_replace_entities
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -130,7 +131,6 @@ class OEBReader(object):
             meta_info_to_oeb_metadata
         stream = io.BytesIO(etree.tostring(opf, xml_declaration=True,
                                            encoding='utf-8'))
-        # o = opf_meta.OPF(stream)
         o = OPF(stream)
         pwm = o.primary_writing_mode
         if pwm:
@@ -251,7 +251,7 @@ class OEBReader(object):
                                      href)
                     warned.add(href)
                 id, _ = manifest.generate(id='added')
-                guessed = guess_type(href)[0]
+                guessed = mimetypes.guess_type(href)[0]
                 media_type = guessed or base.BINARY_MIME
                 added = manifest.add(id, href, media_type)
                 unchecked.add(added)
@@ -268,7 +268,7 @@ class OEBReader(object):
             if media_type is None:
                 media_type = elem.get('mediatype', None)
             if not media_type or media_type == 'text/xml':
-                guessed = guess_type(href)[0]
+                guessed = mimetypes.guess_type(href)[0]
                 media_type = guessed or media_type or base.BINARY_MIME
             if hasattr(media_type, 'lower'):
                 media_type = media_type.lower()
