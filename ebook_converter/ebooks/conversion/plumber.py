@@ -14,8 +14,8 @@ from ebook_converter.ebooks.conversion.preprocess import HTMLPreProcessor
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils.date import parse_date
 from ebook_converter.utils.zipfile import ZipFile
-from ebook_converter import extract, walk, filesystem_encoding
-from ebook_converter.constants_old import __version__
+from ebook_converter import extract, walk
+from ebook_converter.constants_old import __version__, filesystem_encoding
 
 
 DEBUG_README=b'''

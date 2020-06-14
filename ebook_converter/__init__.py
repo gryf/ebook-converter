@@ -3,7 +3,6 @@ import os
 import pkg_resources
 import re
 import sys
-import time
 import mimetypes
 
 from functools import partial
@@ -13,10 +12,11 @@ try:
 except EnvironmentError:
     os.chdir(os.path.expanduser('~'))
 
-from ebook_converter.constants_old import iswindows, islinux, isfrozen, \
-    isbsd, preferred_encoding, __appname__, __version__, __author__, \
+from ebook_converter import constants_old
+from ebook_converter.constants_old import islinux, isfrozen, \
+    isbsd, __appname__, __version__, __author__, \
     win32event, win32api, winerror, fcntl, \
-    filesystem_encoding, plugins, config_dir
+    config_dir
 from ebook_converter.startup import winutil, winutilerror
 from ebook_converter.utils.icu import safe_chr
 
@@ -41,7 +41,7 @@ def guess_extension(*args, **kwargs):
 
 def unicode_path(path, abs=False):
     if isinstance(path, bytes):
-        path = path.decode(filesystem_encoding)
+        path = path.decode(constants_old.filesystem_encoding)
     if abs:
         path = os.path.abspath(path)
     return path
@@ -68,9 +68,10 @@ def sanitize_file_name(name, substitute='_'):
     """
 
     if isinstance(name, bytes):
-        name = name.decode(filesystem_encoding, 'replace')
+        name = name.decode(constants_old.filesystem_encoding, 'replace')
     if isinstance(substitute, bytes):
-        substitute = substitute.decode(filesystem_encoding, 'replace')
+        substitute = substitute.decode(constants_old.filesystem_encoding,
+                                       'replace')
     chars = (substitute
              if c in _filename_sanitize_unicode else c for c in name)
     one = ''.join(chars)
@@ -99,7 +100,8 @@ def prints(*args, **kwargs):
     """
     file = kwargs.get('file', sys.stdout)
     file = getattr(file, 'buffer', file)
-    enc = 'utf-8' if os.getenv('CALIBRE_WORKER') else preferred_encoding
+    enc = ('utf-8' if os.getenv('CALIBRE_WORKER')
+           else constants_old.preferred_encoding)
     sep = kwargs.get('sep', ' ')
     if not isinstance(sep, bytes):
         sep = sep.encode(enc)
@@ -110,7 +112,7 @@ def prints(*args, **kwargs):
     count = 0
     for i, arg in enumerate(args):
         if isinstance(arg, str):
-            if iswindows:
+            if constants_old.iswindows:
                 from ebook_converter.utils.terminal import Detect
                 cs = Detect(file)
                 if cs.is_console:
@@ -257,40 +259,6 @@ def walk(dir):
             yield os.path.join(record[0], f)
 
 
-def strftime(fmt, t=None):
-    """
-    A version of strftime that returns unicode strings and tries to handle
-    dates before 1900
-    """
-    if not fmt:
-        return ''
-    if t is None:
-        t = time.localtime()
-    if hasattr(t, 'timetuple'):
-        t = t.timetuple()
-    early_year = t[0] < 1900
-    if early_year:
-        replacement = 1900 if t[0] % 4 == 0 else 1901
-        fmt = fmt.replace('%Y', '_early year hack##')
-        t = list(t)
-        orig_year = t[0]
-        t[0] = replacement
-        t = time.struct_time(t)
-    ans = None
-    if iswindows:
-        if isinstance(fmt, bytes):
-            fmt = fmt.decode('mbcs', 'replace')
-        fmt = fmt.replace('%e', '%#d')
-        ans = plugins['winutil'][0].strftime(fmt, t)
-    else:
-        ans = time.strftime(fmt, t)
-        if isinstance(ans, bytes):
-            ans = ans.decode(preferred_encoding, 'replace')
-    if early_year:
-        ans = ans.replace('_early year hack##', str(orig_year))
-    return ans
-
-
 def my_unichr(num):
     try:
         return safe_chr(num)
@@ -380,14 +348,15 @@ def prepare_string_for_xml(raw, attribute=False):
     return raw
 
 
-def force_unicode(obj, enc=preferred_encoding):
+def force_unicode(obj, enc=constants_old.preferred_encoding):
     if isinstance(obj, bytes):
         try:
             obj = obj.decode(enc)
         except Exception:
             try:
-                obj = obj.decode(filesystem_encoding if enc ==
-                                 preferred_encoding else preferred_encoding)
+                obj = obj.decode(constants_old.filesystem_encoding
+                                 if enc == constants_old.preferred_encoding
+                                 else constants_old.preferred_encoding)
             except Exception:
                 try:
                     obj = obj.decode('utf-8')

@@ -8,12 +8,11 @@ import urllib.parse
 from xml.sax import saxutils
 
 from ebook_converter import constants as const
-from ebook_converter import strftime
+from ebook_converter.utils import date
 from ebook_converter.constants_old import iswindows
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.base import XPath, xml2text, urlnormalize
 from ebook_converter.library.comments import comments_to_html, markdown
-from ebook_converter.utils.date import is_date_undefined, as_local_time
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
 from ebook_converter.ebooks.metadata import fmt_sidx, rating_to_stars
 
@@ -272,11 +271,11 @@ def render_jacket(mi, output_profile, alt_title='Unknown', alt_tags=[],
     publisher = saxutils.escape(publisher)
 
     try:
-        if is_date_undefined(mi.pubdate):
+        if date.is_date_undefined(mi.pubdate):
             pubdate = ''
         else:
-            dt = as_local_time(mi.pubdate)
-            pubdate = strftime('%Y', dt.timetuple())
+            dt = date.as_local_time(mi.pubdate)
+            pubdate = date.strftime('%Y', dt.timetuple())
     except Exception:
         pubdate = ''
 

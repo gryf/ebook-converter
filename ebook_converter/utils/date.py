@@ -1,8 +1,8 @@
 import re
-from datetime import datetime, time as dtime, timedelta, MINYEAR, MAXYEAR
-from functools import partial
+import datetime
+import time
+import functools
 
-from ebook_converter import strftime
 from ebook_converter.constants_old import iswindows, isosx, plugins, preferred_encoding
 from ebook_converter.utils.iso8601 import utc_tz, local_tz, UNDEFINED_DATE
 from ebook_converter.utils.localization import lcdata
@@ -46,8 +46,8 @@ else:
     except:
         parse_date_day_first = False
 
-DEFAULT_DATE = datetime(2000,1,1, tzinfo=utc_tz)
-EPOCH = datetime(1970, 1, 1, tzinfo=_utc_tz)
+DEFAULT_DATE = datetime.datetime(2000,1,1, tzinfo=utc_tz)
+EPOCH = datetime.datetime(1970, 1, 1, tzinfo=_utc_tz)
 
 
 def is_date_undefined(qt_or_dt):
@@ -58,7 +58,7 @@ def is_date_undefined(qt_or_dt):
         if hasattr(d, 'date'):
             d = d.date()
         try:
-            d = datetime(d.year(), d.month(), d.day(), tzinfo=utc_tz)
+            d = datetime.datetime(d.year(), d.month(), d.day(), tzinfo=utc_tz)
         except ValueError:
             return True  # Undefined QDate
     return d.year < UNDEFINED_DATE.year or (
@@ -96,7 +96,8 @@ def parse_date(date_string, assume_utc=False, as_utc=True, default=None):
     if isinstance(date_string, bytes):
         date_string = date_string.decode(preferred_encoding, 'replace')
     if default is None:
-        func = datetime.utcnow if assume_utc else datetime.now
+        func = (datetime.datetime.utcnow if assume_utc
+                else datetime.datetime.now)
         default = func().replace(day=15, hour=0, minute=0, second=0, microsecond=0,
                 tzinfo=_utc_tz if assume_utc else _local_tz)
     if iso_pat().match(date_string) is not None:
@@ -109,7 +110,7 @@ def parse_date(date_string, assume_utc=False, as_utc=True, default=None):
 
 
 def fix_only_date(val):
-    n = val + timedelta(days=1)
+    n = val + datetime.timedelta(days=1)
     if n.month > val.month:
         val = val.replace(day=val.day-1)
     if val.day == 1:
@@ -130,20 +131,20 @@ def parse_only_date(raw, assume_utc=True, as_utc=True):
 
 
 def strptime(val, fmt, assume_utc=False, as_utc=True):
-    dt = datetime.strptime(val, fmt)
+    dt = datetime.datetime.strptime(val, fmt)
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=_utc_tz if assume_utc else _local_tz)
     return dt.astimezone(_utc_tz if as_utc else _local_tz)
 
 
 def dt_factory(time_t, assume_utc=False, as_utc=True):
-    dt = datetime(*(time_t[0:6]))
+    dt = datetime.datetime(*(time_t[0:6]))
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=_utc_tz if assume_utc else _local_tz)
     return dt.astimezone(_utc_tz if as_utc else _local_tz)
 
 
-safeyear = lambda x: min(max(x, MINYEAR), MAXYEAR)
+safeyear = lambda x: min(max(x, datetime.MINYEAR), datetime.MAXYEAR)
 
 
 def qt_to_dt(qdate_or_qdatetime, as_utc=True):
@@ -153,29 +154,29 @@ def qt_to_dt(qdate_or_qdatetime, as_utc=True):
         o = o.toUTC()
         d, t = o.date(), o.time()
         try:
-            ans = datetime(safeyear(d.year()), d.month(), d.day(), t.hour(), t.minute(), t.second(), t.msec()*1000, utc_tz)
+            ans = datetime.datetime(safeyear(d.year()), d.month(), d.day(), t.hour(), t.minute(), t.second(), t.msec()*1000, utc_tz)
         except ValueError:
-            ans = datetime(safeyear(d.year()), d.month(), 1, t.hour(), t.minute(), t.second(), t.msec()*1000, utc_tz)
+            ans = datetime.datetime(safeyear(d.year()), d.month(), 1, t.hour(), t.minute(), t.second(), t.msec()*1000, utc_tz)
         if not as_utc:
             ans = ans.astimezone(local_tz)
         return ans
 
     try:
-        dt = datetime(safeyear(o.year()), o.month(), o.day()).replace(tzinfo=_local_tz)
+        dt = datetime.datetime(safeyear(o.year()), o.month(), o.day()).replace(tzinfo=_local_tz)
     except ValueError:
-        dt = datetime(safeyear(o.year()), o.month(), 1).replace(tzinfo=_local_tz)
+        dt = datetime.datetime(safeyear(o.year()), o.month(), 1).replace(tzinfo=_local_tz)
     return dt.astimezone(_utc_tz if as_utc else _local_tz)
 
 
 def fromtimestamp(ctime, as_utc=True):
-    dt = datetime.utcfromtimestamp(ctime).replace(tzinfo=_utc_tz)
+    dt = datetime.datetime.utcfromtimestamp(ctime).replace(tzinfo=_utc_tz)
     if not as_utc:
         dt = dt.astimezone(_local_tz)
     return dt
 
 
 def fromordinal(day, as_utc=True):
-    return datetime.fromordinal(day).replace(
+    return datetime.datetime.fromordinal(day).replace(
             tzinfo=_utc_tz if as_utc else _local_tz)
 
 
@@ -191,6 +192,40 @@ def isoformat(date_time, assume_utc=False, as_utc=True, sep='T'):
 
 def internal_iso_format_string():
     return 'yyyy-MM-ddThh:mm:ss'
+
+
+def strftime(fmt, t=None):
+    """
+    A version of strftime that returns unicode strings and tries to handle
+    dates before 1900
+    """
+    if not fmt:
+        return ''
+    if t is None:
+        t = time.localtime()
+    if hasattr(t, 'timetuple'):
+        t = t.timetuple()
+    early_year = t[0] < 1900
+    if early_year:
+        replacement = 1900 if t[0] % 4 == 0 else 1901
+        fmt = fmt.replace('%Y', '_early year hack##')
+        t = list(t)
+        orig_year = t[0]
+        t[0] = replacement
+        t = time.struct_time(t)
+    ans = None
+    if iswindows:
+        if isinstance(fmt, bytes):
+            fmt = fmt.decode('mbcs', 'replace')
+        fmt = fmt.replace('%e', '%#d')
+        ans = plugins['winutil'][0].strftime(fmt, t)
+    else:
+        ans = time.strftime(fmt, t)
+        if isinstance(ans, bytes):
+            ans = ans.decode(preferred_encoding, 'replace')
+    if early_year:
+        ans = ans.replace('_early year hack##', str(orig_year))
+    return ans
 
 
 def w3cdtf(date_time, assume_utc=False):
@@ -227,21 +262,21 @@ def as_utc(date_time, assume_utc=True):
 
 
 def now():
-    return datetime.now().replace(tzinfo=_local_tz)
+    return datetime.datetime.now().replace(tzinfo=_local_tz)
 
 
 def utcnow():
-    return datetime.utcnow().replace(tzinfo=_utc_tz)
+    return datetime.datetime.utcnow().replace(tzinfo=_utc_tz)
 
 
 def utcfromtimestamp(stamp):
     try:
-        return datetime.utcfromtimestamp(stamp).replace(tzinfo=_utc_tz)
+        return datetime.datetime.utcfromtimestamp(stamp).replace(tzinfo=_utc_tz)
     except ValueError:
         # Raised if stamp is out of range for the platforms gmtime function
         # For example, this happens with negative values on windows
         try:
-            return EPOCH + timedelta(seconds=stamp)
+            return EPOCH + datetime.timedelta(seconds=stamp)
         except (ValueError, OverflowError):
             # datetime can only represent years between 1 and 9999
             import traceback
@@ -334,8 +369,8 @@ def format_date(dt, format, assume_utc=False, as_utc=False):
     if not format:
         format = 'dd MMM yyyy'
 
-    if not isinstance(dt, datetime):
-        dt = datetime.combine(dt, dtime())
+    if not isinstance(dt, datetime.datetime):
+        dt = datetime.datetime.combine(dt, datetime.time())
 
     if hasattr(dt, 'tzinfo'):
         if dt.tzinfo is None:
@@ -349,7 +384,7 @@ def format_date(dt, format, assume_utc=False, as_utc=False):
     if dt == UNDEFINED_DATE:
         return ''
 
-    repl_func = partial(fd_repl_func, dt, 'ap' in format.lower())
+    repl_func = functools.partial(fd_repl_func, dt, 'ap' in format.lower())
     return re.sub(
         '(s{1,2})|(m{1,2})|(h{1,2})|(ap)|(AP)|(d{1,4}|M{1,4}|(?:yyyy|yy))',
         repl_func, format)
@@ -411,8 +446,8 @@ def clean_date_for_sort(dt, fmt=None):
     if not fmt:
         fmt = 'yyMd'
 
-    if not isinstance(dt, datetime):
-        dt = datetime.combine(dt, dtime())
+    if not isinstance(dt, datetime.datetime):
+        dt = datetime.datetime.combine(dt, datetime.time())
 
     if hasattr(dt, 'tzinfo'):
         if dt.tzinfo is None:
@@ -426,7 +461,7 @@ def clean_date_for_sort(dt, fmt=None):
           'day':UNDEFINED_DATE.day, 'hour':UNDEFINED_DATE.hour,
           'min':UNDEFINED_DATE.minute, 'sec':UNDEFINED_DATE.second}
 
-    repl_func = partial(cd_repl_func, tt, dt)
+    repl_func = functools.partial(cd_repl_func, tt, dt)
     re.sub('(s{1,2})|(m{1,2})|(h{1,2})|(d{1,4}|M{1,4}|(?:yyyy|yy))', repl_func, fmt)
     return dt.replace(year=tt['year'], month=tt['mon'], day=tt['day'], hour=tt['hour'],
                       minute=tt['min'], second=tt['sec'], microsecond=0)

@@ -1,7 +1,7 @@
 import datetime, os, time
 from collections import namedtuple
 
-from ebook_converter import strftime
+from ebook_converter.utils import date
 from ebook_converter.customize import CatalogPlugin
 from ebook_converter.customize.conversion import OptionRecommendation, DummyReporter
 from ebook_converter.library import current_library_name
@@ -254,8 +254,8 @@ class EPUB_MOBI(CatalogPlugin):
         opts.fmt = self.fmt = path_to_output.rpartition('.')[2]
 
         # Add local options
-        opts.creator = '%s, %s %s, %s' % (strftime('%A'), strftime('%B'), strftime('%d').lstrip('0'), strftime('%Y'))
-        opts.creator_sort_as = '%s %s' % ('calibre', strftime('%Y-%m-%d'))
+        opts.creator = '%s, %s %s, %s' % (date.strftime('%A'), date.strftime('%B'), date.strftime('%d').lstrip('0'), date.strftime('%Y'))
+        opts.creator_sort_as = '%s %s' % ('calibre', date.strftime('%Y-%m-%d'))
         opts.connected_kindle = False
 
         # Finalize output_profile

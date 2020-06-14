@@ -20,10 +20,10 @@ from math import ceil, floor
 
 import bs4
 
-from ebook_converter import (
-    __appname__, entity_to_unicode, fit_image, force_unicode, preferred_encoding
-)
-from ebook_converter.constants_old import filesystem_encoding
+from ebook_converter import __appname__, entity_to_unicode, fit_image, \
+        force_unicode
+from ebook_converter.constants_old import filesystem_encoding, \
+        preferred_encoding
 from ebook_converter.devices.interface import DevicePlugin as Device
 from ebook_converter.ebooks import ConversionError
 from ebook_converter.ebooks.BeautifulSoup import html5_parser
