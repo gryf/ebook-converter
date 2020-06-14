@@ -18,7 +18,7 @@ try:
     _author_pat = re.compile(tweaks['authors_split_regex'])
 except Exception:
     prints('Author split regexp:', tweaks['authors_split_regex'],
-            'is invalid, using default')
+           'is invalid, using default')
     _author_pat = re.compile(r'(?i),?\s+(and|with)\s+')
 
 
@@ -76,7 +76,8 @@ def author_to_author_sort(author, method=None):
     if method == 'copy':
         return author
 
-    prefixes = {force_unicode(y).lower() for y in tweaks['author_name_prefixes']}
+    prefixes = {force_unicode(y).lower()
+                for y in tweaks['author_name_prefixes']}
     prefixes |= {y+'.' for y in prefixes}
     while True:
         if not tokens:
@@ -87,7 +88,8 @@ def author_to_author_sort(author, method=None):
         else:
             break
 
-    suffixes = {force_unicode(y).lower() for y in tweaks['author_name_suffixes']}
+    suffixes = {force_unicode(y).lower()
+                for y in tweaks['author_name_suffixes']}
     suffixes |= {y+'.' for y in suffixes}
 
     suffix = ''
@@ -144,7 +146,7 @@ def get_title_sort_pat(lang=None):
     except:
         ans = frozenset((r'A\s+', r'The\s+', r'An\s+'))
     ans = '|'.join(ans)
-    ans = '^(%s)'%ans
+    ans = '^(%s)' % ans
     try:
         ans = re.compile(ans, re.IGNORECASE)
     except:
@@ -154,7 +156,7 @@ def get_title_sort_pat(lang=None):
 
 
 _ignore_starts = '\'"'+''.join(chr(x) for x in
-        list(range(0x2018, 0x201e))+[0x2032, 0x2033])
+                               list(range(0x2018, 0x201e))+[0x2032, 0x2033])
 
 
 def title_sort(title, order=None, lang=None):

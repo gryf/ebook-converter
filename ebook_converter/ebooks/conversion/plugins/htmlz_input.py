@@ -6,10 +6,10 @@ from ebook_converter.customize.conversion import InputFormatPlugin
 
 class HTMLZInput(InputFormatPlugin):
 
-    name        = 'HTLZ Input'
-    author      = 'John Schember'
+    name = 'HTLZ Input'
+    author = 'John Schember'
     description = 'Convert HTML files to HTML'
-    file_types  = {'htmlz'}
+    file_types = {'htmlz'}
     commit_name = 'htmlz_input'
 
     def convert(self, stream, options, file_ext, log,
@@ -36,13 +36,14 @@ class HTMLZInput(InputFormatPlugin):
                 top_levels.append(x)
         # Try to find an index. file.
         for x in top_levels:
-            if x.lower() in (u'index.html', u'index.xhtml', u'index.htm'):
+            if x.lower() in ('index.html', 'index.xhtml', 'index.htm'):
                 index = x
                 break
         # Look for multiple HTML files in the archive. We look at the
         # top level files only as only they matter in HTMLZ.
         for x in top_levels:
-            if os.path.splitext(x)[1].lower() in (u'.html', u'.xhtml', u'.htm'):
+            if os.path.splitext(x)[1].lower() in ('.html', '.xhtml',
+                                                  '.htm'):
                 # Set index to the first HTML file found if it's not
                 # called index.
                 if not index:
@@ -84,15 +85,14 @@ class HTMLZInput(InputFormatPlugin):
         c = 0
         while os.path.exists(htmlfile):
             c += 1
-            htmlfile = u'index%d.html'%c
+            htmlfile = u'index%d.html' % c
         with open(htmlfile, 'wb') as f:
             f.write(html.encode('utf-8'))
         odi = options.debug_pipeline
         options.debug_pipeline = None
         # Generate oeb from html conversion.
         with open(htmlfile, 'rb') as f:
-            oeb = html_input.convert(f, options, 'html', log,
-                {})
+            oeb = html_input.convert(f, options, 'html', log, {})
         options.debug_pipeline = odi
         os.remove(htmlfile)
 

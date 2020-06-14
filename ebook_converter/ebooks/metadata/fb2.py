@@ -12,8 +12,7 @@ from lxml import etree
 from ebook_converter.utils.date import parse_only_date
 from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.utils.imghdr import identify
-from ebook_converter import guess_type, guess_all_extensions, prints, \
-        force_unicode
+from ebook_converter import guess_all_extensions, prints, force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation, check_isbn
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.polyglot.binary import as_base64_unicode

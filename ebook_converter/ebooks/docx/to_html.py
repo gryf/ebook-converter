@@ -1,5 +1,11 @@
-import sys, os, re, math, errno, uuid, numbers
-from collections import OrderedDict, defaultdict
+import sys
+import os
+import re
+import math
+import errno
+import uuid
+import numbers
+import collections
 import mimetypes
 
 from lxml import etree
@@ -7,23 +13,24 @@ from lxml import html
 from lxml.html.builder import (
     HTML, HEAD, TITLE, BODY, LINK, META, P, SPAN, BR, DIV, A, DT, DL, DD, H1)
 
-from ebook_converter import guess_type
-from ebook_converter.ebooks.docx.container import DOCX
-from ebook_converter.ebooks.docx.names import XML, generate_anchor
-from ebook_converter.ebooks.docx.styles import Styles, inherit, PageProperties
-from ebook_converter.ebooks.docx.numbering import Numbering
-from ebook_converter.ebooks.docx.fonts import Fonts, is_symbol_font, map_symbol_text
-from ebook_converter.ebooks.docx.images import Images
-from ebook_converter.ebooks.docx.tables import Tables
-from ebook_converter.ebooks.docx.footnotes import Footnotes
 from ebook_converter.ebooks.docx.cleanup import cleanup_markup
+from ebook_converter.ebooks.docx.container import DOCX
+from ebook_converter.ebooks.docx.fields import Fields
+from ebook_converter.ebooks.docx.fonts import Fonts
+from ebook_converter.ebooks.docx.fonts import is_symbol_font
+from ebook_converter.ebooks.docx.fonts import map_symbol_text
+from ebook_converter.ebooks.docx.footnotes import Footnotes
+from ebook_converter.ebooks.docx.images import Images
+from ebook_converter.ebooks.docx.names import XML, generate_anchor
+from ebook_converter.ebooks.docx.numbering import Numbering
+from ebook_converter.ebooks.docx.settings import Settings
+from ebook_converter.ebooks.docx.styles import Styles, inherit, PageProperties
+from ebook_converter.ebooks.docx.tables import Tables
 from ebook_converter.ebooks.docx.theme import Theme
 from ebook_converter.ebooks.docx.toc import create_toc
-from ebook_converter.ebooks.docx.fields import Fields
-from ebook_converter.ebooks.docx.settings import Settings
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
-from ebook_converter.utils.localization import canonicalize_lang, lang_as_iso639_1
-
+from ebook_converter.utils.localization import canonicalize_lang
+from ebook_converter.utils.localization import lang_as_iso639_1
 
 
 NBSP = '\xa0'
@@ -54,7 +61,9 @@ def html_lang(docx_lang):
 
 class Convert(object):
 
-    def __init__(self, path_or_stream, dest_dir=None, log=None, detect_cover=True, notes_text=None, notes_nopb=False, nosupsub=False):
+    def __init__(self, path_or_stream, dest_dir=None, log=None,
+                 detect_cover=True, notes_text=None, notes_nopb=False,
+                 nosupsub=False):
         self.docx = DOCX(path_or_stream, log=log)
         self.namespace = self.docx.namespace
         self.ms_pat = re.compile(r'\s{2,}')
@@ -73,7 +82,7 @@ class Convert(object):
         self.fields = Fields(self.namespace)
         self.styles = Styles(self.namespace, self.tables)
         self.images = Images(self.namespace, self.log)
-        self.object_map = OrderedDict()
+        self.object_map = collections.OrderedDict()
         self.html = HTML(
             HEAD(
                 META(charset='utf-8'),
@@ -82,9 +91,9 @@ class Convert(object):
             ),
             self.body
         )
-        self.html.text='\n\t'
-        self.html[0].text='\n\t\t'
-        self.html[0].tail='\n'
+        self.html.text = '\n\t'
+        self.html[0].text = '\n\t\t'
+        self.html[0].tail = '\n'
         for child in self.html[0]:
             child.tail = '\n\t\t'
         self.html[0][-1].tail = '\n\t'
@@ -98,17 +107,18 @@ class Convert(object):
 
     def __call__(self):
         doc = self.docx.document
-        relationships_by_id, relationships_by_type = self.docx.document_relationships
+        (relationships_by_id,
+         relationships_by_type) = self.docx.document_relationships
         self.resolve_alternate_content(doc)
         self.fields(doc, self.log)
         self.read_styles(relationships_by_type)
         self.images(relationships_by_id)
-        self.layers = OrderedDict()
+        self.layers = collections.OrderedDict()
         self.framed = [[]]
         self.frame_map = {}
         self.framed_map = {}
         self.anchor_map = {}
-        self.link_map = defaultdict(list)
+        self.link_map = collections.defaultdict(list)
         self.link_source_map = {}
         self.toc_anchor = None
         self.block_runs = []
@@ -142,7 +152,8 @@ class Convert(object):
                 dl = DL(id=anchor)
                 dl.set('class', 'footnote')
                 self.body.append(dl)
-                dl.append(DT('[', A('←' + text, href='#back_%s' % anchor, title=text)))
+                dl.append(DT('[', A('←' + text, href='#back_%s' % anchor,
+                                    title=text)))
                 dl[-1][0].tail = ']'
                 dl.append(DD())
                 paras = []
@@ -159,7 +170,8 @@ class Convert(object):
                 self.mark_block_runs(paras)
 
         for p, wp in self.object_map.items():
-            if len(p) > 0 and not p.text and len(p[0]) > 0 and not p[0].text and p[0][0].get('class', None) == 'tab':
+            if (len(p) > 0 and not p.text and len(p[0]) > 0 and
+                    not p[0].text and p[0][0].get('class', None) == 'tab'):
                 # Paragraph uses tabs for indentation, convert to text-indent
                 parent = p[0]
                 tabs = []
@@ -172,7 +184,9 @@ class Convert(object):
                         break
                 indent = len(tabs) * self.settings.default_tab_stop
                 style = self.styles.resolve(wp)
-                if style.text_indent is inherit or (hasattr(style.text_indent, 'endswith') and style.text_indent.endswith('pt')):
+                if (style.text_indent is inherit or
+                        (hasattr(style.text_indent, 'endswith') and
+                         style.text_indent.endswith('pt'))):
                     if style.text_indent is not inherit:
                         indent = float(style.text_indent[:-2]) + indent
                     style.text_indent = '%.3gpt' % indent
@@ -197,7 +211,8 @@ class Convert(object):
                 except (TypeError, ValueError):
                     lvl = 0
                 numbered.append((html_obj, num_id, lvl))
-        self.numbering.apply_markup(numbered, self.body, self.styles, self.object_map, self.images)
+        self.numbering.apply_markup(numbered, self.body, self.styles,
+                                    self.object_map, self.images)
         self.apply_frames()
 
         if len(self.body) > 0:
@@ -232,13 +247,15 @@ class Convert(object):
         self.fields.polish_markup(self.object_map)
 
         self.log.debug('Cleaning up redundant markup generated by Word')
-        self.cover_image = cleanup_markup(self.log, self.html, self.styles, self.dest_dir, self.detect_cover, self.namespace.XPath)
+        self.cover_image = cleanup_markup(self.log, self.html, self.styles,
+                                          self.dest_dir, self.detect_cover,
+                                          self.namespace.XPath)
 
         return self.write(doc)
 
     def read_page_properties(self, doc):
         current = []
-        self.page_map = OrderedDict()
+        self.page_map = collections.OrderedDict()
         self.section_starts = []
 
         for p in self.namespace.descendants(doc, 'w:p', 'w:tbl'):
@@ -267,7 +284,8 @@ class Convert(object):
     def resolve_alternate_content(self, doc):
         # For proprietary extensions in Word documents use the fallback, spec
         # compliant form
-        # See https://wiki.openoffice.org/wiki/OOXML/Markup_Compatibility_and_Extensibility
+        # See https://wiki.openoffice.org/wiki/
+        # OOXML/Markup_Compatibility_and_Extensibility
         for ac in self.namespace.descendants(doc, 'mc:AlternateContent'):
             choices = self.namespace.XPath('./mc:Choice')(ac)
             fallbacks = self.namespace.XPath('./mc:Fallback')(ac)
@@ -284,7 +302,8 @@ class Convert(object):
                 cname[-1] = defname
                 if self.docx.exists('/'.join(cname)):
                     name = name
-            if name and name.startswith('word/word') and not self.docx.exists(name):
+            if (name and name.startswith('word/word') and
+                    not self.docx.exists(name)):
                 name = name.partition('/')[2]
             return name
 
@@ -327,7 +346,8 @@ class Convert(object):
                 self.log.warn('Endnotes %s do not exist' % enname)
             else:
                 enrel = self.docx.get_relationships(enname)
-        footnotes(etree.fromstring(foraw) if foraw else None, forel, etree.fromstring(enraw) if enraw else None, enrel)
+        footnotes(etree.fromstring(foraw) if foraw else None, forel,
+                  etree.fromstring(enraw) if enraw else None, enrel)
 
         if fname is not None:
             embed_relationships = self.docx.get_relationships(fname)[0]
@@ -336,7 +356,8 @@ class Convert(object):
             except KeyError:
                 self.log.warn('Fonts table %s does not exist' % fname)
             else:
-                fonts(etree.fromstring(raw), embed_relationships, self.docx, self.dest_dir)
+                fonts(etree.fromstring(raw), embed_relationships, self.docx,
+                      self.dest_dir)
 
         if tname is not None:
             try:
@@ -364,16 +385,20 @@ class Convert(object):
             except KeyError:
                 self.log.warn('Numbering styles %s do not exist' % nname)
             else:
-                numbering(etree.fromstring(raw), self.styles, self.docx.get_relationships(nname)[0])
+                numbering(etree.fromstring(raw), self.styles,
+                          self.docx.get_relationships(nname)[0])
 
         self.styles.resolve_numbering(numbering)
 
     def write(self, doc):
-        toc = create_toc(doc, self.body, self.resolved_link_map, self.styles, self.object_map, self.log, self.namespace)
-        raw = html.tostring(self.html, encoding='utf-8', doctype='<!DOCTYPE html>')
+        toc = create_toc(doc, self.body, self.resolved_link_map, self.styles,
+                         self.object_map, self.log, self.namespace)
+        raw = html.tostring(self.html, encoding='utf-8',
+                            doctype='<!DOCTYPE html>')
         with open(os.path.join(self.dest_dir, 'index.html'), 'wb') as f:
             f.write(raw)
-        css = self.styles.generate_css(self.dest_dir, self.docx, self.notes_nopb, self.nosupsub)
+        css = self.styles.generate_css(self.dest_dir, self.docx,
+                                       self.notes_nopb, self.nosupsub)
         if css:
             with open(os.path.join(self.dest_dir, 'docx.css'), 'wb') as f:
                 f.write(css.encode('utf-8'))
@@ -394,23 +419,29 @@ class Convert(object):
                                          title='Table of Contents',
                                          type='toc'))
         toc_file = os.path.join(self.dest_dir, 'toc.ncx')
-        with open(os.path.join(self.dest_dir, 'metadata.opf'), 'wb') as of, open(toc_file, 'wb') as ncx:
+        with open(os.path.join(self.dest_dir,
+                               'metadata.opf'), 'wb') as of, open(toc_file,
+                                                                  'wb') as ncx:
             opf.render(of, ncx, 'toc.ncx', process_guide=process_guide)
         if os.path.getsize(toc_file) == 0:
             os.remove(toc_file)
         return os.path.join(self.dest_dir, 'metadata.opf')
 
     def read_block_anchors(self, doc):
-        doc_anchors = frozenset(self.namespace.XPath('./w:body/w:bookmarkStart[@w:name]')(doc))
+        doc_anchors = frozenset(self.namespace.XPath('./w:body/w:bookmarkStart'
+                                                     '[@w:name]')(doc))
         if doc_anchors:
             current_bm = set()
-            rmap = {v:k for k, v in self.object_map.items()}
-            for p in self.namespace.descendants(doc, 'w:p', 'w:bookmarkStart[@w:name]'):
+            rmap = {v: k for k, v in self.object_map.items()}
+            for p in self.namespace.descendants(doc, 'w:p',
+                                                'w:bookmarkStart[@w:name]'):
                 if p.tag.endswith('}p'):
                     if current_bm and p in rmap:
                         para = rmap[p]
                         if 'id' not in para.attrib:
-                            para.set('id', generate_anchor(next(iter(current_bm)), frozenset(self.anchor_map.values())))
+                            _bm = next(iter(current_bm))
+                            _am = frozenset(self.anchor_map.values())
+                            para.set('id', generate_anchor(_bm, _am))
                         for name in current_bm:
                             self.anchor_map[name] = para.get('id')
                         current_bm = set()
@@ -442,13 +473,15 @@ class Convert(object):
                 except AttributeError:
                     break
 
-        for x in self.namespace.descendants(p, 'w:r', 'w:bookmarkStart', 'w:hyperlink', 'w:instrText'):
+        for x in self.namespace.descendants(p, 'w:r', 'w:bookmarkStart',
+                                            'w:hyperlink', 'w:instrText'):
             if p_parent(x) is not p:
                 continue
             if x.tag.endswith('}r'):
                 span = self.convert_run(x)
                 if current_anchor is not None:
-                    (dest if len(dest) == 0 else span).set('id', current_anchor)
+                    (dest if len(dest) == 0 else span).set('id',
+                                                           current_anchor)
                     current_anchor = None
                 if current_hyperlink is not None:
                     try:
@@ -462,11 +495,14 @@ class Convert(object):
                 self.layers[p].append(x)
             elif x.tag.endswith('}bookmarkStart'):
                 anchor = self.namespace.get(x, 'w:name')
-                if anchor and anchor not in self.anchor_map and anchor != '_GoBack':
+                if (anchor and anchor not in self.anchor_map and
+                        anchor != '_GoBack'):
                     # _GoBack is a special bookmark inserted by Word 2010 for
                     # the return to previous edit feature, we ignore it
                     old_anchor = current_anchor
-                    self.anchor_map[anchor] = current_anchor = generate_anchor(anchor, frozenset(self.anchor_map.values()))
+                    current_anchor = generate_anchor(
+                        anchor, frozenset(self .anchor_map.values()))
+                    self.anchor_map[anchor] = current_anchor
                     if old_anchor is not None:
                         # The previous anchor was not applied to any element
                         for a, t in tuple(self.anchor_map.items()):
@@ -474,10 +510,13 @@ class Convert(object):
                                 self.anchor_map[a] = current_anchor
             elif x.tag.endswith('}hyperlink'):
                 current_hyperlink = x
-            elif x.tag.endswith('}instrText') and x.text and x.text.strip().startswith('TOC '):
+            elif (x.tag.endswith('}instrText') and x.text and
+                    x.text.strip().startswith('TOC ')):
                 old_anchor = current_anchor
                 anchor = str(uuid.uuid4())
-                self.anchor_map[anchor] = current_anchor = generate_anchor('toc', frozenset(self.anchor_map.values()))
+                current_anchor = generate_anchor(
+                    'toc', frozenset(self.anchor_map.values()))
+                self.anchor_map[anchor] = current_anchor
                 self.toc_anchor = current_anchor
                 if old_anchor is not None:
                     # The previous anchor was not applied to any element
@@ -489,7 +528,8 @@ class Convert(object):
             dest.set('id', current_anchor)
             current_anchor = None
 
-        m = re.match(r'heading\s+(\d+)$', style.style_name or '', re.IGNORECASE)
+        m = re.match(r'heading\s+(\d+)$', style.style_name or '',
+                     re.IGNORECASE)
         if m is not None:
             n = min(6, max(1, int(m.group(1))))
             dest.tag = 'h%d' % n
@@ -533,7 +573,8 @@ class Convert(object):
         if len(dest) > 0 and not dest[-1].tail:
             if dest[-1].tag == 'br':
                 dest[-1].tail = NBSP
-            elif len(dest[-1]) > 0 and dest[-1][-1].tag == 'br' and not dest[-1][-1].tail:
+            elif (len(dest[-1]) > 0 and dest[-1][-1].tag == 'br' and
+                    not dest[-1][-1].tail):
                 dest[-1][-1].tail = NBSP
 
         return dest
@@ -578,12 +619,12 @@ class Convert(object):
             if anchor and anchor in self.anchor_map:
                 span.set('href', '#' + self.anchor_map[anchor])
                 continue
-            self.log.warn('Hyperlink with unknown target (rid=%s, anchor=%s), ignoring' %
-                          (rid, anchor))
+            self.log.warn('Hyperlink with unknown target (rid=%s, anchor=%s), '
+                          'ignoring' % (rid, anchor))
             # hrefs that point nowhere give epubcheck a hernia. The element
             # should be styled explicitly by Word anyway.
             # span.set('href', '#')
-        rmap = {v:k for k, v in self.object_map.items()}
+        rmap = {v: k for k, v in self.object_map.items()}
         for hyperlink, runs in self.fields.hyperlink_fields:
             spans = [rmap[r] for r in runs if r in rmap]
             if not spans:
@@ -604,7 +645,8 @@ class Convert(object):
                 if anchor in self.anchor_map:
                     span.set('href', '#' + self.anchor_map[anchor])
                     continue
-                self.log.warn('Hyperlink field with unknown anchor: %s' % anchor)
+                self.log.warn('Hyperlink field with unknown anchor: %s' %
+                              anchor)
             else:
                 if url in self.anchor_map:
                     span.set('href', '#' + self.anchor_map[url])
@@ -652,7 +694,8 @@ class Convert(object):
                 # actually needs it, i.e. if it has more than one
                 # consecutive space or it has newlines or tabs.
                 multi_spaces = self.ms_pat.search(ctext) is not None
-                preserve = multi_spaces or self.ws_pat.search(ctext) is not None
+                preserve = (multi_spaces or
+                            self.ws_pat.search(ctext) is not None)
                 if preserve:
                     text.add_elem(SPAN(ctext, style="white-space:pre-wrap"))
                     ans.append(text.elem)
@@ -668,24 +711,30 @@ class Convert(object):
                 else:
                     clear = child.get('clear', None)
                     if clear in {'all', 'left', 'right'}:
-                        br = BR(style='clear:%s'%('both' if clear == 'all' else clear))
+                        br = BR(style='clear:%s' % ('both' if clear == 'all'
+                                                    else clear))
                     else:
                         br = BR()
                 text.add_elem(br)
                 ans.append(text.elem)
-            elif self.namespace.is_tag(child, 'w:drawing') or self.namespace.is_tag(child, 'w:pict'):
-                for img in self.images.to_html(child, self.current_page, self.docx, self.dest_dir):
+            elif (self.namespace.is_tag(child, 'w:drawing') or
+                  self.namespace.is_tag(child, 'w:pict')):
+                for img in self.images.to_html(child, self.current_page,
+                                               self.docx, self.dest_dir):
                     text.add_elem(img)
                     ans.append(text.elem)
-            elif self.namespace.is_tag(child, 'w:footnoteReference') or self.namespace.is_tag(child, 'w:endnoteReference'):
+            elif (self.namespace.is_tag(child, 'w:footnoteReference') or
+                  self.namespace.is_tag(child, 'w:endnoteReference')):
                 anchor, name = self.footnotes.get_ref(child)
                 if anchor and name:
-                    l = A(name, id='back_%s' % anchor, href='#' + anchor, title=name)
-                    l.set('class', 'noteref')
-                    text.add_elem(l)
+                    _l = A(name, id='back_%s' % anchor, href='#' + anchor,
+                           title=name)
+                    _l.set('class', 'noteref')
+                    text.add_elem(_l)
                     ans.append(text.elem)
             elif self.namespace.is_tag(child, 'w:tab'):
-                spaces = int(math.ceil((self.settings.default_tab_stop / 36) * 6))
+                spaces = int(math.ceil((self.settings.default_tab_stop / 36) *
+                                       6))
                 text.add_elem(SPAN(NBSP * spaces))
                 ans.append(text.elem)
                 ans[-1].set('class', 'tab')
@@ -699,7 +748,8 @@ class Convert(object):
         style = self.styles.resolve_run(run)
         if style.vert_align in {'superscript', 'subscript'}:
             if ans.text or len(ans):
-                ans.set('data-docx-vert', 'sup' if style.vert_align == 'superscript' else 'sub')
+                ans.set('data-docx-vert',
+                        'sup' if style.vert_align == 'superscript' else 'sub')
         if style.lang is not inherit:
             lang = html_lang(style.lang)
             if lang is not None and lang != self.doc_lang:
@@ -738,12 +788,14 @@ class Convert(object):
             idx = parent.index(paras[0])
             frame = DIV(*paras)
             parent.insert(idx, frame)
-            self.framed_map[frame] = css = style.css(self.page_map[self.object_map[paras[0]]])
+            self.framed_map[frame] = css = style.css(
+                self.page_map[self.object_map[paras[0]]])
             self.styles.register(css, 'frame')
 
         if not self.block_runs:
             return
-        rmap = {v:k for k, v in self.object_map.items()}
+
+        rmap = {v: k for k, v in self.object_map.items()}
         for border_style, blocks in self.block_runs:
             paras = tuple(rmap[p] for p in blocks)
             for p in paras:
@@ -796,17 +848,20 @@ class Convert(object):
                 else:
                     border_style = style.clone_border_styles()
                     if has_visible_border:
-                        border_style.margin_top, style.margin_top = style.margin_top, inherit
+                        style.margin_top = inherit
+                        border_style.margin_top = style.margin_top
                 if p is not run[-1]:
                     style.padding_bottom = 0
                 else:
                     if has_visible_border:
-                        border_style.margin_bottom, style.margin_bottom = style.margin_bottom, inherit
+                        style.margin_bottom = inherit
+                        border_style.margin_bottom = style.margin_bottom
                 style.clear_borders()
                 if p is not run[-1]:
                     style.apply_between_border()
             if has_visible_border:
-                border_style.margin_left, border_style.margin_right = max_left,max_right
+                border_style.margin_left = max_left
+                border_style.margin_right = max_right
                 self.block_runs.append((border_style, run))
 
         run = []

@@ -15,17 +15,18 @@ from ebook_converter.polyglot.builtins import as_unicode
 
 
 def sanitize_file_name(x):
-    ans = re.sub(r'\s+', ' ', re.sub(r'[?&=;#]', '_', ascii_filename(x))).strip().rstrip('.')
+    ans = re.sub(r'\s+', ' ', re.sub(r'[?&=;#]', '_',
+                                     ascii_filename(x))).strip().rstrip('.')
     ans, ext = ans.rpartition('.')[::2]
     return (ans.strip() + '.' + ext.strip()).rstrip('.')
 
 
 class HTMLInput(InputFormatPlugin):
 
-    name        = 'HTML Input'
-    author      = 'Kovid Goyal'
+    name = 'HTML Input'
+    author = 'Kovid Goyal'
     description = 'Convert HTML and OPF files to an OEB'
-    file_types  = {'opf', 'html', 'htm', 'xhtml', 'xhtm', 'shtm', 'shtml'}
+    file_types = {'opf', 'html', 'htm', 'xhtml', 'xhtm', 'shtm', 'shtml'}
     commit_name = 'html_input'
 
     options = {

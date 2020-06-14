@@ -1,9 +1,11 @@
 import mimetypes
-import sys, os, re
-from xml.sax.saxutils import escape
-from string import Formatter
+import os
 import pkg_resources
+import re
+import string
+import sys
 import urllib.parse
+from xml.sax import saxutils
 
 from ebook_converter import constants as const
 from ebook_converter import strftime
@@ -16,18 +18,14 @@ from ebook_converter.ebooks.chardet import strip_encoding_declarations
 from ebook_converter.ebooks.metadata import fmt_sidx, rating_to_stars
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 JACKET_XPATH = '//h:meta[@name="calibre-content" and @content="jacket"]'
 
 
-class SafeFormatter(Formatter):
+class SafeFormatter(string.Formatter):
 
     def get_value(self, *args, **kwargs):
         try:
-            return Formatter.get_value(self, *args, **kwargs)
+            return string.Formatter.get_value(self, *args, **kwargs)
         except KeyError:
             return ''
 
@@ -40,7 +38,7 @@ class Base(object):
         for img in path(item.data):
             if removed >= limit:
                 break
-            href  = item.abshref(img.get('src'))
+            href = item.abshref(img.get('src'))
             image = self.oeb.manifest.hrefs.get(href)
             if image is None:
                 href = urlnormalize(href)
@@ -68,7 +66,8 @@ class RemoveFirstImage(Base):
                     raw = xml2text(body[0]).strip()
                     imgs = XPath('//h:img|//svg:svg')(item.data)
                     if not raw and not imgs:
-                        self.log('Removing %s as it has no content'%item.href)
+                        self.log('Removing %s as it has no content' %
+                                 item.href)
                         self.oeb.manifest.remove(item)
                         deleted_item = item
                 break
@@ -82,20 +81,20 @@ class RemoveFirstImage(Base):
             self.oeb.guide.remove_by_href(deleted_item.href)
 
     def __call__(self, oeb, opts, metadata):
-        '''
+        """
         Add metadata in jacket.xhtml if specified in opts
         If not specified, remove previous jacket instance
-        '''
+        """
         self.oeb, self.opts, self.log = oeb, opts, oeb.log
         if opts.remove_first_image:
             self.remove_first_image()
 
 
 class Jacket(Base):
-    '''
-    Book jacket manipulation. Remove first image and insert comments at start of
-    book.
-    '''
+    """
+    Book jacket manipulation. Remove first image and insert comments at start
+    of book.
+    """
 
     def insert_metadata(self, mi):
         self.log('Inserting metadata into book...')
@@ -107,22 +106,24 @@ class Jacket(Base):
 
         try:
             comments = str(self.oeb.metadata.description[0])
-        except:
+        except Exception:
             comments = ''
 
         try:
             title = str(self.oeb.metadata.title[0])
-        except:
+        except Exception:
             title = 'Unknown'
 
         try:
             authors = list(map(str, self.oeb.metadata.creator))
-        except:
+        except Exception:
             authors = ['Unknown']
 
         root = render_jacket(mi, self.opts.output_profile,
-                alt_title=title, alt_tags=tags, alt_authors=authors,
-                alt_comments=comments, rescale_fonts=True)
+                             alt_title=title, alt_tags=tags,
+                             alt_authors=authors,
+                             alt_comments=comments,
+                             rescale_fonts=True)
         id, href = self.oeb.manifest.generate('calibre_jacket', 'jacket.xhtml')
 
         jacket = self.oeb.manifest.add(id, href, mimetypes.guess_type(href)[0],
@@ -132,7 +133,8 @@ class Jacket(Base):
         for img, path in referenced_images(root):
             self.oeb.log('Embedding referenced image %s into jacket' % path)
             ext = path.rpartition('.')[-1].lower()
-            item_id, href = self.oeb.manifest.generate('jacket_image', 'jacket_img.'+ext)
+            item_id, href = self.oeb.manifest.generate('jacket_image',
+                                                       'jacket_img.' + ext)
             with open(path, 'rb') as f:
                 item = self.oeb.manifest.add(
                     item_id, href, mimetypes.guess_type(href)[0],
@@ -149,10 +151,10 @@ class Jacket(Base):
                 break
 
     def __call__(self, oeb, opts, metadata):
-        '''
+        """
         Add metadata in jacket.xhtml if specified in opts
         If not specified, remove previous jacket instance
-        '''
+        """
         self.oeb, self.opts, self.log = oeb, opts, oeb.log
         self.remove_existing_jacket()
         if opts.insert_metadata:
@@ -164,8 +166,8 @@ class Jacket(Base):
 def get_rating(rating, rchar, e_rchar):
     ans = ''
     try:
-        num = float(rating)/2
-    except:
+        num = float(rating) / 2
+    except Exception:
         return ans
     num = max(0, num)
     num = min(num, 5)
@@ -180,25 +182,29 @@ class Series(str):
 
     def __new__(self, series, series_index):
         if series and series_index is not None:
-            roman = '{1} of <em>{0}</em>'.format(
-                escape(series), escape(fmt_sidx(series_index, use_roman=True)))
-            combined = '{1} of <em>{0}</em>'.format(
-                escape(series), escape(fmt_sidx(series_index,
-                                                use_roman=False)))
+            _roman = saxutils.escape(fmt_sidx(series_index, use_roman=True))
+            _no_roman = saxutils.escape(fmt_sidx(series_index,
+                                                 use_roman=False))
+            roman = '{1} of <em>{0}</em>'.format(saxutils.escape(series),
+                                                 _roman)
+            combined = '{1} of <em>{0}</em>'.format(saxutils.escape(series),
+                                                    _no_roman)
         else:
-            combined = roman = escape(series or u'')
+            combined = roman = saxutils.escape(series or u'')
         s = str.__new__(self, combined)
         s.roman = roman
-        s.name = escape(series or '')
-        s.number = escape(fmt_sidx(series_index or 1.0, use_roman=False))
-        s.roman_number = escape(fmt_sidx(series_index or 1.0, use_roman=True))
+        s.name = saxutils.escape(series or '')
+        s.number = saxutils.escape(fmt_sidx(series_index or 1.0,
+                                            use_roman=False))
+        s.roman_number = saxutils.escape(fmt_sidx(series_index or 1.0,
+                                                  use_roman=True))
         return s
 
 
 class Tags(str):
 
     def __new__(self, tags, output_profile):
-        tags = [escape(x) for x in tags or ()]
+        tags = [saxutils.escape(x) for x in tags or ()]
         t = str.__new__(self, ', '.join(tags))
         t.alphabetical = ', '.join(sorted(tags))
         t.tags_list = tags
@@ -233,9 +239,9 @@ def postprocess_jacket(root, output_profile, has_data):
         extract_class('cbj_kindle_banner_hr')
 
 
-def render_jacket(mi, output_profile,
-        alt_title='Unknown', alt_tags=[], alt_comments='',
-        alt_publisher='', rescale_fonts=False, alt_authors=None):
+def render_jacket(mi, output_profile, alt_title='Unknown', alt_tags=[],
+                  alt_comments='', alt_publisher='', rescale_fonts=False,
+                  alt_authors=None):
     with open(pkg_resources.resource_filename('ebook_converter',
                                               'data/jacket/stylesheet.css'),
               'rb') as fobj:
@@ -250,17 +256,20 @@ def render_jacket(mi, output_profile,
 
     try:
         title_str = alt_title if mi.is_null('title') else mi.title
-    except:
+    except Exception:
         title_str = 'Unknown'
-    title_str = escape(title_str)
+    title_str = saxutils.escape(title_str)
     title = '<span class="title">%s</span>' % title_str
 
     series = Series(mi.series, mi.series_index)
     try:
-        publisher = mi.publisher if not mi.is_null('publisher') else alt_publisher
-    except:
+        if not mi.is_null('publisher'):
+            publisher = mi.publisher
+        else:
+            publisher = alt_publisher
+    except Exception:
         publisher = ''
-    publisher = escape(publisher)
+    publisher = saxutils.escape(publisher)
 
     try:
         if is_date_undefined(mi.pubdate):
@@ -268,10 +277,11 @@ def render_jacket(mi, output_profile,
         else:
             dt = as_local_time(mi.pubdate)
             pubdate = strftime('%Y', dt.timetuple())
-    except:
+    except Exception:
         pubdate = ''
 
-    rating = get_rating(mi.rating, output_profile.ratings_char, output_profile.empty_ratings_char)
+    rating = get_rating(mi.rating, output_profile.ratings_char,
+                        output_profile.empty_ratings_char)
 
     tags = Tags((mi.tags if mi.tags else alt_tags), output_profile)
 
@@ -285,10 +295,10 @@ def render_jacket(mi, output_profile,
         mi.authors = list(alt_authors or ('Unknown',))
     try:
         author = mi.format_authors()
-    except:
+    except Exception:
         author = ''
     mi.authors = orig
-    author = escape(author)
+    author = saxutils.escape(author)
     has_data = {}
 
     def generate_html(comments):
@@ -301,7 +311,7 @@ def render_jacket(mi, output_profile,
                 'publisher': publisher,
                 'rating': rating,
                 'rating_label': 'Rating',
-                'searchable_tags': ' '.join(escape(t) + 'ttt'
+                'searchable_tags': ' '.join(saxutils.escape(t) + 'ttt'
                                             for t in tags.tags_list),
                 'series': series,
                 'series_label': 'Series',
@@ -320,25 +330,30 @@ def render_jacket(mi, output_profile,
                 if dt == 'series':
                     args[dkey] = Series(mi.get(key), mi.get(key + '_index'))
                 elif dt == 'rating':
-                    args[dkey] = rating_to_stars(mi.get(key), m.get('display', {}).get('allow_half_stars', False))
+                    args[dkey] = rating_to_stars(mi.get(key),
+                                                 m.get('display', {})
+                                                 .get('allow_half_stars',
+                                                      False))
                 elif dt == 'comments':
                     val = val or ''
                     display = m.get('display', {})
                     ctype = display.get('interpret_as') or 'html'
                     if ctype == 'long-text':
-                        val = '<pre style="white-space:pre-wrap">%s</pre>' % escape(val)
+                        val = ('<pre style="white-space:pre-wrap">%s</pre>' %
+                               saxutils.escape(val))
                     elif ctype == 'short-text':
-                        val = '<span>%s</span>' % escape(val)
+                        val = '<span>%s</span>' % saxutils.escape(val)
                     elif ctype == 'markdown':
                         val = markdown(val)
                     else:
                         val = comments_to_html(val)
                     args[dkey] = val
                 else:
-                    args[dkey] = escape(val)
-                args[dkey+'_label'] = escape(display_name)
+                    args[dkey] = saxutils.escape(val)
+                args[dkey+'_label'] = saxutils.escape(display_name)
             except Exception:
-                # if the val (custom column contents) is None, don't add to args
+                # if the val (custom column contents) is None, don't add to
+                # args
                 pass
 
         if False:
@@ -371,10 +386,11 @@ def render_jacket(mi, output_profile,
         # the text in the book. That means that as long as the jacket uses
         # relative font sizes (em or %), the post conversion font size will be
         # the same as for text in the main book. So text with size x em will
-        # be rescaled to the same value in both the jacket and the main content.
+        # be rescaled to the same value in both the jacket and the main
+        # content.
         #
-        # We cannot use data-calibre-rescale 100 on the body tag as that will just
-        # give the body tag a font size of 1em, which is useless.
+        # We cannot use data-calibre-rescale 100 on the body tag as that will
+        # just give the body tag a font size of 1em, which is useless.
         for body in root.xpath('//*[local-name()="body"]'):
             fw = body.makeelement(base.tag('xhtml', 'div'))
             fw.set('data-calibre-rescale', '100')

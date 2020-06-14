@@ -1,11 +1,9 @@
 import mimetypes
 import re
+
 from ebook_converter.ebooks.oeb.base import XPath, urlunquote
+from ebook_converter.polyglot.binary import from_base64_bytes
 from ebook_converter.polyglot.builtins import as_bytes
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 class DataURL(object):
@@ -27,25 +25,29 @@ class DataURL(object):
                     continue
                 if ';base64' in header:
                     data = re.sub(r'\s+', '', data)
-                    from ebook_converter.polyglot.binary import from_base64_bytes
                     try:
                         data = from_base64_bytes(data)
                     except Exception:
-                        self.log.error('Found invalid base64 encoded data URI, ignoring it')
+                        self.log.error('Found invalid base64 encoded data '
+                                       'URI, ignoring it')
                         continue
                 else:
                     data = urlunquote(data)
                 data = as_bytes(data)
                 fmt = what(None, data)
                 if not fmt:
-                    self.log.warn('Image encoded as data URL has unknown format, ignoring')
+                    self.log.warn('Image encoded as data URL has unknown '
+                                  'format, ignoring')
                     continue
-                img.set('src', item.relhref(self.convert_image_data_uri(data, fmt, oeb)))
+                img.set('src',
+                        item.relhref(self.convert_image_data_uri(data, fmt,
+                                                                 oeb)))
 
     def convert_image_data_uri(self, data, fmt, oeb):
-        self.log('Found image encoded as data URI converting it to normal image')
-        from ebook_converter import guess_type
-        item_id, item_href = oeb.manifest.generate('data-url-image', 'data-url-image.' + fmt)
+        self.log('Found image encoded as data URI converting it to normal '
+                 'image')
+        item_id, item_href = oeb.manifest.generate('data-url-image',
+                                                   'data-url-image.' + fmt)
         oeb.manifest.add(item_id, item_href,
                          mimetypes.guess_type(item_href)[0], data=data)
         return item_href

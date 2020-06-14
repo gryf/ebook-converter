@@ -10,11 +10,11 @@ import mimetypes
 import os
 import re
 import sys
+import textwrap
+import traceback
 import unittest
 import urllib.parse
 import uuid
-import traceback
-import textwrap
 
 from lxml import etree
 from lxml.builder import ElementMaker
@@ -32,7 +32,7 @@ from ebook_converter.ebooks.metadata import string_to_authors, \
 from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.utils.date import parse_date, isoformat
 from ebook_converter.utils.localization import get_lang, canonicalize_lang
-from ebook_converter import prints, guess_type
+from ebook_converter import prints
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
 from ebook_converter.utils.config import tweaks
 from ebook_converter.polyglot.urllib import unquote
@@ -1807,8 +1807,7 @@ def test_m2o():
 class OPFTest(unittest.TestCase):
 
     def setUp(self):
-        self.stream = io.BytesIO(
-b'''\
+        self.stream = io.BytesIO(b'''\
 <?xml version="1.0"  encoding="UTF-8"?>
 <package version="2.0" xmlns="http://www.idpf.org/2007/opf" >
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
@@ -1827,8 +1826,7 @@ b'''\
     <item id="1" href="a%20%7E%20b" media-type="text/txt" />
 </manifest>
 </package>
-'''
-        )
+''')
         self.opf = OPF(self.stream, os.getcwd())
 
     def testReading(self, opf=None):
