@@ -45,29 +45,12 @@ def to_unicode(raw, encoding='utf-8', errors='strict'):
     return raw.decode(encoding, errors)
 
 
-def patheq(p1, p2):
-    p = os.path
-    d = lambda x : p.normcase(p.normpath(p.realpath(p.normpath(x))))
-    if not p1 or not p2:
-        return False
-    return d(p1) == d(p2)
-
-
 def unicode_path(path, abs=False):
     if isinstance(path, bytes):
         path = path.decode(filesystem_encoding)
     if abs:
         path = os.path.abspath(path)
     return path
-
-
-def osx_version():
-    if isosx:
-        import platform
-        src = platform.mac_ver()[0]
-        m = re.match(r'(\d+)\.(\d+)\.(\d+)', src)
-        if m:
-            return int(m.group(1)), int(m.group(2)), int(m.group(3))
 
 
 def confirm_config_name(name):
@@ -107,21 +90,21 @@ def sanitize_file_name(name, substitute='_'):
 
 
 def prints(*args, **kwargs):
-    '''
+    """
     Print unicode arguments safely by encoding them to preferred_encoding
     Has the same signature as the print function from Python 3, except for the
     additional keyword argument safe_encode, which if set to True will cause the
     function to use repr when encoding fails.
 
     Returns the number of bytes written.
-    '''
+    """
     file = kwargs.get('file', sys.stdout)
     file = getattr(file, 'buffer', file)
     enc = 'utf-8' if os.getenv('CALIBRE_WORKER') else preferred_encoding
-    sep  = kwargs.get('sep', ' ')
+    sep = kwargs.get('sep', ' ')
     if not isinstance(sep, bytes):
         sep = sep.encode(enc)
-    end  = kwargs.get('end', '\n')
+    end = kwargs.get('end', '\n')
     if not isinstance(end, bytes):
         end = end.encode(enc)
     safe_encode = kwargs.get('safe_encode', False)
@@ -173,10 +156,6 @@ def prints(*args, **kwargs):
     file.write(end)
     count += len(end)
     return count
-
-
-class CommandLineError(Exception):
-    pass
 
 
 def setup_cli_handlers(logger, level):

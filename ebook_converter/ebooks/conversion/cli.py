@@ -10,9 +10,7 @@ import sys
 from ebook_converter.utils.config import OptionParser
 from ebook_converter.utils.logging import Log
 from ebook_converter.customize.conversion import OptionRecommendation
-from ebook_converter import patheq
 from ebook_converter import init_mimetypes
-from ebook_converter.utils.localization import localize_user_manual_link
 
 
 USAGE = '%prog ' + '''\
@@ -42,12 +40,11 @@ For full documentation of the conversion system see
 https://manual.calibre-ebook.com/conversion.html
 '''
 
-HEURISTIC_OPTIONS = ['markup_chapter_headings',
-                      'italicize_common_cases', 'fix_indents',
-                      'html_unwrap_factor', 'unwrap_lines',
-                      'delete_blank_paragraphs', 'format_scene_breaks',
-                      'dehyphenate', 'renumber_headings',
-                      'replace_scene_breaks']
+HEURISTIC_OPTIONS = ['markup_chapter_headings', 'italicize_common_cases',
+                     'fix_indents', 'html_unwrap_factor', 'unwrap_lines',
+                     'delete_blank_paragraphs', 'format_scene_breaks',
+                     'dehyphenate', 'renumber_headings',
+                     'replace_scene_breaks']
 
 DEFAULT_TRUE_OPTIONS = HEURISTIC_OPTIONS + ['remove_fake_margins']
 
@@ -62,21 +59,21 @@ def check_command_line_options(parser, args, log):
         log.error('\n\nYou must specify the input AND output files')
         raise SystemExit(1)
 
-    input = os.path.abspath(args[1])
-    if not input.endswith('.recipe') and not os.access(input, os.R_OK) and not \
+    input_file = os.path.abspath(args[1])
+    if not input_file.endswith('.recipe') and not os.access(input_file, os.R_OK) and not \
             ('-h' in args or '--help' in args):
-        log.error('Cannot read from', input)
+        log.error('Cannot read from', input_file)
         raise SystemExit(1)
-    if input.endswith('.recipe') and not os.access(input, os.R_OK):
-        input = args[1]
+    if input_file.endswith('.recipe') and not os.access(input_file, os.R_OK):
+        input_file = args[1]
 
-    output = args[2]
-    if (output.startswith('.') and output[:2] not in {'..', '.'} and '/' not in
-            output and '\\' not in output):
-        output = os.path.splitext(os.path.basename(input))[0]+output
-    output = os.path.abspath(output)
+    output_file = args[2]
+    if (output_file.startswith('.') and output_file[:2] not in {'..', '.'} and '/' not in
+            output_file and '\\' not in output_file):
+        output_file = os.path.splitext(os.path.basename(input_file))[0]+output_file
+    output_file = os.path.abspath(output_file)
 
-    return input, output
+    return input_file, output_file
 
 
 def option_recommendation_to_cli_option(add_option, rec):
@@ -307,15 +304,15 @@ def create_option_parser(args, log):
         else:
             raise SystemExit(1)
 
-    input, output = check_command_line_options(parser, args, log)
+    input_file, output_file = check_command_line_options(parser, args, log)
 
     from ebook_converter.ebooks.conversion.plumber import Plumber
 
     reporter = ProgressBar(log)
-    if patheq(input, output):
+    if os.path.abspath(input_file) == os.path.abspath(output_file):
         raise ValueError('Input file is the same as the output file')
 
-    plumber = Plumber(input, output, log, reporter)
+    plumber = Plumber(input_file, output_file, log, reporter)
     add_input_output_options(parser, plumber)
     add_pipeline_options(parser, plumber)
 
