@@ -14,6 +14,7 @@ def as_bytes(x, encoding='utf-8'):
 
 
 def as_unicode(x, encoding='utf-8', errors='strict'):
+    return str(x)
     if isinstance(x, bytes):
         return x.decode(encoding, errors)
     return str(x)

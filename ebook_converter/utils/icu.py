@@ -1,16 +1,9 @@
-import codecs
 import sys
-import unicodedata
 
 # Setup code {{{
-from ebook_converter.constants_old import plugins
 from ebook_converter.polyglot.builtins import cmp
-from ebook_converter.utils.config_base import tweaks
+from ebook_converter.utils import config_base
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 is_narrow_build = sys.maxunicode < 0x10ffff
 _locale = _collator = _primary_collator = _sort_collator = _numeric_collator = _case_sensitive_collator = None
@@ -24,33 +17,6 @@ _icu, err = 1, None  # plugins['icu']
 if _icu is None:
     raise RuntimeError('Failed to load icu with error: %s' % err)
 del err
-#icu_unicode_version = getattr(_icu, 'unicode_version', None)
-# _nmodes = {m:getattr(_icu, m) for m in ('NFC', 'NFD', 'NFKC', 'NFKD')}
-
-# Ensure that the python internal filesystem and default encodings are not ASCII
-
-
-#def is_ascii(name):
-#    try:
-#        return codecs.lookup(name).name == b'ascii'
-#    except (TypeError, LookupError):
-#        return True
-#
-#
-#try:
-#    if is_ascii(sys.getdefaultencoding()):
-#        _icu.set_default_encoding(b'utf-8')
-#except:
-#    import traceback
-#    traceback.print_exc()
-#
-#try:
-#    if is_ascii(sys.getfilesystemencoding()):
-#        _icu.set_filesystem_encoding(b'utf-8')
-#except:
-#    import traceback
-#    traceback.print_exc()
-#del is_ascii
 
 
 def collator():
@@ -58,8 +24,8 @@ def collator():
     if _collator is None:
         if _locale is None:
             from ebook_converter.utils.localization import get_lang
-            if tweaks['locale_for_sorting']:
-                _locale = tweaks['locale_for_sorting']
+            if config_base.tweaks['locale_for_sorting']:
+                _locale = config_base.tweaks['locale_for_sorting']
             else:
                 _locale = get_lang()
         try:
@@ -91,7 +57,7 @@ def sort_collator():
     if _sort_collator is None:
         _sort_collator = collator().clone()
         _sort_collator.strength = _icu.UCOL_SECONDARY
-        _sort_collator.numeric = tweaks['numeric_collation']
+        _sort_collator.numeric = config_base.tweaks['numeric_collation']
     return _sort_collator
 
 
@@ -311,9 +277,3 @@ string_length = len  #_icu.string_length if is_narrow_build else len
 
 # Return the number of UTF-16 codepoints in a string
 utf16_length = len  # if is_narrow_build else _icu.utf16_length
-
-################################################################################
-
-# if __name__ == '__main__':
-    # from ebook_converter.utils.icu_test import run
-    # run(verbosity=4)

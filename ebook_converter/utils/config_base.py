@@ -1,22 +1,30 @@
-__license__ = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-import os, re, traceback, numbers
-from functools import partial
-from collections import defaultdict
-from copy import deepcopy
+import json
+import collections
+import copy
+import functools
+import numbers
+import os
 import pkg_resources
+import re
+import traceback
+import pickle
+import datetime
+import base64
 
+from ebook_converter.constants_old import CONFIG_DIR_MODE
+from ebook_converter.constants_old import config_dir
+from ebook_converter.constants_old import filesystem_encoding
+from ebook_converter.constants_old import iswindows
+from ebook_converter.constants_old import preferred_encoding
 from ebook_converter.utils.lock import ExclusiveFile
-from ebook_converter.constants_old import config_dir, CONFIG_DIR_MODE, preferred_encoding, filesystem_encoding, iswindows
+from ebook_converter.utils.date import isoformat
+from ebook_converter.utils import iso8601
 
 plugin_dir = os.path.join(config_dir, 'plugins')
 
 
 def parse_old_style(src):
-    import pickle as cPickle
-    options = {'cPickle':cPickle}
+    options = {'cPickle': pickle}
     try:
         if not isinstance(src, str):
             src = src.decode('utf-8')
@@ -25,20 +33,19 @@ def parse_old_style(src):
         exec(src, options)
     except Exception as err:
         try:
-            print('Failed to parse old style options string with error: {}'.format(err))
+            print('Failed to parse old style options string with error: '
+                  '{}'.format(err))
         except Exception:
             pass
     return options
 
 
 def to_json(obj):
-    import datetime
     if isinstance(obj, bytearray):
-        from base64 import standard_b64encode
         return {'__class__': 'bytearray',
-                '__value__': standard_b64encode(bytes(obj)).decode('ascii')}
+                '__value__': base64.standard_b64encode(bytes(obj))
+                             .decode('ascii')}
     if isinstance(obj, datetime.datetime):
-        from ebook_converter.utils.date import isoformat
         return {'__class__': 'datetime.datetime',
                 '__value__': isoformat(obj, as_utc=True)}
     if isinstance(obj, (set, frozenset)):
@@ -62,11 +69,10 @@ def from_json(obj):
     custom = obj.get('__class__')
     if custom is not None:
         if custom == 'bytearray':
-            from base64 import standard_b64decode
-            return bytearray(standard_b64decode(obj['__value__'].encode('ascii')))
+            return bytearray(base64.standard_b64decode(obj['__value__']
+                                                       .encode('ascii')))
         if custom == 'datetime.datetime':
-            from ebook_converter.utils.iso8601 import parse_iso8601
-            return parse_iso8601(obj['__value__'], assume_utc=True)
+            return iso8601.parse_iso8601(obj['__value__'], assume_utc=True)
         if custom == 'set':
             return set(obj['__value__'])
     return obj
@@ -88,24 +94,27 @@ def force_unicode_recursive(obj):
     if isinstance(obj, (list, tuple)):
         return type(obj)(map(force_unicode_recursive, obj))
     if isinstance(obj, dict):
-        return {force_unicode_recursive(k): force_unicode_recursive(v) for k, v in obj.items()}
+        return {force_unicode_recursive(k): force_unicode_recursive(v)
+                for k, v in obj.items()}
     return obj
 
 
 def json_dumps(obj, ignore_unserializable=False):
-    import json
     try:
-        ans = json.dumps(obj, indent=2, default=safe_to_json if ignore_unserializable else to_json, sort_keys=True, ensure_ascii=False)
+        ans = json.dumps(obj, indent=2, default=safe_to_json
+                         if ignore_unserializable
+                         else to_json, sort_keys=True, ensure_ascii=False)
     except UnicodeDecodeError:
         obj = force_unicode_recursive(obj)
-        ans = json.dumps(obj, indent=2, default=safe_to_json if ignore_unserializable else to_json, sort_keys=True, ensure_ascii=False)
+        ans = json.dumps(obj, indent=2, default=safe_to_json
+                         if ignore_unserializable
+                         else to_json, sort_keys=True, ensure_ascii=False)
     if not isinstance(ans, bytes):
         ans = ans.encode('utf-8')
     return ans
 
 
 def json_loads(raw):
-    import json
     if isinstance(raw, bytes):
         raw = raw.decode('utf-8')
     return json.loads(raw, object_hook=from_json)
@@ -119,26 +128,28 @@ def make_config_dir():
 class Option(object):
 
     def __init__(self, name, switches=[], help='', type=None, choices=None,
-                 check=None, group=None, default=None, action=None, metavar=None):
+                 check=None, group=None, default=None, action=None,
+                 metavar=None):
         if choices:
             type = 'choice'
 
-        self.name     = name
+        self.name = name
         self.switches = switches
-        self.help     = help.replace('%default', repr(default)) if help else None
-        self.type     = type
+        self.help = help.replace('%default', repr(default)) if help else None
+        self.type = type
         if self.type is None and action is None and choices is None:
             if isinstance(default, float):
                 self.type = 'float'
-            elif isinstance(default, numbers.Integral) and not isinstance(default, bool):
+            elif (isinstance(default, numbers.Integral) and
+                  not isinstance(default, bool)):
                 self.type = 'int'
 
-        self.choices  = choices
-        self.check    = check
-        self.group    = group
-        self.default  = default
-        self.action   = action
-        self.metavar  = metavar
+        self.choices = choices
+        self.check = check
+        self.group = group
+        self.default = default
+        self.action = action
+        self.metavar = metavar
 
     def __eq__(self, other):
         return self.name == getattr(other, 'name', other)
@@ -153,21 +164,22 @@ class Option(object):
 class OptionValues(object):
 
     def copy(self):
-        return deepcopy(self)
+        return copy.deepcopy(self)
 
 
 class OptionSet(object):
 
-    OVERRIDE_PAT = re.compile(r'#{3,100} Override Options #{15}(.*?)#{3,100} End Override #{3,100}',
-                              re.DOTALL|re.IGNORECASE)
+    OVERRIDE_PAT = re.compile(r'#{3,100} Override Options #{15}(.*?)#{3,100} '
+                              'End Override #{3,100}',
+                              re.DOTALL | re.IGNORECASE)
 
     def __init__(self, description=''):
         self.description = description
         self.defaults = {}
         self.preferences = []
-        self.group_list  = []
-        self.groups      = {}
-        self.set_buffer  = {}
+        self.group_list = []
+        self.groups = {}
+        self.set_buffer = {}
         self.loads_pat = None
 
     def has_option(self, name_or_option_object):
@@ -188,10 +200,11 @@ class OptionSet(object):
 
     def add_group(self, name, description=''):
         if name in self.group_list:
-            raise ValueError('A group by the name %s already exists in this set'%name)
+            raise ValueError('A group by the name %s already exists in this '
+                             'set' % name)
         self.groups[name] = description
         self.group_list.append(name)
-        return partial(self.add_opt, group=name)
+        return functools.partial(self.add_opt, group=name)
 
     def update(self, other):
         for name in other.groups.keys():
@@ -204,9 +217,10 @@ class OptionSet(object):
             self.preferences.append(pref)
 
     def smart_update(self, opts1, opts2):
-        '''
-        Updates the preference values in opts1 using only the non-default preference values in opts2.
-        '''
+        """
+        Updates the preference values in opts1 using only the non-default
+        preference values in opts2.
+        """
         for pref in self.preferences:
             new = getattr(opts2, pref.name, pref.default)
             if new != pref.default:
@@ -217,47 +231,45 @@ class OptionSet(object):
             self.preferences.remove(name)
 
     def add_opt(self, name, switches=[], help=None, type=None, choices=None,
-                 group=None, default=None, action=None, metavar=None):
-        '''
+                group=None, default=None, action=None, metavar=None):
+        """
         Add an option to this section.
 
-        :param name:       The name of this option. Must be a valid Python identifier.
-                           Must also be unique in this OptionSet and all its subsets.
-        :param switches:   List of command line switches for this option
-                           (as supplied to :module:`optparse`). If empty, this
-                           option will not be added to the command line parser.
-        :param help:       Help text.
-        :param type:       Type checking of option values. Supported types are:
-                           `None, 'choice', 'complex', 'float', 'int', 'string'`.
-        :param choices:    List of strings or `None`.
-        :param group:      Group this option belongs to. You must previously
-                           have created this group with a call to :method:`add_group`.
-        :param default:    The default value for this option.
-        :param action:     The action to pass to optparse. Supported values are:
-                           `None, 'count'`. For choices and boolean options,
-                           action is automatically set correctly.
-        '''
-        pref = Option(name, switches=switches, help=help, type=type, choices=choices,
-                 group=group, default=default, action=action, metavar=None)
+        :param name: The name of this option. Must be a valid Python
+                     identifier. Must also be unique in this OptionSet and all
+                     its subsets.
+        :param switches: List of command line switches for this option (as
+                         supplied to :module:`optparse`). If empty, this option
+                         will not be added to the command line parser.
+        :param help: Help text.
+        :param type: Type checking of option values. Supported types are:
+                     `None, 'choice', 'complex', 'float', 'int', 'string'`.
+        :param choices: List of strings or `None`.
+        :param group: Group this option belongs to. You must previously
+                      have created this group with a call to
+                      :method:`add_group`.
+        :param default: The default value for this option.
+        :param action: The action to pass to optparse. Supported values are:
+                       `None, 'count'`. For choices and boolean options,
+                       action is automatically set correctly.
+        """
+        pref = Option(name, switches=switches, help=help, type=type,
+                      choices=choices, group=group, default=default,
+                      action=action, metavar=None)
         if group is not None and group not in self.groups.keys():
-            raise ValueError('Group %s has not been added to this section'%group)
+            raise ValueError('Group %s has not been added to this section' %
+                             group)
+
         if pref in self.preferences:
-            raise ValueError('An option with the name %s already exists in this set.'%name)
+            raise ValueError('An option with the name %s already exists in '
+                             'this set.' % name)
         self.preferences.append(pref)
         self.defaults[name] = default
-
-    def retranslate_help(self):
-        t = _
-        for opt in self.preferences:
-            if opt.help:
-                opt.help = t(opt.help)
-                if opt.name == 'use_primary_find_in_search':
-                    opt.help = opt.help.format(u'ñ')
 
     def option_parser(self, user_defaults=None, usage='', gui_mode=False):
         from ebook_converter.utils.config import OptionParser
         parser = OptionParser(usage, gui_mode=gui_mode)
-        groups = defaultdict(lambda : parser)
+        groups = collections.defaultdict(lambda: parser)
         for group, desc in self.groups.items():
             groups[group] = parser.add_option_group(group.upper(), desc)
 
@@ -270,15 +282,13 @@ class OptionSet(object):
                 action = 'store'
                 if pref.default is True or pref.default is False:
                     action = 'store_' + ('false' if pref.default else 'true')
-            args = dict(
-                        dest=pref.name,
-                        help=pref.help,
-                        metavar=pref.metavar,
-                        type=pref.type,
-                        choices=pref.choices,
-                        default=getattr(user_defaults, pref.name, pref.default),
-                        action=action,
-                        )
+            args = {'dest': pref.name,
+                    'help': pref.help,
+                    'metavar': pref.metavar,
+                    'type': pref.type,
+                    'choices': pref.choices,
+                    'default': getattr(user_defaults, pref.name, pref.default),
+                    'action': action}
             g.add_option(*pref.switches, **args)
 
         return parser
@@ -292,7 +302,9 @@ class OptionSet(object):
     def parse_string(self, src):
         options = {}
         if src:
-            is_old_style = (isinstance(src, bytes) and src.startswith(b'#')) or (isinstance(src, str) and src.startswith(u'#'))
+            is_old_style = (isinstance(src, bytes) and
+                            src.startswith(b'#')) or (isinstance(src, str) and
+                                                      src.startswith(u'#'))
             if is_old_style:
                 options = parse_old_style(src)
             else:
@@ -302,7 +314,8 @@ class OptionSet(object):
                         raise Exception('options is not a dictionary')
                 except Exception as err:
                     try:
-                        print('Failed to parse options string with error: {}'.format(err))
+                        print('Failed to parse options string with error: {}'
+                              .format(err))
                     except Exception:
                         pass
         opts = OptionValues()
@@ -316,20 +329,21 @@ class OptionSet(object):
         return opts
 
     def serialize(self, opts, ignore_unserializable=False):
-        data = {pref.name: getattr(opts, pref.name, pref.default) for pref in self.preferences}
+        data = {pref.name: getattr(opts, pref.name, pref.default)
+                for pref in self.preferences}
         return json_dumps(data, ignore_unserializable=ignore_unserializable)
 
 
 class ConfigInterface(object):
 
     def __init__(self, description):
-        self.option_set       = OptionSet(description=description)
-        self.add_opt          = self.option_set.add_opt
-        self.add_group        = self.option_set.add_group
-        self.remove_opt       = self.remove = self.option_set.remove_opt
-        self.parse_string     = self.option_set.parse_string
-        self.get_option       = self.option_set.get_option
-        self.preferences      = self.option_set.preferences
+        self.option_set = OptionSet(description=description)
+        self.add_opt = self.option_set.add_opt
+        self.add_group = self.option_set.add_group
+        self.remove_opt = self.remove = self.option_set.remove_opt
+        self.parse_string = self.option_set.parse_string
+        self.get_option = self.option_set.get_option
+        self.preferences = self.option_set.preferences
 
     def update(self, other):
         self.option_set.update(other.option_set)
@@ -343,9 +357,9 @@ class ConfigInterface(object):
 
 
 class Config(ConfigInterface):
-    '''
+    """
     A file based configuration.
-    '''
+    """
 
     def __init__(self, basename, description=''):
         ConfigInterface.__init__(self, description)
@@ -368,9 +382,8 @@ class Config(ConfigInterface):
                     traceback.print_exc()
         if not src:
             path = path.rpartition('.')[0]
-            from ebook_converter.utils.shared_file import share_open
             try:
-                with share_open(path, 'rb') as f:
+                with open(path, 'rb') as f:
                     src = f.read().decode('utf-8')
             except Exception:
                 pass
@@ -378,7 +391,8 @@ class Config(ConfigInterface):
                 migrate = bool(src)
         ans = self.option_set.parse_string(src)
         if migrate:
-            new_src = self.option_set.serialize(ans, ignore_unserializable=True)
+            new_src = self.option_set.serialize(ans,
+                                                ignore_unserializable=True)
             with ExclusiveFile(self.config_file_path) as f:
                 f.seek(0), f.truncate()
                 f.write(new_src)
@@ -386,9 +400,11 @@ class Config(ConfigInterface):
 
     def set(self, name, val):
         if not self.option_set.has_option(name):
-            raise ValueError('The option %s is not defined.'%name)
+            raise ValueError('The option %s is not defined.' % name)
+
         if not os.path.exists(config_dir):
             make_config_dir()
+
         with ExclusiveFile(self.config_file_path) as f:
             src = f.read()
             opts = self.option_set.parse_string(src)
@@ -402,9 +418,9 @@ class Config(ConfigInterface):
 
 
 class StringConfig(ConfigInterface):
-    '''
+    """
     A string based configuration
-    '''
+    """
 
     def __init__(self, src, description=''):
         ConfigInterface.__init__(self, description)
@@ -420,20 +436,21 @@ class StringConfig(ConfigInterface):
 
     def set(self, name, val):
         if not self.option_set.has_option(name):
-            raise ValueError('The option %s is not defined.'%name)
+            raise ValueError('The option %s is not defined.' % name)
+
         opts = self.option_set.parse_string(self.src)
         setattr(opts, name, val)
         self.set_src(self.option_set.serialize(opts))
 
 
 class ConfigProxy(object):
-    '''
+    """
     A Proxy to minimize file reads for widely used config settings
-    '''
+    """
 
     def __init__(self, config):
         self.__config = config
-        self.__opts   = None
+        self.__opts = None
 
     @property
     def defaults(self):
@@ -441,9 +458,6 @@ class ConfigProxy(object):
 
     def refresh(self):
         self.__opts = self.__config.parse()
-
-    def retranslate_help(self):
-        self.__config.option_set.retranslate_help()
 
     def __getitem__(self, key):
         return self.get(key)
@@ -470,7 +484,8 @@ class ConfigProxy(object):
 
 
 def create_global_prefs(conf_obj=None):
-    c = Config('global', 'calibre wide preferences') if conf_obj is None else conf_obj
+    c = Config('global',
+               'calibre wide preferences') if conf_obj is None else conf_obj
     c.add_opt('database_path',
               default=os.path.expanduser('~/library1.db'),
               help='Path to the database in which books are stored')
@@ -481,17 +496,19 @@ def create_global_prefs(conf_obj=None):
     c.add_opt('network_timeout', default=5,
               help='Default timeout for network operations (seconds)')
     c.add_opt('library_path', default=None,
-              help='Path to directory in which your library of books is stored')
+              help='Path to directory in which your library of books is '
+              'stored')
     c.add_opt('language', default=None,
               help='The language in which to display the user interface')
-    c.add_opt('output_format', default='EPUB',
-              help='The default output format for e-book conversions. When auto-converting'
-              ' to send to a device this can be overridden by individual device preferences.'
-              ' These can be changed by right clicking the device icon in calibre and'
-              ' choosing "Configure".')
-    c.add_opt('input_format_order', default=['EPUB', 'AZW3', 'MOBI', 'LIT', 'PRC',
-        'FB2', 'HTML', 'HTM', 'XHTM', 'SHTML', 'XHTML', 'ZIP', 'DOCX', 'ODT', 'RTF', 'PDF',
-        'TXT'],
+    c.add_opt('output_format', default='EPUB', help='The default output '
+              'format for e-book conversions. When auto-converting to send to '
+              'a device this can be overridden by individual device '
+              'preferences. These can be changed by right clicking the device '
+              'icon in calibre and choosing "Configure".')
+    c.add_opt('input_format_order',
+              default=['EPUB', 'AZW3', 'MOBI', 'LIT', 'PRC', 'FB2', 'HTML',
+                       'HTM', 'XHTM', 'SHTML', 'XHTML', 'ZIP', 'DOCX', 'ODT',
+                       'RTF', 'PDF', 'TXT'],
               help='Ordered list of formats to prefer for input.')
     c.add_opt('read_file_metadata', default=True,
               help='Read metadata from files')
@@ -501,27 +518,32 @@ def create_global_prefs(conf_obj=None):
               'Most tasks like conversion/news download/adding books/etc. '
               'are affected by this setting.')
     c.add_opt('swap_author_names', default=False,
-            help='Swap author first and last names when reading metadata')
+              help='Swap author first and last names when reading metadata')
     c.add_opt('add_formats_to_existing', default=False,
-            help='Add new formats to existing book records')
+              help='Add new formats to existing book records')
     c.add_opt('check_for_dupes_on_ctl', default=False,
-            help='Check for duplicates when copying to another library')
+              help='Check for duplicates when copying to another library')
     c.add_opt('installation_uuid', default=None, help='Installation UUID')
-    c.add_opt('new_book_tags', default=[], help='Tags to apply to books added to the library')
-    c.add_opt('mark_new_books', default=False, help='Mark newly added books. The mark is a temporary mark that is automatically removed when calibre is restarted.')
+    c.add_opt('new_book_tags', default=[],
+              help='Tags to apply to books added to the library')
+    c.add_opt('mark_new_books', default=False, help='Mark newly added books. '
+              'The mark is a temporary mark that is automatically removed '
+              'when calibre is restarted.')
 
     # these are here instead of the gui preferences because calibredb and
     # calibre server can execute searches
-    c.add_opt('saved_searches', default={}, help='List of named saved searches')
-    c.add_opt('user_categories', default={}, help='User-created Tag browser categories')
+    c.add_opt('saved_searches', default={},
+              help='List of named saved searches')
+    c.add_opt('user_categories', default={},
+              help='User-created Tag browser categories')
     c.add_opt('manage_device_metadata', default='manual',
-        help='How and when calibre updates metadata on the device.')
+              help='How and when calibre updates metadata on the device.')
     c.add_opt('limit_search_columns', default=False,
               help='When searching for text without using lookup '
               'prefixes, as for example, Red instead of title:Red, '
               'limit the columns searched to those named below.')
     c.add_opt('limit_search_columns_to',
-            default=['title', 'authors', 'tags', 'series', 'publisher'],
+              default=['title', 'authors', 'tags', 'series', 'publisher'],
               help='Choose columns to be searched when not using prefixes, '
               'as for example, when searching for Red instead of '
               'title:Red. Enter a list of search/lookup names '
@@ -536,9 +558,11 @@ def create_global_prefs(conf_obj=None):
               'this is much slower than a simple search on very large '
               'libraries. Also, this option will have no effect if you turn '
               'on case-sensitive searching')
-    c.add_opt('case_sensitive', default=False, help='Make searches case-sensitive')
+    c.add_opt('case_sensitive', default=False,
+              help='Make searches case-sensitive')
 
-    c.add_opt('migrated', default=False, help='For Internal use. Don\'t modify.')
+    c.add_opt('migrated', default=False,
+              help='For Internal use. Don\'t modify.')
     return c
 
 
@@ -581,7 +605,8 @@ def write_custom_tweaks(tweaks_dict):
     changed_tweaks = {}
     default_tweaks = exec_tweaks(default_tweaks_raw())
     for key, cval in tweaks_dict.items():
-        if key in default_tweaks and normalize_tweak(cval) == normalize_tweak(default_tweaks[key]):
+        if (key in default_tweaks and
+                normalize_tweak(cval) == normalize_tweak(default_tweaks[key])):
             continue
         changed_tweaks[key] = cval
     raw = json_dumps(changed_tweaks)
@@ -598,10 +623,10 @@ def exec_tweaks(path):
             raw = f.read()
             fname = f.name
     code = compile(raw, fname, 'exec')
-    l = {}
+    x = {}
     g = {'__file__': fname}
-    exec(code, g, l)
-    return l
+    exec(code, g, x)
+    return x
 
 
 def read_custom_tweaks():

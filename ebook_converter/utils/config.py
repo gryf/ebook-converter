@@ -5,9 +5,7 @@ import optparse
 import os
 from copy import deepcopy
 
-from ebook_converter.constants_old import (
-    CONFIG_DIR_MODE, __appname__, __author__, config_dir, get_version, iswindows
-)
+from ebook_converter import constants_old
 from ebook_converter.utils.config_base import (
     Config, ConfigInterface, ConfigProxy, Option, OptionSet, OptionValues,
     StringConfig, json_dumps, json_loads, make_config_dir, plugin_dir, prefs,
@@ -23,7 +21,8 @@ if False:
 
 
 def check_config_write_access():
-    return os.access(config_dir, os.W_OK) and os.access(config_dir, os.X_OK)
+    return (os.access(constants_old.config_dir, os.W_OK) and
+            os.access(constants_old.config_dir, os.X_OK))
 
 
 class CustomHelpFormatter(optparse.IndentedHelpFormatter):
@@ -85,14 +84,16 @@ class OptionParser(optparse.OptionParser):
 
         usage = textwrap.dedent(usage)
         if epilog is None:
-            epilog = 'Created by ' + colored(__author__, fg='cyan')
+            epilog = 'Created by ' + colored(constants_old.__author__,
+                                             fg='cyan')
         usage += ('\n\nWhenever you pass arguments to %prog that have spaces '
                   'in them, enclose the arguments in quotation marks. For '
                   'example: "{}"\n\n').format("C:\\some path with spaces"
-                                              if iswindows
+                                              if constants_old.iswindows
                                               else '/some path/with spaces')
         if version is None:
-            version = '%%prog (%s %s)'%(__appname__, get_version())
+            version = '%%prog (%s %s)' % (constants_old.__appname__,
+                                          constants_old.get_version())
         optparse.OptionParser.__init__(self, usage=usage, version=version, epilog=epilog,
                                formatter=CustomHelpFormatter(),
                                conflict_handler=conflict_handler, **kwds)
@@ -198,18 +199,17 @@ class DynamicConfig(dict):
 
     @property
     def file_path(self):
-        return os.path.join(config_dir, self.name+'.pickle.json')
+        return os.path.join(constants_old.config_dir, self.name+'.pickle.json')
 
     def decouple(self, prefix):
         self.name = prefix + self.name
         self.refresh()
 
     def read_old_serialized_representation(self):
-        from ebook_converter.utils.shared_file import share_open
         from ebook_converter.utils.serialize import pickle_loads
         path = self.file_path.rpartition('.')[0]
         try:
-            with share_open(path, 'rb') as f:
+            with open(path, 'rb') as f:
                 raw = f.read()
         except EnvironmentError:
             raw = b''
@@ -293,7 +293,8 @@ class XMLConfig(dict):
 
     EXTENSION = '.plist'
 
-    def __init__(self, rel_path_to_cf_file, base_path=config_dir):
+    def __init__(self, rel_path_to_cf_file,
+                 base_path=constants_old.config_dir):
         dict.__init__(self)
         self.no_commit = False
         self.defaults = {}
@@ -390,7 +391,7 @@ class XMLConfig(dict):
         if hasattr(self, 'file_path') and self.file_path:
             dpath = os.path.dirname(self.file_path)
             if not os.path.exists(dpath):
-                os.makedirs(dpath, mode=CONFIG_DIR_MODE)
+                os.makedirs(dpath, mode=constants_old.CONFIG_DIR_MODE)
             with ExclusiveFile(self.file_path) as f:
                 raw = self.to_raw()
                 f.seek(0)
