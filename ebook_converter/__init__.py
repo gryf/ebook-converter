@@ -32,10 +32,6 @@ def init_mimetypes():
                                                     'data/mime.types')])
 
 
-def guess_all_extensions(*args, **kwargs):
-    return mimetypes.guess_all_extensions(*args, **kwargs)
-
-
 def guess_extension(*args, **kwargs):
     ext = mimetypes.guess_extension(*args, **kwargs)
     if not ext and args and args[0] == 'application/x-palmreader':

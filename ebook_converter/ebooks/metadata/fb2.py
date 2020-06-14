@@ -12,7 +12,7 @@ from lxml import etree
 from ebook_converter.utils.date import parse_only_date
 from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.utils.imghdr import identify
-from ebook_converter import guess_all_extensions, prints, force_unicode
+from ebook_converter import prints, force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation, check_isbn
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.polyglot.binary import as_base64_unicode
@@ -222,12 +222,13 @@ def _parse_cover_data(root, imgid, mi, ctx):
     elm_binary = ctx.XPath('//fb:binary[@id="%s"]' % imgid)(root)
     if elm_binary:
         mimetype = elm_binary[0].get('content-type', 'image/jpeg')
-        mime_extensions = guess_all_extensions(mimetype)
+        mime_extensions = mimetypes.guess_all_extensions(mimetype)
 
         if not mime_extensions and mimetype.startswith('image/'):
             mimetype_fromid = mimetypes.guess_type(imgid)[0]
             if mimetype_fromid and mimetype_fromid.startswith('image/'):
-                mime_extensions = guess_all_extensions(mimetype_fromid)
+                mime_extensions = (mimetypes
+                                   .guess_all_extensions(mimetype_fromid))
 
         if mime_extensions:
             pic_data = elm_binary[0].text
