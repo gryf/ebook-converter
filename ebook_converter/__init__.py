@@ -39,12 +39,6 @@ def guess_extension(*args, **kwargs):
     return ext
 
 
-def to_unicode(raw, encoding='utf-8', errors='strict'):
-    if isinstance(raw, str):
-        return raw
-    return raw.decode(encoding, errors)
-
-
 def unicode_path(path, abs=False):
     if isinstance(path, bytes):
         path = path.decode(filesystem_encoding)
