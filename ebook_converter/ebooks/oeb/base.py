@@ -21,7 +21,6 @@ from ebook_converter import force_unicode
 from ebook_converter.constants_old import filesystem_encoding, __version__
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor
-from ebook_converter import as_unicode
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
@@ -419,7 +418,7 @@ def urlnormalize(href):
         parts = urllib.parse.urlparse(href)
     except ValueError as e:
         raise ValueError('Failed to parse the URL: %r with underlying error: '
-                         '%s' % (href, as_unicode(e)))
+                         '%s' % (href, e))
     if not parts.scheme or parts.scheme == 'file':
         path, frag = urllib.parse.urldefrag(href)
         parts = ('', '', path, '', '', frag)
@@ -723,7 +722,7 @@ class Metadata(object):
                 % (parse_utils.barename(self.term), self.value, self.attrib)
 
         def __str__(self):
-            return as_unicode(self.value)
+            return str(self.value)
 
         def to_opf1(self, dcmeta=None, xmeta=None, nsrmap={}):
             attrib = {}

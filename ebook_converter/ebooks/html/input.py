@@ -10,19 +10,13 @@ import urllib.parse
 from ebook_converter.ebooks.oeb.base import urlunquote
 from ebook_converter.ebooks.chardet import detect_xml_encoding
 from ebook_converter.constants_old import iswindows
-from ebook_converter import unicode_path, as_unicode, replace_entities
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
+from ebook_converter import unicode_path, replace_entities
 
 
 class Link(object):
-
-    '''
+    """
     Represents a link in a HTML file.
-    '''
+    """
 
     @classmethod
     def url_to_local_path(cls, url, base):
@@ -31,7 +25,8 @@ class Link(object):
         if iswindows and path.startswith('/'):
             path = path[1:]
             isabs = True
-        path = urllib.parse.urlunparse(('', '', path, url.params, url.query, ''))
+        path = urllib.parse.urlunparse(('', '', path, url.params, url.query,
+                                        ''))
         path = urlunquote(path)
         if isabs or os.path.isabs(path):
             return path
@@ -39,17 +34,18 @@ class Link(object):
 
     def __init__(self, url, base):
         '''
-        :param url:  The url this link points to. Must be an unquoted unicode string.
-        :param base: The base directory that relative URLs are with respect to.
-                     Must be a unicode string.
+        :param url:  The url this link points to. Must be an unquoted unicode
+                     string.
+        :param base: The base directory that relative URLs are with respect
+                     to. Must be a unicode string.
         '''
         assert isinstance(url, str) and isinstance(base, str)
-        self.url         = url
-        self.parsed_url  = urllib.parse.urlparse(self.url)
-        self.is_local    = self.parsed_url.scheme in ('', 'file')
+        self.url = url
+        self.parsed_url = urllib.parse.urlparse(self.url)
+        self.is_local = self.parsed_url.scheme in ('', 'file')
         self.is_internal = self.is_local and not bool(self.parsed_url.path)
-        self.path        = None
-        self.fragment    = urlunquote(self.parsed_url.fragment)
+        self.path = None
+        self.fragment = urlunquote(self.parsed_url.fragment)
         if self.is_local and not self.is_internal:
             self.path = self.url_to_local_path(self.parsed_url, base)
 
@@ -62,7 +58,7 @@ class Link(object):
         return self.path == getattr(other, 'path', other)
 
     def __str__(self):
-        return 'Link: %s --> %s'%(self.url, self.path)
+        return 'Link: %s --> %s' % (self.url, self.path)
 
 
 class IgnoreFile(Exception):
@@ -84,24 +80,25 @@ class HTMLFile(object):
     The encoding of the file is available as :member:`encoding`.
     '''
 
-    HTML_PAT  = re.compile(r'<\s*html', re.IGNORECASE)
+    HTML_PAT = re.compile(r'<\s*html', re.IGNORECASE)
     TITLE_PAT = re.compile('<title>([^<>]+)</title>', re.IGNORECASE)
-    LINK_PAT  = re.compile(
-    r'<\s*a\s+.*?href\s*=\s*(?:(?:"(?P<url1>[^"]+)")|(?:\'(?P<url2>[^\']+)\')|(?P<url3>[^\s>]+))',
-    re.DOTALL|re.IGNORECASE)
+    LINK_PAT = re.compile(r'<\s*a\s+.*?href\s*=\s*(?:(?:"(?P<url1>[^"]+)")|'
+                          r'(?:\'(?P<url2>[^\']+)\')|(?P<url3>[^\s>]+))',
+                          re.DOTALL | re.IGNORECASE)
 
-    def __init__(self, path_to_html_file, level, encoding, verbose, referrer=None):
-        '''
+    def __init__(self, path_to_html_file, level, encoding, verbose,
+                 referrer=None):
+        """
         :param level: The level of this file. Should be 0 for the root file.
         :param encoding: Use `encoding` to decode HTML.
         :param referrer: The :class:`HTMLFile` that first refers to this file.
-        '''
-        self.path     = unicode_path(path_to_html_file, abs=True)
-        self.title    = os.path.splitext(os.path.basename(self.path))[0]
-        self.base     = os.path.dirname(self.path)
-        self.level    = level
+        """
+        self.path = unicode_path(path_to_html_file, abs=True)
+        self.title = os.path.splitext(os.path.basename(self.path))[0]
+        self.base = os.path.dirname(self.path)
+        self.level = level
         self.referrer = referrer
-        self.links    = []
+        self.links = []
 
         try:
             with open(self.path, 'rb') as f:
@@ -112,18 +109,21 @@ class HTMLFile(object):
                         header = header.decode(encoding)
                     except ValueError:
                         pass
-                self.is_binary = level > 0 and not bool(self.HTML_PAT.search(header))
+                self.is_binary = level > 0 and not bool(self
+                                                        .HTML_PAT
+                                                        .search(header))
                 if not self.is_binary:
                     src += f.read()
         except IOError as err:
-            msg = 'Could not read from file: %s with error: %s'%(self.path, as_unicode(err))
+            msg = ('Could not read from file: %s with error: %s' %
+                   (self.path, str(err)))
             if level == 0:
                 raise IOError(msg)
             raise IgnoreFile(msg, err.errno)
 
         if not src:
             if level == 0:
-                raise ValueError('The file %s is empty'%self.path)
+                raise ValueError('The file %s is empty' % self.path)
             self.is_binary = True
 
         if not self.is_binary:
@@ -145,7 +145,9 @@ class HTMLFile(object):
         return hash(self.path)
 
     def __str__(self):
-        return 'HTMLFile:%d:%s:%s'%(self.level, 'b' if self.is_binary else 'a', self.path)
+        return 'HTMLFile:%d:%s:%s' % (self.level,
+                                      'b' if self.is_binary else 'a',
+                                      self.path)
 
     def __repr__(self):
         return str(self)
@@ -191,20 +193,22 @@ def depth_first(root, flat, visited=None):
                         visited.add(hf)
 
 
-def traverse(path_to_html_file, max_levels=sys.maxsize, verbose=0, encoding=None):
-    '''
+def traverse(path_to_html_file, max_levels=sys.maxsize, verbose=0,
+             encoding=None):
+    """
     Recursively traverse all links in the HTML file.
 
     :param max_levels: Maximum levels of recursion. Must be non-negative. 0
-                       implies that no links in the root HTML file are followed.
-    :param encoding:   Specify character encoding of HTML files. If `None` it is
-                       auto-detected.
-    :return:           A pair of lists (breadth_first, depth_first). Each list contains
-                       :class:`HTMLFile` objects.
-    '''
+                       implies that no links in the root HTML file are
+                       followed.
+    :param encoding:   Specify character encoding of HTML files. If `None` it
+                       is auto-detected.
+    :return:           A pair of lists (breadth_first, depth_first). Each list
+                       contains :class:`HTMLFile` objects.
+    """
     assert max_levels >= 0
     level = 0
-    flat =  [HTMLFile(path_to_html_file, level, encoding, verbose)]
+    flat = [HTMLFile(path_to_html_file, level, encoding, verbose)]
     next_level = list(flat)
     while level < max_levels and len(next_level) > 0:
         level += 1
@@ -215,9 +219,10 @@ def traverse(path_to_html_file, max_levels=sys.maxsize, verbose=0, encoding=None
                 if link.path is None or link.path in flat:
                     continue
                 try:
-                    nf = HTMLFile(link.path, level, encoding, verbose, referrer=hf)
+                    nf = HTMLFile(link.path, level, encoding, verbose,
+                                  referrer=hf)
                     if nf.is_binary:
-                        raise IgnoreFile('%s is a binary file'%nf.path, -1)
+                        raise IgnoreFile('%s is a binary file' % nf.path, -1)
                     nl.append(nf)
                     flat.append(nf)
                 except IgnoreFile as err:
@@ -244,7 +249,8 @@ def get_filelist(htmlfile, dir, opts, log):
     log.info('Building file list...')
     filelist = traverse(htmlfile, max_levels=int(opts.max_levels),
                         verbose=opts.verbose,
-                        encoding=opts.input_encoding)[0 if opts.breadth_first else 1]
+                        encoding=opts
+                        .input_encoding)[0 if opts.breadth_first else 1]
     if opts.verbose:
         log.debug('\tFound files...')
         for f in filelist:

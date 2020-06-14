@@ -1,20 +1,18 @@
 """
 A simplified logging system
 """
-import sys, traceback, io
+import sys
+import traceback
+import io
 from functools import partial
 from threading import Lock
 
-from ebook_converter import force_unicode, as_unicode, prints
+from ebook_converter import force_unicode, prints
 
-
-__license__ = 'GPL 3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 DEBUG = 0
-INFO  = 1
-WARN  = 2
+INFO = 1
+WARN = 2
 ERROR = 3
 
 
@@ -38,10 +36,10 @@ class ANSIStream(Stream):
     def __init__(self, stream=sys.stdout):
         Stream.__init__(self, stream)
         self.color = {
-            DEBUG: u'green',
+            DEBUG: 'green',
             INFO: None,
-            WARN: u'yellow',
-            ERROR: u'red',
+            WARN: 'yellow',
+            ERROR: 'red',
         }
 
     def prints(self, level, *args, **kwargs):
@@ -64,12 +62,10 @@ class FileStream(Stream):
 
 class HTMLStream(Stream):
 
-    color = {
-        DEBUG: b'<span style="color:green">',
-        INFO: b'<span>',
-        WARN: b'<span style="color:blue">',
-        ERROR: b'<span style="color:red">'
-    }
+    color = {DEBUG: b'<span style="color:green">',
+             INFO: b'<span>',
+             WARN: b'<span style="color:blue">',
+             ERROR: b'<span style="color:red">'}
     normal = b'</span>'
 
     def __init__(self, stream=sys.stdout):
@@ -104,14 +100,14 @@ class UnicodeHTMLStream(HTMLStream):
             self.data.append(col)
             self.last_col = col
 
-        sep  = kwargs.get(u'sep', u' ')
-        end  = kwargs.get(u'end', u'\n')
+        sep = kwargs.get('sep', ' ')
+        end = kwargs.get('end', '\n')
 
         for arg in args:
             if isinstance(arg, bytes):
                 arg = force_unicode(arg)
             elif not isinstance(arg, str):
-                arg = as_unicode(arg)
+                arg = str(arg)
             self.data.append(arg+sep)
             self.plain_text.append(arg+sep)
         self.data.append(end)
@@ -124,8 +120,8 @@ class UnicodeHTMLStream(HTMLStream):
 
     @property
     def html(self):
-        end = self.normal if self.data else u''
-        return u''.join(self.data) + end
+        end = self.normal if self.data else ''
+        return ''.join(self.data) + end
 
     def dump(self):
         return [self.data, self.plain_text, self.last_col]
@@ -143,8 +139,8 @@ class UnicodeHTMLStream(HTMLStream):
 class Log(object):
 
     DEBUG = DEBUG
-    INFO  = INFO
-    WARN  = WARN
+    INFO = INFO
+    WARN = WARN
     ERROR = ERROR
 
     def __init__(self, level=INFO):
@@ -153,8 +149,8 @@ class Log(object):
         self.outputs = [default_output]
 
         self.debug = partial(self.print_with_flush, DEBUG)
-        self.info  = partial(self.print_with_flush, INFO)
-        self.warn  = self.warning = partial(self.print_with_flush, WARN)
+        self.info = partial(self.print_with_flush, INFO)
+        self.warn = self.warning = partial(self.print_with_flush, WARN)
         self.error = partial(self.print_with_flush, ERROR)
 
     def prints(self, level, *args, **kwargs):
@@ -222,7 +218,8 @@ class ThreadSafeLog(Log):
         limit = kwargs.pop('limit', None)
         with self._lock:
             Log.print_with_flush(self, ERROR, *args, **kwargs)
-            Log.print_with_flush(self, self.exception_traceback_level, traceback.format_exc(limit))
+            Log.print_with_flush(self, self.exception_traceback_level,
+                                 traceback.format_exc(limit))
 
 
 class ThreadSafeWrapper(Log):
@@ -242,10 +239,9 @@ class ThreadSafeWrapper(Log):
 
 
 class GUILog(ThreadSafeLog):
-
-    '''
+    """
     Logs in HTML and plain text as unicode. Ideal for display in a GUI context.
-    '''
+    """
 
     def __init__(self):
         ThreadSafeLog.__init__(self, level=self.DEBUG)

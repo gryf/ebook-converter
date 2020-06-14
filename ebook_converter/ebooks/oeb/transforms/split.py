@@ -14,7 +14,7 @@ from lxml.etree import XPath as _XPath
 from lxml import etree
 
 from ebook_converter import constants as const
-from ebook_converter import as_unicode, force_unicode
+from ebook_converter import force_unicode
 from ebook_converter.ebooks.epub import rules
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.polish.split import do_split
@@ -126,7 +126,7 @@ class Split(object):
             except SelectorError as err:
                 self.log.warn('Ignoring page breaks specified with invalid '
                               'CSS selector: %r (%s)' %
-                              (selector, as_unicode(err)))
+                              (selector, err))
 
         for i, elem in enumerate(item.data.iter('*')):
             try:

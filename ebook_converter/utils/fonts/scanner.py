@@ -2,15 +2,11 @@ import os
 from collections import defaultdict
 from threading import Thread
 
-from ebook_converter import walk, prints, as_unicode
-from ebook_converter.constants_old import (config_dir, iswindows, isosx, plugins, DEBUG,
-        isworker, filesystem_encoding)
+from ebook_converter import walk, prints
+from ebook_converter.constants_old import iswindows, isosx
+from ebook_converter.constants_old import plugins, DEBUG, isworker
+from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 
 class NoFonts(ValueError):
@@ -38,7 +34,7 @@ def fc_list():
         return default_font_dirs()
     try:
         lib = ctypes.CDLL(lib)
-    except:
+    except Exception:
         return default_font_dirs()
 
     prototype = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p)
@@ -97,7 +93,7 @@ def font_dirs():
     if iswindows:
         winutil, err = plugins['winutil']
         if err:
-            raise RuntimeError('Failed to load winutil: %s'%err)
+            raise RuntimeError('Failed to load winutil: %s' % err)
         try:
             return [winutil.special_folder_path(winutil.CSIDL_FONTS)]
         except ValueError:
@@ -126,9 +122,10 @@ def font_priority(font):
     width_normal = font['font-stretch'] == 'normal'
     weight_normal = font['font-weight'] == 'normal'
     num_normal = sum(filter(None, (style_normal, width_normal,
-        weight_normal)))
+                                   weight_normal)))
     subfamily_name = (font['wws_subfamily_name'] or
-            font['preferred_subfamily_name'] or font['subfamily_name'])
+                      font['preferred_subfamily_name'] or
+                      font['subfamily_name'])
     if num_normal == 3 and subfamily_name == 'Regular':
         return 0
     if num_normal == 3:
@@ -167,7 +164,9 @@ def build_families(cached_fonts, folders, family_attr='font-family'):
             if fingerprint in fmap:
                 opath = fmap[fingerprint]['path']
                 npath = font['path']
-                if path_significance(npath, folders) >= path_significance(opath, folders):
+                if path_significance(npath,
+                                     folders) >= path_significance(opath,
+                                                                   folders):
                     remove.append(fmap[fingerprint])
                     fmap[fingerprint] = font
                 else:
@@ -214,7 +213,7 @@ class FontScanner(Thread):
         try:
             return self.font_family_map[family.lower()]
         except KeyError:
-            raise NoFonts('No fonts found for the family: %r'%family)
+            raise NoFonts('No fonts found for the family: %r' % family)
 
     def legacy_fonts_for_family(self, family):
         '''
@@ -247,8 +246,11 @@ class FontScanner(Thread):
         with open(path, 'rb') as f:
             return f.read()
 
-    def find_font_for_text(self, text, allowed_families={'serif', 'sans-serif'},
-            preferred_families=('serif', 'sans-serif', 'monospace', 'cursive', 'fantasy')):
+    def find_font_for_text(self, text,
+                           allowed_families={'serif', 'sans-serif'},
+                           preferred_families=('serif', 'sans-serif',
+                                               'monospace', 'cursive',
+                                               'fantasy')):
         '''
         Find a font on the system capable of rendering the given text.
 
@@ -258,10 +260,11 @@ class FontScanner(Thread):
 
         :return: (family name, faces) or None, None
         '''
-        from ebook_converter.utils.fonts.utils import (supports_text,
-                panose_to_css_generic_family, get_printable_characters)
+        from ebook_converter.utils.fonts.utils import \
+            supports_text, panose_to_css_generic_family, \
+            get_printable_characters
         if not isinstance(text, str):
-            raise TypeError(u'%r is not unicode'%text)
+            raise TypeError(u'%r is not unicode' % text)
         text = get_printable_characters(text)
         found = {}
 
@@ -269,7 +272,7 @@ class FontScanner(Thread):
             try:
                 raw = self.get_font_data(font)
                 return supports_text(raw, text)
-            except:
+            except Exception:
                 pass
             return False
 
@@ -278,7 +281,8 @@ class FontScanner(Thread):
             if not faces:
                 continue
             generic_family = panose_to_css_generic_family(faces[0]['panose'])
-            if generic_family in allowed_families or generic_family == preferred_families[0]:
+            if (generic_family in allowed_families or
+                    generic_family == preferred_families[0]):
                 return (family, faces)
             elif generic_family not in found:
                 found[generic_family] = (family, faces)
@@ -321,18 +325,20 @@ class FontScanner(Thread):
                 files = tuple(walk(folder))
             except EnvironmentError as e:
                 if DEBUG:
-                    prints('Failed to walk font folder:', folder,
-                            as_unicode(e))
+                    prints('Failed to walk font folder:', folder, str(e))
                 continue
             for candidate in files:
-                if (candidate.rpartition('.')[-1].lower() not in self.allowed_extensions or not os.path.isfile(candidate)):
+                if (candidate.rpartition('.')[-1].lower() not in
+                        self.allowed_extensions or
+                        not os.path.isfile(candidate)):
                     continue
                 candidate = os.path.normcase(os.path.abspath(candidate))
                 try:
                     s = os.stat(candidate)
                 except EnvironmentError:
                     continue
-                fileid = '{0}||{1}:{2}'.format(candidate, s.st_size, s.st_mtime)
+                fileid = '{0}||{1}:{2}'.format(candidate, s.st_size,
+                                               s.st_mtime)
                 if fileid in cached_fonts:
                     # Use previously cached metadata, since the file size and
                     # last modified timestamp have not changed.
@@ -343,7 +349,7 @@ class FontScanner(Thread):
                 except Exception as e:
                     if DEBUG:
                         prints('Failed to read metadata from font file:',
-                                candidate, as_unicode(e))
+                               candidate, str(e))
                     continue
 
         if frozenset(cached_fonts) != frozenset(self.cached_fonts):
@@ -353,7 +359,8 @@ class FontScanner(Thread):
         self.build_families()
 
     def build_families(self):
-        self.font_family_map, self.font_families = build_families(self.cached_fonts, self.folders)
+        (self.font_family_map,
+         self.font_families) = build_families(self.cached_fonts, self.folders)
 
     def write_cache(self):
         with self.cache:
@@ -380,14 +387,14 @@ class FontScanner(Thread):
         for family in self.font_families:
             prints(family)
             for font in self.fonts_for_family(family):
-                prints('\t%s: %s'%(font['full_name'], font['path']))
+                prints('\t%s: %s' % (font['full_name'], font['path']))
                 prints(end='\t')
                 for key in ('font-stretch', 'font-weight', 'font-style'):
-                    prints('%s: %s'%(key, font[key]), end=' ')
+                    prints('%s: %s' % (key, font[key]), end=' ')
                 prints()
                 prints('\tSub-family:', font['wws_subfamily_name'] or
-                        font['preferred_subfamily_name'] or
-                        font['subfamily_name'])
+                       font['preferred_subfamily_name'] or
+                       font['subfamily_name'])
                 prints()
             prints()
 

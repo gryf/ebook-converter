@@ -13,10 +13,10 @@ try:
 except EnvironmentError:
     os.chdir(os.path.expanduser('~'))
 
-from ebook_converter.constants_old import (iswindows, isosx, islinux, isfrozen,
-        isbsd, preferred_encoding, __appname__, __version__, __author__,
-        win32event, win32api, winerror, fcntl,
-        filesystem_encoding, plugins, config_dir)
+from ebook_converter.constants_old import iswindows, islinux, isfrozen, \
+    isbsd, preferred_encoding, __appname__, __version__, __author__, \
+    win32event, win32api, winerror, fcntl, \
+    filesystem_encoding, plugins, config_dir
 from ebook_converter.startup import winutil, winutilerror
 from ebook_converter.utils.icu import safe_chr
 
@@ -51,23 +51,28 @@ def confirm_config_name(name):
     return name + '_again'
 
 
-_filename_sanitize_unicode = frozenset(('\\', '|', '?', '*', '<',        # no2to3
-    '"', ':', '>', '+', '/') + tuple(map(chr, range(32))))  # no2to3
+_filename_sanitize_unicode = frozenset(('\\', '|', '?', '*', '<',
+                                        '"', ':', '>', '+', '/') +
+                                       tuple(map(chr, range(32))))
 
 
 def sanitize_file_name(name, substitute='_'):
-    '''
-    Sanitize the filename `name`. All invalid characters are replaced by `substitute`.
-    The set of invalid characters is the union of the invalid characters in Windows,
-    macOS and Linux. Also removes leading and trailing whitespace.
-    **WARNING:** This function also replaces path separators, so only pass file names
-    and not full paths to it.
-    '''
+    """
+    Sanitize the filename `name`. All invalid characters are replaced by
+    `substitute`. The set of invalid characters is the union of the invalid
+    characters in Windows, macOS and Linux. Also removes leading and trailing
+    whitespace.
+
+    **WARNING:** This function also replaces path separators, so only pass
+    file names and not full paths to it.
+    """
+
     if isinstance(name, bytes):
         name = name.decode(filesystem_encoding, 'replace')
     if isinstance(substitute, bytes):
         substitute = substitute.decode(filesystem_encoding, 'replace')
-    chars = (substitute if c in _filename_sanitize_unicode else c for c in name)
+    chars = (substitute
+             if c in _filename_sanitize_unicode else c for c in name)
     one = ''.join(chars)
     one = re.sub(r'\s', ' ', one).strip()
     bname, ext = os.path.splitext(one)
@@ -87,8 +92,8 @@ def prints(*args, **kwargs):
     """
     Print unicode arguments safely by encoding them to preferred_encoding
     Has the same signature as the print function from Python 3, except for the
-    additional keyword argument safe_encode, which if set to True will cause the
-    function to use repr when encoding fails.
+    additional keyword argument safe_encode, which if set to True will cause
+    the function to use repr when encoding fails.
 
     Returns the number of bytes written.
     """
@@ -120,7 +125,7 @@ def prints(*args, **kwargs):
             except UnicodeEncodeError:
                 try:
                     arg = arg.encode('utf-8')
-                except:
+                except Exception:
                     if not safe_encode:
                         raise
                     arg = repr(arg)
@@ -131,7 +136,7 @@ def prints(*args, **kwargs):
                 except UnicodeEncodeError:
                     try:
                         arg = arg.encode('utf-8')
-                    except:
+                    except Exception:
                         if not safe_encode:
                             raise
                         arg = repr(arg)
@@ -139,7 +144,7 @@ def prints(*args, **kwargs):
         try:
             file.write(arg)
             count += len(arg)
-        except:
+        except Exception:
             from polyglot import reprlib
             arg = reprlib.repr(arg)
             file.write(arg)
@@ -168,20 +173,10 @@ def setup_cli_handlers(logger, level):
     elif level == logging.DEBUG:
         handler = logging.StreamHandler(sys.stderr)
         handler.setLevel(logging.DEBUG)
-        handler.setFormatter(logging.Formatter('[%(levelname)s] %(filename)s:%(lineno)s: %(message)s'))
+        handler.setFormatter(logging.Formatter('[%(levelname)s] %(filename)s:'
+                                               '%(lineno)s: %(message)s'))
 
     logger.addHandler(handler)
-
-
-def load_library(name, cdll):
-    if iswindows:
-        return cdll.LoadLibrary(name)
-    if isosx:
-        name += '.dylib'
-        if hasattr(sys, 'frameworks_dir'):
-            return cdll.LoadLibrary(os.path.join(getattr(sys, 'frameworks_dir'), name))
-        return cdll.LoadLibrary(name)
-    return cdll.LoadLibrary(name+'.so')
 
 
 def extract(path, dir):
@@ -216,7 +211,8 @@ def fit_image(width, height, pwidth, pheight):
     @param height: Height of image
     @param pwidth: Width of box
     @param pheight: Height of box
-    @return: scaled, new_width, new_height. scaled is True iff new_width and/or new_height is different from width or height.
+    @return: scaled, new_width, new_height. scaled is True iff new_width
+             and/or new_height is different from width or height.
     '''
     scaled = height > pheight or width > pwidth
     if height > pheight:
@@ -262,8 +258,10 @@ def walk(dir):
 
 
 def strftime(fmt, t=None):
-    ''' A version of strftime that returns unicode strings and tries to handle dates
-    before 1900 '''
+    """
+    A version of strftime that returns unicode strings and tries to handle
+    dates before 1900
+    """
     if not fmt:
         return ''
     if t is None:
@@ -272,7 +270,7 @@ def strftime(fmt, t=None):
         t = t.timetuple()
     early_year = t[0] < 1900
     if early_year:
-        replacement = 1900 if t[0]%4 == 0 else 1901
+        replacement = 1900 if t[0] % 4 == 0 else 1901
         fmt = fmt.replace('%Y', '_early year hack##')
         t = list(t)
         orig_year = t[0]
@@ -301,27 +299,33 @@ def my_unichr(num):
 
 
 def entity_to_unicode(match, exceptions=[], encoding='cp1252',
-        result_exceptions={}):
-    '''
+                      result_exceptions={}):
+    """
     :param match: A match object such that '&'+match.group(1)';' is the entity.
 
-    :param exceptions: A list of entities to not convert (Each entry is the name of the entity, for e.g. 'apos' or '#1234'
+    :param exceptions: A list of entities to not convert (Each entry is the
+                       name of the entity, for e.g. 'apos' or '#1234'
 
-    :param encoding: The encoding to use to decode numeric entities between 128 and 256.
-    If None, the Unicode UCS encoding is used. A common encoding is cp1252.
+    :param encoding: The encoding to use to decode numeric entities between
+                     128 and 256. If None, the Unicode UCS encoding is used.
+                     A common encoding is cp1252.
 
-    :param result_exceptions: A mapping of characters to entities. If the result
-    is in result_exceptions, result_exception[result] is returned instead.
-    Convenient way to specify exception for things like < or > that can be
-    specified by various actual entities.
-    '''
+    :param result_exceptions: A mapping of characters to entities. If the
+                              result is in result_exceptions,
+                              result_exception[result] is returned instead.
+                              Convenient way to specify exception for things
+                              like < or > that can be specified by various
+                              actual entities.
+    """
+
     def check(ch):
         return result_exceptions.get(ch, ch)
 
     ent = match.group(1)
     if ent in exceptions:
         return '&'+ent+';'
-    if ent in {'apos', 'squot'}:  # squot is generated by some broken CMS software
+    # squot is generated by some broken CMS software
+    if ent in {'apos', 'squot'}:
         return check("'")
     if ent == 'hellips':
         ent = 'hellip'
@@ -331,7 +335,7 @@ def entity_to_unicode(match, exceptions=[], encoding='cp1252',
                 num = int(ent[2:], 16)
             else:
                 num = int(ent[1:])
-        except:
+        except Exception:
             return '&'+ent+';'
         if encoding is None or num > 255:
             return check(my_unichr(num))
@@ -392,15 +396,6 @@ def force_unicode(obj, enc=preferred_encoding):
                     if isinstance(obj, bytes):
                         obj = obj.decode('utf-8')
     return obj
-
-
-def as_unicode(obj, enc=preferred_encoding):
-    if not isinstance(obj, bytes):
-        try:
-            obj = str(obj)
-        except Exception:
-            obj = repr(obj)
-    return force_unicode(obj, enc=enc)
 
 
 def url_slash_cleaner(url):
