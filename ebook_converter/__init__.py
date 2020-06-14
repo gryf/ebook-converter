@@ -309,16 +309,6 @@ class CurrentDir(object):
             pass
 
 
-_ncpus = None
-
-
-def detect_ncpus():
-    global _ncpus
-    if _ncpus is None:
-        _ncpus = max(1, os.cpu_count() or 1)
-    return _ncpus
-
-
 relpath = os.path.relpath
 
 
