@@ -889,21 +889,6 @@ OptionRecommendation(name='search_replace',
                         continue
                 setattr(mi, x, val)
 
-    def download_cover(self, url):
-        from ebook_converter import browser
-        from PIL import Image
-        import io
-        from ebook_converter.ptempfile import PersistentTemporaryFile
-        self.log('Downloading cover from %r'%url)
-        br = browser()
-        raw = br.open_novisit(url).read()
-        buf = io.BytesIO(raw)
-        pt = PersistentTemporaryFile('.jpg')
-        pt.close()
-        img = Image.open(buf)
-        img.convert('RGB').save(pt.name)
-        return pt.name
-
     def read_user_metadata(self):
         '''
         Read all metadata specified by the user. Command line options override
@@ -921,7 +906,8 @@ OptionRecommendation(name='search_replace',
         self.opts_to_mi(mi)
         if mi.cover:
             if mi.cover.startswith('http:') or mi.cover.startswith('https:'):
-                mi.cover = self.download_cover(mi.cover)
+                self.log.warn("TODO: Cover image is on remote server, "
+                              "implement downloading using requests")
             ext = mi.cover.rpartition('.')[-1].lower().strip()
             if ext not in ('png', 'jpg', 'jpeg', 'gif'):
                 ext = 'jpg'
