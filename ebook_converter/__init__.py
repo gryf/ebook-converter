@@ -43,10 +43,6 @@ def guess_extension(*args, **kwargs):
     return ext
 
 
-def get_types_map():
-    return mimetypes.types_map
-
-
 def to_unicode(raw, encoding='utf-8', errors='strict'):
     if isinstance(raw, str):
         return raw

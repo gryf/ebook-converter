@@ -4,6 +4,7 @@ Basic support for manipulating OEB 1.x/2.0 content and metadata.
 import collections
 import itertools
 import logging
+import mimetypes
 import numbers
 import operator
 import os
@@ -20,7 +21,7 @@ from ebook_converter import force_unicode
 from ebook_converter.constants_old import filesystem_encoding, __version__
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor
-from ebook_converter import as_unicode, get_types_map
+from ebook_converter import as_unicode
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
@@ -257,20 +258,19 @@ def rewrite_links(root, link_repl_func, resolve_base_href=False):
             el.set('style', repl)
 
 
-types_map = get_types_map()
-EPUB_MIME = types_map['.epub']
-XHTML_MIME = types_map['.xhtml']
-CSS_MIME = types_map['.css']
-NCX_MIME = types_map['.ncx']
-OPF_MIME = types_map['.opf']
+EPUB_MIME = mimetypes.types_map['.epub']
+XHTML_MIME = mimetypes.types_map['.xhtml']
+CSS_MIME = mimetypes.types_map['.css']
+NCX_MIME = mimetypes.types_map['.ncx']
+OPF_MIME = mimetypes.types_map['.opf']
 PAGE_MAP_MIME = 'application/oebps-page-map+xml'
 OEB_DOC_MIME = 'text/x-oeb1-document'
 OEB_CSS_MIME = 'text/x-oeb1-css'
-OPENTYPE_MIME = types_map['.otf']
-GIF_MIME = types_map['.gif']
-JPEG_MIME = types_map['.jpeg']
-PNG_MIME = types_map['.png']
-SVG_MIME = types_map['.svg']
+OPENTYPE_MIME = mimetypes.types_map['.otf']
+GIF_MIME = mimetypes.types_map['.gif']
+JPEG_MIME = mimetypes.types_map['.jpeg']
+PNG_MIME = mimetypes.types_map['.png']
+SVG_MIME = mimetypes.types_map['.svg']
 BINARY_MIME = 'application/octet-stream'
 
 XHTML_CSS_NAMESPACE = '@namespace "%s";\n' % const.XHTML_NS
