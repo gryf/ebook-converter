@@ -2,9 +2,11 @@
 Command line interface to conversion sub-system
 """
 import collections
+import json
 import numbers
 import optparse
 import os
+import re
 import sys
 
 from ebook_converter.utils.config import OptionParser
@@ -60,17 +62,20 @@ def check_command_line_options(parser, args, log):
         raise SystemExit(1)
 
     input_file = os.path.abspath(args[1])
-    if not input_file.endswith('.recipe') and not os.access(input_file, os.R_OK) and not \
-            ('-h' in args or '--help' in args):
+    if (not input_file.endswith('.recipe') and
+            not os.access(input_file, os.R_OK) and
+            not ('-h' in args or '--help' in args)):
         log.error('Cannot read from', input_file)
         raise SystemExit(1)
     if input_file.endswith('.recipe') and not os.access(input_file, os.R_OK):
         input_file = args[1]
 
     output_file = args[2]
-    if (output_file.startswith('.') and output_file[:2] not in {'..', '.'} and '/' not in
-            output_file and '\\' not in output_file):
-        output_file = os.path.splitext(os.path.basename(input_file))[0]+output_file
+    if (output_file.startswith('.') and
+            output_file[:2] not in {'..', '.'} and
+            '/' not in output_file and '\\' not in output_file):
+        output_file = os.path.splitext(os.path
+                                       .basename(input_file))[0] + output_file
     output_file = os.path.abspath(output_file)
 
     return input_file, output_file
@@ -80,8 +85,8 @@ def option_recommendation_to_cli_option(add_option, rec):
     opt = rec.option
     switches = ['-'+opt.short_switch] if opt.short_switch else []
     switches.append('--'+opt.long_switch)
-    attrs = dict(dest=opt.name, help=opt.help,
-                     choices=opt.choices, default=rec.recommended_value)
+    attrs = dict(dest=opt.name, help=opt.help, choices=opt.choices,
+                 default=rec.recommended_value)
     if isinstance(rec.recommended_value, type(True)):
         attrs['action'] = 'store_false' if rec.recommended_value else \
                           'store_true'
@@ -151,8 +156,10 @@ def add_input_output_options(parser, plumber):
 
     def add_options(group, options):
         for opt in options:
-            if plumber.input_fmt == 'recipe' and opt.option.long_switch == 'test':
-                group(optparse.Option('--test', dest='test', action='callback', callback=recipe_test))
+            if (plumber.input_fmt == 'recipe' and
+                    opt.option.long_switch == 'test'):
+                group(optparse.Option('--test', dest='test',
+                                      action='callback', callback=recipe_test))
             else:
                 option_recommendation_to_cli_option(group, opt)
 
@@ -174,77 +181,61 @@ def add_input_output_options(parser, plumber):
 
 
 def add_pipeline_options(parser, plumber):
-    groups = collections.OrderedDict((
-              ('' , ('',
-                    [
-                     'input_profile',
-                     'output_profile',
-                     ]
-                    )),
-              ('LOOK AND FEEL' , (
-                  'Options to control the look and feel of the output',
-                  [
-                      'base_font_size', 'disable_font_rescaling',
-                      'font_size_mapping', 'embed_font_family',
-                      'subset_embedded_fonts', 'embed_all_fonts',
-                      'line_height', 'minimum_line_height',
-                      'linearize_tables',
-                      'extra_css', 'filter_css', 'transform_css_rules', 'expand_css',
-                      'smarten_punctuation', 'unsmarten_punctuation',
-                      'margin_top', 'margin_left', 'margin_right',
-                      'margin_bottom', 'change_justification',
-                      'insert_blank_line', 'insert_blank_line_size',
-                      'remove_paragraph_spacing',
-                      'remove_paragraph_spacing_indent_size',
-                      'asciiize', 'keep_ligatures',
-                  ]
-                  )),
+    groups = collections.OrderedDict(
+        (('', ('', ['input_profile', 'output_profile'])),
+         ('LOOK AND FEEL', ('Options to control the look and feel of the '
+                            'output',
+                            ['base_font_size', 'disable_font_rescaling',
+                             'font_size_mapping', 'embed_font_family',
+                             'subset_embedded_fonts', 'embed_all_fonts',
+                             'line_height', 'minimum_line_height',
+                             'linearize_tables', 'extra_css', 'filter_css',
+                             'transform_css_rules', 'expand_css',
+                             'smarten_punctuation', 'unsmarten_punctuation',
+                             'margin_top', 'margin_left', 'margin_right',
+                             'margin_bottom', 'change_justification',
+                             'insert_blank_line', 'insert_blank_line_size',
+                             'remove_paragraph_spacing',
+                             'remove_paragraph_spacing_indent_size',
+                             'asciiize', 'keep_ligatures'])),
 
-              ('HEURISTIC PROCESSING' ,
-               ('Modify the document text and structure using common '
-                'patterns. Disabled by default. Use %(en)s to enable. '
-                'Individual actions can be disabled with the %(dis)s '
-                'options.' % dict(en='--enable-heuristics', dis='--disable-*'),
-                  ['enable_heuristics'] + HEURISTIC_OPTIONS
-                  )),
+         ('HEURISTIC PROCESSING', ('Modify the document text and structure '
+                                   'using common patterns. Disabled by '
+                                   'default. Use %(en)s to enable. Individual '
+                                   'actions can be disabled with the %(dis)s '
+                                   'options.' % dict(en='--enable-heuristics',
+                                                     dis='--disable-*'),
+                                   ['enable_heuristics'] + HEURISTIC_OPTIONS)),
 
-              ('SEARCH AND REPLACE' ,
-               ('Modify the document text and structure using user defined '
-                'patterns.',
-                 ['sr1_search', 'sr1_replace', 'sr2_search', 'sr2_replace',
-                  'sr3_search', 'sr3_replace', 'search_replace']
-              )),
+         ('SEARCH AND REPLACE', ('Modify the document text and structure '
+                                 'using user defined patterns.',
+                                 ['sr1_search', 'sr1_replace', 'sr2_search',
+                                  'sr2_replace', 'sr3_search', 'sr3_replace',
+                                  'search_replace'])),
 
-              ('STRUCTURE DETECTION' , (
-                  'Control auto-detection of document structure.',
-                  [
-                      'chapter', 'chapter_mark',
-                      'prefer_metadata_cover', 'remove_first_image',
-                      'insert_metadata', 'page_breaks_before',
-                      'remove_fake_margins', 'start_reading_at',
-                  ]
-                  )),
+         ('STRUCTURE DETECTION', ('Control auto-detection of document '
+                                  'structure.',
+                                  ['chapter', 'chapter_mark',
+                                   'prefer_metadata_cover',
+                                   'remove_first_image', 'insert_metadata',
+                                   'page_breaks_before', 'remove_fake_margins',
+                                   'start_reading_at'])),
 
-              ('TABLE OF CONTENTS' ,
-               ('Control the automatic generation of a Table of Contents. By '
-                'default, if the source file has a Table of Contents, it will '
-                'be used in preference to the automatically generated one.',
-                ['level1_toc', 'level2_toc', 'level3_toc', 'toc_threshold',
-                 'max_toc_links', 'no_chapters_in_toc', 'use_auto_toc',
-                 'toc_filter', 'duplicate_links_in_toc']
-               )
-              ),
+         ('TABLE OF CONTENTS', ('Control the automatic generation of a Table '
+                                'of Contents. By default, if the source file '
+                                'has a Table of Contents, it will be used in '
+                                'preference to the automatically generated '
+                                'one.',
+                                ['level1_toc', 'level2_toc', 'level3_toc',
+                                 'toc_threshold', 'max_toc_links',
+                                 'no_chapters_in_toc', 'use_auto_toc',
+                                 'toc_filter', 'duplicate_links_in_toc'])),
 
-              ('METADATA' , ('Options to set metadata in the output',
-                            plumber.metadata_option_names + ['read_metadata_from_opf'],
-                            )),
-              ('DEBUG', ('Options to help with debugging the conversion',
-                        [
-                         'verbose',
-                         'debug_pipeline',
-                         ])),
-
-              ))
+         ('METADATA', ('Options to set metadata in the output',
+                       plumber.metadata_option_names +
+                       ['read_metadata_from_opf'])),
+         ('DEBUG', ('Options to help with debugging the conversion',
+                    ['verbose', 'debug_pipeline']))))
 
     for group, (desc, options) in groups.items():
         if group:
@@ -261,9 +252,9 @@ def add_pipeline_options(parser, plumber):
 def option_parser():
     parser = OptionParser(usage=USAGE)
     parser.add_option('--list-recipes', default=False, action='store_true',
-            help='List builtin recipe names. You can create an e-book from '
-                 'a builtin recipe like this: ebook-convert "Recipe '
-                 'Name.recipe" output.epub')
+                      help='List builtin recipe names. You can create an '
+                      'e-book from a builtin recipe like this: ebook-convert '
+                      '"Recipe Name.recipe" output.epub')
     return parser
 
 
@@ -275,25 +266,28 @@ class ProgressBar(object):
     def __call__(self, frac, msg=''):
         if msg:
             percent = int(frac*100)
-            self.log('%d%% %s'%(percent, msg))
+            self.log('%d%% %s' % (percent, msg))
 
 
 def create_option_parser(args, log):
     if '--version' in args:
-        from ebook_converter.constants_old import __appname__, __version__, __author__
+        from ebook_converter.constants_old import __appname__
+        from ebook_converter.constants_old import __author__
+        from ebook_converter.constants_old import __version__
         log(os.path.basename(args[0]), '('+__appname__, __version__+')')
         log('Created by:', __author__)
         raise SystemExit(0)
     if '--list-recipes' in args:
-        from ebook_converter.web.feeds.recipes.collection import get_builtin_recipe_titles
+        from ebook_converter.web.feeds.recipes.collection import \
+                get_builtin_recipe_titles
         log('Available recipes:')
         titles = sorted(get_builtin_recipe_titles())
         for title in titles:
             try:
                 log('\t'+title)
-            except:
+            except Exception:
                 log('\t'+repr(title))
-        log('%d recipes available'%len(titles))
+        log('%d recipes available' % len(titles))
         raise SystemExit(0)
 
     parser = option_parser()
@@ -330,7 +324,6 @@ def escape_sr_pattern(exp):
 
 
 def read_sr_patterns(path, log=None):
-    import json, re
     pats = []
     with open(path, 'rb') as f:
         lines = f.read().decode('utf-8').splitlines()
@@ -342,9 +335,9 @@ def read_sr_patterns(path, log=None):
             line = line.replace('\ue123', '\n')
             try:
                 re.compile(line)
-            except:
-                msg = 'Invalid regular expression: %r from file: %r'%(
-                        line, path)
+            except Exception:
+                msg = 'Invalid regular expression: %r from file: %r' % (line,
+                                                                        path)
                 if log is not None:
                     log.error(msg)
                     raise SystemExit(1)
@@ -363,7 +356,8 @@ def main(args=sys.argv):
     parser, plumber = create_option_parser(args, log)
     opts, leftover_args = parser.parse_args(args)
     if len(leftover_args) > 3:
-        log.error('Extra arguments not understood:', u', '.join(leftover_args[3:]))
+        log.error('Extra arguments not understood: %s',
+                  ', '.join(leftover_args[3:]))
         return 1
     for x in ('read_metadata_from_opf', 'cover'):
         if getattr(opts, x, None) is not None:
@@ -371,7 +365,8 @@ def main(args=sys.argv):
     if opts.search_replace:
         opts.search_replace = read_sr_patterns(opts.search_replace, log)
     if opts.transform_css_rules:
-        from ebook_converter.ebooks.css_transform_rules import import_rules, validate_rule
+        from ebook_converter.ebooks.css_transform_rules import import_rules
+        from ebook_converter.ebooks.css_transform_rules import validate_rule
         with open(opts.transform_css_rules, 'rb') as tcr:
             opts.transform_css_rules = rules = list(import_rules(tcr.read()))
             for rule in rules:
@@ -384,8 +379,7 @@ def main(args=sys.argv):
 
     recommendations = [(n.dest, getattr(opts, n.dest),
                         OptionRecommendation.HIGH)
-                                        for n in parser.options_iter()
-                                        if n.dest]
+                       for n in parser.options_iter() if n.dest]
     plumber.merge_ui_recommendations(recommendations)
 
     plumber.run()
