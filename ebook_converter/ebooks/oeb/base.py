@@ -20,7 +20,7 @@ from ebook_converter import force_unicode
 from ebook_converter.constants_old import filesystem_encoding, __version__
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor
-from ebook_converter import (isbytestring, as_unicode, get_types_map)
+from ebook_converter import as_unicode, get_types_map
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
@@ -501,7 +501,7 @@ class DirContainer(object):
 
     def __init__(self, path, log, ignore_opf=False):
         self.log = log
-        if isbytestring(path):
+        if isinstance(path, bytes):
             path = path.decode(filesystem_encoding)
         self.opfname = None
         ext = os.path.splitext(path)[1].lower()

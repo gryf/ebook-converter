@@ -12,7 +12,7 @@ from css_parser import (profile as cssprofiles, parseString, parseStyle, log as
         css_parser_log, CSSParser, profiles, replaceUrls)
 
 from ebook_converter import constants as const
-from ebook_converter import force_unicode, as_unicode
+from ebook_converter import force_unicode
 from ebook_converter.ebooks import unit_convert
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.normalize_css import DEFAULTS, normalizers
@@ -303,7 +303,7 @@ class Stylizer(object):
             try:
                 matches = tuple(select(text))
             except SelectorError as err:
-                self.logger.error('Ignoring CSS rule with invalid selector: %r (%s)' % (text, as_unicode(err)))
+                self.logger.error('Ignoring CSS rule with invalid selector: %r (%s)' % (text, err))
                 continue
 
             if fl is not None:

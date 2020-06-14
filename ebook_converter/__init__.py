@@ -117,9 +117,9 @@ def sanitize_file_name(name, substitute='_'):
     **WARNING:** This function also replaces path separators, so only pass file names
     and not full paths to it.
     '''
-    if isbytestring(name):
+    if isinstance(name, bytes):
         name = name.decode(filesystem_encoding, 'replace')
-    if isbytestring(substitute):
+    if isinstance(substitute, bytes):
         substitute = substitute.decode(filesystem_encoding, 'replace')
     chars = (substitute if c in _filename_sanitize_unicode else c for c in name)
     one = ''.join(chars)
@@ -569,12 +569,8 @@ def prepare_string_for_xml(raw, attribute=False):
     return raw
 
 
-def isbytestring(obj):
-    return isinstance(obj, bytes)
-
-
 def force_unicode(obj, enc=preferred_encoding):
-    if isbytestring(obj):
+    if isinstance(obj, bytes):
         try:
             obj = obj.decode(enc)
         except Exception:
@@ -586,13 +582,13 @@ def force_unicode(obj, enc=preferred_encoding):
                     obj = obj.decode('utf-8')
                 except Exception:
                     obj = repr(obj)
-                    if isbytestring(obj):
+                    if isinstance(obj, bytes):
                         obj = obj.decode('utf-8')
     return obj
 
 
 def as_unicode(obj, enc=preferred_encoding):
-    if not isbytestring(obj):
+    if not isinstance(obj, bytes):
         try:
             obj = str(obj)
         except Exception:

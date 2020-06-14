@@ -11,7 +11,7 @@ from lxml.etree import Comment
 from ebook_converter.ebooks.metadata import string_to_authors, authors_to_string
 from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.ebooks.chardet import xml_to_unicode
-from ebook_converter import replace_entities, isbytestring
+from ebook_converter import replace_entities
 from ebook_converter.utils.date import parse_date, is_date_undefined
 
 
@@ -128,7 +128,7 @@ def get_metadata_(src, encoding=None):
     # Meta data definitions as in
     # https://www.mobileread.com/forums/showpost.php?p=712544&postcount=9
 
-    if isbytestring(src):
+    if isinstance(src, bytes):
         if not encoding:
             src = xml_to_unicode(src)[0]
         else:

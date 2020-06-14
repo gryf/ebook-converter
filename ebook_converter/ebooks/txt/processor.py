@@ -3,16 +3,12 @@ Read content from txt file.
 """
 import os, re
 
-from ebook_converter import prepare_string_for_xml, isbytestring
+from ebook_converter import prepare_string_for_xml
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 
 from ebook_converter.ebooks.conversion.preprocess import DocAnalysis
 from ebook_converter.utils.cleantext import clean_ascii_chars
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
 
 HTML_TEMPLATE = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>%s </title></head><body>\n%s\n</body></html>'
 
@@ -22,7 +18,7 @@ def clean_txt(txt):
     Run transformations on the text to put it into
     consistent state.
     '''
-    if isbytestring(txt):
+    if isinstance(txt, bytes):
         txt = txt.decode('utf-8', 'replace')
     # Strip whitespace from the end of the line. Also replace
     # all line breaks with \n.
@@ -69,7 +65,7 @@ def split_txt(txt, epub_split_size_kb=0):
             txt = b'\n\n'.join([
                 split_string_separator(line, chunk_size) for line in parts
             ])
-    if isbytestring(txt):
+    if isinstance(txt, bytes):
         txt = txt.decode('utf-8')
 
     return txt

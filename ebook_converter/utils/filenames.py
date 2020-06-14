@@ -8,7 +8,7 @@ import shutil
 import time
 from math import ceil
 
-from ebook_converter import force_unicode, isbytestring, prints, sanitize_file_name
+from ebook_converter import force_unicode, prints, sanitize_file_name
 from ebook_converter.constants_old import (
     filesystem_encoding, iswindows, plugins, preferred_encoding, isosx
 )
@@ -145,7 +145,7 @@ def case_preserving_open_file(path, mode='wb', mkdir_mode=0o777):
     mkdir_mode specifies the mode with which any missing directories in path
     are created.
     '''
-    if isbytestring(path):
+    if isinstance(path, bytes):
         path = path.decode(filesystem_encoding)
 
     path = os.path.abspath(path)
@@ -220,7 +220,7 @@ def windows_get_fileid(path):
     all hardlinks to a file). Similar to inode number on linux. '''
     import win32file
     from pywintypes import error
-    if isbytestring(path):
+    if isinstance(path, bytes):
         path = path.decode(filesystem_encoding)
     try:
         h = win32file.CreateFileW(path, 0, 0, None, win32file.OPEN_EXISTING,
@@ -278,7 +278,7 @@ def windows_get_size(path):
     not in the directory entry (which could be out of date). So we open the
     file, and get the actual size. '''
     import win32file
-    if isbytestring(path):
+    if isinstance(path, bytes):
         path = path.decode(filesystem_encoding)
     h = win32file.CreateFileW(
         path, 0, win32file.FILE_SHARE_READ | win32file.FILE_SHARE_WRITE | win32file.FILE_SHARE_DELETE,
@@ -331,7 +331,7 @@ def windows_fast_hardlink(src, dest):
 def windows_nlinks(path):
     import win32file
     dwFlagsAndAttributes = win32file.FILE_FLAG_BACKUP_SEMANTICS if os.path.isdir(path) else 0
-    if isbytestring(path):
+    if isinstance(path, bytes):
         path = path.decode(filesystem_encoding)
     handle = win32file.CreateFileW(path, win32file.GENERIC_READ, win32file.FILE_SHARE_READ, None, win32file.OPEN_EXISTING, dwFlagsAndAttributes, None)
     try:
@@ -357,7 +357,7 @@ class WindowsAtomicFolderMove(object):
         from pywintypes import error
         from collections import defaultdict
 
-        if isbytestring(path):
+        if isinstance(path, bytes):
             path = path.decode(filesystem_encoding)
 
         if not os.path.exists(path):

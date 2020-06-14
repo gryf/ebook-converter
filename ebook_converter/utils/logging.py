@@ -5,7 +5,7 @@ import sys, traceback, io
 from functools import partial
 from threading import Lock
 
-from ebook_converter import isbytestring, force_unicode, as_unicode, prints
+from ebook_converter import force_unicode, as_unicode, prints
 
 
 __license__ = 'GPL 3'
@@ -108,7 +108,7 @@ class UnicodeHTMLStream(HTMLStream):
         end  = kwargs.get(u'end', u'\n')
 
         for arg in args:
-            if isbytestring(arg):
+            if isinstance(arg, bytes):
                 arg = force_unicode(arg)
             elif not isinstance(arg, str):
                 arg = as_unicode(arg)

@@ -3,7 +3,6 @@ import os, re, collections
 from ebook_converter.utils.config import prefs
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.ebooks.metadata.opf2 import OPF
-from ebook_converter import isbytestring
 from ebook_converter.customize.ui import get_file_type_metadata, set_file_type_metadata
 from ebook_converter.ebooks.metadata import MetaInformation, string_to_authors
 
@@ -126,7 +125,7 @@ def set_metadata(stream, mi, stream_type='lrf', report_error=None):
 
 
 def metadata_from_filename(name, pat=None, fallback_pat=None):
-    if isbytestring(name):
+    if isinstance(name, bytes):
         name = name.decode(filesystem_encoding, 'replace')
     name = name.rpartition('.')[0]
     mi = MetaInformation(None, None)

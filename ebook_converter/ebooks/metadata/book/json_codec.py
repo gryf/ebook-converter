@@ -9,7 +9,6 @@ from datetime import datetime, time
 from ebook_converter.ebooks.metadata.book import SERIALIZABLE_FIELDS
 from ebook_converter.constants_old import filesystem_encoding, preferred_encoding
 from ebook_converter.library.field_metadata import FieldMetadata
-from ebook_converter import isbytestring
 from ebook_converter.polyglot.builtins import as_bytes
 from ebook_converter.polyglot.binary import as_base64_unicode, from_base64_bytes
 
@@ -73,10 +72,10 @@ def object_to_unicode(obj, enc=preferred_encoding):
     def dec(x):
         return x.decode(enc, 'replace')
 
-    if isbytestring(obj):
+    if isinstance(obj, bytes):
         return dec(obj)
     if isinstance(obj, (list, tuple)):
-        return [dec(x) if isbytestring(x) else object_to_unicode(x) for x in obj]
+        return [dec(x) if isinstance(x, bytes) else object_to_unicode(x) for x in obj]
     if isinstance(obj, dict):
         ans = {}
         for k, v in obj.items():
@@ -163,7 +162,7 @@ class JsonCodec(object):
         value = book.get(key)
         if key == 'thumbnail':
             return encode_thumbnail(value)
-        elif isbytestring(value):  # str includes bytes
+        elif isinstance(value, bytes):  # str includes bytes
             enc = filesystem_encoding if key == 'lpath' else preferred_encoding
             return object_to_unicode(value, enc=enc)
         elif datatype == 'datetime':
