@@ -11,7 +11,6 @@ from ebook_converter.utils.config_base import (
     StringConfig, json_dumps, json_loads, make_config_dir, plugin_dir, prefs,
     tweaks, from_json, to_json
 )
-from ebook_converter.utils.lock import ExclusiveFile
 
 
 if False:
@@ -225,7 +224,7 @@ class DynamicConfig(dict):
         if clear_current:
             self.clear()
         if os.path.exists(self.file_path):
-            with ExclusiveFile(self.file_path) as f:
+            with open(self.file_path) as f:
                 raw = f.read()
             if raw:
                 try:
@@ -241,7 +240,7 @@ class DynamicConfig(dict):
             migrate = bool(d)
         if migrate and d:
             raw = json_dumps(d, ignore_unserializable=True)
-            with ExclusiveFile(self.file_path) as f:
+            with open(self.file_path) as f:
                 f.seek(0), f.truncate()
                 f.write(raw)
 
@@ -272,7 +271,7 @@ class DynamicConfig(dict):
         if not os.path.exists(self.file_path):
             make_config_dir()
         raw = json_dumps(self)
-        with ExclusiveFile(self.file_path) as f:
+        with open(self.file_path) as f:
             f.seek(0)
             f.truncate()
             f.write(raw)
@@ -333,7 +332,7 @@ class XMLConfig(dict):
     def refresh(self, clear_current=True):
         d = {}
         if os.path.exists(self.file_path):
-            with ExclusiveFile(self.file_path) as f:
+            with open(self.file_path) as f:
                 raw = f.read()
                 try:
                     d = self.raw_to_object(raw) if raw.strip() else {}
@@ -392,7 +391,7 @@ class XMLConfig(dict):
             dpath = os.path.dirname(self.file_path)
             if not os.path.exists(dpath):
                 os.makedirs(dpath, mode=constants_old.CONFIG_DIR_MODE)
-            with ExclusiveFile(self.file_path) as f:
+            with open(self.file_path) as f:
                 raw = self.to_raw()
                 f.seek(0)
                 f.truncate()

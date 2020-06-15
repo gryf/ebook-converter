@@ -16,7 +16,6 @@ from ebook_converter.constants_old import config_dir
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.constants_old import iswindows
 from ebook_converter.constants_old import preferred_encoding
-from ebook_converter.utils.lock import ExclusiveFile
 from ebook_converter.utils.date import isoformat
 from ebook_converter.utils import iso8601
 
@@ -374,9 +373,9 @@ class Config(ConfigInterface):
         migrate = False
         path = self.config_file_path
         if os.path.exists(path):
-            with ExclusiveFile(path) as f:
+            with open(path) as f:
                 try:
-                    src = f.read().decode('utf-8')
+                    src = f.read()
                 except ValueError:
                     print("Failed to parse", path)
                     traceback.print_exc()
@@ -384,7 +383,7 @@ class Config(ConfigInterface):
             path = path.rpartition('.')[0]
             try:
                 with open(path, 'rb') as f:
-                    src = f.read().decode('utf-8')
+                    src = f.read()
             except Exception:
                 pass
             else:
@@ -393,7 +392,7 @@ class Config(ConfigInterface):
         if migrate:
             new_src = self.option_set.serialize(ans,
                                                 ignore_unserializable=True)
-            with ExclusiveFile(self.config_file_path) as f:
+            with open(self.config_file_path, 'w') as f:
                 f.seek(0), f.truncate()
                 f.write(new_src)
         return ans
@@ -405,13 +404,14 @@ class Config(ConfigInterface):
         if not os.path.exists(config_dir):
             make_config_dir()
 
-        with ExclusiveFile(self.config_file_path) as f:
+        with open(self.config_file_path) as f:
             src = f.read()
             opts = self.option_set.parse_string(src)
             setattr(opts, name, val)
             src = self.option_set.serialize(opts)
             f.seek(0)
             f.truncate()
+            __import__('pdb').set_trace()
             if isinstance(src, str):
                 src = src.encode('utf-8')
             f.write(src)
