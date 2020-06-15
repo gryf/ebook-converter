@@ -1,3 +1,4 @@
+VERSION = '0.1.0'
 CALIBRE_NS = 'http://calibre.kovidgoyal.net/2009/metadata'
 DC09_NS = 'http://purl.org/metadata/dublin_core'
 DC10_NS = 'http://purl.org/dc/elements/1.0/'

@@ -5,6 +5,7 @@ import optparse
 import os
 from copy import deepcopy
 
+from ebook_converter import constants
 from ebook_converter import constants_old
 from ebook_converter.utils.config_base import (
     Config, ConfigInterface, ConfigProxy, Option, OptionSet, OptionValues,
@@ -92,7 +93,7 @@ class OptionParser(optparse.OptionParser):
                                               else '/some path/with spaces')
         if version is None:
             version = '%%prog (%s %s)' % (constants_old.__appname__,
-                                          constants_old.get_version())
+                                          constants.VERSION)
         optparse.OptionParser.__init__(self, usage=usage, version=version, epilog=epilog,
                                formatter=CustomHelpFormatter(),
                                conflict_handler=conflict_handler, **kwds)

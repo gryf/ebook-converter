@@ -19,6 +19,8 @@ from ebook_converter.constants_old import islinux, isfrozen, \
     config_dir
 from ebook_converter.startup import winutil, winutilerror
 from ebook_converter.utils.icu import safe_chr
+from ebook_converter.utils.terminal import Detect
+
 
 if False:
     # Prevent pyflakes from complaining
@@ -98,63 +100,32 @@ def prints(*args, **kwargs):
 
     Returns the number of bytes written.
     """
-    file = kwargs.get('file', sys.stdout)
-    file = getattr(file, 'buffer', file)
+    fobj = kwargs.get('file', sys.stdout)
     enc = ('utf-8' if os.getenv('CALIBRE_WORKER')
            else constants_old.preferred_encoding)
     sep = kwargs.get('sep', ' ')
-    if not isinstance(sep, bytes):
-        sep = sep.encode(enc)
+    if isinstance(sep, bytes):
+        sep = sep.decode(enc)
     end = kwargs.get('end', '\n')
-    if not isinstance(end, bytes):
-        end = end.encode(enc)
-    safe_encode = kwargs.get('safe_encode', False)
+    if isinstance(end, bytes):
+        end = end.decode(enc)
     count = 0
-    for i, arg in enumerate(args):
-        if isinstance(arg, str):
-            if constants_old.iswindows:
-                from ebook_converter.utils.terminal import Detect
-                cs = Detect(file)
-                if cs.is_console:
-                    cs.write_unicode_text(arg)
-                    count += len(arg)
-                    if i != len(args)-1:
-                        file.write(sep)
-                        count += len(sep)
-                    continue
-            try:
-                arg = arg.encode(enc)
-            except UnicodeEncodeError:
-                try:
-                    arg = arg.encode('utf-8')
-                except Exception:
-                    if not safe_encode:
-                        raise
-                    arg = repr(arg)
-        if not isinstance(arg, bytes):
-            if isinstance(arg, str):
-                try:
-                    arg = arg.encode(enc)
-                except UnicodeEncodeError:
-                    try:
-                        arg = arg.encode('utf-8')
-                    except Exception:
-                        if not safe_encode:
-                            raise
-                        arg = repr(arg)
 
+    for i, arg in enumerate(args):
+        if isinstance(arg, bytes):
+            arg = arg.decode(enc)
+        arg = repr(arg)
         try:
-            file.write(arg)
+            fobj.write(arg)
             count += len(arg)
         except Exception:
-            from polyglot import reprlib
-            arg = reprlib.repr(arg)
-            file.write(arg)
+            arg = repr(arg)
+            fobj.write(arg)
             count += len(arg)
         if i != len(args)-1:
-            file.write(sep)
+            fobj.write(sep)
             count += len(sep)
-    file.write(end)
+    fobj.write(end)
     count += len(end)
     return count
 
@@ -316,7 +287,7 @@ def entity_to_unicode(match, exceptions=[], encoding='cp1252',
         return check(html5_entities[ent])
     except KeyError:
         pass
-    from polyglot.html_entities import name2codepoint
+    from ebook_converter.polyglot.html_entities import name2codepoint
     try:
         return check(my_unichr(name2codepoint[ent]))
     except KeyError:

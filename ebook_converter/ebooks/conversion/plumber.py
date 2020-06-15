@@ -15,7 +15,8 @@ from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils.date import parse_date
 from ebook_converter.utils.zipfile import ZipFile
 from ebook_converter import extract, walk
-from ebook_converter.constants_old import __version__, filesystem_encoding
+from ebook_converter import constants
+from ebook_converter.constants_old import filesystem_encoding
 
 
 DEBUG_README=b'''
@@ -956,7 +957,7 @@ OptionRecommendation(name='search_replace',
         if self.opts.verbose > 1:
             self.log.debug('Resolved conversion options')
             try:
-                self.log.debug('ebook_converter version:', __version__)
+                self.log.debug('ebook_converter version:', constants.VERSION)
                 odict = dict(self.opts.__dict__)
                 for x in ('username', 'password'):
                     odict.pop(x, None)

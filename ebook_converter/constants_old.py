@@ -5,7 +5,7 @@ import locale
 import os
 import sys
 
-from ebook_converter.polyglot.builtins import environ_item, as_unicode
+from ebook_converter.polyglot.builtins import environ_item
 
 __appname__   = 'calibre'
 numeric_version = (4, 12, 0)
@@ -176,12 +176,8 @@ class Plugins(collections.Mapping):
             p = importlib.import_module(name)
         except Exception as err:
             p = None
-            try:
-                plugin_err = str(err)
-            except Exception:
-                plugin_err = as_unicode(err, encoding=preferred_encoding, errors='replace')
+            plugin_err = str(err)
         self._plugins[name] = p, plugin_err
-        # sys.path.remove(plugins_loc)
 
     def __iter__(self):
         return iter(self.plugins)
@@ -199,9 +195,7 @@ class Plugins(collections.Mapping):
         return self._plugins[name]
 
 
-plugins = None
-if plugins is None:
-    plugins = Plugins()
+plugins = Plugins()
 # }}}
 
 # config_dir {{{
