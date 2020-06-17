@@ -18,7 +18,6 @@ from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.utils import read_font_record
 from ebook_converter.ebooks.oeb.parse_utils import parse_html
 from ebook_converter.ebooks.oeb import base
-from ebook_converter.polyglot.builtins import as_unicode
 
 ID_RE = re.compile(br'''<[^>]+\s(?:id|ID)\s*=\s*['"]([^'"]+)['"]''')
 NAME_RE = re.compile(br'''<\s*a\s*\s(?:name|NAME)\s*=\s*['"]([^'"]+)['"]''')
@@ -403,7 +402,11 @@ class Mobi8Reader(object):
                     continue
 
             entry['href'] = href
-            entry['idtag'] = as_unicode(idtag, self.header.codec or 'utf-8')
+            if isinstance(idtag, bytes):
+                entry['idtag'] = idtag.decode(self.header.codec or 'utf-8',
+                                              'strict')
+            else:
+                entry['idtag'] = idtag
 
         for e in remove:
             index_entries.remove(e)

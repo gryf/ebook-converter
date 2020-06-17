@@ -11,7 +11,6 @@ from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter.utils.localization import get_lang
 from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.imghdr import what
-from ebook_converter.polyglot.builtins import as_unicode
 
 
 def sanitize_file_name(x):
@@ -281,9 +280,8 @@ class HTMLInput(InputFormatPlugin):
             # bhref refers to an already existing file. The read() method of
             # DirContainer will call unquote on it before trying to read the
             # file, therefore we quote it here.
-            if isinstance(bhref, str):
-                bhref = bhref.encode('utf-8')
-            item.html_input_href = as_unicode(urllib.parse.quote(bhref))
+            # XXX(gryf): why the heck it was changed to bytes?
+            item.html_input_href = urllib.parse.quote(bhref)
             if guessed in self.OEB_STYLES:
                 item.override_css_fetch = functools.partial(
                         self.css_import_handler, os.path.dirname(link))

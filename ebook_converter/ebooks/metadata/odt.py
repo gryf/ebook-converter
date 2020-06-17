@@ -32,7 +32,6 @@ from ebook_converter.utils.zipfile import ZipFile, safe_replace
 from odf.draw import Frame as odFrame, Image as odImage
 from odf.namespaces import DCNS, METANS, OFFICENS
 from odf.opendocument import load as odLoad
-from ebook_converter.polyglot.builtins import as_unicode
 
 
 fields = {
@@ -240,7 +239,7 @@ def _set_metadata(raw, mi):
         add_user_metadata('opf.seriesindex', '{}'.format(mi.series_index))
     if not mi.is_null('identifiers'):
         remove_user_metadata('opf.identifiers')
-        add_user_metadata('opf.identifiers', as_unicode(json.dumps(mi.identifiers)))
+        add_user_metadata('opf.identifiers', str(json.dumps(mi.identifiers)))
     if not mi.is_null('rating'):
         remove_user_metadata('opf.rating')
         add_user_metadata('opf.rating', '%.2g' % mi.rating)

@@ -10,7 +10,6 @@ import urllib.parse
 
 from ebook_converter import relpath, prints, force_unicode
 from ebook_converter.utils.config_base import tweaks
-from ebook_converter.polyglot.builtins import as_unicode
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -268,17 +267,14 @@ class Resource(object):
                 basedir = os.getcwd()
         if self.path is None:
             return self._href
-        f = self.fragment.encode('utf-8') if isinstance(self.fragment, str) else self.fragment
-        frag = '#'+as_unicode(urllib.parse.quote(f)) if self.fragment else ''
+        frag = '#' + urllib.parse.quote(self.fragment) if self.fragment else ''
         if self.path == basedir:
-            return ''+frag
+            return '' + frag
         try:
             rpath = relpath(self.path, basedir)
         except OSError:  # On windows path and basedir could be on different drives
             rpath = self.path
-        if isinstance(rpath, str):
-            rpath = rpath.encode('utf-8')
-        return as_unicode(urllib.parse.quote(rpath.replace(os.sep, '/')))+frag
+        return urllib.parse.quote(rpath.replace(os.sep, '/')) + frag
 
     def set_basedir(self, path):
         self._basedir = path
