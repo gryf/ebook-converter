@@ -1,8 +1,6 @@
 import re
 import html.entities
 
-from ebook_converter.constants_old import plugins, preferred_encoding
-
 
 def ascii_pat(for_binary=False):
     attr = 'binary' if for_binary else 'text'
@@ -39,7 +37,8 @@ def clean_ascii_chars(txt, charlist=None):
 
 def allowed(x):
     x = ord(x)
-    return (x != 127 and (31 < x < 0xd7ff or x in (9, 10, 13))) or (0xe000 < x < 0xfffd) or (0x10000 < x < 0x10ffff)
+    return ((x != 127 and (31 < x < 0xd7ff or x in (9, 10, 13))) or
+            (0xe000 < x < 0xfffd) or (0x10000 < x < 0x10ffff))
 
 
 def py_clean_xml_chars(unicode_string):
@@ -47,12 +46,6 @@ def py_clean_xml_chars(unicode_string):
 
 
 clean_xml_chars = py_clean_xml_chars
-
-
-def test_clean_xml_chars():
-    raw = 'asd\x02a\U00010437x\ud801b\udffe\ud802'
-    if native_clean_xml_chars(raw) != 'asda\U00010437xb':
-        raise ValueError('Failed to XML clean: %r' % raw)
 
 
 # Fredrik Lundh: http://effbot.org/zone/re-sub.htm#unescape-html
@@ -76,8 +69,7 @@ def unescape(text, rm=False, rchar=''):
         else:
             # named entity
             try:
-                text = chr(html.entities
-                                        .name2codepoint[text[1:-1]])
+                text = chr(html.entities.name2codepoint[text[1:-1]])
             except KeyError:
                 pass
         if rm:
