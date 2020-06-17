@@ -392,11 +392,13 @@ class XMLConfig(dict):
             dpath = os.path.dirname(self.file_path)
             if not os.path.exists(dpath):
                 os.makedirs(dpath, mode=constants_old.CONFIG_DIR_MODE)
-            with open(self.file_path) as f:
+            with open(self.file_path, 'w') as f:
                 raw = self.to_raw()
                 f.seek(0)
                 f.truncate()
-                f.write(raw)
+                # TODO(gryf): get rid of another proxy for json module which
+                # stubbornly insist on using bytes instead of unicode objects
+                f.write(raw.decode('utf-8'))
 
     def __enter__(self):
         self.no_commit = True
