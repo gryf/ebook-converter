@@ -4,7 +4,7 @@ from threading import Thread
 
 from ebook_converter import walk, prints
 from ebook_converter.constants_old import iswindows, isosx
-from ebook_converter.constants_old import plugins, DEBUG, isworker
+from ebook_converter.constants_old import plugins, DEBUG
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
 
@@ -308,14 +308,6 @@ class FontScanner(Thread):
 
     def do_scan(self):
         self.reload_cache()
-
-        if isworker:
-            # Dont scan font files in worker processes, use whatever is
-            # cached. Font files typically dont change frequently enough to
-            # justify a rescan in a worker process.
-            self.build_families()
-            return
-
         cached_fonts = self.cached_fonts.copy()
         self.cached_fonts.clear()
         for folder in self.folders:

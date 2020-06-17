@@ -100,9 +100,10 @@ def colored(text, fg=None, bg=None, bold=False):
 class Detect(object):
 
     def __init__(self, stream):
+        __import__('pdb').set_trace()
         self.stream = stream or sys.stdout
         self.isatty = getattr(self.stream, 'isatty', lambda : False)()
-        force_ansi = 'CALIBRE_FORCE_ANSI' in os.environ
+        force_ansi = False
         if not self.isatty and force_ansi:
             self.isatty = True
         self.isansi = force_ansi or not iswindows

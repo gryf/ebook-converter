@@ -36,10 +36,6 @@ if iswindows:
     isxp = wver.major < 6
     isoldvista = wver.build < 6002
 is64bit = sys.maxsize > (1 << 32)
-isworker = any([os.getenv('CALIBRE_WORKER') or
-                os.getenv('CALIBRE_SIMPLE_WORKER')])
-if isworker:
-    os.environ.pop('CALIBRE_FORCE_ANSI', None)
 FAKE_PROTOCOL, FAKE_HOST = 'clbr', 'internal.invalid'
 VIEWER_APP_UID = 'com.calibre-ebook.viewer'
 EDITOR_APP_UID = 'com.calibre-ebook.edit-book'
