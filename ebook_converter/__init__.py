@@ -1,9 +1,10 @@
+import html
 import math
+import mimetypes
 import os
 import pkg_resources
 import re
 import sys
-import mimetypes
 
 from functools import partial
 
@@ -287,9 +288,8 @@ def entity_to_unicode(match, exceptions=[], encoding='cp1252',
         return check(html5_entities[ent])
     except KeyError:
         pass
-    from ebook_converter.polyglot.html_entities import name2codepoint
     try:
-        return check(my_unichr(name2codepoint[ent]))
+        return check(my_unichr(html.entities.name2codepoint[ent]))
     except KeyError:
         return '&'+ent+';'
 
