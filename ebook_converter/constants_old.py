@@ -5,7 +5,6 @@ import locale
 import os
 import sys
 
-from ebook_converter.polyglot.builtins import environ_item
 
 __appname__   = 'calibre'
 numeric_version = (4, 12, 0)
@@ -40,7 +39,7 @@ is64bit = sys.maxsize > (1 << 32)
 isworker = any([os.getenv('CALIBRE_WORKER') or
                 os.getenv('CALIBRE_SIMPLE_WORKER')])
 if isworker:
-    os.environ.pop(environ_item('CALIBRE_FORCE_ANSI'), None)
+    os.environ.pop('CALIBRE_FORCE_ANSI', None)
 FAKE_PROTOCOL, FAKE_HOST = 'clbr', 'internal.invalid'
 VIEWER_APP_UID = 'com.calibre-ebook.viewer'
 EDITOR_APP_UID = 'com.calibre-ebook.edit-book'

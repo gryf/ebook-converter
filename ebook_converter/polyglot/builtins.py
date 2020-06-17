@@ -20,12 +20,6 @@ def error_message(exc):
     return str(exc)
 
 
-def environ_item(x):
-    if isinstance(x, bytes):
-        x = x.decode('utf-8')
-    return x
-
-
 def exec_path(path, ctx=None):
     ctx = ctx or {}
     with open(path, 'rb') as f:

@@ -5,7 +5,6 @@ from ebook_converter.constants_old import isosx, isfrozen, filesystem_encoding
 from ebook_converter.utils.config import prefs
 from ebook_converter.ptempfile import PersistentTemporaryFile, base_dir
 from ebook_converter.utils.serialize import msgpack_dumps
-from ebook_converter.polyglot.builtins import environ_item
 from ebook_converter.polyglot.binary import as_hex_unicode
 try:
     import win32process
@@ -83,10 +82,11 @@ class Worker(object):
 
     @property
     def env(self):
+        __import__('pdb').set_trace()
         env = os.environ.copy()
-        env['CALIBRE_WORKER'] = environ_item('1')
+        env['CALIBRE_WORKER'] = '1'
         td = as_hex_unicode(msgpack_dumps(base_dir()))
-        env['CALIBRE_WORKER_TEMP_DIR'] = environ_item(td)
+        env['CALIBRE_WORKER_TEMP_DIR'] = td
         env.update(self._env)
         return env
 
@@ -149,7 +149,7 @@ class Worker(object):
         except EnvironmentError:
             # cwd no longer exists
             origwd = cwd or os.path.expanduser('~')
-        env['ORIGWD'] = environ_item(as_hex_unicode(msgpack_dumps(origwd)))
+        env['ORIGWD'] = as_hex_unicode(msgpack_dumps(origwd))
         _cwd = cwd
         if priority is None:
             priority = prefs['worker_process_priority']
