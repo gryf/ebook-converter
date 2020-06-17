@@ -2,14 +2,13 @@ import importlib
 import sys
 import zipfile
 
-from ebook_converter.constants_old import numeric_version, iswindows, isosx
+from ebook_converter.constants_old import numeric_version, isosx
 from ebook_converter.ptempfile import PersistentTemporaryFile
 
 
 platform = 'linux'
-if iswindows:
-    platform = 'windows'
-elif isosx:
+
+if isosx:
     platform = 'osx'
 
 
@@ -331,7 +330,7 @@ class MetadataReaderPlugin(Plugin):
     #: For example: ``set(['lit', 'mobi', 'prc'])``
     file_types = set()
 
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     version = numeric_version
     author = 'Kovid Goyal'
 
@@ -363,7 +362,7 @@ class MetadataWriterPlugin(Plugin):
     #: For example: ``set(['lit', 'mobi', 'prc'])``
     file_types = set()
 
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     version = numeric_version
     author = 'Kovid Goyal'
 
@@ -509,7 +508,7 @@ class CatalogPlugin(Plugin):
 
 class InterfaceActionBase(Plugin):
 
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     author = 'Kovid Goyal'
     type = 'User interface action'
     can_be_disabled = False
@@ -542,7 +541,7 @@ class PreferencesPlugin(Plugin):
     various fields of the plugin control how it is categorized in the UI.
     """
 
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     author = 'Kovid Goyal'
     type = 'Preferences'
     can_be_disabled = False
@@ -594,7 +593,7 @@ class PreferencesPlugin(Plugin):
 
 class StoreBase(Plugin):
 
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     author = 'John Schember'
     type = 'Store'
     # Information about the store. Should be in the primary language

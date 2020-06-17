@@ -8,7 +8,6 @@ import os
 import re
 import shutil
 import sys
-import time
 import unicodedata
 import urllib.parse
 import uuid
@@ -18,7 +17,6 @@ from lxml import etree
 
 from ebook_converter import constants as const
 from ebook_converter import CurrentDir, walk
-from ebook_converter.constants_old import iswindows
 from ebook_converter.customize.ui import plugin_for_input_format, plugin_for_output_format
 from ebook_converter.ebooks import escape_xpath_attr
 from ebook_converter.ebooks.chardet import xml_to_unicode
@@ -109,10 +107,7 @@ def href_to_name(href, root, base=None):
     if purl.scheme or not purl.path:
         return None
     href = oeb_base.urlunquote(purl.path)
-    if iswindows and ':' in href:
-        # path manipulations on windows fail for paths with : in them, so we
-        # assume all such paths are invalid/absolute paths.
-        return None
+
     fullpath = os.path.join(base, *href.split('/'))
     return unicodedata.normalize('NFC', abspath_to_name(fullpath, root))
 
@@ -1040,10 +1035,8 @@ class Container(ContainerBase):  # {{{
                 try:
                     os.unlink(path)
                 except EnvironmentError:
-                    if not iswindows:
-                        raise
-                    time.sleep(1)  # Wait for whatever has locked the file to release it
-                    os.unlink(path)
+                    raise
+
                 os.rename(temp, path)
         return path
 

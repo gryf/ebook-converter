@@ -3,7 +3,7 @@ from collections import defaultdict
 from threading import Thread
 
 from ebook_converter import walk, prints
-from ebook_converter.constants_old import iswindows, isosx
+from ebook_converter.constants_old import isosx
 from ebook_converter.constants_old import plugins, DEBUG
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
@@ -90,14 +90,6 @@ def fc_list():
 
 
 def font_dirs():
-    if iswindows:
-        winutil, err = plugins['winutil']
-        if err:
-            raise RuntimeError('Failed to load winutil: %s' % err)
-        try:
-            return [winutil.special_folder_path(winutil.CSIDL_FONTS)]
-        except ValueError:
-            return [r'C:\Windows\Fonts']
     if isosx:
         return [
                 '/Library/Fonts',

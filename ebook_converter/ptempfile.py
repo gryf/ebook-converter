@@ -6,8 +6,8 @@ being closed.
 """
 import tempfile, os, atexit
 
-from ebook_converter.constants_old import (__version__, __appname__, filesystem_encoding,
-        iswindows, get_windows_temp_path, isosx)
+from ebook_converter.constants_old import __version__, __appname__, \
+        filesystem_encoding, isosx
 
 
 def cleanup(path):
@@ -52,9 +52,7 @@ def determined_remove_dir(x):
 
 
 def app_prefix(prefix):
-    if iswindows:
-        return '%s_'%__appname__
-    return '%s_%s_%s'%(__appname__, __version__, prefix)
+    return '%s_%s_%s' % (__appname__, __version__, prefix)
 
 
 _osx_cache_dir = None
@@ -99,19 +97,9 @@ def base_dir():
             _base_dir = td
         else:
             base = os.environ.get('CALIBRE_TEMP_DIR', None)
-            if base is not None and iswindows:
-                base = os.getenv('CALIBRE_TEMP_DIR')
             prefix = app_prefix('tmp_')
             if base is None:
-                if iswindows:
-                    # On windows, if the TMP env var points to a path that
-                    # cannot be encoded using the mbcs encoding, then the
-                    # python 2 tempfile algorithm for getting the temporary
-                    # directory breaks. So we use the win32 api to get a
-                    # unicode temp path instead. See
-                    # https://bugs.launchpad.net/bugs/937389
-                    base = get_windows_temp_path()
-                elif isosx:
+                if isosx:
                     # Use the cache dir rather than the temp dir for temp files as Apple
                     # thinks deleting unused temp files is a good idea. See note under
                     # _CS_DARWIN_USER_TEMP_DIR here
@@ -119,7 +107,7 @@ def base_dir():
                     base = osx_cache_dir()
 
             _base_dir = tempfile.mkdtemp(prefix=prefix, dir=base)
-            atexit.register(determined_remove_dir if iswindows else remove_dir, _base_dir)
+            atexit.register(remove_dir, _base_dir)
 
         try:
             tempfile.gettempdir()

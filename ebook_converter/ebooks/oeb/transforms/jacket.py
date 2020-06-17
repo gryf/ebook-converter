@@ -9,7 +9,6 @@ from xml.sax import saxutils
 
 from ebook_converter import constants as const
 from ebook_converter.utils import date
-from ebook_converter.constants_old import iswindows
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.base import XPath, xml2text, urlnormalize
 from ebook_converter.library.comments import comments_to_html, markdown
@@ -419,7 +418,5 @@ def referenced_images(root):
         src = img.get('src')
         if src.startswith('file://'):
             path = src[7:]
-            if iswindows and path.startswith('/'):
-                path = path[1:]
             if os.path.exists(path):
                 yield img, path

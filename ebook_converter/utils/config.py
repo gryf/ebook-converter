@@ -88,9 +88,7 @@ class OptionParser(optparse.OptionParser):
                                              fg='cyan')
         usage += ('\n\nWhenever you pass arguments to %prog that have spaces '
                   'in them, enclose the arguments in quotation marks. For '
-                  'example: "{}"\n\n').format("C:\\some path with spaces"
-                                              if constants_old.iswindows
-                                              else '/some path/with spaces')
+                  'example: "{}"\n\n').format('/some path/with spaces')
         if version is None:
             version = '%%prog (%s %s)' % (constants_old.__appname__,
                                           constants.VERSION)

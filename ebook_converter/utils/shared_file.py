@@ -36,11 +36,7 @@ def find_tests():
                     eq(fname, f.name)
                 f = share_open(fname, 'rb')
                 eq(f.read(1), b'a')
-                if iswindows:
-                    os.rename(fname, fname+'.moved')
-                    os.remove(fname+'.moved')
-                else:
-                    os.remove(fname)
+                os.remove(fname)
                 eq(f.read(1), b'a')
                 f2 = share_open(fname, 'w+b')
                 f2.write(b'b' * 10 * 1024)

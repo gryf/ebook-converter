@@ -19,7 +19,7 @@ class CSV_XML(CatalogPlugin):
 
     name = 'Catalog_CSV_XML'
     description = 'CSV/XML catalog generator'
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     author = 'Greg Riker'
     version = (1, 0, 0)
     file_types = {'csv', 'xml'}

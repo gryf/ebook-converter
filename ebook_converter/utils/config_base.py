@@ -14,7 +14,6 @@ import base64
 from ebook_converter.constants_old import CONFIG_DIR_MODE
 from ebook_converter.constants_old import config_dir
 from ebook_converter.constants_old import filesystem_encoding
-from ebook_converter.constants_old import iswindows
 from ebook_converter.constants_old import preferred_encoding
 from ebook_converter.utils.date import isoformat
 from ebook_converter.utils import iso8601
@@ -79,7 +78,7 @@ def from_json(obj):
 
 def force_unicode(x):
     try:
-        return x.decode('mbcs' if iswindows else preferred_encoding)
+        return x.decode(preferred_encoding)
     except UnicodeDecodeError:
         try:
             return x.decode(filesystem_encoding)

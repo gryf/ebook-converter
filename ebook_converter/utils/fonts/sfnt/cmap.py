@@ -6,10 +6,6 @@ from ebook_converter.utils.fonts.sfnt import UnknownTable, max_power_of_two
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 # Note that the code for creating a BMP table (cmap format 4) is taken with
 # thanks from the fonttools project (BSD licensed).
 

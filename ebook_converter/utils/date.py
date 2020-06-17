@@ -3,7 +3,7 @@ import datetime
 import time
 import functools
 
-from ebook_converter.constants_old import iswindows, isosx, plugins, preferred_encoding
+from ebook_converter.constants_old import isosx, plugins, preferred_encoding
 from ebook_converter.utils.iso8601 import utc_tz, local_tz, UNDEFINED_DATE
 from ebook_converter.utils.localization import lcdata
 
@@ -13,38 +13,21 @@ _local_tz = local_tz
 
 # When parsing ambiguous dates that could be either dd-MM Or MM-dd use the
 # user's locale preferences
-if iswindows:
-    import ctypes
-    LOCALE_SSHORTDATE, LOCALE_USER_DEFAULT = 0x1f, 0
-    buf = ctypes.create_string_buffer(b'\0', 255)
-    try:
-        ctypes.windll.kernel32.GetLocaleInfoA(LOCALE_USER_DEFAULT, LOCALE_SSHORTDATE, buf, 255)
-        parse_date_day_first = buf.value.index(b'd') < buf.value.index(b'M')
-    except:
-        parse_date_day_first = False
-    del ctypes, LOCALE_SSHORTDATE, buf, LOCALE_USER_DEFAULT
-elif isosx:
-    try:
-        date_fmt = plugins['usbobserver'][0].date_format()
-        parse_date_day_first = date_fmt.index('d') < date_fmt.index('M')
-    except:
-        parse_date_day_first = False
-else:
-    try:
-        def first_index(raw, queries):
-            for q in queries:
-                try:
-                    return raw.index(q)
-                except ValueError:
-                    pass
-            return -1
+try:
+    def first_index(raw, queries):
+        for q in queries:
+            try:
+                return raw.index(q)
+            except ValueError:
+                pass
+        return -1
 
-        import locale
-        raw = locale.nl_langinfo(locale.D_FMT)
-        parse_date_day_first = first_index(raw, ('%d', '%a', '%A')) < first_index(raw, ('%m', '%b', '%B'))
-        del raw, first_index
-    except:
-        parse_date_day_first = False
+    import locale
+    raw = locale.nl_langinfo(locale.D_FMT)
+    parse_date_day_first = first_index(raw, ('%d', '%a', '%A')) < first_index(raw, ('%m', '%b', '%B'))
+    del raw, first_index
+except:
+    parse_date_day_first = False
 
 DEFAULT_DATE = datetime.datetime(2000,1,1, tzinfo=utc_tz)
 EPOCH = datetime.datetime(1970, 1, 1, tzinfo=_utc_tz)
@@ -214,15 +197,10 @@ def strftime(fmt, t=None):
         t[0] = replacement
         t = time.struct_time(t)
     ans = None
-    if iswindows:
-        if isinstance(fmt, bytes):
-            fmt = fmt.decode('mbcs', 'replace')
-        fmt = fmt.replace('%e', '%#d')
-        ans = plugins['winutil'][0].strftime(fmt, t)
-    else:
-        ans = time.strftime(fmt, t)
-        if isinstance(ans, bytes):
-            ans = ans.decode(preferred_encoding, 'replace')
+
+    ans = time.strftime(fmt, t)
+    if isinstance(ans, bytes):
+        ans = ans.decode(preferred_encoding, 'replace')
     if early_year:
         ans = ans.replace('_early year hack##', str(orig_year))
     return ans

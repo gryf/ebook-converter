@@ -20,7 +20,7 @@ class BIBTEX(CatalogPlugin):
 
     name = 'Catalog_BIBTEX'
     description = 'BIBTEX catalog generator'
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     author = 'Sengian'
     version = (1, 0, 0)
     file_types = {'bib'}

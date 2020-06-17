@@ -3,7 +3,7 @@ from struct import pack
 from io import BytesIO
 
 from ebook_converter.ebooks.oeb import base
-from ebook_converter.constants_old import iswindows, isosx
+from ebook_converter.constants_old import isosx
 from ebook_converter.ebooks.mobi.utils import (utf8_text, to_base)
 from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.ebooks.metadata import authors_to_sort_string
@@ -150,8 +150,8 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
         nrecs += 1
 
     if be_kindlegen2:
-        mv = 200 if iswindows else 202 if isosx else 201
-        vals = {204:mv, 205:2, 206:9, 207:0}
+        mv = 201
+        vals = {204: mv, 205: 2, 206: 9, 207: 0}
     elif is_periodical:
         # Pretend to be amazon's super secret periodical generator
         vals = {204:201, 205:2, 206:0, 207:101}

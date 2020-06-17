@@ -8,7 +8,7 @@ import sys
 from lxml import etree
 
 from ebook_converter import CurrentDir, xml_replace_entities, prints
-from ebook_converter.constants_old import isbsd, islinux, isosx, iswindows
+from ebook_converter.constants_old import isbsd, islinux, isosx
 from ebook_converter.ebooks import ConversionError, DRMError
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ptempfile import PersistentTemporaryFile
@@ -20,8 +20,6 @@ PDFTOHTML = 'pdftohtml'
 
 
 def popen(cmd, **kw):
-    if iswindows:
-        kw['creationflags'] = 0x08
     return subprocess.Popen(cmd, **kw)
 
 
@@ -29,11 +27,6 @@ if isosx and hasattr(sys, 'frameworks_dir'):
     base = os.path.join(os.path.dirname(sys.frameworks_dir), 'utils.app',
                         'Contents', 'MacOS')
     PDFTOHTML = os.path.join(base, PDFTOHTML)
-if iswindows and hasattr(sys, 'frozen'):
-    base = os.path.dirname(sys.executable)
-    if hasattr(sys, 'new_app_layout'):
-        base = sys.extensions_location
-    PDFTOHTML = os.path.join(base, 'pdftohtml.exe')
 if (islinux or isbsd) and getattr(sys, 'frozen', False):
     PDFTOHTML = os.path.join(sys.executables_location, 'bin', 'pdftohtml')
 

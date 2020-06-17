@@ -2,7 +2,6 @@ import os
 
 from lxml.html.builder import IMG, HR
 
-from ebook_converter.constants_old import iswindows
 from ebook_converter.ebooks.docx.names import barename
 from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.img import resize_to_fit, image_to_data
@@ -123,8 +122,6 @@ class Images(object):
     def read_image_data(self, fname, base=None):
         if fname.startswith('file://'):
             src = fname[len('file://'):]
-            if iswindows and src and src[0] == '/':
-                src = src[1:]
             if not src or not os.path.exists(src):
                 raise LinkedImageNotFound(src)
             with open(src, 'rb') as rawsrc:

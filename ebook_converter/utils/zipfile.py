@@ -340,11 +340,7 @@ class ZipInfo (object):
         self.compress_type = ZIP_STORED  # Type of compression for the file
         self.comment = b""               # Comment for each file
         self.extra = b""                 # ZIP extra data
-        if sys.platform == 'win32':
-            self.create_system = 0          # System which created ZIP archive
-        else:
-            # Assume everything else is unix-y
-            self.create_system = 3          # System which created ZIP archive
+        self.create_system = 3          # System which created ZIP archive
         self.create_version = 20        # Version which created ZIP archive
         self.extract_version = 20       # Version needed to extract archive
         self.reserved = 0               # Must be zero

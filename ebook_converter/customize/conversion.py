@@ -103,7 +103,7 @@ class InputFormatPlugin(Plugin):
 
     type = 'Conversion input'
     can_be_disabled = False
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     commit_name = None  # unique name under which options for this plugin are saved
     ui_data = None
 
@@ -241,7 +241,7 @@ class OutputFormatPlugin(Plugin):
 
     type = 'Conversion output'
     can_be_disabled = False
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     commit_name = None  # unique name under which options for this plugin are saved
     ui_data = None
 

@@ -28,7 +28,7 @@ class PML2PMLZ(FileTypePlugin):
                    'a PML file to the library.')
     version = numeric_version
     file_types = {'pml'}
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     on_import = True
 
     def run(self, pmlfile):
@@ -60,7 +60,7 @@ class TXT2TXTZ(FileTypePlugin):
                    'the archive.')
     version = numeric_version
     file_types = {'txt', 'text'}
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     on_import = True
 
     def _get_image_references(self, txt, base_dir):

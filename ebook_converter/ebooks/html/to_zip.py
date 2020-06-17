@@ -19,7 +19,7 @@ class HTML2ZIP(FileTypePlugin):
             ''')
     version = numeric_version
     file_types = {'html', 'htm', 'xhtml', 'xhtm', 'shtm', 'shtml'}
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     on_import = True
 
     def run(self, htmlfile):

@@ -44,7 +44,7 @@ class KPFExtract(FileTypePlugin):
                    'KPF files. Note this will not contain any edits made in '
                    'the Kindle Create program itself.')
     file_types = {'kpf'}
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     on_import = True
 
     def run(self, archive):
@@ -67,7 +67,7 @@ class ArchiveExtract(FileTypePlugin):
                    'RAR). Also try to autodetect if they are actually CBZ/CBR '
                    'files.')
     file_types = {'zip', 'rar'}
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     on_import = True
 
     def run(self, archive):

@@ -2,7 +2,6 @@ import os
 from collections import namedtuple
 
 from ebook_converter import prints
-from ebook_converter.constants_old import iswindows
 from ebook_converter.customize import Plugin
 
 
@@ -153,7 +152,7 @@ class DevicePlugin(Plugin):
         else:
             products = self.PRODUCT_ID if hasattr(self.PRODUCT_ID, '__len__') else [self.PRODUCT_ID]
 
-        ch = self.can_handle_windows if iswindows else self.can_handle
+        ch = self.can_handle
         for vid in vendors_on_system.intersection(vendors):
             for dev in devices_on_system:
                 cvid, pid, bcd = dev[:3]
@@ -225,23 +224,6 @@ class DevicePlugin(Plugin):
 
         """
         raise NotImplementedError()
-
-    def can_handle_windows(self, usbdevice, debug=False):
-        '''
-        Optional method to perform further checks on a device to see if this driver
-        is capable of handling it. If it is not it should return False. This method
-        is only called after the vendor, product ids and the bcd have matched, so
-        it can do some relatively time intensive checks. The default implementation
-        returns True. This method is called only on Windows. See also
-        :meth:`can_handle`.
-
-        Note that for devices based on USBMS this method by default delegates
-        to :meth:`can_handle`.  So you only need to override :meth:`can_handle`
-        in your subclass of USBMS.
-
-        :param usbdevice: A usbdevice as returned by :func:`calibre.devices.winusb.scan_usb_devices`
-        '''
-        return True
 
     def can_handle(self, device_info, debug=False):
         '''

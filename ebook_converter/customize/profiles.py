@@ -41,7 +41,7 @@ class Plugin(_Plugin):
 class InputProfile(Plugin):
 
     author = 'Kovid Goyal'
-    supported_platforms = {'windows', 'osx', 'linux'}
+    supported_platforms = {'osx', 'linux'}
     can_be_disabled = False
     type = 'Input profile'
 
@@ -239,7 +239,7 @@ input_profiles.sort(key=lambda x: x.name.lower())
 class OutputProfile(Plugin):
 
     author = 'Kovid Goyal'
-    supported_platforms = {'windows', 'osx', 'linux'}
+    supported_platforms = {'osx', 'linux'}
     can_be_disabled = False
     type = 'Output profile'
 

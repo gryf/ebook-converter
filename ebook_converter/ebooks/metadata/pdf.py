@@ -5,7 +5,6 @@ import os, subprocess, shutil, re
 from functools import partial
 
 from ebook_converter import prints
-from ebook_converter.constants_old import iswindows
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.ebooks.metadata import (
     MetaInformation, string_to_authors, check_isbn, check_doi)
@@ -18,7 +17,7 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 def get_tools():
     from ebook_converter.ebooks.pdf.pdftohtml import PDFTOHTML
     base = os.path.dirname(PDFTOHTML)
-    suffix = '.exe' if iswindows else ''
+    suffix = ''
     pdfinfo = os.path.join(base, 'pdfinfo') + suffix
     pdftoppm = os.path.join(base, 'pdftoppm') + suffix
     return pdfinfo, pdftoppm
@@ -87,9 +86,6 @@ def page_images(pdfpath, outputdir='.', first=1, last=1, image_format='jpeg', pr
     pdftoppm = get_tools()[1]
     outputdir = os.path.abspath(outputdir)
     args = {}
-    if iswindows:
-        import win32process as w
-        args['creationflags'] = w.HIGH_PRIORITY_CLASS | w.CREATE_NO_WINDOW
     try:
         subprocess.check_call([
             pdftoppm, '-cropbox', '-' + image_format, '-f', str(first),

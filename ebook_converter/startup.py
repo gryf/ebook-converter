@@ -1,12 +1,8 @@
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
-
-'''
+"""
 Perform various initialization tasks.
-'''
-
+"""
 import builtins
+import fcntl
 import locale
 import sys
 
@@ -14,7 +10,6 @@ from ebook_converter import constants_old
 
 # For backwards compat with some third party plugins
 builtins.__dict__['dynamic_property'] = lambda func: func(None)
-
 
 
 _run_once = False
@@ -36,17 +31,7 @@ if not _run_once:
                 spec = m.__spec__
             return spec
 
-
     sys.meta_path.insert(0, DeVendor())
-
-    #
-    # Platform specific modules
-    if constants_old.iswindows:
-        winutil, winutilerror = constants_old.plugins['winutil']
-        if not winutil:
-            raise RuntimeError('Failed to load the winutil plugin: %s'%winutilerror)
-        if len(sys.argv) > 1 and not isinstance(sys.argv[1], str):
-            sys.argv[1:] = winutil.argv()[1-len(sys.argv):]
 
     # Ensure that all temp files/dirs are created under a calibre tmp dir
     from ebook_converter.ptempfile import base_dir
@@ -66,20 +51,16 @@ if not _run_once:
 
     #
     # Ensure that the max number of open files is at least 1024
-    if constants_old.iswindows:
-        # See https://msdn.microsoft.com/en-us/library/6e3b887c.aspx
-        if hasattr(winutil, 'setmaxstdio'):
-            winutil.setmaxstdio(max(1024, winutil.getmaxstdio()))
-    else:
-        import resource
-        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
-        if soft < 1024:
-            try:
-                resource.setrlimit(resource.RLIMIT_NOFILE, (min(1024, hard), hard))
-            except Exception:
-                if constants_old.DEBUG:
-                    import traceback
-                    traceback.print_exc()
+
+    import resource
+    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    if soft < 1024:
+        try:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (min(1024, hard), hard))
+        except Exception:
+            if constants_old.DEBUG:
+                import traceback
+                traceback.print_exc()
 
     #
     # Setup resources
@@ -152,18 +133,9 @@ def test_lopen():
     n = 'f\xe4llen'
     print('testing open()')
 
-    if constants_old.iswindows:
-        import msvcrt, win32api
-
-        def assert_not_inheritable(f):
-            if win32api.GetHandleInformation(msvcrt.get_osfhandle(f.fileno())) & 0b1:
-                raise SystemExit('File handle is inheritable!')
-    else:
-        import fcntl
-
-        def assert_not_inheritable(f):
-            if not fcntl.fcntl(f, fcntl.F_GETFD) & fcntl.FD_CLOEXEC:
-                raise SystemExit('File handle is inheritable!')
+    def assert_not_inheritable(f):
+        if not fcntl.fcntl(f, fcntl.F_GETFD) & fcntl.FD_CLOEXEC:
+            raise SystemExit('File handle is inheritable!')
 
     def copen(*args):
         ans = open(*args)

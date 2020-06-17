@@ -16,18 +16,16 @@ except EnvironmentError:
 from ebook_converter import constants_old
 from ebook_converter.constants_old import islinux, isfrozen, \
     isbsd, __appname__, __version__, __author__, \
-    win32event, win32api, winerror, fcntl, \
     config_dir
 from ebook_converter.startup import winutil, winutilerror
 from ebook_converter.utils.icu import safe_chr
-from ebook_converter.utils.terminal import Detect
 
 
 if False:
     # Prevent pyflakes from complaining
     winutil, winutilerror, __appname__, islinux, __version__
-    fcntl, win32event, isfrozen, __author__
-    winerror, win32api, isbsd, config_dir
+    isfrozen, __author__
+    isbsd, config_dir
 
 
 def init_mimetypes():

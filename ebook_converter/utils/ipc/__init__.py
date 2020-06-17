@@ -6,15 +6,9 @@ import threading
 
 from ebook_converter import force_unicode
 from ebook_converter.constants_old import filesystem_encoding
-from ebook_converter.constants_old import get_windows_username
 from ebook_converter.constants_old import islinux
-from ebook_converter.constants_old import iswindows
 from ebook_converter.utils.filenames import ascii_filename
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 VADDRESS = None
 
@@ -31,34 +25,24 @@ def eintr_retry_call(func, *args, **kwargs):
 
 @functools.lru_cache()
 def socket_address(which):
-    if iswindows:
-        ans = r'\\.\pipe\Calibre' + which
-        try:
-            user = get_windows_username()
-        except Exception:
-            user = None
-        if user:
-            user = ascii_filename(user).replace(' ', '_')
-            if user:
-                ans += '-' + user[:100] + 'x'
+
+    user = force_unicode(os.environ.get('USER') or os.path.basename(os.path.expanduser('~')), filesystem_encoding)
+    sock_name = '{}-calibre-{}.socket'.format(ascii_filename(user).replace(' ', '_'), which)
+    if islinux:
+        ans = '\0' + sock_name
     else:
-        user = force_unicode(os.environ.get('USER') or os.path.basename(os.path.expanduser('~')), filesystem_encoding)
-        sock_name = '{}-calibre-{}.socket'.format(ascii_filename(user).replace(' ', '_'), which)
-        if islinux:
-            ans = '\0' + sock_name
-        else:
-            from tempfile import gettempdir
-            tmp = force_unicode(gettempdir(), filesystem_encoding)
-            ans = os.path.join(tmp, sock_name)
+        from tempfile import gettempdir
+        tmp = force_unicode(gettempdir(), filesystem_encoding)
+        ans = os.path.join(tmp, sock_name)
     return ans
 
 
 def gui_socket_address():
-    return socket_address('GUI' if iswindows else 'gui')
+    return socket_address('gui')
 
 
 def viewer_socket_address():
-    return socket_address('Viewer' if iswindows else 'viewer')
+    return socket_address('viewer')
 
 
 class RC(threading.Thread):

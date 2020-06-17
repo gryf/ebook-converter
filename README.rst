@@ -38,6 +38,10 @@ modifications from third parties (external modules copied into Calibre project
 for instance), and make a huge cleanup. I'm not sure if I find time and
 strength for doing it completely, but I'll try.
 
+Windows is not currently supported, because of the original spaghetti code.
+This may change in the future, after cleanup of mentioned pasta would be
+completed.
+
 
 Input formats
 ~~~~~~~~~~~~~

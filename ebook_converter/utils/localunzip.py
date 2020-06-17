@@ -10,10 +10,6 @@ from collections import namedtuple, OrderedDict
 from tempfile import SpooledTemporaryFile
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 HEADER_SIG = 0x04034b50
 HEADER_BYTE_SIG = pack(b'<L', HEADER_SIG)
 local_header_fmt = b'<L5HL2L2H'
@@ -27,18 +23,8 @@ LocalHeader = namedtuple('LocalHeader',
         'filename extra')
 
 
-if hasattr(sys, 'getwindowsversion'):
-    windows_reserved_filenames = (
-        'CON', 'PRN', 'AUX', 'CLOCK$', 'NUL' 'COM0', 'COM1', 'COM2', 'COM3',
-        'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9' 'LPT0', 'LPT1', 'LPT2',
-        'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9')
-
-    def is_reserved_filename(x):
-        base = x.partition('.')[0].upper()
-        return base in windows_reserved_filenames
-else:
-    def is_reserved_filename(x):
-        return False
+def is_reserved_filename(x):
+    return False
 
 
 def decode_arcname(name):

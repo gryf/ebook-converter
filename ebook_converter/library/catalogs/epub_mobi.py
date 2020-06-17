@@ -19,7 +19,7 @@ class EPUB_MOBI(CatalogPlugin):
 
     name = 'Catalog_EPUB_MOBI'
     description = 'AZW3/EPUB/MOBI catalog generator'
-    supported_platforms = ['windows', 'osx', 'linux']
+    supported_platforms = ['osx', 'linux']
     minimum_calibre_version = (0, 7, 40)
     author = 'Greg Riker'
     version = (1, 0, 0)

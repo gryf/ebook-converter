@@ -18,7 +18,6 @@ Various run time constants.
 
 
 _plat = sys.platform.lower()
-iswindows = 'win32' in _plat or 'win64' in _plat
 isosx     = 'darwin' in _plat
 isnewosx  = isosx and getattr(sys, 'new_app_bundle', False)
 isfreebsd = 'freebsd' in _plat
@@ -26,15 +25,11 @@ isnetbsd = 'netbsd' in _plat
 isdragonflybsd = 'dragonfly' in _plat
 isbsd = isfreebsd or isnetbsd or isdragonflybsd
 ishaiku = 'haiku1' in _plat
-islinux   = not(iswindows or isosx or isbsd or ishaiku)
+islinux   = True
 isfrozen  = hasattr(sys, 'frozen')
 isunix = isosx or islinux or ishaiku
 isportable = os.getenv('CALIBRE_PORTABLE_BUILD') is not None
 isxp = isoldvista = False
-if iswindows:
-    wver = sys.getwindowsversion()
-    isxp = wver.major < 6
-    isoldvista = wver.build < 6002
 is64bit = sys.maxsize > (1 << 32)
 FAKE_PROTOCOL, FAKE_HOST = 'clbr', 'internal.invalid'
 VIEWER_APP_UID = 'com.calibre-ebook.viewer'
@@ -48,10 +43,7 @@ try:
 except:
     preferred_encoding = 'utf-8'
 
-win32event = importlib.import_module('win32event') if iswindows else None
-winerror   = importlib.import_module('winerror') if iswindows else None
-win32api   = importlib.import_module('win32api') if iswindows else None
-fcntl      = None if iswindows else importlib.import_module('fcntl')
+fcntl = importlib.import_module('fcntl')
 dark_link_color = '#6cb4ee'
 
 _osx_ver = None
@@ -116,23 +108,14 @@ def _get_cache_dir():
             if err.errno == errno.EEXIST:
                 return ans
 
-    if iswindows:
-        w = plugins['winutil'][0]
+    candidate = os.getenv('XDG_CACHE_HOME', '~/.cache')
+    candidate = os.path.join(os.path.expanduser(candidate),
+                                __appname__)
+    if isinstance(candidate, bytes):
         try:
-            candidate = os.path.join(w.special_folder_path(w.CSIDL_LOCAL_APPDATA), '%s-cache'%__appname__)
+            candidate = candidate.decode(filesystem_encoding)
         except ValueError:
-            return confcache
-    elif isosx:
-        candidate = os.path.join(os.path.expanduser('~/Library/Caches'), __appname__)
-    else:
-        candidate = os.getenv('XDG_CACHE_HOME', '~/.cache')
-        candidate = os.path.join(os.path.expanduser(candidate),
-                                    __appname__)
-        if isinstance(candidate, bytes):
-            try:
-                candidate = candidate.decode(filesystem_encoding)
-            except ValueError:
-                candidate = confcache
+            candidate = confcache
     try:
         os.makedirs(candidate)
     except EnvironmentError as err:
@@ -200,39 +183,27 @@ CONFIG_DIR_MODE = 0o700
 cconfd = os.getenv('CALIBRE_CONFIG_DIRECTORY')
 if cconfd is not None:
     config_dir = os.path.abspath(cconfd)
-elif iswindows:
-    if plugins['winutil'][0] is None:
-        raise Exception(plugins['winutil'][1])
-    try:
-        config_dir = plugins['winutil'][0].special_folder_path(plugins['winutil'][0].CSIDL_APPDATA)
-    except ValueError:
-        config_dir = None
-    if not config_dir or not os.access(config_dir, os.W_OK|os.X_OK):
-        config_dir = os.path.expanduser('~')
-    config_dir = os.path.join(config_dir, 'calibre')
-elif isosx:
-    config_dir = os.path.expanduser('~/Library/Preferences/calibre')
-else:
-    bdir = os.path.abspath(os.path.expanduser(os.getenv('XDG_CONFIG_HOME', '~/.config')))
-    config_dir = os.path.join(bdir, 'calibre')
-    try:
-        os.makedirs(config_dir, mode=CONFIG_DIR_MODE)
-    except:
-        pass
-    if not os.path.exists(config_dir) or \
-            not os.access(config_dir, os.W_OK) or not \
-            os.access(config_dir, os.X_OK):
-        print('No write acces to', config_dir, 'using a temporary dir instead')
-        import tempfile, atexit
-        config_dir = tempfile.mkdtemp(prefix='calibre-config-')
 
-        def cleanup_cdir():
-            try:
-                import shutil
-                shutil.rmtree(config_dir)
-            except:
-                pass
-        atexit.register(cleanup_cdir)
+bdir = os.path.abspath(os.path.expanduser(os.getenv('XDG_CONFIG_HOME', '~/.config')))
+config_dir = os.path.join(bdir, 'calibre')
+try:
+    os.makedirs(config_dir, mode=CONFIG_DIR_MODE)
+except:
+    pass
+if not os.path.exists(config_dir) or \
+        not os.access(config_dir, os.W_OK) or not \
+        os.access(config_dir, os.X_OK):
+    print('No write acces to', config_dir, 'using a temporary dir instead')
+    import tempfile, atexit
+    config_dir = tempfile.mkdtemp(prefix='calibre-config-')
+
+    def cleanup_cdir():
+        try:
+            import shutil
+            shutil.rmtree(config_dir)
+        except:
+            pass
+    atexit.register(cleanup_cdir)
 # }}}
 
 
@@ -251,8 +222,6 @@ def get_version():
             v = v[:-2]
     if is_running_from_develop:
         v += '*'
-    if iswindows and is64bit:
-        v += ' [64bit]'
 
     return v
 
@@ -261,33 +230,3 @@ def get_portable_base():
     'Return path to the directory that contains calibre-portable.exe or None'
     if isportable:
         return os.path.dirname(os.path.dirname(os.getenv('CALIBRE_PORTABLE_BUILD')))
-
-
-def get_windows_username():
-    '''
-    Return the user name of the currently logged in user as a unicode string.
-    Note that usernames on windows are case insensitive, the case of the value
-    returned depends on what the user typed into the login box at login time.
-    '''
-    username = plugins['winutil'][0].username
-    return username()
-
-
-def get_windows_temp_path():
-    temp_path = plugins['winutil'][0].temp_path
-    return temp_path()
-
-
-def get_windows_user_locale_name():
-    locale_name = plugins['winutil'][0].locale_name
-    return locale_name()
-
-
-def get_windows_number_formats():
-    ans = getattr(get_windows_number_formats, 'ans', None)
-    if ans is None:
-        localeconv = plugins['winutil'][0].localeconv
-        d = localeconv()
-        thousands_sep, decimal_point = d['thousands_sep'], d['decimal_point']
-        ans = get_windows_number_formats.ans = thousands_sep, decimal_point
-    return ans
