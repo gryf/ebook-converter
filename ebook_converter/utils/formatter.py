@@ -8,12 +8,6 @@ import re, string, traceback, numbers
 from ebook_converter import prints
 from ebook_converter.constants_old import DEBUG
 from ebook_converter.utils.formatter_functions import formatter_functions
-from ebook_converter.polyglot.builtins import error_message
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 
 class _Parser(object):

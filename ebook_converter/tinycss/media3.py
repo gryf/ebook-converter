@@ -1,10 +1,5 @@
 from ebook_converter.tinycss.css21 import CSS21Parser
 from ebook_converter.tinycss.parsing import remove_whitespace, split_on_comma, ParseError
-from ebook_converter.polyglot.builtins import error_message
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 class MediaQuery(object):
@@ -96,7 +91,7 @@ class CSSMedia3Parser(CSS21Parser):
 
                     expressions.append((media_feature, expr))
             except MalformedExpression as err:
-                errors.append(ParseError(err.tok, error_message(err)))
+                errors.append(ParseError(err.tok, str(err)))
                 media_type, negated, expressions = 'all', True, ()
             queries.append(MediaQuery(media_type or 'all', expressions=tuple(expressions), negated=negated))
 
