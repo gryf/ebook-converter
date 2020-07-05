@@ -380,7 +380,7 @@ class TemplateFormatter(string.Formatter):
                 traceback.print_exc()
                 if column_name:
                     prints('Error evaluating column named:', column_name)
-            ans = error_value + ' ' + error_message(e)
+            ans = error_value + ' ' + str(e)
         return ans
 
 
