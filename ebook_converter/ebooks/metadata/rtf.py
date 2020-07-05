@@ -6,11 +6,10 @@ import re
 
 from ebook_converter import force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation
-from ebook_converter.polyglot.builtins import int_to_byte
 
-title_pat    = re.compile(br'\{\\info.*?\{\\title(.*?)(?<!\\)\}', re.DOTALL)
-author_pat   = re.compile(br'\{\\info.*?\{\\author(.*?)(?<!\\)\}', re.DOTALL)
-comment_pat  = re.compile(br'\{\\info.*?\{\\subject(.*?)(?<!\\)\}', re.DOTALL)
+title_pat = re.compile(br'\{\\info.*?\{\\title(.*?)(?<!\\)\}', re.DOTALL)
+author_pat = re.compile(br'\{\\info.*?\{\\author(.*?)(?<!\\)\}', re.DOTALL)
+comment_pat = re.compile(br'\{\\info.*?\{\\subject(.*?)(?<!\\)\}', re.DOTALL)
 tags_pat = re.compile(br'\{\\info.*?\{\\category(.*?)(?<!\\)\}', re.DOTALL)
 publisher_pat = re.compile(br'\{\\info.*?\{\\manager(.*?)(?<!\\)\}', re.DOTALL)
 
@@ -76,7 +75,8 @@ def detect_codepage(stream):
 def encode(unistr):
     if not isinstance(unistr, str):
         unistr = force_unicode(unistr)
-    return ''.join(c if ord(c) < 128 else '\\u{}?'.format(ord(c)) for c in unistr)
+    return ''.join(c if ord(c) < 128 else
+                   '\\u{}?'.format(ord(c)) for c in unistr)
 
 
 def decode(raw, codec):
@@ -84,7 +84,7 @@ def decode(raw, codec):
 
     def codepage(match):
         try:
-            return int_to_byte(int(match.group(1), 16)).decode(codec)
+            return bytes((int(match.group(1), 16),)).decode(codec)
         except ValueError:
             return '?'
 
@@ -153,28 +153,28 @@ def create_metadata(stream, options):
     md = [r'{\info']
     if options.title:
         title = encode(options.title)
-        md.append(r'{\title %s}'%(title,))
+        md.append(r'{\title %s}' % title)
     if options.authors:
         au = options.authors
         if not isinstance(au, (str, bytes)):
             au = ', '.join(au)
         author = encode(au)
-        md.append(r'{\author %s}'%(author,))
+        md.append(r'{\author %s}' % author)
     comp = options.comment if hasattr(options, 'comment') else options.comments
     if comp:
         comment = encode(comp)
-        md.append(r'{\subject %s}'%(comment,))
+        md.append(r'{\subject %s}' % comment)
     if options.publisher:
         publisher = encode(options.publisher)
-        md.append(r'{\manager %s}'%(publisher,))
+        md.append(r'{\manager %s}' % publisher)
     if options.tags:
         tags = u', '.join(options.tags)
         tags = encode(tags)
-        md.append(r'{\category %s}'%(tags,))
+        md.append(r'{\category %s}' % tags)
     if len(md) > 1:
         md.append('}')
         stream.seek(0)
-        src   = stream.read()
+        src = stream.read()
         ans = src[:6] + ''.join(md).encode('ascii') + src[6:]
         stream.seek(0)
         stream.write(ans)
@@ -183,7 +183,8 @@ def create_metadata(stream, options):
 def set_metadata(stream, options):
     '''
     Modify/add RTF metadata in stream
-    @param options: Object with metadata attributes title, author, comment, category
+    @param options: Object with metadata attributes title, author, comment,
+                    category
     '''
     def add_metadata_item(src, name, val):
         index = src.rindex('}')

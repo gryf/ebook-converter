@@ -32,9 +32,5 @@ def cmp(a, b):
     return (a > b) - (a < b)
 
 
-def int_to_byte(x):
-    return bytes((x,))
-
-
 def reload(module):
     return importlib.reload(module)
