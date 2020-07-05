@@ -2,11 +2,13 @@ import hashlib
 import itertools
 import os
 import re
+import posixpath
 import traceback
 import uuid
 
 from lxml import etree
 
+from ebook_converter import constants as const
 from ebook_converter.ebooks.metadata import opf2 as opf_meta
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.customize.conversion import InputFormatPlugin
@@ -264,6 +266,8 @@ class EPUBInput(InputFormatPlugin):
         from ebook_converter.utils.zipfile import ZipFile
         from ebook_converter import walk
         from ebook_converter.ebooks import DRMError
+
+        _path_or_stream = getattr(stream, 'name', 'stream')
         try:
             zf = ZipFile(stream)
             zf.extractall(os.getcwd())
@@ -281,34 +285,30 @@ class EPUBInput(InputFormatPlugin):
                         not os.path.basename(f).startswith('.'):
                     opf = os.path.abspath(f)
                     break
-        path = getattr(stream, 'name', 'stream')
 
         if opf is None:
             raise ValueError('%s is not a valid EPUB file (could not find '
-                             'opf)' % path)
+                             'opf)' % _path_or_stream)
 
         opf = os.path.relpath(opf, os.getcwd())
-        # parts = os.path.split(opf)
+        parts = os.path.split(opf)
         opf = opf_meta.OPF(opf, os.path.dirname(os.path.abspath(opf)))
 
         self._encrypted_font_uris = []
         if os.path.exists(encfile):
             if not self.process_encryption(encfile, opf, log):
-                raise DRMError(os.path.basename(path))
+                raise DRMError(os.path.basename(_path_or_stream))
         self.encrypted_fonts = self._encrypted_font_uris
 
-        # XXX(gryf): this code would fail pretty ugly, thus, this part was
-        # never used.
-        # if len(parts) > 1 and parts[0]:
-        #    delta = '/'.join(parts[:-1])+'/'
+        # NOTE(gryf): check if opf is nested on the directory(ies), if so,
+        # update the links for guide and manifest.
+        if len(parts) > 1 and parts[0]:
+            path = os.path.join(parts[0])
 
-        #    def normpath(x):
-        #        return posixpath.normpath(delta + elem.get('href'))
-
-        #    for elem in opf.itermanifest():
-        #        elem.set('href', normpath(elem.get('href')))
-        #    for elem in opf.iterguide():
-        #        elem.set('href', normpath(elem.get('href')))
+            for elem in opf.itermanifest():
+                elem.set('href', os.path.join(path, elem.get('href')))
+            for elem in opf.iterguide():
+                elem.set('href', os.path.join(path, elem.get('href')))
 
         if opf.package_version >= 3.0:
             f = self.rationalize_cover3
@@ -366,8 +366,8 @@ class EPUBInput(InputFormatPlugin):
         from lxml import etree
         from ebook_converter.ebooks.chardet import xml_to_unicode
         from ebook_converter.ebooks.oeb.polish.parsing import parse
-        from ebook_converter.ebooks.oeb.base import EPUB_NS, XHTML, NCX_MIME, \
-            NCX, urlnormalize, urlunquote, serialize
+        from ebook_converter.ebooks.oeb.base import \
+            serialize
         from ebook_converter.ebooks.oeb.polish.toc import first_child
         from tempfile import NamedTemporaryFile
         with open(nav_path, 'rb') as f:
@@ -379,12 +379,13 @@ class EPUBInput(InputFormatPlugin):
                                'ncx/" version="2005-1" xml:lang="eng">'
                                '<navMap/></ncx>')
         navmap = ncx[0]
-        et = '{%s}type' % EPUB_NS
+        et = '{%s}type' % const.EPUB_NS
         bn = os.path.basename(nav_path)
 
         def add_from_li(li, parent):
             href = text = None
-            for x in li.iterchildren(XHTML('a'), XHTML('span')):
+            for x in li.iterchildren(base.tag('xhtml', 'a'),
+                                     base.tag('xhtml', 'span')):
                 text = etree.tostring(x, method='text', encoding='unicode',
                                       with_tail=False).strip() or ' '.join(
                             x.xpath('descendant-or-self::*/@title')).strip()
@@ -393,25 +394,26 @@ class EPUBInput(InputFormatPlugin):
                     if href.startswith('#'):
                         href = bn + href
                 break
-            np = parent.makeelement(NCX('navPoint'))
+            np = parent.makeelement(base.tag('ncx', 'navPoint'))
             parent.append(np)
-            np.append(np.makeelement(NCX('navLabel')))
-            np[0].append(np.makeelement(NCX('text')))
+            np.append(np.makeelement(base.tag('ncx', 'navLabel')))
+            np[0].append(np.makeelement(base.tag('ncx', 'text')))
             np[0][0].text = text
             if href:
-                np.append(np.makeelement(NCX('content'), attrib={'src': href}))
+                np.append(np.makeelement(base.tag('ncx', 'content'),
+                                         attrib={'src': href}))
             return np
 
         def process_nav_node(node, toc_parent):
-            for li in node.iterchildren(XHTML('li')):
+            for li in node.iterchildren(base.tag('xhtml', 'li')):
                 child = add_from_li(li, toc_parent)
-                ol = first_child(li, XHTML('ol'))
+                ol = first_child(li, base.tag('xhtml', 'ol'))
                 if child is not None and ol is not None:
                     process_nav_node(ol, child)
 
-        for nav in root.iterdescendants(XHTML('nav')):
+        for nav in root.iterdescendants(base.tag('xhtml', 'nav')):
             if nav.get(et) == 'toc':
-                ol = first_child(nav, XHTML('ol'))
+                ol = first_child(nav, base.tag('xhtml', 'ol'))
                 if ol is not None:
                     process_nav_node(ol, navmap)
                     break
@@ -422,28 +424,29 @@ class EPUBInput(InputFormatPlugin):
                                 delete=False) as f:
             f.write(etree.tostring(ncx, encoding='utf-8'))
         ncx_href = os.path.relpath(f.name, os.getcwd()).replace(os.sep, '/')
-        ncx_id = opf.create_manifest_item(ncx_href, NCX_MIME,
+        ncx_id = opf.create_manifest_item(ncx_href, base.NCX_MIME,
                                           append=True).get('id')
         for spine in opf.root.xpath('//*[local-name()="spine"]'):
             spine.set('toc', ncx_id)
         url = os.path.relpath(nav_path).replace(os.sep, '/')
-        opts.epub3_nav_href = urlnormalize(url)
+        opts.epub3_nav_href = base.urlnormalize(url)
         opts.epub3_nav_parsed = root
         if getattr(self, 'removed_cover', None):
             changed = False
             base_path = os.path.dirname(nav_path)
             for elem in root.xpath('//*[@href]'):
                 href, frag = elem.get('href').partition('#')[::2]
-                link_path = os.path.relpath(os.path.join(base_path,
-                                                         urlunquote(href)),
-                                            base_path)
-                abs_href = urlnormalize(link_path)
+                link_path = (os.path
+                             .relpath(os.path
+                                      .join(base_path, base.urlunquote(href)),
+                                      base_path))
+                abs_href = base.urlnormalize(link_path)
                 if abs_href == self.removed_cover:
                     changed = True
                     elem.set('data-calibre-removed-titlepage', '1')
             if changed:
                 with open(nav_path, 'wb') as f:
-                    f.write(serialize(root, 'application/xhtml+xml'))
+                    f.write(base.serialize(root, 'application/xhtml+xml'))
 
     def postprocess_book(self, oeb, opts, log):
         rc = getattr(self, 'removed_cover', None)
