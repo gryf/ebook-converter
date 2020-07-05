@@ -42,27 +42,39 @@ Windows is not currently supported, because of the original spaghetti code.
 This may change in the future, after cleanup of mentioned pasta would be
 completed.
 
+So called `Kindle periodical` format is not supported, since all we do care are
+local files. If there would be downloaded periodical thing (using Calibre for
+example), it would be treated as common book.
+
 
 Input formats
 ~~~~~~~~~~~~~
 
 Currently, I've tested following input formats:
 
-- docx
-- epub
-- LibreOffice odt
-- txt
-- Palm pdb
-- rtf
-- mobi
-- fb2
-- html
-- pdf
-- lrf
+- Microsoft Word 2007 and up (``docx``)
+- EPUB, both v2 and v3 (``epub``)
+- LibreOffice (``odt``)
+- Pure text files (``txt``)
+- Several PalmOS (``pdb``) readers support:
+
+  - Plucker
+  - Adobe Reader for PalmOS
+  - eReader various formats
+  - Weasel Reader
+  - Haodoo Reader
+
+- Rich Text Format (``rtf``)
+- Mobipocket (``mobi``)
+- Kindle (``azw3``, ``azw4``, …)
+- FictionBook (``fb2``)
+- Hyper Text Markup Language (``html``)
+- Adobe Portable Document Format (``pdf``)
+- Broadband eBooks (shortened as BBeB) (``lrf``)
 
 Note, that old Microsoft doc format is not supported, although old documents
-can be fairly easy converted using text processors programs, lik Word or
-LibreOffice to supported formats.
+can be fairly easy converted using text processors programs, like Microsoft
+Word or LibreOffice to supported formats.
 
 
 Output formats
@@ -70,12 +82,12 @@ Output formats
 
 Currently, following formats are supported:
 
-- lrf
-- epub
-- mobi
-- docx
-- htmlz (zipped HTML file with additional assets, like images)
-- txt
+- Broadband eBooks (shortened as BBeB) (``lrf``)
+- EPUB v2 (``epub``)
+- Mobipocket (``mobi``)
+- Microsoft Word (``docx``)
+- zipped HTML file with additional assets, like images (``htmlz``)
+- Text (``txt``)
 
 
 Installation
@@ -115,3 +127,4 @@ for details.
 .. _Calibre project: https://calibre-ebook.com/
 .. _pypi: https://pypi.python.org
 .. _Liberation fonts: https://github.com/liberationfonts/liberation-fonts
+.. _Kindle periodical: https://sellercentral.amazon.com/gp/help/external/help.html?itemID=202047960&language=en-US
