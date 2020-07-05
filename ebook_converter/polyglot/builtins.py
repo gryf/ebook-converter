@@ -11,7 +11,3 @@ def as_bytes(x, encoding='utf-8'):
     if isinstance(x, memoryview):
         return x.tobytes()
     return str(x).encode(encoding)
-
-
-def cmp(a, b):
-    return (a > b) - (a < b)
