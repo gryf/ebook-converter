@@ -1596,32 +1596,6 @@ class BuiltinAuthorSorts(BuiltinFormatterFunction):
         return val_sep.join(n for n in names)
 
 
-_formatter_builtins = [
-    BuiltinAdd(), BuiltinAnd(), BuiltinApproximateFormats(), BuiltinAssign(),
-    BuiltinAuthorLinks(), BuiltinAuthorSorts(), BuiltinBooksize(),
-    BuiltinCapitalize(), BuiltinCmp(), BuiltinContains(), BuiltinCount(),
-    BuiltinCurrentLibraryName(), BuiltinCurrentLibraryPath(),
-    BuiltinDaysBetween(), BuiltinDivide(), BuiltinEval(), BuiltinFirstNonEmpty(),
-    BuiltinField(), BuiltinFinishFormatting(), BuiltinFirstMatchingCmp(),
-    BuiltinFormatDate(), BuiltinFormatNumber(), BuiltinFormatsModtimes(),
-    BuiltinFormatsPaths(), BuiltinFormatsSizes(),
-    BuiltinHasCover(), BuiltinHumanReadable(), BuiltinIdentifierInList(),
-    BuiltinIfempty(), BuiltinLanguageCodes(), BuiltinLanguageStrings(),
-    BuiltinInList(), BuiltinListDifference(), BuiltinListEquals(),
-    BuiltinListIntersection(), BuiltinListitem(), BuiltinListRe(),
-    BuiltinListReGroup(), BuiltinListSort(), BuiltinListUnion(), BuiltinLookup(),
-    BuiltinLowercase(), BuiltinMultiply(), BuiltinNot(), BuiltinOndevice(),
-    BuiltinOr(), BuiltinPrint(), BuiltinRawField(), BuiltinRawList(),
-    BuiltinRe(), BuiltinReGroup(), BuiltinSelect(), BuiltinSeriesSort(),
-    BuiltinShorten(), BuiltinStrcat(), BuiltinStrcatMax(),
-    BuiltinStrcmp(), BuiltinStrInList(), BuiltinStrlen(), BuiltinSubitems(),
-    BuiltinSublist(),BuiltinSubstr(), BuiltinSubtract(), BuiltinSwapAroundComma(),
-    BuiltinSwitch(), BuiltinTemplate(), BuiltinTest(), BuiltinTitlecase(),
-    BuiltinToday(), BuiltinTransliterate(), BuiltinUppercase(),
-    BuiltinUserCategories(), BuiltinVirtualLibraries()
-]
-
-
 class FormatterUserFunction(FormatterFunction):
 
     def __init__(self, name, doc, arg_count, program_text):
