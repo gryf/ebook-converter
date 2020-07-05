@@ -12,10 +12,11 @@ from lxml import etree
 from ebook_converter import constants as const
 from ebook_converter import prepare_string_for_xml
 from ebook_converter.constants_old import __appname__, __version__
-from ebook_converter.utils.localization import lang_as_iso639_1
-from ebook_converter.utils.img import save_cover_data_to
-from ebook_converter.ebooks.oeb.base import urlnormalize
+from ebook_converter.ebooks.oeb import base
+from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.polyglot.binary import as_base64_unicode
+from ebook_converter.utils.img import save_cover_data_to
+from ebook_converter.utils.localization import lang_as_iso639_1
 
 
 __license__ = 'GPL 3'
@@ -114,7 +115,6 @@ class FB2MLizer(object):
         return text
 
     def fb2_header(self):
-        from ebook_converter.ebooks.oeb.base import OPF
         metadata = {}
         metadata['title'] = self.oeb_book.metadata.title[0].value
         metadata['appname'] = __appname__
@@ -179,7 +179,7 @@ class FB2MLizer(object):
         year = publisher = isbn = ''
         identifiers = self.oeb_book.metadata['identifier']
         for x in identifiers:
-            if (x.get(OPF('scheme'), None).lower() == 'uuid' or
+            if (x.get(base.tag('opf', 'scheme'), None).lower() == 'uuid' or
                     str(x).startswith('urn:uuid:')):
                 metadata['id'] = str(x).split(':')[-1]
                 break
@@ -204,7 +204,7 @@ class FB2MLizer(object):
                          prepare_string_for_xml(publisher.value))
 
         for x in identifiers:
-            if x.get(OPF('scheme'), None).lower() == 'isbn':
+            if x.get(base.tag('opf', 'scheme'), None).lower() == 'isbn':
                 isbn = '<isbn>%s</isbn>' % prepare_string_for_xml(x.value)
 
         metadata['year'] = year
@@ -259,8 +259,6 @@ class FB2MLizer(object):
         return '</FictionBook>'
 
     def get_cover(self):
-        from ebook_converter.ebooks.oeb.base import OEB_RASTER_IMAGES
-
         cover_href = None
 
         # Get the raster cover if it's available.
@@ -269,7 +267,7 @@ class FB2MLizer(object):
                 self.oeb_book.manifest.ids):
             id = str(self.oeb_book.metadata.cover[0])
             cover_item = self.oeb_book.manifest.ids[id]
-            if cover_item.media_type in OEB_RASTER_IMAGES:
+            if cover_item.media_type in base.OEB_RASTER_IMAGES:
                 cover_href = cover_item.href
         else:
             # Figure out if we have a title page or a cover page
@@ -297,7 +295,6 @@ class FB2MLizer(object):
         return ''
 
     def get_text(self):
-        from ebook_converter.ebooks.oeb.base import XHTML
         from ebook_converter.ebooks.oeb.stylizer import Stylizer
         text = ['<body>']
 
@@ -320,8 +317,8 @@ class FB2MLizer(object):
                 page_section_open = True
                 self.section_level += 1
 
-            text += self.dump_text(item.data.find(XHTML('body')), stylizer,
-                                   item)
+            text += self.dump_text(item.data.find(base.tag('xhtml', 'body')),
+                                   stylizer, item)
 
             if page_section_open:
                 text.append('</section>')
@@ -340,15 +337,13 @@ class FB2MLizer(object):
         This function uses the self.image_hrefs dictionary mapping. It is
         populated by the dump_text function.
         """
-        from ebook_converter.ebooks.oeb.base import OEB_RASTER_IMAGES
-
         images = []
         for item in self.oeb_book.manifest:
             # Don't write the image if it's not referenced in the document's
             # text.
             if item.href not in self.image_hrefs:
                 continue
-            if item.media_type in OEB_RASTER_IMAGES:
+            if item.media_type in base.OEB_RASTER_IMAGES:
                 try:
                     if item.media_type not in ('image/jpeg', 'image/png'):
                         imdata = save_cover_data_to(item.data,
@@ -423,7 +418,7 @@ class FB2MLizer(object):
         return s_out, s_tags
 
     def dump_text(self, elem_tree, stylizer, page, tag_stack=[]):
-        '''
+        """
         This function is intended to be used in a recursive manner. dump_text
         will run though all elements in the elem_tree and call itself on each
         element.
@@ -437,18 +432,17 @@ class FB2MLizer(object):
         @param tag_stack: List of open FB2 tags to take into account.
 
         @return: List of string representing the XHTML converted to FB2 markup.
-        '''
-        from ebook_converter.ebooks.oeb.base import barename
-        from ebook_converter.ebooks.oeb.base import namespace
+        """
         elem = elem_tree
 
         # Ensure what we are converting is not a string and that the fist tag
         # is part of the XHTML namespace.
         if (not isinstance(elem_tree.tag, (str, bytes)) or
-                namespace(elem_tree.tag) != const.XHTML_NS):
+                parse_utils.namespace(elem_tree.tag) != const.XHTML_NS):
             p = elem.getparent()
             if (p is not None and isinstance(p.tag, (str, bytes)) and
-                    namespace(p.tag) == const.XHTML_NS and elem.tail):
+                    parse_utils.namespace(p.tag) == const.XHTML_NS and
+                    elem.tail):
                 return [elem.tail]
             return []
 
@@ -465,7 +459,7 @@ class FB2MLizer(object):
         # the tags.
         tags = []
         # First tag in tree
-        tag = barename(elem_tree.tag)
+        tag = parse_utils.barename(elem_tree.tag)
         # Number of blank lines above tag
         try:
             ems = int(round((float(style.marginTop) / style.fontSize) - 1))
@@ -517,7 +511,7 @@ class FB2MLizer(object):
         # tag but it can have multiple styles.
         if tag == 'img' and elem_tree.attrib.get('src', None):
             # Only write the image tag if it is in the manifest.
-            ihref = urlnormalize(page.abshref(elem_tree.attrib['src']))
+            ihref = base.urlnormalize(page.abshref(elem_tree.attrib['src']))
             if ihref in self.oeb_book.manifest.hrefs:
                 if ihref not in self.image_hrefs:
                     self.image_hrefs[ihref] = 'img_%s' % len(self.image_hrefs)
@@ -560,7 +554,7 @@ class FB2MLizer(object):
                 fb2_out += p_txt
                 tags += p_tag
                 fb2_out.append('<a l:href="%s">' %
-                               urlnormalize(elem_tree.attrib['href']))
+                               base.urlnormalize(elem_tree.attrib['href']))
                 tags.append('a')
         if tag == 'b' or style['font-weight'] in ('bold', 'bolder'):
             s_out, s_tags = self.handle_simple_tag('strong', tag_stack+tags)
