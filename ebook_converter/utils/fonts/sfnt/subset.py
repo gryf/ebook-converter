@@ -3,14 +3,10 @@ from collections import OrderedDict
 from operator import itemgetter
 from functools import partial
 
-from ebook_converter.utils.icu import safe_chr, ord_string
+from ebook_converter.utils.icu import ord_string
 from ebook_converter.utils.fonts.sfnt.container import Sfnt
 from ebook_converter.utils.fonts.sfnt.errors import UnsupportedFont, NoGlyphs
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 # TrueType outlines {{{
 
@@ -253,7 +249,7 @@ def main(args):
     def conv_code(c):
         if c.upper()[:2] in ('U+', '0X'):
             c = int(c[2:], 16)
-        return safe_chr(int(c))
+        return chr(int(c))
 
     for c in chars:
         if '-' in c:

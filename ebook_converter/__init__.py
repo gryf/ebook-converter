@@ -18,7 +18,6 @@ from ebook_converter.constants_old import islinux, isfrozen, \
     isbsd, __appname__, __version__, __author__, \
     config_dir
 from ebook_converter.startup import winutil, winutilerror
-from ebook_converter.utils.icu import safe_chr
 
 
 if False:
@@ -231,7 +230,7 @@ def walk(dir):
 
 def my_unichr(num):
     try:
-        return safe_chr(num)
+        return chr(num)
     except (ValueError, OverflowError):
         return '?'
 
