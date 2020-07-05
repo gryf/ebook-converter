@@ -165,6 +165,8 @@ def normalize(x):
 def calibre_cover(title, author_string, series_string=None,
                   output_format='jpg', title_size=46, author_size=36,
                   logo_path=None):
+    # TODO(gryf): generate cover using pillow
+    return None
     title = normalize(title)
     author_string = normalize(author_string)
     series_string = normalize(series_string)

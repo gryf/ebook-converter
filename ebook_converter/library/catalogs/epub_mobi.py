@@ -484,13 +484,15 @@ class EPUB_MOBI(CatalogPlugin):
                 recommendations.append(('cover', cpath, OptionRecommendation.HIGH))
                 log.info("using existing catalog cover")
             else:
-                from ebook_converter.ebooks.covers import calibre_cover2
-                log.info("replacing catalog cover")
-                new_cover_path = PersistentTemporaryFile(suffix='.jpg')
-                new_cover = calibre_cover2(opts.catalog_title, 'calibre')
-                new_cover_path.write(new_cover)
-                new_cover_path.close()
-                recommendations.append(('cover', new_cover_path.name, OptionRecommendation.HIGH))
+                # TODO(gryf): feature: generating cover with pillow.
+                pass
+                # from ebook_converter.ebooks.covers import calibre_cover2
+                # log.info("replacing catalog cover")
+                # new_cover_path = PersistentTemporaryFile(suffix='.jpg')
+                # # new_cover = calibre_cover2(opts.catalog_title, 'calibre')
+                # new_cover_path.write('')
+                # new_cover_path.close()
+                # recommendations.append(('cover', new_cover_path.name, OptionRecommendation.HIGH))
 
             # Run ebook-convert
             from ebook_converter.ebooks.conversion.plumber import Plumber

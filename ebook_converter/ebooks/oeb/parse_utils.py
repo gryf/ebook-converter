@@ -1,3 +1,4 @@
+import logging
 import re
 
 from lxml import etree
@@ -11,6 +12,10 @@ from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declar
 
 RECOVER_PARSER = etree.XMLParser(recover=True, no_network=True,
                                  resolve_entities=False)
+
+
+# TODO(gryf): replace this with real logging setup.
+LOG = logging
 
 
 class NotHTML(Exception):
@@ -152,8 +157,7 @@ def check_for_html5(prefix, root):
 def parse_html(data, log=None, decoder=None, preprocessor=None,
         filename='<string>', non_html_file_tags=frozenset()):
     if log is None:
-        from ebook_converter.utils.logging import default_log
-        log = default_log
+        log = LOG
 
     filename = force_unicode(filename, enc=filesystem_encoding)
 

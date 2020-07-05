@@ -51,13 +51,13 @@ HEURISTIC_OPTIONS = ['markup_chapter_headings', 'italicize_common_cases',
 DEFAULT_TRUE_OPTIONS = HEURISTIC_OPTIONS + ['remove_fake_margins']
 
 
-def print_help(parser, log):
+def print_help(parser):
     parser.print_help()
 
 
 def check_command_line_options(parser, args, log):
     if len(args) < 3 or args[1].startswith('-') or args[2].startswith('-'):
-        print_help(parser, log)
+        print_help(parser)
         log.error('\n\nYou must specify the input AND output files')
         raise SystemExit(1)
 
@@ -292,7 +292,7 @@ def create_option_parser(args, log):
 
     parser = option_parser()
     if len(args) < 3:
-        print_help(parser, log)
+        print_help(parser)
         if any(x in args for x in ('-h', '--help')):
             raise SystemExit(0)
         else:

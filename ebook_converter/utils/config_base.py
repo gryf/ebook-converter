@@ -410,7 +410,6 @@ class Config(ConfigInterface):
             src = self.option_set.serialize(opts)
             f.seek(0)
             f.truncate()
-            __import__('pdb').set_trace()
             if isinstance(src, str):
                 src = src.encode('utf-8')
             f.write(src)
