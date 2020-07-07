@@ -1,22 +1,17 @@
-from urllib.request import (build_opener, getproxies, install_opener,
-        HTTPBasicAuthHandler, HTTPCookieProcessor, HTTPDigestAuthHandler,
-        url2pathname, urlopen, Request)
-from urllib.parse import (parse_qs, quote, unquote as uq, quote_plus, urldefrag,
-        urlencode, urljoin, urlparse, urlunparse, urlsplit, urlunsplit)
-from urllib.error import HTTPError, URLError
+import urllib.parse
 
 
 def unquote(x, encoding='utf-8', errors='replace'):
+    # TODO(gryf): this works like that: if x is a binary, convert it to
+    # string using encoding and make unquote. After that make it binary again.
+    # If x is string, just pass it to the unquote.
+    # This approach is mostly used within lxml etree strings, which suppose to
+    # be binary because of its inner representation. I'm wondering, if
+    # xml.etree could be used instead - to be checked.
     binary = isinstance(x, bytes)
     if binary:
         x = x.decode(encoding, errors)
-    ans = uq(x, encoding, errors)
+    ans = urllib.parse.unquote(x, encoding, errors)
     if binary:
         ans = ans.encode(encoding, errors)
     return ans
-
-
-def unquote_plus(x, encoding='utf-8', errors='replace'):
-    q, repl = (b'+', b' ') if isinstance(x, bytes) else ('+', ' ')
-    x = x.replace(q, repl)
-    return unquote(x, encoding=encoding, errors=errors)
