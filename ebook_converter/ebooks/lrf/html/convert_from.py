@@ -13,10 +13,10 @@ import re
 import sys
 import tempfile
 import urllib.parse
-from collections import deque
-from functools import partial
-from itertools import chain
-from math import ceil, floor
+import collections
+import functools
+import itertools
+import math
 
 import bs4
 
@@ -37,30 +37,8 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import (
     RuledLine, Span, Sub, Sup, TextBlock
 )
 from ebook_converter.ptempfile import PersistentTemporaryFile
-from ebook_converter.polyglot.urllib import unquote
 
 from PIL import Image as PILImage
-
-
-def update_css(ncss, ocss):
-    for key in ncss.keys():
-        if key in ocss:
-            ocss[key].update(ncss[key])
-        else:
-            ocss[key] = ncss[key]
-
-
-def munge_paths(basepath, url):
-    purl = urllib.parse.urlparse(unquote(url),)
-    path, fragment = purl[2], purl[5]
-    if path:
-        path = path.replace('/', os.sep)
-    if not path:
-        path = basepath
-    elif not os.path.isabs(path):
-        dn = os.path.dirname(basepath)
-        path = os.path.join(dn, path)
-    return os.path.normpath(path), fragment
 
 
 def strip_style_comments(match):
@@ -77,94 +55,135 @@ def strip_style_comments(match):
     return src
 
 
+SELECTOR_PAT = re.compile(r"([A-Za-z0-9\-\_\:\.]+"
+                          r"[A-Za-z0-9\-\_\:\.\s\,]*)\s*\{([^\}]*)\}")
+PAGE_BREAK_PAT = re.compile(r'page-break-(?:after|before)\s*:\s*(\w+)',
+                            re.IGNORECASE)
+IGNORED_TAGS = (bs4.Comment, bs4.Declaration, bs4.ProcessingInstruction)
+
+MARKUP_MASSAGE = [  # Close <a /> tags
+                  (re.compile(r'<a(\s[^>]*)?/>', re.IGNORECASE),
+                   lambda match: '<a'+match.group(1)+'></a>'),
+
+                  # Strip comments from <style> tags. This is needed as
+                  # sometimes there are unterminated comments
+                  (re.compile(r"<\s*style.*?>(.*?)<\/\s*style\s*>",
+                              re.DOTALL | re.IGNORECASE),
+                   lambda match: match.group().replace('<!--', '')
+                   .replace('-->', '')),
+
+                  # remove <p> tags from within <a href> tags
+                  (re.compile(r'<\s*a\s+[^<>]*href\s*=[^<>]*>(.*?)<\s*/'
+                              r'\s*a\s*>', re.DOTALL | re.IGNORECASE),
+                   lambda match: re.compile(r'%(open)s|%(close)s' %
+                                            tag_regex('p'),
+                                            re.IGNORECASE)
+                   .sub('', match.group())),
+
+                  # Replace common line break patterns with line breaks
+                  (re.compile(r'<p>(&nbsp;|\s)*</p>', re.IGNORECASE),
+                   lambda m: '<br />'),
+
+                  # Replace empty headers with line breaks
+                  (re.compile(r'<h[0-5]?>(&nbsp;|\s)*</h[0-5]?>',
+                              re.IGNORECASE), lambda m: '<br />'),
+
+                  # Replace entities
+                  (re.compile(r'&(\S+?);'),
+                   functools.partial(entity_to_unicode,
+                                     exceptions=['lt', 'gt', 'amp', 'quot'])),
+
+                  # Remove comments from within style tags as they can mess up
+                  # BeatifulSoup
+                  (re.compile(r'(<style.*?</style>)',
+                              re.IGNORECASE | re.DOTALL),
+                   strip_style_comments),
+
+                  # Remove self closing script tags as they also mess up
+                  # BeautifulSoup
+                  (re.compile(r'(?i)<script[^<>]+?/>'), lambda match: ''),
+
+                  # BeautifulSoup treats self closing <div> tags as open <div>
+                  # tags
+                  (re.compile(r'(?i)<\s*div([^>]*)/\s*>'),
+                   lambda match: '<div%s></div>' % match.group(1))]
+# Fix Baen markup
+BAEN = [(re.compile(r'page-break-before:\s*\w+([\s;\}])', re.IGNORECASE),
+         lambda match: match.group(1)),
+        (re.compile(r'<p>\s*(<a id.*?>\s*</a>)\s*</p>', re.IGNORECASE),
+         lambda match: match.group(1)),
+        (re.compile(r'<\s*a\s+id="p[0-9]+"\s+name="p[0-9]+"\s*>\s*</a>',
+                    re.IGNORECASE), lambda match: '')]
+# Fix pdftohtml markup
+PDFTOHTML = [(re.compile(r'<hr.*?>', re.IGNORECASE), lambda match: '<br />'),
+             # Remove page numbers
+             (re.compile(r'\d+<br>', re.IGNORECASE), lambda match: ''),
+             # Remove <br> and replace <br><br> with <p>
+             (re.compile(r'<br.*?>\s*<br.*?>', re.IGNORECASE),
+              lambda match: '<p>'),
+             (re.compile(r'(.*)<br.*?>', re.IGNORECASE),
+              lambda match: match.group() if re.match('<',
+                                                      match.group(1).lstrip())
+              or len(match.group(1)) < 40 else match.group(1)),
+             # Remove hyphenation
+             (re.compile(r'-\n\r?'), lambda match: '')]
+
+# Fix Book Designer markup
+BOOK_DESIGNER = [(re.compile('<hr>', re.IGNORECASE),
+                  lambda match: '<span style="page-break-after:always">'
+                  ' </span>'),
+                 (re.compile(r'<h2[^><]*?id=BookTitle[^><]*?(align=)*(?(1)'
+                             r'(\w+))*[^><]*?>[^><]*?</h2>', re.IGNORECASE),
+                  lambda match: '<h1 id="BookTitle" align="%s">%s</h1>' %
+                  (match.group(2) if match.group(2) else 'center',
+                   match.group(3))),
+                 (re.compile(r'<h2[^><]*?id=BookAuthor[^><]*?(align=)*(?(1)'
+                             r'(\w+))*[^><]*?>[^><]*?</h2>', re.IGNORECASE),
+                  lambda match: '<h2 id="BookAuthor" align="%s">%s</h2>' %
+                  (match.group(2) if match.group(2) else 'center',
+                   match.group(3))),
+                 (re.compile(r'<span[^><]*?id=title[^><]*?>(.*?)</span>',
+                             re.IGNORECASE | re.DOTALL),
+                  lambda match: '<h2 class="title">%s</h2>' % match.group(1)),
+                 (re.compile(r'<span[^><]*?id=subtitle[^><]*?>(.*?)</span>',
+                             re.IGNORECASE | re.DOTALL),
+                  lambda match: '<h3 class="subtitle">%s</h3>' %
+                  match.group(1)),
+                 (re.compile(r'<div[^><]*?>(&nbsp;){4}</div>', re.IGNORECASE),
+                  lambda match: '<p></p>')]
+
+
+def update_css(ncss, ocss):
+    for key in ncss.keys():
+        if key in ocss:
+            ocss[key].update(ncss[key])
+        else:
+            ocss[key] = ncss[key]
+
+
+def munge_paths(basepath, url):
+    purl = urllib.parse.urlparse(urllib.parse.unquote(url),)
+    path, fragment = purl[2], purl[5]
+    if path:
+        path = path.replace('/', os.sep)
+    if not path:
+        path = basepath
+    elif not os.path.isabs(path):
+        dn = os.path.dirname(basepath)
+        path = os.path.join(dn, path)
+    return os.path.normpath(path), fragment
+
+
 def tag_regex(tagname):
-    '''Return non-grouping regular expressions that match the opening and closing tags for tagname'''
-    return dict(open=r'(?:<\s*%(t)s\s+[^<>]*?>|<\s*%(t)s\s*>)'%dict(t=tagname),
-                close=r'</\s*%(t)s\s*>'%dict(t=tagname))
+    """
+    Return non-grouping regular expressions that match the opening and closing
+    tags for tagname
+    """
+    return dict(open=r'(?:<\s*%(t)s\s+[^<>]*?>|<\s*%(t)s\s*>)' %
+                dict(t=tagname), close=r'</\s*%(t)s\s*>' % dict(t=tagname))
 
 
 class HTMLConverter(object):
-    SELECTOR_PAT   = re.compile(r"([A-Za-z0-9\-\_\:\.]+[A-Za-z0-9\-\_\:\.\s\,]*)\s*\{([^\}]*)\}")
-    PAGE_BREAK_PAT = re.compile(r'page-break-(?:after|before)\s*:\s*(\w+)', re.IGNORECASE)
-    IGNORED_TAGS   = (bs4.Comment, bs4.Declaration, bs4.ProcessingInstruction)
-
-    MARKUP_MASSAGE   = [
-                        # Close <a /> tags
-                        (re.compile(r'<a(\s[^>]*)?/>', re.IGNORECASE),
-                         lambda match: '<a'+match.group(1)+'></a>'),
-                        # Strip comments from <style> tags. This is needed as
-                        # sometimes there are unterminated comments
-                        (re.compile(r"<\s*style.*?>(.*?)<\/\s*style\s*>", re.DOTALL|re.IGNORECASE),
-                         lambda match: match.group().replace('<!--', '').replace('-->', '')),
-                        # remove <p> tags from within <a href> tags
-                        (re.compile(r'<\s*a\s+[^<>]*href\s*=[^<>]*>(.*?)<\s*/\s*a\s*>', re.DOTALL|re.IGNORECASE),
-                         lambda match: re.compile(r'%(open)s|%(close)s'%tag_regex('p'), re.IGNORECASE).sub('', match.group())),
-
-                        # Replace common line break patterns with line breaks
-                        (re.compile(r'<p>(&nbsp;|\s)*</p>', re.IGNORECASE), lambda m: '<br />'),
-
-                        # Replace empty headers with line breaks
-                        (re.compile(r'<h[0-5]?>(&nbsp;|\s)*</h[0-5]?>',
-                                    re.IGNORECASE), lambda m: '<br />'),
-
-                        # Replace entities
-                        (re.compile(r'&(\S+?);'), partial(entity_to_unicode,
-                                                           exceptions=['lt', 'gt', 'amp', 'quot'])),
-                        # Remove comments from within style tags as they can mess up BeatifulSoup
-                        (re.compile(r'(<style.*?</style>)', re.IGNORECASE|re.DOTALL),
-                         strip_style_comments),
-
-                        # Remove self closing script tags as they also mess up BeautifulSoup
-                        (re.compile(r'(?i)<script[^<>]+?/>'), lambda match: ''),
-
-                        # BeautifulSoup treats self closing <div> tags as open <div> tags
-                        (re.compile(r'(?i)<\s*div([^>]*)/\s*>'),
-                         lambda match: '<div%s></div>'%match.group(1))
-
-                        ]
-    # Fix Baen markup
-    BAEN = [
-                     (re.compile(r'page-break-before:\s*\w+([\s;\}])', re.IGNORECASE),
-                      lambda match: match.group(1)),
-                     (re.compile(r'<p>\s*(<a id.*?>\s*</a>)\s*</p>', re.IGNORECASE),
-                      lambda match: match.group(1)),
-                     (re.compile(r'<\s*a\s+id="p[0-9]+"\s+name="p[0-9]+"\s*>\s*</a>', re.IGNORECASE),
-                      lambda match: ''),
-                     ]
-    # Fix pdftohtml markup
-    PDFTOHTML  = [
-                  # Remove <hr> tags
-                  (re.compile(r'<hr.*?>', re.IGNORECASE), lambda match: '<br />'),
-                  # Remove page numbers
-                  (re.compile(r'\d+<br>', re.IGNORECASE), lambda match: ''),
-                  # Remove <br> and replace <br><br> with <p>
-                  (re.compile(r'<br.*?>\s*<br.*?>', re.IGNORECASE), lambda match: '<p>'),
-                  (re.compile(r'(.*)<br.*?>', re.IGNORECASE),
-                   lambda match: match.group() if re.match('<', match.group(1).lstrip()) or len(match.group(1)) < 40
-                                else match.group(1)),
-                  # Remove hyphenation
-                  (re.compile(r'-\n\r?'), lambda match: ''),
-
-                  ]
-
-    # Fix Book Designer markup
-    BOOK_DESIGNER = [
-                     # HR
-                     (re.compile('<hr>', re.IGNORECASE),
-                      lambda match : '<span style="page-break-after:always"> </span>'),
-                     # Create header tags
-                     (re.compile(r'<h2[^><]*?id=BookTitle[^><]*?(align=)*(?(1)(\w+))*[^><]*?>[^><]*?</h2>', re.IGNORECASE),
-                      lambda match : '<h1 id="BookTitle" align="%s">%s</h1>'%(match.group(2) if match.group(2) else 'center', match.group(3))),
-                     (re.compile(r'<h2[^><]*?id=BookAuthor[^><]*?(align=)*(?(1)(\w+))*[^><]*?>[^><]*?</h2>', re.IGNORECASE),
-                      lambda match : '<h2 id="BookAuthor" align="%s">%s</h2>'%(match.group(2) if match.group(2) else 'center', match.group(3))),
-                     (re.compile(r'<span[^><]*?id=title[^><]*?>(.*?)</span>', re.IGNORECASE|re.DOTALL),
-                      lambda match : '<h2 class="title">%s</h2>'%(match.group(1),)),
-                     (re.compile(r'<span[^><]*?id=subtitle[^><]*?>(.*?)</span>', re.IGNORECASE|re.DOTALL),
-                      lambda match : '<h3 class="subtitle">%s</h3>'%(match.group(1),)),
-                     # Blank lines
-                     (re.compile(r'<div[^><]*?>(&nbsp;){4}</div>', re.IGNORECASE),
-                      lambda match : '<p></p>'),
-                     ]
 
     def __hasattr__(self, attr):
         if hasattr(self.options, attr):
@@ -182,68 +201,85 @@ class HTMLConverter(object):
         else:
             object.__setattr__(self, attr, val)
 
-    CSS = {
-           'h1'     : {"font-size"   : "xx-large", "font-weight":"bold", 'text-indent':'0pt'},
-           'h2'     : {"font-size"   : "x-large", "font-weight":"bold", 'text-indent':'0pt'},
-           'h3'     : {"font-size"   : "large", "font-weight":"bold", 'text-indent':'0pt'},
-           'h4'     : {"font-size"   : "large", 'text-indent':'0pt'},
-           'h5'     : {"font-weight" : "bold", 'text-indent':'0pt'},
-           'b'      : {"font-weight" : "bold"},
-           'strong' : {"font-weight" : "bold"},
-           'i'      : {"font-style"  : "italic"},
-           'cite'   : {'font-style'  : 'italic'},
-           'em'     : {"font-style"  : "italic"},
-           'small'  : {'font-size'   : 'small'},
-           'pre'    : {'font-family' : 'monospace', 'white-space': 'pre'},
-           'code'   : {'font-family' : 'monospace'},
-           'tt'     : {'font-family' : 'monospace'},
-           'center' : {'text-align'  : 'center'},
-           'th'     : {'font-size'   : 'large', 'font-weight':'bold'},
-           'big'    : {'font-size'   : 'large', 'font-weight':'bold'},
-           '.libprs500_dropcaps' : {'font-size': 'xx-large'},
-           'u'      : {'text-decoration': 'underline'},
-           'sup'    : {'vertical-align': 'super', 'font-size': '60%'},
-           'sub'    : {'vertical-align': 'sub', 'font-size': '60%'},
+    CSS = {'h1': {"font-size": "xx-large", "font-weight": "bold",
+                  'text-indent': '0pt'},
+           'h2': {"font-size": "x-large", "font-weight": "bold",
+                  'text-indent': '0pt'},
+           'h3': {"font-size": "large", "font-weight": "bold",
+                  'text-indent': '0pt'},
+           'h4': {"font-size": "large", 'text-indent': '0pt'},
+           'h5': {"font-weight": "bold", 'text-indent': '0pt'},
+           'b': {"font-weight": "bold"},
+           'strong': {"font-weight": "bold"},
+           'i': {"font-style": "italic"},
+           'cite': {'font-style': 'italic'},
+           'em': {"font-style": "italic"},
+           'small': {'font-size': 'small'},
+           'pre': {'font-family': 'monospace', 'white-space': 'pre'},
+           'code': {'font-family': 'monospace'},
+           'tt': {'font-family': 'monospace'},
+           'center': {'text-align': 'center'},
+           'th': {'font-size': 'large', 'font-weight': 'bold'},
+           'big': {'font-size': 'large', 'font-weight': 'bold'},
+           '.libprs500_dropcaps': {'font-size': 'xx-large'},
+           'u': {'text-decoration': 'underline'},
+           'sup': {'vertical-align': 'super', 'font-size': '60%'},
+           'sub': {'vertical-align': 'sub', 'font-size': '60%'},
            }
 
     def __init__(self, book, fonts, options, logger, paths):
-        '''
+        """
         Convert HTML files at C{paths} and add to C{book}. After creating
         the object, you must call L{self.writeto} to output the LRF/S file.
 
         @param book: The LRF book
         @type book:  L{lrf.pylrs.Book}
         @param fonts: dict specifying the font families to use
-        '''
+        """
         # Defaults for various formatting tags
         object.__setattr__(self, 'options', options)
         self.log = logger
         self.fonts = fonts  # : dict specifying font families to use
         # Memory
-        self.scaled_images    = {}    #: Temporary files with scaled version of images
-        self.rotated_images   = {}    #: Temporary files with rotated version of images
-        self.text_styles      = []    #: Keep track of already used textstyles
-        self.block_styles     = []    #: Keep track of already used blockstyles
-        self.images  = {}      #: Images referenced in the HTML document
-        self.targets = {}      #: <a name=...> and id elements
-        self.links   = deque()  # : <a href=...> elements
+        # Temporary files with scaled version of images
+        self.scaled_images = {}
+        # Temporary files with rotated version of images
+        self.rotated_images = {}
+        # Keep track of already used textstyles
+        self.text_styles = []
+        # Keep track of already used blockstyles
+        self.block_styles = []
+        # Images referenced in the HTML document
+        self.images = {}
+        # <a name=...> and id elements
+        self.targets = {}
+        # <a href=...> elements
+        self.links = collections.deque()
         self.processed_files = []
-        self.extra_toc_entries = []  # : TOC entries gleaned from semantic information
+        # TOC entries gleaned from semantic information
+        self.extra_toc_entries = []
         self.image_memory = []
         self.id_counter = 0
-        self.unused_target_blocks = []  # : Used to remove extra TextBlocks
-        self.link_level  = 0    #: Current link level
-        self.memory = []        #: Used to ensure that duplicate CSS unhandled erros are not reported
-        self.tops = {}          #: element representing the top of each HTML file in the LRF file
-        self.previous_text = ''  # : Used to figure out when to lstrip
+        # Used to remove extra TextBlocks
+        self.unused_target_blocks = []
+        # Current link level
+        self.link_level = 0
+        # Used to ensure that duplicate CSS unhandled erros are not reported
+        self.memory = []
+        # element representing the top of each HTML file in the LRF file
+        self.tops = {}
+        # Used to figure out when to lstrip
+        self.previous_text = ''
         self.stripped_space = ''
-        self.preserve_block_style = False  # : Used so that <p> tags in <blockquote> elements are handled properly
+        # Used so that <p> tags in <blockquote> elements are handled properly
+        self.preserve_block_style = False
         self.avoid_page_break = False
         self.current_page = book.create_page()
 
         # Styles
         self.blockquote_style = book.create_block_style(sidemargin=60,
-                                                        topskip=20, footskip=20)
+                                                        topskip=20,
+                                                        footskip=20)
         self.unindented_style = book.create_text_style(parindent=0)
 
         self.in_table = False
@@ -252,7 +288,8 @@ class HTMLConverter(object):
         self.list_indent = 20
         self.list_counter = 1
 
-        self.book = book                #: The Book object representing a BBeB book
+        # The Book object representing a BBeB book
+        self.book = book
 
         self.override_css = {}
         self.override_pcss = {}
@@ -265,7 +302,7 @@ class HTMLConverter(object):
                 src = self._override_css
             if isinstance(src, bytes):
                 src = src.decode('utf-8', 'replace')
-            match = self.PAGE_BREAK_PAT.search(src)
+            match = PAGE_BREAK_PAT.search(src)
             if match and not re.match('avoid', match.group(1), re.IGNORECASE):
                 self.page_break_found = True
             ncss, npcss = self.parse_css(src)
@@ -275,7 +312,8 @@ class HTMLConverter(object):
                 update_css(npcss, self.override_pcss)
 
         paths = [os.path.abspath(path) for path in paths]
-        paths = [path.decode(sys.getfilesystemencoding()) if not isinstance(path, str) else path for path in paths]
+        paths = [path.decode(sys.getfilesystemencoding())
+                 if not isinstance(path, str) else path for path in paths]
 
         while len(paths) > 0 and self.link_level <= self.link_levels:
             for path in paths:
@@ -285,8 +323,9 @@ class HTMLConverter(object):
                     self.add_file(path)
                 except KeyboardInterrupt:
                     raise
-                except:
-                    if self.link_level == 0:  # Die on errors in the first level
+                except Exception:
+                    # Die on errors in the first level
+                    if self.link_level == 0:
                         raise
                     for link in self.links:
                         if link['path'] == path:
@@ -310,15 +349,16 @@ class HTMLConverter(object):
             self.book.rationalize_font_sizes(self.base_font_size)
 
     def is_baen(self, soup):
-        return bool(soup.find('meta', attrs={'name':'Publisher',
-                        'content':re.compile('Baen', re.IGNORECASE)}))
+        return bool(soup.find('meta',
+                              attrs={'name': 'Publisher',
+                                     'content': re.compile('Baen',
+                                                           re.IGNORECASE)}))
 
     def is_book_designer(self, raw):
         return bool(re.search('<H2[^><]*id=BookTitle', raw))
 
     def preprocess(self, raw):
-        nmassage = []
-        nmassage.extend(HTMLConverter.MARKUP_MASSAGE)
+        nmassage = MARKUP_MASSAGE[:]
 
         if not self.book_designer and self.is_book_designer(raw):
             self.book_designer = True
@@ -327,21 +367,24 @@ class HTMLConverter(object):
         self.log.info('\tParsing HTML...')
 
         if self.baen:
-            nmassage.extend(HTMLConverter.BAEN)
+            nmassage.extend(BAEN)
 
         if self.pdftohtml:
-            nmassage.extend(HTMLConverter.PDFTOHTML)
+            nmassage.extend(PDFTOHTML)
         if self.book_designer:
-            nmassage.extend(HTMLConverter.BOOK_DESIGNER)
+            nmassage.extend(BOOK_DESIGNER)
         if isinstance(raw, bytes):
             raw = xml_to_unicode(raw, replace_entities=True)[0]
         for pat, repl in nmassage:
             raw = pat.sub(repl, raw)
+
         soup = html5_parser(raw)
+
         if not self.baen and self.is_baen(soup):
             self.baen = True
             self.log.info('\tBaen file detected. Re-parsing...')
             return self.preprocess(raw)
+
         if self.book_designer:
             t = soup.find(id='BookTitle')
             if t:
@@ -354,10 +397,11 @@ class HTMLConverter(object):
             if not os.path.exists(tdir):
                 os.makedirs(tdir)
             try:
-                with open(os.path.join(tdir, 'html2lrf-verbose.html'), 'wb') as f:
+                with open(os.path.join(tdir,
+                                       'html2lrf-verbose.html'), 'wb') as f:
                     f.write(str(soup).encode('utf-8'))
                     self.log.info('Written preprocessed HTML to '+f.name)
-            except:
+            except Exception:
                 pass
 
         return soup
@@ -376,10 +420,12 @@ class HTMLConverter(object):
                                          self.file_name))
 
         if not os.path.exists(path):
-            path = path.replace('&', '%26')  # convertlit replaces & with %26 in file names
+            # convertlit replaces & with %26 in file names
+            path = path.replace('&', '%26')
         with open(path, 'rb') as f:
             raw = f.read()
-        if self.pdftohtml:  # Bug in pdftohtml that causes it to output invalid UTF-8 files
+        # Bug in pdftohtml that causes it to output invalid UTF-8 files
+        if self.pdftohtml:
             raw = raw.decode('utf-8', 'ignore')
         elif self.encoding is not None:
             raw = raw.decode(self.encoding, 'ignore')
@@ -405,7 +451,7 @@ class HTMLConverter(object):
         """
         sdict, pdict = {}, {}
         style = re.sub(r'/\*.*?\*/', '', style)  # Remove /*...*/ comments
-        for sel in re.findall(HTMLConverter.SELECTOR_PAT, style):
+        for sel in re.findall(SELECTOR_PAT, style):
             for key in sel[0].split(','):
                 val = self.parse_style_properties(sel[1])
                 key = key.strip().lower()
@@ -419,7 +465,7 @@ class HTMLConverter(object):
                         else:
                             pdict[key][pseudo] = val
                     else:
-                        pdict[key] = {pseudo:val}
+                        pdict[key] = {pseudo: val}
                 else:
                     if key in sdict:
                         sdict[key].update(val)
@@ -434,14 +480,14 @@ class HTMLConverter(object):
         @return: A dictionary with one entry for each property where the key
                 is the property name and the value is the property value.
         """
-        prop = dict()
-        for s in props.split(';'):
-            l = s.split(':',1)
-            if len(l)==2:
-                key = l[0].strip().lower()
-                val = l[1].strip()
-                prop[key] = val
-        return prop
+        properties = {}
+        for style in props.split(';'):
+            parts = style.split(':', 1)
+            if len(parts) == 2:
+                key = parts[0].strip().lower()
+                val = parts[1].strip()
+                properties[key] = val
+        return properties
 
     def tag_css(self, tag, parent_css={}):
         """
@@ -495,7 +541,8 @@ class HTMLConverter(object):
     def parse_file(self, soup):
         def get_valid_block(page):
             for item in page.contents:
-                if isinstance(item, (Canvas, TextBlock, ImageBlock, RuledLine)):
+                if isinstance(item,
+                              (Canvas, TextBlock, ImageBlock, RuledLine)):
                     if isinstance(item, TextBlock) and not item.contents:
                         continue
                     return item
@@ -523,9 +570,11 @@ class HTMLConverter(object):
             self.book.append(self.current_page)
             self.current_page = None
 
-        if top not in top.parent.contents:  # May have been removed for a cover image
+        # May have been removed for a cover image
+        if top not in top.parent.contents:
             top = top.parent.contents[0]
-        if not top.has_text() and top.parent.contents.index(top) == len(top.parent.contents)-1:
+        if (not top.has_text() and top.parent.contents.index(top) ==
+                len(top.parent.contents) - 1):
             # Empty block at the bottom of a page
             opage = top.parent
             top.parent.contents.remove(top)
@@ -573,19 +622,23 @@ class HTMLConverter(object):
                     pass
 
         path, fragment = munge_paths(self.target_prefix, tag['href'])
-        return {'para':para, 'text':text, 'path':os.path.abspath(path),
-                'fragment':fragment, 'in toc': (self.link_level == 0 and
-                    not self.use_spine and not self.options.no_links_in_toc)}
+        return {'para': para, 'text': text, 'path': os.path.abspath(path),
+                'fragment': fragment, 'in toc': (self.link_level == 0 and
+                                                 not self.use_spine and not
+                                                 self.options.no_links_in_toc)}
 
     def get_text(self, tag, limit=None):
         css = self.tag_css(tag)[0]
-        if ('display' in css and css['display'].lower() == 'none') or ('visibility' in css and css['visibility'].lower() == 'hidden'):
+        if 'display' in css and css['display'].lower() == 'none':
             return ''
+        if 'visibility' in css and css['visibility'].lower() == 'hidden':
+            return ''
+
         text, alt_text = '', ''
         for c in tag.contents:
             if limit is not None and len(text) > limit:
                 break
-            if isinstance(c, HTMLConverter.IGNORED_TAGS):
+            if isinstance(c, IGNORED_TAGS):
                 continue
             if isinstance(c, bs4.NavigableString):
                 text += str(c)
@@ -603,7 +656,7 @@ class HTMLConverter(object):
                hasattr(target.parent, 'objId'):
                 self.book.addTocEntry(ascii_text, tb)
             else:
-                self.log.debug("Cannot add link %s to TOC"%ascii_text)
+                self.log.debug("Cannot add link %s to TOC" % ascii_text)
 
         def get_target_block(fragment, targets):
             '''Return the correct block for the <a name> element'''
@@ -622,7 +675,8 @@ class HTMLConverter(object):
 
             if not ans:
                 for i in range(len(page.contents)-1, -1, -1):
-                    if isinstance(page.contents[i], (TextBlock, RuledLine, ImageBlock)):
+                    if isinstance(page.contents[i],
+                                  (TextBlock, RuledLine, ImageBlock)):
                         ans = page.contents[i]
                         break
 
@@ -633,18 +687,22 @@ class HTMLConverter(object):
                 ans = ntb
 
             if found:
-                targets[fragment] =  ans
+                targets[fragment] = ans
                 page.contents.remove(bs)
             return ans
 
-        outside_links = deque()
+        outside_links = collections.deque()
         while len(self.links) > 0:
             link = self.links.popleft()
-            para, text, path, fragment = link['para'], link['text'], link['path'], link['fragment']
+            para = link['para']
+            text = link['text']
+            path = link['path']
+            fragment = link['fragment']
             ascii_text = text
 
             if not isinstance(path, str):
                 path = path.decode(sys.getfilesystemencoding())
+
             if path in self.processed_files:
                 if path+fragment in self.targets.keys():
                     tb = get_target_block(path+fragment, self.targets)
@@ -695,22 +753,24 @@ class HTMLConverter(object):
     def add_image_page(self, path):
         if os.access(path, os.R_OK):
             self.end_page()
-            pwidth, pheight = self.profile.screen_width, self.profile.screen_height - \
-                              self.profile.fudge
+            pwidth = self.profile.screen_width
+            pheight = self.profile.screen_height - self.profile.fudge
             page = self.book.create_page(evensidemargin=0, oddsidemargin=0,
                                          topmargin=0, textwidth=pwidth,
                                          headheight=0, headsep=0, footspace=0,
-                                         footheight=0,
-                                         textheight=pheight)
+                                         footheight=0, textheight=pheight)
             if path not in self.images:
                 self.images[path] = ImageStream(path)
+
             im = PILImage.open(path)
             width, height = im.size
             canvas = Canvas(pwidth, pheight)
             ib = ImageBlock(self.images[path], x1=width,
                             y1=height, xsize=width, ysize=height,
                             blockwidth=width, blockheight=height)
-            canvas.put_object(ib, int((pwidth-width)/2.), int((pheight-height)/2.))
+
+            canvas.put_object(ib, int((pwidth-width)/2.),
+                              int((pheight-height)/2.))
             page.append(canvas)
             self.book.append(page)
 
@@ -720,7 +780,7 @@ class HTMLConverter(object):
         # extract is called on a child, it will
         # mess up the iteration.
         for c in copy.copy(ptag.contents):
-            if isinstance(c, HTMLConverter.IGNORED_TAGS):
+            if isinstance(c, IGNORED_TAGS):
                 continue
             elif isinstance(c, bs4.Tag):
                 self.parse_tag(c, pcss)
@@ -759,7 +819,8 @@ class HTMLConverter(object):
         if align != self.current_block.textStyle.attrs['align']:
             self.current_para.append_to(self.current_block)
             self.current_block.append_to(self.current_page)
-            ts = self.book.create_text_style(**self.current_block.textStyle.attrs)
+            ts = self.book.create_text_style(**self.current_block
+                                             .textStyle.attrs)
             ts.attrs['align'] = align
             try:
                 index = self.text_styles.index(ts)
@@ -783,7 +844,8 @@ class HTMLConverter(object):
         if len(src) > 32760:
             pos = 0
             while pos < len(src):
-                self.add_text(src[pos:pos+32760], css, pseudo_css, force_span_use)
+                self.add_text(src[pos:pos+32760], css, pseudo_css,
+                              force_span_use)
                 pos += 32760
             return
         src = src.replace('\r\n', '\n').replace('\r', '\n')
@@ -801,22 +863,27 @@ class HTMLConverter(object):
             ncss.update(pseudo_css.pop('first-letter'))
             self.add_text(f, ncss, {}, force_span_use)
 
-        collapse_whitespace = 'white-space' not in css or css['white-space'] != 'pre'
+        collapse_whitespace = ('white-space' not in css or
+                               css['white-space'] != 'pre')
         if self.process_alignment(css) and collapse_whitespace:
             # Dont want leading blanks in a new paragraph
             src = src.lstrip()
 
         def append_text(src):
             fp, key, variant = self.font_properties(css)
-            for x, y in [('\xad', ''), ('\xa0', ' '), ('\ufb00', 'ff'), ('\ufb01', 'fi'), ('\ufb02', 'fl'), ('\ufb03', 'ffi'), ('\ufb04', 'ffl')]:
+            for x, y in [('\xad', ''), ('\xa0', ' '), ('\ufb00', 'ff'),
+                         ('\ufb01', 'fi'), ('\ufb02', 'fl'),
+                         ('\ufb03', 'ffi'), ('\ufb04', 'ffl')]:
                 src = src.replace(x, y)
 
-            valigner = lambda x: x
-            if 'vertical-align' in css:
-                valign = css['vertical-align']
-                if valign in ('sup', 'super', 'sub'):
-                    fp['fontsize'] = int(fp['fontsize']) * 5 // 3
-                    valigner = Sub if valign == 'sub' else Sup
+            def valigner(x):
+                if 'vertical-align' in css:
+                    valign = css['vertical-align']
+                    if valign in ('sup', 'super', 'sub'):
+                        fp['fontsize'] = int(fp['fontsize']) * 5 // 3
+                        return Sub(x) if valign == 'sub' else Sup(x)
+                return x
+
             normal_font_size = int(fp['fontsize'])
 
             if variant == 'small-caps':
@@ -827,7 +894,8 @@ class HTMLConverter(object):
                         if temp:
                             dump.append(valigner(''.join(temp)))
                             temp = []
-                        dump.append(Span(valigner(c), fontsize=normal_font_size))
+                        dump.append(Span(valigner(c),
+                                         fontsize=normal_font_size))
                     else:
                         temp.append(c.upper())
                 src = dump
@@ -857,22 +925,24 @@ class HTMLConverter(object):
             if 'color' in css and not self.ignore_colors:
                 attrs['textcolor'] = lrs_color(css['color'])
             attrs.update(fp)
-            elem = Span(text=src, **attrs) if (attrs or force_span_use) else src
+            elem = Span(text=src, **attrs) if (attrs or
+                                               force_span_use) else src
             if 'text-decoration' in css:
                 dec = css['text-decoration'].lower()
-                linepos = 'after' if dec == 'underline' else 'before' if dec == 'overline' else None
+                linepos = ('after' if dec == 'underline' else
+                           'before' if dec == 'overline' else None)
                 if linepos is not None:
                     elem = EmpLine(elem, emplineposition=linepos)
             self.current_para.append(elem)
 
         if collapse_whitespace:
             src = re.sub(r'\s{1,}', ' ', src)
-            if self.stripped_space and len(src) == len(src.lstrip(' \n\r\t')):
+            if self.stripped_space and len(src) == len(src.lstrip()):
                 src = self.stripped_space + src
-            src, orig = src.rstrip(' \n\r\t'), src
+            src, orig = src.rstrip(), src
             self.stripped_space = orig[len(src):]
-            if len(self.previous_text) != len(self.previous_text.rstrip(' \n\r\t')):
-                src = src.lstrip(' \n\r\t')
+            if len(self.previous_text) != len(self.previous_text.rstrip()):
+                src = src.lstrip()
             if len(src):
                 self.previous_text = src
                 append_text(src)
@@ -890,25 +960,26 @@ class HTMLConverter(object):
         self.previous_text = '\n'
 
     def end_current_para(self):
-        '''
+        """
         End current paragraph with a paragraph break after it.
-        '''
+        """
         if self.current_para.contents:
             self.current_block.append(self.current_para)
         self.current_block.append(CR())
         self.current_para = Paragraph()
 
     def end_current_block(self):
-        '''
+        """
         End current TextBlock. Create new TextBlock with the same styles.
-        '''
+        """
         if self.current_para.contents:
             self.current_block.append(self.current_para)
             self.current_para = Paragraph()
         if self.current_block.contents or self.current_block.must_append:
             self.current_page.append(self.current_block)
-            self.current_block = self.book.create_text_block(textStyle=self.current_block.textStyle,
-                                                         blockStyle=self.current_block.blockStyle)
+            self.current_block = self.book.create_text_block(
+                textStyle=self.current_block.textStyle,
+                blockStyle=self.current_block.blockStyle)
 
     def process_image(self, path, tag_css, width=None, height=None,
                       dropcaps=False, rescale=False):
@@ -926,7 +997,8 @@ class HTMLConverter(object):
         try:
             im = PILImage.open(path)
         except IOError as err:
-            self.log.warning('Unable to process image: %s\n%s'%(original_path, err))
+            self.log.warning('Unable to process image: %s\n%s',
+                             original_path, err)
             return
         encoding = detect_encoding(im)
 
@@ -935,16 +1007,19 @@ class HTMLConverter(object):
                 width = 1
             if height <= 0:
                 height = 1
-            pt = PersistentTemporaryFile(suffix='_html2lrf_scaled_image_.'+encoding.lower())
+            pt = PersistentTemporaryFile(suffix='_html2lrf_scaled_image_.' +
+                                         encoding.lower())
             self.image_memory.append(pt)  # Neccessary, trust me ;-)
             try:
-                im.resize((int(width), int(height)), PILImage.ANTIALIAS).save(pt, encoding)
+                im.resize((int(width), int(height)),
+                          PILImage.ANTIALIAS).save(pt, encoding)
                 pt.close()
                 self.scaled_images[path] = pt
                 return pt.name
-            except (IOError, SystemError) as err:  # PIL chokes on interlaced PNG images as well a some GIF images
-                self.log.warning('Unable to process image %(path)s. Error: '
-                                 '%(err)s' % dict(path=path, err=err))
+            # PIL chokes on interlaced PNG images as well a some GIF images
+            except (IOError, SystemError) as err:
+                self.log.warning('Unable to process image %s. Error: %s',
+                                 path, err)
 
         if width is None or height is None:
             width, height = im.size
@@ -955,7 +1030,7 @@ class HTMLConverter(object):
 
         factor = 720./self.profile.dpi
         pheight = int(self.current_page.pageStyle.attrs['textheight'])
-        pwidth  = int(self.current_page.pageStyle.attrs['textwidth'])
+        pwidth = int(self.current_page.pageStyle.attrs['textwidth'])
 
         if dropcaps:
             scale = False
@@ -970,26 +1045,32 @@ class HTMLConverter(object):
             if path not in self.images:
                 self.images[path] = ImageStream(path)
             im = Image(self.images[path], x0=0, y0=0, x1=width, y1=height,
-                               xsize=width, ysize=height)
-            line_height = (int(self.current_block.textStyle.attrs['baselineskip']) +
-                            int(self.current_block.textStyle.attrs['linespace']))//10
-            line_height *= self.profile.dpi/72
-            lines = int(ceil(height/line_height))
+                       xsize=width, ysize=height)
+            line_height = (int(self.current_block.textStyle
+                               .attrs['baselineskip']) +
+                           int(self.current_block.textStyle
+                               .attrs['linespace'])) // 10
+            line_height *= self.profile.dpi / 72
+            lines = int(math.ceil(height/line_height))
             dc = DropCaps(lines)
-            dc.append(Plot(im, xsize=ceil(width*factor), ysize=ceil(height*factor)))
+            dc.append(Plot(im, xsize=math.ceil(width*factor),
+                           ysize=math.ceil(height*factor)))
             self.current_para.append(dc)
             return
 
         if self.autorotation and width > pwidth and width > height:
-            pt = PersistentTemporaryFile(suffix='_html2lrf_rotated_image_.'+encoding.lower())
+            pt = PersistentTemporaryFile(suffix='_html2lrf_rotated_image_.' +
+                                         encoding.lower())
             try:
                 im = im.rotate(90)
                 im.save(pt, encoding)
                 path = pt.name
                 self.rotated_images[path] = pt
                 width, height = im.size
-            except IOError:  # PIL chokes on interlaced PNG files and since auto-rotation is not critical we ignore the error
-                self.log.debug('Unable to process interlaced PNG %s' %
+            # PIL chokes on interlaced PNG files and since auto-rotation is
+            # not critical we ignore the error
+            except IOError:
+                self.log.debug('Unable to process interlaced PNG %s',
                                original_path)
             finally:
                 pt.close()
@@ -1005,19 +1086,19 @@ class HTMLConverter(object):
             try:
                 self.images[path] = ImageStream(path, encoding=encoding)
             except LrsError as err:
-                self.log.warning(('Could not process image: %s\n%s')%(
-                    original_path, err))
+                self.log.warning('Could not process image: %s\n%s',
+                                 original_path, err)
                 return
 
         im = Image(self.images[path], x0=0, y0=0, x1=width, y1=height,
-                               xsize=width, ysize=height)
+                   xsize=width, ysize=height)
 
         self.process_alignment(tag_css)
 
         if max(width, height) <= min(pwidth, pheight)/5:
-            self.current_para.append(Plot(im, xsize=ceil(width*factor),
-                                          ysize=ceil(height*factor)))
-        elif height <= int(floor((2/3)*pheight)):
+            self.current_para.append(Plot(im, xsize=math.ceil(width*factor),
+                                          ysize=math.ceil(height*factor)))
+        elif height <= int(math.floor((2/3)*pheight)):
             pb = self.current_block
             self.end_current_para()
             self.process_alignment(tag_css)
@@ -1031,11 +1112,12 @@ class HTMLConverter(object):
             self.current_para = Paragraph()
         else:
             self.end_page()
-            if len(self.current_page.contents) == 1 and not self.current_page.has_text():
+            if len(self.current_page
+                   .contents) == 1 and not self.current_page.has_text():
                 self.current_page.contents[0:1] = []
             self.current_page.append(Canvas(width=pwidth,
                                             height=height))
-            left = int(floor((pwidth - width)/2))
+            left = int(math.floor((pwidth - width)/2))
             self.current_page.contents[-1].put_object(
                             ImageBlock(self.images[path], xsize=width,
                                        ysize=height, x1=width, y1=height,
@@ -1054,21 +1136,23 @@ class HTMLConverter(object):
             else:
                 end_page = True
             tag_css.pop('page-break-after')
-        if (self.force_page_break_attr[0].match(tagname) and
+        if ((self.force_page_break_attr[0].match(tagname) and
            tag.has_attr(self.force_page_break_attr[1]) and
-           self.force_page_break_attr[2].match(tag[self.force_page_break_attr[1]])) or \
-           self.force_page_break.match(tagname):
+           self.force_page_break_attr[2]
+            .match(tag[self.force_page_break_attr[1]])) or
+           self.force_page_break.match(tagname)):
             self.end_page()
             self.page_break_found = True
         if not self.page_break_found and self.page_break.match(tagname):
-            number_of_paragraphs = sum([
-                len([1 for i in block.contents if isinstance(i, Paragraph)])
-                for block in self.current_page.contents if isinstance(block, TextBlock)
-            ])
+            number_of_paragraphs = sum([len([1 for i in block.contents
+                                             if isinstance(i, Paragraph)])
+                                        for block in self.current_page
+                                        .contents
+                                        if isinstance(block, TextBlock)])
 
             if number_of_paragraphs > 2:
                 self.end_page()
-                self.log.debug('Forcing page break at %s'%tagname)
+                self.log.debug('Forcing page break at %s', tagname)
         return end_page
 
     def block_properties(self, tag_css):
@@ -1091,11 +1175,13 @@ class HTMLConverter(object):
         def set(default, one, two):
             fval = None
             if one is not None:
-                val = self.unit_convert(one, base_length='10pt' if 'em' in one else bl)
+                val = self.unit_convert(one, base_length='10pt'
+                                        if 'em' in one else bl)
                 if val is not None:
                     fval = val
             if two is not None:
-                val = self.unit_convert(two, base_length='10pt' if 'em' in two else bl)
+                val = self.unit_convert(two, base_length='10pt'
+                                        if 'em' in two else bl)
                 if val is not None:
                     fval = val if fval is None else fval + val
             if fval is None:
@@ -1103,20 +1189,29 @@ class HTMLConverter(object):
             return fval
 
         ans = {}
-        ans['topskip']    = set(self.book.defaultBlockStyle.attrs['topskip'], s1[0], s2[0])
-        ans['footskip']   = set(self.book.defaultBlockStyle.attrs['footskip'], s1[2], s2[2])
-        ans['sidemargin'] = set(self.book.defaultBlockStyle.attrs['sidemargin'], s1[3], s2[3])
+        ans['topskip'] = set(self.book.defaultBlockStyle.attrs['topskip'],
+                             s1[0], s2[0])
+        ans['footskip'] = set(self.book.defaultBlockStyle.attrs['footskip'],
+                              s1[2], s2[2])
+        ans['sidemargin'] = set(self.book.defaultBlockStyle
+                                .attrs['sidemargin'], s1[3], s2[3])
 
         factor = 0.7
-        if 2*int(ans['sidemargin']) >= factor*int(self.current_block.blockStyle.attrs['blockwidth']):
+        if 2 * int(ans['sidemargin']) >= factor * int(self.current_block
+                                                      .blockStyle
+                                                      .attrs['blockwidth']):
             # Try using (left + right)/2
             val = int(ans['sidemargin'])
-            ans['sidemargin'] = set(self.book.defaultBlockStyle.attrs['sidemargin'], s1[1], s2[1])
+            ans['sidemargin'] = set(self.book.defaultBlockStyle
+                                    .attrs['sidemargin'], s1[1], s2[1])
             val += int(ans['sidemargin'])
             val /= 2.
             ans['sidemargin'] = int(val)
-        if 2*int(ans['sidemargin']) >= factor*int(self.current_block.blockStyle.attrs['blockwidth']):
-            ans['sidemargin'] = int((factor*int(self.current_block.blockStyle.attrs['blockwidth'])) / 2)
+        if 2 * int(ans['sidemargin']) >= factor * int(self.current_block
+                                                      .blockStyle
+                                                      .attrs['blockwidth']):
+            ans['sidemargin'] = int((factor*int(self.current_block.blockStyle
+                                                .attrs['blockwidth'])) / 2)
 
         for prop in ('topskip', 'footskip', 'sidemargin'):
             if isinstance(ans[prop], (str, bytes)):
@@ -1127,15 +1222,18 @@ class HTMLConverter(object):
         return ans
 
     def font_properties(self, css):
-        '''
-        Convert the font propertiess in css to the Xylog equivalents. If the CSS
-        does not contain a particular font property, the default from self.book.defaultTextSytle
-        is used. Assumes 1em = 10pt
-        @return: dict, key, variant. The dict contains the Xlog equivalents. key indicates
-          the font type (i.e. bold, bi, normal) and variant is None or 'small-caps'
-        '''
+        """
+        Convert the font propertiess in css to the Xylog equivalents. If the
+        CSS does not contain a particular font property, the default from
+        self.book.defaultTextSytle is used. Assumes 1em = 10pt
+        @return: dict, key, variant. The dict contains the Xlog equivalents.
+                 key indicates the font type (i.e. bold, bi, normal) and
+                 variant is None or 'small-caps'
+        """
+
         t = {}
-        for key in ('fontwidth', 'fontsize', 'wordspace', 'fontfacename', 'fontweight', 'baselineskip'):
+        for key in ('fontwidth', 'fontsize', 'wordspace', 'fontfacename',
+                    'fontweight', 'baselineskip'):
             t[key] = self.book.defaultTextStyle.attrs[key]
 
         def font_weight(val):
@@ -1155,10 +1253,12 @@ class HTMLConverter(object):
 
         def font_family(val):
             ans = 'serif'
-            if max(val.find("courier"), val.find("mono"), val.find("fixed"), val.find("typewriter"))>=0:
+            if max(val.find("courier"), val.find("mono"), val.find("fixed"),
+                   val.find("typewriter")) >= 0:
                 ans = 'mono'
-            elif max(val.find("arial"), val.find("helvetica"), val.find("verdana"),
-                 val.find("trebuchet"), val.find("sans")) >= 0:
+            elif max(val.find("arial"), val.find("helvetica"),
+                     val.find("verdana"), val.find("trebuchet"),
+                     val.find("sans")) >= 0:
                 ans = 'sans'
             return ans
 
@@ -1179,9 +1279,9 @@ class HTMLConverter(object):
             return key
 
         def font_size(val):
-            '''
+            """
             Assumes 1em=100%=10pt
-            '''
+            """
             normal = 100
             ans = self.unit_convert(val, pts=True, base_length='10pt')
 
@@ -1276,18 +1376,20 @@ class HTMLConverter(object):
         return t, key, variant
 
     def unit_convert(self, val, pts=False, base_length='10pt'):
-        '''
+        """
         Tries to convert html units in C{val} to pixels.
         @param pts: If True return 10*pts instead of pixels.
-        @return: The number of pixels (an int) if successful. Otherwise, returns None.
-        '''
+        @return: The number of pixels (an int) if successful. Otherwise,
+                 returns None.
+        """
         dpi = self.profile.dpi
         result = None
         try:
             result = int(val)
         except ValueError:
             pass
-        m = re.search(r"\s*(-*[0-9]*\.?[0-9]*)\s*(%|em|px|mm|cm|in|dpt|pt|pc)", val)
+        m = re.search(r"\s*(-*[0-9]*\.?[0-9]*)\s*"
+                      r"(%|em|px|mm|cm|in|dpt|pt|pc)", val)
 
         if m is not None and m.group(1):
             unit = float(m.group(1))
@@ -1324,7 +1426,8 @@ class HTMLConverter(object):
             bl = str(self.current_block.blockStyle.attrs['blockwidth'])+'px'
             if 'em' in tag_css['text-indent']:
                 bl = '10pt'
-            indent = self.unit_convert(str(tag_css['text-indent']), pts=True, base_length=bl)
+            indent = self.unit_convert(str(tag_css['text-indent']), pts=True,
+                                       base_length=bl)
             if not indent:
                 indent = 0
             if indent > 0 and indent < 10 * self.minimum_indent:
@@ -1334,13 +1437,14 @@ class HTMLConverter(object):
         fp['parindent'] = indent
 
         if 'line-height' in tag_css:
-            bls, ls = int(self.book.defaultTextStyle.attrs['baselineskip']), \
-                      int(self.book.defaultTextStyle.attrs['linespace'])
+            bls = int(self.book.defaultTextStyle.attrs['baselineskip'])
+            ls = int(self.book.defaultTextStyle.attrs['linespace'])
             try:  # See if line-height is a unitless number
                 val = int(float(tag_css['line-height'].strip()) * (ls))
                 fp['linespace'] = val
             except ValueError:
-                val = self.unit_convert(tag_css['line-height'], pts=True, base_length='1pt')
+                val = self.unit_convert(tag_css['line-height'], pts=True,
+                                        base_length='1pt')
             if val is not None:
                 val -= bls
                 if val >= 0:
@@ -1352,12 +1456,14 @@ class HTMLConverter(object):
         ''' Ensure padding and text-indent properties are respected '''
         text_properties = self.text_properties(tag_css)
         block_properties = self.block_properties(tag_css)
-        indent = (float(text_properties['parindent'])/10) * (self.profile.dpi/72)
+        indent = (float(text_properties['parindent']) / 10) * (self.profile
+                                                               .dpi / 72)
         margin = float(block_properties['sidemargin'])
-        # Since we're flattening the block structure, we need to ensure that text
-        # doesn't go off the left edge of the screen
+        # Since we're flattening the block structure, we need to ensure that
+        # text doesn't go off the left edge of the screen
         if indent < 0 and margin + indent < 0:
-            text_properties['parindent'] = int(-margin * (72/self.profile.dpi) * 10)
+            text_properties['parindent'] = int(-margin * (72 / self
+                                                          .profile.dpi) * 10)
 
         align = self.get_alignment(tag_css)
 
@@ -1366,8 +1472,10 @@ class HTMLConverter(object):
                 if key not in props:
                     props[key] = default[key]
 
-        fill_out_properties(block_properties, self.book.defaultBlockStyle.attrs)
-        fill_out_properties(text_properties, self.book.defaultTextStyle.attrs)
+        fill_out_properties(block_properties,
+                            self.book.defaultBlockStyle.attrs)
+        fill_out_properties(text_properties,
+                            self.book.defaultTextStyle.attrs)
 
         def properties_different(dict1, dict2):
             for key in dict1.keys():
@@ -1375,9 +1483,11 @@ class HTMLConverter(object):
                     return True
             return False
 
-        if properties_different(self.current_block.blockStyle.attrs, block_properties) or \
-           properties_different(self.current_block.textStyle.attrs, text_properties) or\
-           align != self.current_block.textStyle.attrs['align']:
+        if (properties_different(self.current_block.blockStyle.attrs,
+                                 block_properties) or
+                properties_different(self.current_block.textStyle.attrs,
+                                     text_properties) or
+                align != self.current_block.textStyle.attrs['align']):
             ts = self.current_block.textStyle.copy()
             ts.attrs.update(text_properties)
             ts.attrs['align'] = align
@@ -1422,8 +1532,13 @@ class HTMLConverter(object):
                         break
                 if target and not isinstance(target, (TextBlock, ImageBlock)):
                     if isinstance(target, RuledLine):
-                        target = self.book.create_text_block(textStyle=self.current_block.textStyle,
-                                                     blockStyle=self.current_block.blockStyle)
+                        target = (self.book
+                                  .create_text_block(textStyle=self
+                                                     .current_block
+                                                     .textStyle,
+                                                     blockStyle=self
+                                                     .current_block
+                                                     .blockStyle))
                         target.Paragraph(' ')
                         self.current_page.append(target)
                     else:
@@ -1443,7 +1558,7 @@ class HTMLConverter(object):
         try:
             tagname = tag.name.lower()
         except AttributeError:
-            if not isinstance(tag, HTMLConverter.IGNORED_TAGS):
+            if not isinstance(tag, IGNORED_TAGS):
                 self.add_text(tag, parent_css, {})
             return
         tag_css, tag_pseudo_css = self.tag_css(tag, parent_css=parent_css)
@@ -1458,23 +1573,24 @@ class HTMLConverter(object):
             (self.chapter_attr[1].lower() == 'none' or
              (tag.has_attr(self.chapter_attr[1]) and
               self.chapter_attr[2].match(tag[self.chapter_attr[1]])))):
-            self.log.debug('Detected chapter %s'%tagname)
+            self.log.debug('Detected chapter %s', tagname)
             self.end_page()
             self.page_break_found = True
 
             if self.options.add_chapters_to_toc:
                 self.current_block.must_append = True
-                self.extra_toc_entries.append((self.get_text(tag,
-                    limit=1000), self.current_block))
+                self.extra_toc_entries.append((self.get_text(tag, limit=1000),
+                                               self.current_block))
 
         end_page = self.process_page_breaks(tag, tagname, tag_css)
         try:
             if tagname in ["title", "script", "meta", 'del', 'frameset']:
                 pass
             elif tagname == 'a' and self.link_levels >= 0:
-                if tag.has_attr('href') and not self.link_exclude.match(tag['href']):
-                    if urllib.parse.urlparse(tag['href'])[0] not in ('',
-                                                                     'file'):
+                if (tag.has_attr('href') and not
+                        self.link_exclude.match(tag['href'])):
+                    if (urllib.parse.urlparse(tag['href'])[0] not in
+                            ('', 'file')):
                         self.process_children(tag, tag_css, tag_pseudo_css)
                     else:
                         path = munge_paths(self.target_prefix, tag['href'])[0]
@@ -1488,14 +1604,21 @@ class HTMLConverter(object):
                                 text = self.get_text(tag, limit=1000)
                                 if not text.strip():
                                     text = "Link"
-                                self.add_text(text, tag_css, {}, force_span_use=True)
-                                self.links.append(self.create_link(self.current_para.contents, tag))
+                                self.add_text(text, tag_css, {},
+                                              force_span_use=True)
+                                self.links.append(self
+                                                  .create_link(self
+                                                               .current_para
+                                                               .contents, tag))
                                 if tag.has_attr('id') or tag.has_attr('name'):
-                                    key = 'name' if tag.has_attr('name') else 'id'
-                                    self.targets[self.target_prefix+tag[key]] = self.current_block
+                                    key = ('name' if tag.has_attr('name')
+                                           else 'id')
+                                    self.targets[self.target_prefix +
+                                                 tag[key]] = self.current_block
                                     self.current_block.must_append = True
                         else:
-                            self.log.debug('Could not follow link to '+tag['href'])
+                            self.log.debug('Could not follow link to ',
+                                           tag['href'])
                             self.process_children(tag, tag_css, tag_pseudo_css)
                 elif tag.has_attr('name') or tag.has_attr('id'):
                     self.process_anchor(tag, tag_css, tag_pseudo_css)
@@ -1505,21 +1628,23 @@ class HTMLConverter(object):
                 if tag.has_attr('src'):
                     path = munge_paths(self.target_prefix, tag['src'])[0]
                     if not os.path.exists(path):
-                        path = path.replace('&', '%26')  # convertlit replaces & with %26
+                        # convertlit replaces & with %26
+                        path = path.replace('&', '%26')
                     if os.access(path, os.R_OK) and os.path.isfile(path):
                         width, height = None, None
                         try:
                             width = int(tag['width'])
                             height = int(tag['height'])
-                        except:
+                        except Exception:
                             pass
-                        dropcaps = tag.get('class') in ('libprs500_dropcaps', ['libprs500_dropcaps'])
+                        dropcaps = tag.get('class') in ('libprs500_dropcaps',
+                                                        ['libprs500_dropcaps'])
                         self.process_image(path, tag_css, width, height,
                                            dropcaps=dropcaps, rescale=True)
                     elif not urllib.parse.urlparse(tag['src'])[0]:
                         self.log.warn('Could not find image: '+tag['src'])
                 else:
-                    self.log.debug("Failed to process: %s"%str(tag))
+                    self.log.debug("Failed to process: %s", tag)
             elif tagname in ['style', 'link']:
                 ncss, npcss = {}, {}
                 if tagname == 'style':
@@ -1527,17 +1652,21 @@ class HTMLConverter(object):
                     css, pcss = self.parse_css(text)
                     ncss.update(css)
                     npcss.update(pcss)
-                elif (tag.has_attr('type') and tag['type'] in ("text/css", "text/x-oeb1-css") and tag.has_attr('href')):
+                elif (tag.has_attr('type') and
+                        tag['type'] in ("text/css", "text/x-oeb1-css") and
+                        tag.has_attr('href')):
                     path = munge_paths(self.target_prefix, tag['href'])[0]
                     try:
                         with open(path, 'rb') as f:
                             src = f.read().decode('utf-8', 'replace')
-                        match = self.PAGE_BREAK_PAT.search(src)
-                        if match and not re.match('avoid', match.group(1), re.IGNORECASE):
+                        match = PAGE_BREAK_PAT.search(src)
+                        if match and not re.match('avoid', match.group(1),
+                                                  re.IGNORECASE):
                             self.page_break_found = True
                         ncss, npcss = self.parse_css(src)
                     except IOError:
-                        self.log.warn('Could not read stylesheet: '+tag['href'])
+                        self.log.warn('Could not read stylesheet: %s',
+                                      tag['href'])
                 if ncss:
                     update_css(ncss, self.css)
                     self.css.update(self.override_css)
@@ -1569,7 +1698,7 @@ class HTMLConverter(object):
                     self.list_counter = 1
                     try:
                         self.list_counter = int(tag['start'])
-                    except:
+                    except Exception:
                         pass
                 prev_bs = self.current_block.blockStyle
                 self.end_current_block()
@@ -1590,7 +1719,8 @@ class HTMLConverter(object):
                 margin = self.list_indent*self.list_level
                 if tagname == 'dd':
                     margin += 80
-                if int(self.current_block.blockStyle.attrs['sidemargin']) != margin:
+                if int(self.current_block.blockStyle
+                       .attrs['sidemargin']) != margin:
                     self.end_current_block()
                     attrs = self.current_block.blockStyle.attrs
                     attrs = attrs.copy()
@@ -1613,7 +1743,8 @@ class HTMLConverter(object):
                             in_ol = parent.name.lower() == 'ol'
                             break
                         parent = parent.parent
-                    prepend = str(self.list_counter)+'. ' if in_ol else '\u2022' + ' '
+                    prepend = (str(self.list_counter)+'. '
+                               if in_ol else '\u2022' + ' ')
                     self.current_para.append(Span(prepend))
                     self.process_children(tag, tag_css, tag_pseudo_css)
                     if in_ol:
@@ -1633,8 +1764,9 @@ class HTMLConverter(object):
                 except ValueError:
                     self.text_styles.append(ts)
                 bs = self.book.create_block_style()
-                bs.attrs['sidemargin'], bs.attrs['topskip'], bs.attrs['footskip'] = \
-                60, 20, 20
+                bs.attrs['sidemargin'] = 60
+                bs.attrs['topskip'] = 20
+                bs.attrs['footskip'] = 20
                 try:
                     index = self.block_styles.index(bs)
                     bs = self.block_styles[index]
@@ -1649,12 +1781,17 @@ class HTMLConverter(object):
                 self.current_para.append_to(self.current_block)
                 self.current_block.append_to(self.current_page)
                 self.current_para = Paragraph()
-                self.current_block = self.book.create_text_block(textStyle=pb.textStyle,
-                                                                 blockStyle=pb.blockStyle)
+                self.current_block = (self.book
+                                      .create_text_block(textStyle=pb
+                                                         .textStyle,
+                                                         blockStyle=pb
+                                                         .blockStyle))
             elif tagname in ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
                 new_block = self.process_block(tag, tag_css)
 
-                if (self.anchor_ids and tag.has_attr('id')) or (self.book_designer and tag.get('class') in ('title', ['title'])):
+                if ((self.anchor_ids and tag.has_attr('id')) or
+                    (self.book_designer and
+                     tag.get('class') in ('title', ['title']))):
                     if not tag.has_attr('id'):
                         tag['id'] = __appname__+'_id_'+str(self.id_counter)
                         self.id_counter += 1
@@ -1664,21 +1801,26 @@ class HTMLConverter(object):
                         self.end_current_block()
                     self.current_block.must_append = True
                     self.targets[tkey] = self.current_block
-                    if (self.book_designer and tag.get('class') in ('title', ['title'])):
-                        self.extra_toc_entries.append((self.get_text(tag, 100), self.current_block))
+                    if (self.book_designer and tag
+                            .get('class') in ('title', ['title'])):
+                        self.extra_toc_entries.append((self
+                                                       .get_text(tag, 100),
+                                                       self.current_block))
 
                 src = self.get_text(tag, limit=1000)
 
-                if not self.disable_chapter_detection and tagname.startswith('h'):
+                if (not self.disable_chapter_detection and
+                        tagname.startswith('h')):
                     if self.chapter_regex.search(src):
-                        self.log.debug('Detected chapter %s'%src)
+                        self.log.debug('Detected chapter %s', src)
                         self.end_page()
                         self.page_break_found = True
 
                         if self.options.add_chapters_to_toc:
                             self.current_block.must_append = True
-                            self.extra_toc_entries.append((self.get_text(tag,
-                                limit=1000), self.current_block))
+                            (self.extra_toc_entries
+                             .append((self.get_text(tag, limit=1000),
+                                      self.current_block)))
 
                 if self.current_para.has_text():
                     self.current_para.append_to(self.current_block)
@@ -1695,12 +1837,13 @@ class HTMLConverter(object):
 
                 self.process_children(tag, tag_css, tag_pseudo_css)
 
-                if self.current_para.contents :
+                if self.current_para.contents:
                     self.current_block.append(self.current_para)
                 self.current_para = Paragraph()
                 if tagname.startswith('h') or self.blank_after_para:
                     self.current_block.append(CR())
-            elif tagname in ['b', 'strong', 'i', 'em', 'span', 'tt', 'big', 'code', 'cite', 'sup', 'sub']:
+            elif tagname in ['b', 'strong', 'i', 'em', 'span', 'tt', 'big',
+                             'code', 'cite', 'sup', 'sub']:
                 self.process_children(tag, tag_css, tag_pseudo_css)
             elif tagname == 'font':
                 if tag.has_attr('face'):
@@ -1713,8 +1856,11 @@ class HTMLConverter(object):
                 self.previous_text = '\n'
             elif tagname in ['hr', 'tr']:  # tr needed for nested tables
                 self.end_current_block()
-                if tagname == 'hr' and not tag_css.get('width', '').strip().startswith('0'):
-                    self.current_page.RuledLine(linelength=int(self.current_page.pageStyle.attrs['textwidth']))
+                if (tagname == 'hr' and
+                        not tag_css.get('width', '').strip().startswith('0')):
+                    (self.current_page
+                     .RuledLine(linelength=int(self.current_page.pageStyle
+                                               .attrs['textwidth'])))
                 self.previous_text = '\n'
                 self.process_children(tag, tag_css, tag_pseudo_css)
             elif tagname == 'td':  # Needed for nested tables
@@ -1722,7 +1868,9 @@ class HTMLConverter(object):
                     self.current_para.append(' ')
                     self.previous_text = ' '
                 self.process_children(tag, tag_css, tag_pseudo_css)
-            elif tagname == 'table' and not self.ignore_tables and not self.in_table:
+            elif (tagname == 'table' and
+                  not self.ignore_tables and
+                  not self.in_table):
                 tag_css = self.tag_css(tag)[0]  # Table should not inherit CSS
                 try:
                     self.process_table(tag, tag_css)
@@ -1750,12 +1898,16 @@ class HTMLConverter(object):
         table = Table(self, tag, tag_css, rowpad=rowpad, colpad=10)
         canvases = []
         ps = self.current_page.pageStyle.attrs
-        for block, xpos, ypos, delta, targets in table.blocks(int(ps['textwidth']), int(ps['textheight'])):
+        for (block, xpos, ypos,
+             delta, targets) in table.blocks(int(ps['textwidth']),
+                                             int(ps['textheight'])):
             if not block:
                 if ypos > int(ps['textheight']):
                     raise Exception('Table has cell that is too large')
-                canvases.append(Canvas(int(self.current_page.pageStyle.attrs['textwidth']), ypos+rowpad,
-                        blockrule='block-fixed'))
+                canvases.append(Canvas(int(self.current_page.pageStyle
+                                           .attrs['textwidth']),
+                                       ypos + rowpad,
+                                       blockrule='block-fixed'))
                 for name in targets:
                     self.targets[self.target_prefix+name] = canvases[-1]
             else:
@@ -1777,13 +1929,15 @@ class HTMLConverter(object):
         self.book.renderLrs(path) if lrs else self.book.renderLrf(path)
 
     def cleanup(self):
-        for _file in chain(self.scaled_images.values(), self.rotated_images.values()):
+        for _file in itertools.chain(self.scaled_images.values(),
+                                     self.rotated_images.values()):
             _file.__del__()
 
 
 def process_file(path, options, logger):
     path = os.path.abspath(path)
-    default_title = force_unicode(os.path.splitext(os.path.basename(path))[0], filesystem_encoding)
+    default_title = force_unicode(os.path.splitext(os.path.basename(path))[0],
+                                  filesystem_encoding)
     dirpath = os.path.dirname(path)
 
     tpath = ''
@@ -1795,8 +1949,8 @@ def process_file(path, options, logger):
         if os.access(options.cover, os.R_OK):
             th = Device.THUMBNAIL_HEIGHT
             im = PILImage.open(options.cover)
-            pwidth, pheight = options.profile.screen_width, \
-                              options.profile.screen_height - options.profile.fudge
+            pwidth = options.profile.screen_width
+            pheight = options.profile.screen_height - options.profile.fudge
             width, height = im.size
             if width < pwidth:
                 corrf = pwidth/width
@@ -1804,28 +1958,34 @@ def process_file(path, options, logger):
 
             scaled, width, height = fit_image(width, height, pwidth, pheight)
             try:
-                cim = im.resize((width, height), PILImage.BICUBIC).convert('RGB') if \
-                      scaled else im
-                cf = PersistentTemporaryFile(prefix=__appname__+"_", suffix=".jpg")
+                cim = im.resize((width, height),
+                                PILImage
+                                .BICUBIC).convert('RGB') if scaled else im
+                cf = PersistentTemporaryFile(prefix=__appname__ + "_",
+                                             suffix=".jpg")
                 cf.close()
                 cim.convert('RGB').save(cf.name)
                 options.cover = cf.name
 
-                tim = im.resize((int(0.75*th), th), PILImage.ANTIALIAS).convert('RGB')
-                tf = PersistentTemporaryFile(prefix=__appname__+'_', suffix=".jpg")
+                tim = im.resize((int(0.75 * th), th),
+                                PILImage.ANTIALIAS).convert('RGB')
+                tf = PersistentTemporaryFile(prefix=__appname__ + '_',
+                                             suffix=".jpg")
                 tf.close()
                 tim.save(tf.name)
                 tpath = tf.name
-            except IOError as err:  # PIL sometimes fails, for example on interlaced PNG files
+            # PIL sometimes fails, for example on interlaced PNG files
+            except IOError as err:
                 logger.warn('Could not read cover image: %s', err)
                 options.cover = None
         else:
-            raise ConversionError('Cannot read from: %s'% (options.cover,))
+            raise ConversionError('Cannot read from: %s', options.cover)
 
     if not options.title:
         options.title = default_title
 
-    for prop in ('author', 'author_sort', 'title', 'title_sort', 'publisher', 'freetext'):
+    for prop in ('author', 'author_sort', 'title', 'title_sort', 'publisher',
+                 'freetext'):
         val = getattr(options, prop, None)
         if val and not isinstance(val, str):
             soup = html5_parser(val)
@@ -1839,8 +1999,10 @@ def process_file(path, options, logger):
                 freetext=options.freetext, category=options.category,
                 publisher=options.publisher,
                 booksetting=BookSetting(dpi=10*options.profile.dpi,
-                                        screenheight=options.profile.screen_height,
-                                        screenwidth=options.profile.screen_width))
+                                        screenheight=options.profile
+                                        .screen_height,
+                                        screenwidth=options.profile
+                                        .screen_width))
     if tpath:
         args['thumbnail'] = tpath
     header = None
@@ -1855,16 +2017,16 @@ def process_file(path, options, logger):
             fheader = "%t by %a"
         fheader = re.sub(r'(?<!%)%t', options.title, fheader)
         fheader = re.sub(r'(?<!%)%a', options.author, fheader)
-        fheader = re.sub(r'%%a','%a',fheader)
-        fheader = re.sub(r'%%t','%t',fheader)
+        fheader = re.sub(r'%%a', '%a', fheader)
+        fheader = re.sub(r'%%t', '%t', fheader)
         header.append(fheader + "  ")
     book, fonts = Book(options, logger, header=header, **args)
-    le = re.compile(options.link_exclude) if options.link_exclude else \
-         re.compile('$')
-    pb = re.compile(options.page_break, re.IGNORECASE) if options.page_break else \
-         re.compile('$')
-    fpb = re.compile(options.force_page_break, re.IGNORECASE) if options.force_page_break else \
-         re.compile('$')
+    le = re.compile(options
+                    .link_exclude) if options.link_exclude else re.compile('$')
+    pb = re.compile(options.page_break,
+                    re.IGNORECASE) if options.page_break else re.compile('$')
+    fpb = (re.compile(options.force_page_break, re.IGNORECASE)
+           if options.force_page_break else re.compile('$'))
     cq = options.chapter_attr.split(',')
     if len(cq) < 3:
         raise ValueError('The --chapter-attr setting must have 2 commas.')
@@ -1874,18 +2036,22 @@ def process_file(path, options, logger):
     options.link_exclude = le
     options.page_break = pb
     if not isinstance(options.chapter_regex, str):
-        options.chapter_regex = options.chapter_regex.decode(preferred_encoding)
+        options.chapter_regex = (options.chapter_regex
+                                 .decode(preferred_encoding))
     options.chapter_regex = re.compile(options.chapter_regex, re.IGNORECASE)
     fpba = options.force_page_break_attr.split(',')
     if len(fpba) != 3:
         fpba = ['$', '', '$']
-    options.force_page_break_attr = [re.compile(fpba[0], re.IGNORECASE), fpba[1],
+    options.force_page_break_attr = [re.compile(fpba[0], re.IGNORECASE),
+                                     fpba[1],
                                      re.compile(fpba[2], re.IGNORECASE)]
     if not hasattr(options, 'anchor_ids'):
         options.anchor_ids = True
-    files = options.spine if (options.use_spine and hasattr(options, 'spine')) else [path]
+    files = options.spine if (options.use_spine and
+                              hasattr(options, 'spine')) else [path]
     conv = HTMLConverter(book, fonts, options, logger, files)
-    if options.use_spine and hasattr(options, 'toc') and options.toc is not None:
+    if options.use_spine and hasattr(options,
+                                     'toc') and options.toc is not None:
         conv.create_toc(options.toc)
     oname = options.output
     if not oname:
@@ -1902,7 +2068,7 @@ def try_opf(path, options, logger):
     if hasattr(options, 'opf'):
         opf = options.opf
     else:
-        files = glob.glob(os.path.join(os.path.dirname(path),'*'))
+        files = glob.glob(os.path.join(os.path.dirname(path), '*'))
         opf = None
         for f in files:
             ext = f.rpartition('.')[-1].lower()
@@ -1941,13 +2107,13 @@ def try_opf(path, options, logger):
                     try:
                         PILImage.open(cover)
                         options.cover = cover
-                    except:
+                    except Exception:
                         pass
             if not getattr(options, 'cover', None) and orig_cover is not None:
                 options.cover = orig_cover
         if getattr(opf, 'spine', False):
             options.spine = [i.path for i in opf.spine if i.path]
         if not getattr(options, 'toc', None):
-            options.toc   = opf.toc
+            options.toc = opf.toc
     except Exception:
         logger.exception('Failed to process OPF file')
