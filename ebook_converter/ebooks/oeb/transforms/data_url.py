@@ -1,7 +1,8 @@
 import mimetypes
 import re
+import urllib.parse
 
-from ebook_converter.ebooks.oeb.base import XPath, urlunquote
+from ebook_converter.ebooks.oeb.base import XPath
 from ebook_converter.polyglot.binary import from_base64_bytes
 from ebook_converter.polyglot.builtins import as_bytes
 
@@ -32,7 +33,7 @@ class DataURL(object):
                                        'URI, ignoring it')
                         continue
                 else:
-                    data = urlunquote(data)
+                    data = urllib.parse.unquote(data)
                 data = as_bytes(data)
                 fmt = what(None, data)
                 if not fmt:

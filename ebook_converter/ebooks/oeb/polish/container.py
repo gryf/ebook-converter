@@ -106,7 +106,7 @@ def href_to_name(href, root, base=None):
         return None
     if purl.scheme or not purl.path:
         return None
-    href = oeb_base.urlunquote(purl.path)
+    href = urllib.parse.unquote(purl.path)
 
     fullpath = os.path.join(base, *href.split('/'))
     return unicodedata.normalize('NFC', abspath_to_name(fullpath, root))
@@ -1171,7 +1171,7 @@ class EpubContainer(Container):
         )
         if not opf_files:
             raise InvalidEpub('META-INF/container.xml contains no link to OPF file')
-        opf_path = os.path.join(self.root, *(oeb_base.urlunquote(opf_files[0].get('full-path')).split('/')))
+        opf_path = os.path.join(self.root, *(urllib.parse.unquote(opf_files[0].get('full-path')).split('/')))
         if not exists(opf_path):
             raise InvalidEpub('OPF file does not exist at location pointed to'
                     ' by META-INF/container.xml')

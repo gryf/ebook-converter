@@ -1,21 +1,18 @@
+import collections
+import functools
 import os
 import posixpath
-from collections import namedtuple
-from functools import partial
+import urllib.parse
 
 from lxml import etree
 
 from ebook_converter import fit_image
-from ebook_converter.ebooks.oeb.base import urlunquote
 from ebook_converter.ebooks.docx.images import pt_to_emu
 from ebook_converter.utils.filenames import ascii_filename
 from ebook_converter.utils.imghdr import identify
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
-Image = namedtuple('Image', 'rid fname width height fmt item')
+Image = collections.namedtuple('Image', 'rid fname width height fmt item')
 
 
 def as_num(x):
@@ -102,7 +99,7 @@ class ImagesManager(object):
         fake_margins = floating is None
         self.count += 1
         img = self.images[href]
-        name = urlunquote(posixpath.basename(href))
+        name = urllib.parse.unquote(posixpath.basename(href))
         width, height = style.img_size(img.width, img.height)
         scaled, width, height = fit_image(width, height, self.page_width, self.page_height)
         width, height = map(pt_to_emu, (width, height))
@@ -157,7 +154,7 @@ class ImagesManager(object):
         makeelement(makeelement(spPr, 'a:prstGeom', prst='rect'), 'a:avLst')
 
     def create_filename(self, href, fmt):
-        fname = ascii_filename(urlunquote(posixpath.basename(href)))
+        fname = ascii_filename(urllib.parse.unquote(posixpath.basename(href)))
         fname = posixpath.splitext(fname)[0]
         fname = fname[:75].rstrip('.') or 'image'
         num = 0
@@ -171,7 +168,8 @@ class ImagesManager(object):
 
     def serialize(self, images_map):
         for img in self.images.values():
-            images_map['word/' + img.fname] = partial(self.get_data, img.item)
+            images_map['word/' + img.fname] = functools.partial(self.get_data,
+                                                                img.item)
 
     def get_data(self, item):
         try:

@@ -24,7 +24,6 @@ from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.short_uuid import uuid4
-from ebook_converter.polyglot.urllib import unquote as urlunquote
 
 
 def tag(tag_ns, name):
@@ -423,7 +422,7 @@ def urlnormalize(href):
         path, frag = urllib.parse.urldefrag(href)
         parts = ('', '', path, '', '', frag)
     parts = (part.replace('\\', '/') for part in parts)
-    parts = (urlunquote(part) for part in parts)
+    parts = (urllib.parse.unquote(part) for part in parts)
     parts = (urlquote(part) for part in parts)
     return urllib.parse.urlunparse(parts)
 
@@ -516,24 +515,15 @@ class DirContainer(object):
                     self.opfname = path
                     return
 
-    def _unquote(self, path):
-        # unquote must run on a bytestring and will return a bytestring
-        # If it runs on a unicode object, it returns a double encoded unicode
-        # string: unquote(u'%C3%A4') != unquote(b'%C3%A4').decode('utf-8')
-        # and the latter is correct
-        if isinstance(path, str):
-            path = path.encode('utf-8')
-        return urlunquote(path).decode('utf-8')
-
     def read(self, path):
         if path is None:
             path = self.opfname
-        path = os.path.join(self.rootdir, self._unquote(path))
+        path = os.path.join(self.rootdir, urllib.parse.unquote(path))
         with open(path, 'rb') as f:
             return f.read()
 
     def write(self, path, data):
-        path = os.path.join(self.rootdir, self._unquote(path))
+        path = os.path.join(self.rootdir, urllib.parse.unquote(path))
         dir = os.path.dirname(path)
         if not os.path.isdir(dir):
             os.makedirs(dir)
@@ -544,7 +534,7 @@ class DirContainer(object):
         if not path:
             return False
         try:
-            path = os.path.join(self.rootdir, self._unquote(path))
+            path = os.path.join(self.rootdir, urllib.parse.unquote(path))
         except ValueError:  # Happens if path contains quoted special chars
             return False
         try:
@@ -913,7 +903,7 @@ class Manifest(object):
 
         def _parse_xhtml(self, data):
             orig_data = data
-            fname = urlunquote(self.href)
+            fname = urllib.parse.unquote(self.href)
             self.oeb.log.debug('Parsing', fname, '...')
             self.oeb.html_preprocessor.current_href = self.href
             try:
@@ -1212,7 +1202,7 @@ class Manifest(object):
                 media_type = OEB_DOC_MIME
             elif media_type in OEB_STYLES:
                 media_type = OEB_CSS_MIME
-            attrib = {'id': item.id, 'href': urlunquote(item.href),
+            attrib = {'id': item.id, 'href': urllib.parse.unquote(item.href),
                       'media-type': media_type}
             if item.fallback:
                 attrib['fallback'] = item.fallback
@@ -1227,7 +1217,7 @@ class Manifest(object):
                 media_type = XHTML_MIME
             elif media_type in OEB_STYLES:
                 media_type = CSS_MIME
-            attrib = {'id': item.id, 'href': urlunquote(item.href),
+            attrib = {'id': item.id, 'href': urllib.parse.unquote(item.href),
                       'media-type': media_type}
             if item.fallback:
                 attrib['fallback'] = item.fallback
@@ -1446,7 +1436,7 @@ class Guide(object):
     def to_opf1(self, parent=None):
         elem = element(parent, 'guide')
         for ref in self.refs.values():
-            attrib = {'type': ref.type, 'href': urlunquote(ref.href)}
+            attrib = {'type': ref.type, 'href': urllib.parse.unquote(ref.href)}
             if ref.title:
                 attrib['title'] = ref.title
             element(elem, 'reference', attrib=attrib)
@@ -1457,7 +1447,7 @@ class Guide(object):
             return
         elem = element(parent, tag('opf', 'guide'))
         for ref in self.refs.values():
-            attrib = {'type': ref.type, 'href': urlunquote(ref.href)}
+            attrib = {'type': ref.type, 'href': urllib.parse.unquote(ref.href)}
             if ref.title:
                 attrib['title'] = ref.title
             element(elem, tag('opf', 'reference'), attrib=attrib)
@@ -1594,7 +1584,7 @@ class TOC(object):
     def to_opf1(self, tour):
         for node in self.nodes:
             element(tour, 'site', attrib={
-                'title': node.title, 'href': urlunquote(node.href)})
+                'title': node.title, 'href': urllib.parse.unquote(node.href)})
             node.to_opf1(tour)
         return tour
 

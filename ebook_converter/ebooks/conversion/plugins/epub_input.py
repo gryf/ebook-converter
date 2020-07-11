@@ -5,6 +5,7 @@ import re
 import posixpath
 import traceback
 import uuid
+import urllib.parse
 
 from lxml import etree
 
@@ -438,7 +439,8 @@ class EPUBInput(InputFormatPlugin):
                 href, frag = elem.get('href').partition('#')[::2]
                 link_path = (os.path
                              .relpath(os.path
-                                      .join(base_path, base.urlunquote(href)),
+                                      .join(base_path,
+                                            urllib.parse.unquote(href)),
                                       base_path))
                 abs_href = base.urlnormalize(link_path)
                 if abs_href == self.removed_cover:

@@ -7,7 +7,6 @@ import re
 import sys
 import urllib.parse
 
-from ebook_converter.ebooks.oeb.base import urlunquote
 from ebook_converter.ebooks.chardet import detect_xml_encoding
 from ebook_converter import unicode_path, replace_entities
 
@@ -23,7 +22,7 @@ class Link(object):
         isabs = False
         path = urllib.parse.urlunparse(('', '', path, url.params, url.query,
                                         ''))
-        path = urlunquote(path)
+        path = urllib.parse.unquote(path)
         if isabs or os.path.isabs(path):
             return path
         return os.path.abspath(os.path.join(base, path))
@@ -41,7 +40,7 @@ class Link(object):
         self.is_local = self.parsed_url.scheme in ('', 'file')
         self.is_internal = self.is_local and not bool(self.parsed_url.path)
         self.path = None
-        self.fragment = urlunquote(self.parsed_url.fragment)
+        self.fragment = urllib.parse.unquote(self.parsed_url.fragment)
         if self.is_local and not self.is_internal:
             self.path = self.url_to_local_path(self.parsed_url, base)
 

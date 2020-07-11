@@ -4,7 +4,6 @@ import shutil
 import urllib.parse
 import uuid
 
-from ebook_converter import constants as const
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.customize.conversion import OutputFormatPlugin
@@ -390,7 +389,7 @@ class EPUBOutput(OutputFormatPlugin):
             href = getattr(node, 'href', None)
             if hasattr(href, 'partition'):
                 _base, _, frag = href.partition('#')
-                frag = base.urlunquote(frag)
+                frag = urllib.parse.unquote(frag)
                 if frag and frag_pat.match(frag) is None:
                     self.log.warn(
                             'Removing fragment identifier %r from TOC as Adobe Digital Editions cannot handle it'%frag)
