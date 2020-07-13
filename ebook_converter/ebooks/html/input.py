@@ -88,7 +88,7 @@ class HTMLFile(object):
         :param encoding: Use `encoding` to decode HTML.
         :param referrer: The :class:`HTMLFile` that first refers to this file.
         """
-        self.path = unicode_path(path_to_html_file, abs=True)
+        self.path = os.path.abspath(path_to_html_file)
         self.title = os.path.splitext(os.path.basename(self.path))[0]
         self.base = os.path.dirname(self.path)
         self.level = level

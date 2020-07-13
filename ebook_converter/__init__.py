@@ -39,14 +39,6 @@ def guess_extension(*args, **kwargs):
     return ext
 
 
-def unicode_path(path, abs=False):
-    if isinstance(path, bytes):
-        path = path.decode(constants_old.filesystem_encoding)
-    if abs:
-        path = os.path.abspath(path)
-    return path
-
-
 def confirm_config_name(name):
     return name + '_again'
 
