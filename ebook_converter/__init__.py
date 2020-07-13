@@ -323,13 +323,6 @@ def force_unicode(obj, enc=constants_old.preferred_encoding):
     return obj
 
 
-def url_slash_cleaner(url):
-    '''
-    Removes redundant /'s from url's.
-    '''
-    return re.sub(r'(?<!:)/{2,}', '/', url)
-
-
 def human_readable(size, sep=' '):
     """ Convert a size in bytes into a human readable form """
     divisor, suffix = 1, "B"
