@@ -39,10 +39,6 @@ def guess_extension(*args, **kwargs):
     return ext
 
 
-def confirm_config_name(name):
-    return name + '_again'
-
-
 _filename_sanitize_unicode = frozenset(('\\', '|', '?', '*', '<',
                                         '"', ':', '>', '+', '/') +
                                        tuple(map(chr, range(32))))
