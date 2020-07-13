@@ -1,4 +1,5 @@
 import html
+import logging
 import math
 import mimetypes
 import os
@@ -8,16 +9,14 @@ import sys
 
 from functools import partial
 
-try:
-    os.getcwd()
-except EnvironmentError:
-    os.chdir(os.path.expanduser('~'))
-
 from ebook_converter import constants_old
 from ebook_converter.constants_old import islinux, isfrozen, \
     isbsd, __appname__, __version__, __author__, \
     config_dir
+from ebook_converter.ebooks.html_entities import html5_entities
+from ebook_converter.libunzip import extract as zipextract
 from ebook_converter.startup import winutil, winutilerror
+from ebook_converter.utils.unrar import extract as rarextract
 
 
 if False:
@@ -39,11 +38,6 @@ def guess_extension(*args, **kwargs):
     return ext
 
 
-_filename_sanitize_unicode = frozenset(('\\', '|', '?', '*', '<',
-                                        '"', ':', '>', '+', '/') +
-                                       tuple(map(chr, range(32))))
-
-
 def sanitize_file_name(name, substitute='_'):
     """
     Sanitize the filename `name`. All invalid characters are replaced by
@@ -61,7 +55,8 @@ def sanitize_file_name(name, substitute='_'):
         substitute = substitute.decode(constants_old.filesystem_encoding,
                                        'replace')
     chars = (substitute
-             if c in _filename_sanitize_unicode else c for c in name)
+             if c in set(('\\', '|', '?', '*', '<', '"', ':', '>', '+', '/') +
+                         tuple(map(chr, range(32)))) else c for c in name)
     one = ''.join(chars)
     one = re.sub(r'\s', ' ', one).strip()
     bname, ext = os.path.splitext(one)
@@ -117,7 +112,6 @@ def prints(*args, **kwargs):
 
 
 def setup_cli_handlers(logger, level):
-    import logging
     if os.getenv('CALIBRE_WORKER') and logger.handlers:
         return
     logger.setLevel(level)
@@ -144,19 +138,15 @@ def extract(path, dir):
     with open(path, 'rb') as f:
         id_ = f.read(3)
     if id_ == b'Rar':
-        from ebook_converter.utils.unrar import extract as rarextract
         extractor = rarextract
     elif id_.startswith(b'PK'):
-        from ebook_converter.libunzip import extract as zipextract
         extractor = zipextract
     if extractor is None:
         # Fallback to file extension
         ext = os.path.splitext(path)[1][1:].lower()
         if ext in ['zip', 'cbz', 'epub', 'oebzip']:
-            from ebook_converter.libunzip import extract as zipextract
             extractor = zipextract
         elif ext in ['cbr', 'rar']:
-            from ebook_converter.utils.unrar import extract as rarextract
             extractor = rarextract
     if extractor is None:
         raise Exception('Unknown archive type')
@@ -164,7 +154,7 @@ def extract(path, dir):
 
 
 def fit_image(width, height, pwidth, pheight):
-    '''
+    """
     Fit image in box of width pwidth and height pheight.
     @param width: Width of image
     @param height: Height of image
@@ -172,7 +162,7 @@ def fit_image(width, height, pwidth, pheight):
     @param pheight: Height of box
     @return: scaled, new_width, new_height. scaled is True iff new_width
              and/or new_height is different from width or height.
-    '''
+    """
     scaled = height > pheight or width > pwidth
     if height > pheight:
         corrf = pheight / float(height)
@@ -207,7 +197,7 @@ class CurrentDir(object):
 
 
 def walk(dir):
-    ''' A nice interface to os.walk '''
+    """A nice interface to os.walk"""
     for record in os.walk(dir):
         for f in record[-1]:
             yield os.path.join(record[0], f)
@@ -265,7 +255,6 @@ def entity_to_unicode(match, exceptions=[], encoding='cp1252',
             return check(bytes(bytearray((num,))).decode(encoding))
         except UnicodeDecodeError:
             return check(my_unichr(num))
-    from ebook_converter.ebooks.html_entities import html5_entities
     try:
         return check(html5_entities[ent])
     except KeyError:
