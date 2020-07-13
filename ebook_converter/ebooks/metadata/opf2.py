@@ -32,7 +32,6 @@ from ebook_converter.ebooks.metadata import string_to_authors, \
 from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.utils.date import parse_date, isoformat
 from ebook_converter.utils.localization import get_lang, canonicalize_lang
-from ebook_converter import prints
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
 from ebook_converter.utils.config import tweaks
 from ebook_converter.polyglot.urllib import unquote
@@ -516,7 +515,7 @@ def serialize_user_metadata(metadata_elem, all_user_metadata,
             fm = object_to_unicode(fm)
             fm = json.dumps(fm, default=to_json, ensure_ascii=False)
         except Exception:
-            prints('Failed to write user metadata:', name)
+            print('Failed to write user metadata: {name}')
             traceback.print_exc()
             continue
         meta = metadata_elem.makeelement('meta')
@@ -671,7 +670,7 @@ class OPF(object):  # {{{
                 decode_is_multiple(fm)
                 temp.set_user_metadata(name, fm)
             except Exception:
-                prints('Failed to read user metadata:', name)
+                print('Failed to read user metadata: {name}')
                 traceback.print_exc()
                 continue
         self._user_metadata_ = temp.get_all_user_metadata(True)

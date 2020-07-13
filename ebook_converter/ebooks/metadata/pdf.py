@@ -4,7 +4,6 @@ Read meta information from PDF files
 import os, subprocess, shutil, re
 from functools import partial
 
-from ebook_converter import prints
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.ebooks.metadata import (
     MetaInformation, string_to_authors, check_isbn, check_doi)
@@ -39,12 +38,12 @@ def read_info(outputdir, get_cover):
         raw = subprocess.check_output([pdfinfo, '-enc', 'UTF-8', '-isodates',
                                        source_file])
     except subprocess.CalledProcessError as e:
-        prints('pdfinfo errored out with return code: %d'%e.returncode)
+        print(f'pdfinfo errored out with return code: {e.returncode}')
         return None
     try:
         info_raw = raw.decode('utf-8')
     except UnicodeDecodeError:
-        prints('pdfinfo returned no UTF-8 data')
+        print('pdfinfo returned no UTF-8 data')
         return None
 
     for line in info_raw.splitlines():
@@ -63,7 +62,8 @@ def read_info(outputdir, get_cover):
     try:
         raw = subprocess.check_output([pdfinfo, '-meta', source_file]).strip()
     except subprocess.CalledProcessError as e:
-        prints('pdfinfo failed to read XML metadata with return code: %d'%e.returncode)
+        print('pdfinfo failed to read XML metadata with return code: '
+              f'{e.returncode}')
     else:
         parts = re.split(br'^Metadata:', raw, 1, flags=re.MULTILINE)
         if len(parts) > 1:
@@ -77,7 +77,7 @@ def read_info(outputdir, get_cover):
             subprocess.check_call([pdftoppm, '-singlefile', '-jpeg',
                                    '-cropbox', source_file, cover_file])
         except subprocess.CalledProcessError as e:
-            prints('pdftoppm errored out with return code: %d'%e.returncode)
+            print('pdftoppm errored out with return code: {e.returncode}')
 
     return ans
 

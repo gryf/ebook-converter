@@ -24,7 +24,6 @@ class HTML2ZIP(FileTypePlugin):
 
     def run(self, htmlfile):
         import codecs
-        from ebook_converter import prints
         from ebook_converter.ptempfile import TemporaryDirectory
         from ebook_converter.gui2.convert.gui_conversion import gui_convert
         from ebook_converter.customize.conversion import OptionRecommendation
@@ -40,7 +39,8 @@ class HTML2ZIP(FileTypePlugin):
                     try:
                         codecs.lookup(enc)
                     except Exception:
-                        prints('Ignoring invalid input encoding for HTML:', enc)
+                        print('Ignoring invalid input encoding for HTML: %s',
+                              enc)
                     else:
                         recs.append(['input_encoding', enc, OptionRecommendation.HIGH])
                 if bf == 'bf':

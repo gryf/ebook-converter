@@ -8,7 +8,7 @@ import re
 import sys
 import urllib.parse
 
-from ebook_converter import prints, force_unicode
+from ebook_converter import force_unicode
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.polyglot.urllib import unquote
 
@@ -16,8 +16,8 @@ from ebook_converter.polyglot.urllib import unquote
 try:
     _author_pat = re.compile(tweaks['authors_split_regex'])
 except Exception:
-    prints('Author split regexp:', tweaks['authors_split_regex'],
-           'is invalid, using default')
+    print(f"Author split regexp: {tweaks['authors_split_regex']}, is invalid, "
+          f"using default")
     _author_pat = re.compile(r'(?i),?\s+(and|with)\s+')
 
 

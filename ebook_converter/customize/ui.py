@@ -12,7 +12,6 @@ from ebook_converter.customize import profiles
 from ebook_converter.customize import builtins
 from ebook_converter.ebooks import metadata
 from ebook_converter.utils import config as cfg
-from ebook_converter import prints
 
 
 builtin_names = frozenset(p.name for p in builtins.plugins)
@@ -349,9 +348,8 @@ def set_file_type_metadata(stream, mi, ftype, report_error=None):
                     break
                 except Exception:
                     if report_error is None:
-                        prints('Failed to set metadata for the', ftype.upper(),
-                               'format of:', getattr(mi, 'title', ''),
-                               file=sys.stderr)
+                        print('Failed to set metadata for the', ftype.upper(),
+                              'format of:', getattr(mi, 'title', ''))
                         traceback.print_exc()
                     else:
                         report_error(mi, ftype, traceback.format_exc())

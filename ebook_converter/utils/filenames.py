@@ -5,13 +5,11 @@ meaning as possible.
 import errno
 import os
 import shutil
-import time
 from math import ceil
 
-from ebook_converter import force_unicode, prints, sanitize_file_name
-from ebook_converter.constants_old import (
-    filesystem_encoding, plugins, preferred_encoding, isosx
-)
+from ebook_converter import force_unicode, sanitize_file_name
+from ebook_converter.constants_old import (filesystem_encoding,
+                                           preferred_encoding)
 from ebook_converter.utils.localization import get_udc
 
 

@@ -5,11 +5,9 @@ from various formats.
 import numbers
 import os
 import re
-import sys
 
 from lxml import etree
 
-from ebook_converter import prints
 from ebook_converter.ebooks.chardet import xml_to_unicode
 
 
@@ -123,13 +121,14 @@ def render_html_data(path_to_html, width, height):
     result = {}
 
     def report_error(text=''):
-        prints('Failed to render', path_to_html, 'with errors:',
-               file=sys.stderr)
+        __import__('pdb').set_trace()
+        print(f'Failed to render {path_to_html}')
+        # file=sys.stderr)
         if text:
-            prints(text, file=sys.stderr)
+            print(text)  # , file=sys.stderr)
         if result and result['stdout_stderr']:
             with open(result['stdout_stderr'], 'rb') as f:
-                prints(f.read(), file=sys.stderr)
+                print(f.read())  # , file=sys.stderr)
 
     with TemporaryDirectory('-render-html') as tdir:
         try:

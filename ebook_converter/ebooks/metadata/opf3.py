@@ -6,7 +6,6 @@ import re
 from lxml import etree
 
 from ebook_converter import constants as const
-from ebook_converter import prints
 from ebook_converter.ebooks.metadata import authors_to_string
 from ebook_converter.ebooks.metadata import check_isbn
 from ebook_converter.ebooks.metadata import string_to_authors
@@ -923,7 +922,7 @@ def read_user_metadata2(root, remove_tags=False):
             decode_is_multiple(fm)
             ans[name] = fm
         except Exception:
-            prints('Failed to read user metadata:', name)
+            print('Failed to read user metadata: {name}')
             import traceback
             traceback.print_exc()
             continue

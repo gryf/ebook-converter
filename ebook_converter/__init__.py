@@ -14,9 +14,7 @@ from ebook_converter.constants_old import islinux, isfrozen, \
     isbsd, __appname__, __version__, __author__, \
     config_dir
 from ebook_converter.ebooks.html_entities import html5_entities
-from ebook_converter.libunzip import extract as zipextract
 from ebook_converter.startup import winutil, winutilerror
-from ebook_converter.utils.unrar import extract as rarextract
 
 
 if False:
@@ -72,45 +70,6 @@ def sanitize_file_name(name, substitute='_'):
     return one
 
 
-def prints(*args, **kwargs):
-    """
-    Print unicode arguments safely by encoding them to preferred_encoding
-    Has the same signature as the print function from Python 3, except for the
-    additional keyword argument safe_encode, which if set to True will cause
-    the function to use repr when encoding fails.
-
-    Returns the number of bytes written.
-    """
-    fobj = kwargs.get('file', sys.stdout)
-    enc = ('utf-8' if os.getenv('CALIBRE_WORKER')
-           else constants_old.preferred_encoding)
-    sep = kwargs.get('sep', ' ')
-    if isinstance(sep, bytes):
-        sep = sep.decode(enc)
-    end = kwargs.get('end', '\n')
-    if isinstance(end, bytes):
-        end = end.decode(enc)
-    count = 0
-
-    for i, arg in enumerate(args):
-        if isinstance(arg, bytes):
-            arg = arg.decode(enc)
-        arg = repr(arg)
-        try:
-            fobj.write(arg)
-            count += len(arg)
-        except Exception:
-            arg = repr(arg)
-            fobj.write(arg)
-            count += len(arg)
-        if i != len(args)-1:
-            fobj.write(sep)
-            count += len(sep)
-    fobj.write(end)
-    count += len(end)
-    return count
-
-
 def setup_cli_handlers(logger, level):
     if os.getenv('CALIBRE_WORKER') and logger.handlers:
         return
@@ -130,27 +89,6 @@ def setup_cli_handlers(logger, level):
                                                '%(lineno)s: %(message)s'))
 
     logger.addHandler(handler)
-
-
-def extract(path, dir):
-    extractor = None
-    # First use the file header to identify its type
-    with open(path, 'rb') as f:
-        id_ = f.read(3)
-    if id_ == b'Rar':
-        extractor = rarextract
-    elif id_.startswith(b'PK'):
-        extractor = zipextract
-    if extractor is None:
-        # Fallback to file extension
-        ext = os.path.splitext(path)[1][1:].lower()
-        if ext in ['zip', 'cbz', 'epub', 'oebzip']:
-            extractor = zipextract
-        elif ext in ['cbr', 'rar']:
-            extractor = rarextract
-    if extractor is None:
-        raise Exception('Unknown archive type')
-    extractor(path, dir)
 
 
 def fit_image(width, height, pwidth, pheight):

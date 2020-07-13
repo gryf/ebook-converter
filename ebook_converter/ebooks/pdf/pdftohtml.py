@@ -7,7 +7,7 @@ import sys
 
 from lxml import etree
 
-from ebook_converter import CurrentDir, xml_replace_entities, prints
+from ebook_converter import CurrentDir, xml_replace_entities
 from ebook_converter.constants_old import isbsd, islinux, isosx
 from ebook_converter.ebooks import ConversionError, DRMError
 from ebook_converter.ebooks.chardet import xml_to_unicode
@@ -78,8 +78,8 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
             raise ConversionError('pdftohtml failed with return code: '
                                   '%d\n%s' % (ret, out))
         if out:
-            prints("pdftohtml log:")
-            prints(out)
+            print("pdftohtml log:")
+            print(out)
         if not os.path.exists(index) or os.stat(index).st_size < 100:
             raise DRMError()
 

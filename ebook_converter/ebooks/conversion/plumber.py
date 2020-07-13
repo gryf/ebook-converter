@@ -14,7 +14,6 @@ from ebook_converter.ebooks.conversion.preprocess import HTMLPreProcessor
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils.date import parse_date
 from ebook_converter.utils.zipfile import ZipFile
-from ebook_converter import extract, walk
 from ebook_converter import constants
 from ebook_converter.constants_old import filesystem_encoding
 
@@ -694,11 +693,6 @@ OptionRecommendation(name='search_replace',
             input_fmt = 'epub'
         self.archive_input_tdir = None
         self.changed_options = set()
-        if input_fmt in ARCHIVE_FMTS:
-            self.log('Processing archive...')
-            tdir = PersistentTemporaryDirectory('_pl_arc')
-            self.input, input_fmt = self.unarchive(self.input, tdir)
-            self.archive_input_tdir = tdir
         if os.access(self.input, os.R_OK):
             nfp = run_plugins_on_preprocess(self.input, input_fmt)
             if nfp != self.input:
@@ -760,25 +754,6 @@ OptionRecommendation(name='search_replace',
             setattr(self, w, temp)
         if merge_plugin_recs:
             self.merge_plugin_recommendations()
-
-    @classmethod
-    def unarchive(self, path, tdir):
-        extract(path, tdir)
-        files = list(walk(tdir))
-        files = [f if isinstance(f, str) else f.decode(filesystem_encoding)
-                for f in files]
-        from ebook_converter.customize.ui import available_input_formats
-        fmts = set(available_input_formats())
-        fmts -= {'htm', 'html', 'xhtm', 'xhtml'}
-        fmts -= set(ARCHIVE_FMTS)
-
-        for ext in fmts:
-            for f in files:
-                if f.lower().endswith('.'+ext):
-                    if ext in ['txt', 'rtf'] and os.stat(f).st_size < 2048:
-                        continue
-                    return f, ext
-        return self.find_html_index(files)
 
     @classmethod
     def find_html_index(self, files):

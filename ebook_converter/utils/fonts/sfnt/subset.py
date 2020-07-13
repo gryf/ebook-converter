@@ -204,15 +204,13 @@ def option_parser():
 
 
 def print_stats(old_stats, new_stats):
-    from ebook_converter import prints
-    prints('========= Table comparison (original vs. subset) =========')
-    prints('Table', ' ', '%10s'%'Size', '  ', 'Percent', '   ', '%10s'%'New Size',
-            ' New Percent')
-    prints('='*80)
+    print('========= Table comparison (original vs. subset) =========')
+    print('Table          Size  Percent             New Size New Percent')
+    print('='*80)
     old_total = sum(old_stats.values())
     new_total = sum(new_stats.values())
-    tables = sorted(old_stats, key=lambda x:old_stats[x],
-            reverse=True)
+    tables = sorted(old_stats, key=lambda x: old_stats[x],
+                    reverse=True)
     for table in tables:
         osz = old_stats[table]
         op = osz/old_total * 100
@@ -220,15 +218,14 @@ def print_stats(old_stats, new_stats):
         np = nsz/new_total * 100
         suffix = ' | same size'
         if nsz != osz:
-            suffix = ' | reduced to %.1f %%'%(nsz/osz * 100)
-        prints('%4s'%table, '  ', '%10s'%osz, '  ', '%5.1f %%'%op, '   ',
-                '%10s'%nsz, '  ', '%5.1f %%'%np, suffix)
-    prints('='*80)
+            suffix = ' | reduced to %.1f %%' % (nsz/osz * 100)
+        print('%4s  %10s  %5.1f %%  %10s  %5.1f %% %s' %
+              (table, osz, op, nsz, np, suffix))
+    print('='*80)
 
 
 def main(args):
     import sys, time
-    from ebook_converter import prints
     parser = option_parser()
     opts, args = parser.parse_args(args)
     if len(args) < 4 or len(args) > 4:
@@ -243,7 +240,7 @@ def main(args):
 
     def not_single(c):
         if len(c) > 1:
-            prints(c, 'is not a single character', file=sys.stderr)
+            print(f'{c}is not a single character')
             raise SystemExit(1)
 
     def conv_code(c):
@@ -255,7 +252,7 @@ def main(args):
         if '-' in c:
             parts = [x.strip() for x in c.split('-')]
             if len(parts) != 2:
-                prints('Invalid range:', c, file=sys.stderr)
+                print(f'Invalid range: {c}')
                 raise SystemExit(1)
             if opts.codes:
                 parts = tuple(map(conv_code, parts))
@@ -272,13 +269,14 @@ def main(args):
     reduced = (len(sf)/len(orig)) * 100
 
     def sz(x):
-        return '%gKB'%(len(x)/1024.)
+        return '%gKB' % (len(x)/1024.)
     print_stats(old_stats, new_stats)
-    prints('Original size:', sz(orig), 'Subset size:', sz(sf), 'Reduced to: %g%%'%(reduced))
-    prints('Subsetting took %g seconds'%taken)
+    print('Original size:', sz(orig), 'Subset size:', sz(sf),
+          'Reduced to: %g%%' % (reduced))
+    print('Subsetting took %g seconds' % taken)
     with open(off, 'wb') as f:
         f.write(sf)
-    prints('Subset font written to:', off)
+    print('Subset font written to:', off)
 
 
 if __name__ == '__main__':

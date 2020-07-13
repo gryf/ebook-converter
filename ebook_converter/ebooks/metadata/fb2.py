@@ -12,7 +12,7 @@ from lxml import etree
 from ebook_converter.utils.date import parse_only_date
 from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.utils.imghdr import identify
-from ebook_converter import prints, force_unicode
+from ebook_converter import force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation, check_isbn
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.polyglot.binary import as_base64_unicode
@@ -237,8 +237,8 @@ def _parse_cover_data(root, imgid, mi, ctx):
                 fmt = identify(cdata)[0]
                 mi.cover_data = (fmt, cdata)
         else:
-            prints("WARNING: Unsupported coverpage mime-type '%s' (id=#%s)" %
-                   (mimetype, imgid))
+            print(f"WARNING: Unsupported coverpage mime-type '{mimetype}' "
+                  f"(id=#{imgid})")
 
 
 def _parse_tags(root, mi, ctx):

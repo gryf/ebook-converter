@@ -1,7 +1,6 @@
 import os
 from collections import namedtuple
 
-from ebook_converter import prints
 from ebook_converter.customize import Plugin
 
 
@@ -170,7 +169,7 @@ class DevicePlugin(Plugin):
                             cbcd = self.BCD
                         if self.test_bcd(bcd, cbcd):
                             if debug:
-                                prints(dev)
+                                print(dev)
                             if ch(dev, debug=debug):
                                 return True, dev
         return False, None

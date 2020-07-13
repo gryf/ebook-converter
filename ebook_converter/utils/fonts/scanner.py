@@ -2,7 +2,7 @@ import os
 from collections import defaultdict
 from threading import Thread
 
-from ebook_converter import walk, prints
+from ebook_converter import walk
 from ebook_converter.constants_old import isosx
 from ebook_converter.constants_old import plugins, DEBUG
 from ebook_converter.constants_old import filesystem_encoding
@@ -67,7 +67,7 @@ def fc_list():
             try:
                 ans.append(d.decode(filesystem_encoding))
             except ValueError:
-                prints('Ignoring undecodeable font path: %r' % d)
+                print(f'Ignoring undecodeable font path: {d}')
                 continue
     end(str_list)
     if len(ans) < 3:
@@ -309,7 +309,7 @@ class FontScanner(Thread):
                 files = tuple(walk(folder))
             except EnvironmentError as e:
                 if DEBUG:
-                    prints('Failed to walk font folder:', folder, str(e))
+                    print(f'Failed to walk font folder: {folder}, {e}')
                 continue
             for candidate in files:
                 if (candidate.rpartition('.')[-1].lower() not in
@@ -332,8 +332,8 @@ class FontScanner(Thread):
                     self.read_font_metadata(candidate, fileid)
                 except Exception as e:
                     if DEBUG:
-                        prints('Failed to read metadata from font file:',
-                               candidate, str(e))
+                        print(f'Failed to read metadata from font file '
+                              f'{candidate}: {e}')
                     continue
 
         if frozenset(cached_fonts) != frozenset(self.cached_fonts):
@@ -369,18 +369,18 @@ class FontScanner(Thread):
     def dump_fonts(self):
         self.join()
         for family in self.font_families:
-            prints(family)
+            print(family)
             for font in self.fonts_for_family(family):
-                prints('\t%s: %s' % (font['full_name'], font['path']))
-                prints(end='\t')
+                print('\t%s: %s' % (font['full_name'], font['path']))
+                print(end='\t')
                 for key in ('font-stretch', 'font-weight', 'font-style'):
-                    prints('%s: %s' % (key, font[key]), end=' ')
-                prints()
-                prints('\tSub-family:', font['wws_subfamily_name'] or
-                       font['preferred_subfamily_name'] or
-                       font['subfamily_name'])
-                prints()
-            prints()
+                    print('%s: %s' % (key, font[key]))
+                print()
+                print('\tSub-family: %s' % (font['wws_subfamily_name'] or
+                                            font['preferred_subfamily_name']
+                                            or font['subfamily_name']))
+                print()
+            print()
 
 
 font_scanner = FontScanner()

@@ -4,11 +4,11 @@ import itertools
 import json
 import re
 import sys
+import traceback
 
 from lxml import etree
 from lxml.builder import ElementMaker
 
-from ebook_converter import prints
 from ebook_converter.ebooks.metadata import check_isbn, check_doi
 from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.ebooks.metadata.opf2 import dump_dict
@@ -192,7 +192,7 @@ def read_user_metadata(mi, root):
                             mi.set_user_metadata(name, fm)
                             fields.add(name)
                         except Exception:
-                            prints('Failed to read user metadata:', name)
+                            print(f'Failed to read user metadata: {name}')
                             import traceback
                             traceback.print_exc()
 
@@ -467,8 +467,7 @@ def create_user_metadata(calibre, all_user_metadata):
             fm = object_to_unicode(fm)
             fm = json.dumps(fm, default=to_json, ensure_ascii=False)
         except Exception:
-            prints('Failed to write user metadata:', name)
-            import traceback
+            print('Failed to write user metadata: {name}')
             traceback.print_exc()
             continue
         li = bag.makeelement(expand('rdf:li'))

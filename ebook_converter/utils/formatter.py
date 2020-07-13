@@ -5,7 +5,6 @@ Created on 23 Sep 2010
 """
 import re, string, traceback, numbers
 
-from ebook_converter import prints
 from ebook_converter.constants_old import DEBUG
 from ebook_converter.utils.formatter_functions import formatter_functions
 
@@ -373,7 +372,7 @@ class TemplateFormatter(string.Formatter):
             if DEBUG:  # and getattr(e, 'is_locking_error', False):
                 traceback.print_exc()
                 if column_name:
-                    prints('Error evaluating column named:', column_name)
+                    print('Error evaluating column named: {column_name}')
             ans = error_value + ' ' + str(e)
         return ans
 

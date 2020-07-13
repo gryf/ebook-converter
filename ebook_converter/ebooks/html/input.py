@@ -8,7 +8,7 @@ import sys
 import urllib.parse
 
 from ebook_converter.ebooks.chardet import detect_xml_encoding
-from ebook_converter import unicode_path, replace_entities
+from ebook_converter import replace_entities
 
 
 class Link(object):
