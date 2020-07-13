@@ -8,7 +8,7 @@ import re
 import sys
 import urllib.parse
 
-from ebook_converter import relpath, prints, force_unicode
+from ebook_converter import prints, force_unicode
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.polyglot.urllib import unquote
 
@@ -271,7 +271,7 @@ class Resource(object):
         if self.path == basedir:
             return '' + frag
         try:
-            rpath = relpath(self.path, basedir)
+            rpath = os.path.relpath(self.path, basedir)
         except OSError:  # On windows path and basedir could be on different drives
             rpath = self.path
         return urllib.parse.quote(rpath.replace(os.sep, '/')) + frag

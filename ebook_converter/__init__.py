@@ -206,9 +206,6 @@ class CurrentDir(object):
             pass
 
 
-relpath = os.path.relpath
-
-
 def walk(dir):
     ''' A nice interface to os.walk '''
     for record in os.walk(dir):
