@@ -18,6 +18,8 @@ To build and run ebook converter, you'll need:
 - Python 3.6 or newer
 - `Liberation fonts`_
 - setuptools
+- ``pdftohtml``, ``pdfinfo`` and ``pdftoppm`` from `poppler`_ project for
+  conversion from PDF available in ``$PATH``
 
 No Python2 support. Even if Calibre probably still is able to run on Python2, I
 do not have an intention to support it.
@@ -101,7 +103,7 @@ managers), i.e:
 
 .. code:: shell-session
 
-   $ virtualenv venv
+   $ python -m venv venv
    $ . venv/bin/activate
    (venv) $ git clone https://github.com/gryf/ebook-converter
    (venv) $ cd ebook-converter
@@ -128,3 +130,4 @@ for details.
 .. _pypi: https://pypi.python.org
 .. _Liberation fonts: https://github.com/liberationfonts/liberation-fonts
 .. _Kindle periodical: https://sellercentral.amazon.com/gp/help/external/help.html?itemID=202047960&language=en-US
+.. _poppler: https://poppler.freedesktop.org/

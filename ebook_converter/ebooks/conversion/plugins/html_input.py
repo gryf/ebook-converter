@@ -2,10 +2,8 @@ import functools
 import mimetypes
 import os
 import re
-import tempfile
 import urllib.parse
 
-from ebook_converter.constants_old import islinux, isbsd
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter.utils.localization import get_lang
@@ -55,7 +53,6 @@ class HTMLInput(InputFormatPlugin):
 
     def convert(self, stream, opts, file_ext, log,
                 accelerators):
-        self._is_case_sensitive = None
         basedir = os.getcwd()
         self.opts = opts
 
@@ -80,14 +77,6 @@ class HTMLInput(InputFormatPlugin):
         from ebook_converter.ebooks.conversion.plumber import create_oebbook
         return create_oebbook(log, stream.name, opts,
                 encoding=opts.input_encoding)
-
-    def is_case_sensitive(self, path):
-        if getattr(self, '_is_case_sensitive', None) is not None:
-            return self._is_case_sensitive
-        if not path or not os.path.exists(path):
-            return islinux or isbsd
-        self._is_case_sensitive = not (os.path.exists(path.lower()) and os.path.exists(path.upper()))
-        return self._is_case_sensitive
 
     def create_oebbook(self, htmlpath, basedir, opts, log, mi):
         import uuid
@@ -154,8 +143,6 @@ class HTMLInput(InputFormatPlugin):
         self.log = log
         self.log('Normalizing filename cases')
         for path, href in htmlfile_map.items():
-            if not self.is_case_sensitive(path):
-                path = path.lower()
             self.added_resources[path] = href
         self.urlnormalize, self.DirContainer = urlnormalize, DirContainer
         self.urldefrag = urllib.parse.urldefrag
@@ -252,8 +239,6 @@ class HTMLInput(InputFormatPlugin):
         if os.path.isdir(link):
             self.log.warn(link_, 'is a link to a directory. Ignoring.')
             return link_
-        if not self.is_case_sensitive(tempfile.gettempdir()):
-            link = link.lower()
         if link not in self.added_resources:
             bhref = os.path.basename(link)
             id, href = self.oeb.manifest.generate(id='added', href=sanitize_file_name(bhref))

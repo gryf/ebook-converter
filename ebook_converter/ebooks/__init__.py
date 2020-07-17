@@ -121,7 +121,6 @@ def render_html_data(path_to_html, width, height):
     result = {}
 
     def report_error(text=''):
-        __import__('pdb').set_trace()
         print(f'Failed to render {path_to_html}')
         # file=sys.stderr)
         if text:

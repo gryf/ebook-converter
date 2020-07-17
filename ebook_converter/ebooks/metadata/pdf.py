@@ -1,25 +1,15 @@
 """
 Read meta information from PDF files
 """
-import os, subprocess, shutil, re
-from functools import partial
+import functools
+import os
+import re
+import shutil
+import subprocess
 
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.ebooks.metadata import (
     MetaInformation, string_to_authors, check_isbn, check_doi)
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-
-
-def get_tools():
-    from ebook_converter.ebooks.pdf.pdftohtml import PDFTOHTML
-    base = os.path.dirname(PDFTOHTML)
-    suffix = ''
-    pdfinfo = os.path.join(base, 'pdfinfo') + suffix
-    pdftoppm = os.path.join(base, 'pdftoppm') + suffix
-    return pdfinfo, pdftoppm
 
 
 def read_info(outputdir, get_cover):
@@ -29,7 +19,8 @@ def read_info(outputdir, get_cover):
     way to pass unicode paths via command line arguments. This also ensures
     that if poppler crashes, no stale file handles are left for the original
     file, only for src.pdf.'''
-    pdfinfo, pdftoppm = get_tools()
+    pdfinfo = 'pdfinfo'
+    pdftoppm = 'pdftoppm'
     source_file = os.path.join(outputdir, 'src.pdf')
     cover_file = os.path.join(outputdir, 'cover')
     ans = {}
@@ -55,8 +46,8 @@ def read_info(outputdir, get_cover):
             ans[field] = val.strip()
 
     # Now read XMP metadata
-    # Versions of poppler before 0.47.0 used to print out both the Info dict and
-    # XMP metadata packet together. However, since that changed in
+    # Versions of poppler before 0.47.0 used to print out both the Info dict
+    # and XMP metadata packet together. However, since that changed in
     # https://cgit.freedesktop.org/poppler/poppler/commit/?id=c91483aceb1b640771f572cb3df9ad707e5cad0d
     # we can no longer rely on it.
     try:
@@ -77,13 +68,14 @@ def read_info(outputdir, get_cover):
             subprocess.check_call([pdftoppm, '-singlefile', '-jpeg',
                                    '-cropbox', source_file, cover_file])
         except subprocess.CalledProcessError as e:
-            print('pdftoppm errored out with return code: {e.returncode}')
+            print(f'pdftoppm errored out with return code: {e.returncode}')
 
     return ans
 
 
-def page_images(pdfpath, outputdir='.', first=1, last=1, image_format='jpeg', prefix='page-images'):
-    pdftoppm = get_tools()[1]
+def page_images(pdfpath, outputdir='.', first=1, last=1, image_format='jpeg',
+                prefix='page-images'):
+    pdftoppm = 'pdftoppm'
     outputdir = os.path.abspath(outputdir)
     args = {}
     try:
@@ -92,11 +84,12 @@ def page_images(pdfpath, outputdir='.', first=1, last=1, image_format='jpeg', pr
             '-l', str(last), pdfpath, os.path.join(outputdir, prefix)
         ], **args)
     except subprocess.CalledProcessError as e:
-        raise ValueError('Failed to render PDF, pdftoppm errorcode: %s'%e.returncode)
+        raise ValueError('Failed to render PDF, pdftoppm errorcode: %s' %
+                         e.returncode)
 
 
 def is_pdf_encrypted(path_to_pdf):
-    pdfinfo = get_tools()[0]
+    pdfinfo = 'pdfinfo'
     raw = subprocess.check_output([pdfinfo, path_to_pdf])
     q = re.search(br'^Encrypted:\s*(\S+)', raw, flags=re.MULTILINE)
     if q is not None:
@@ -149,7 +142,7 @@ def get_metadata(stream, cover=True):
 
     # Look for recognizable identifiers in the info dict, if they were not
     # found in the XMP metadata
-    for scheme, check_func in {'doi':check_doi, 'isbn':check_isbn}.items():
+    for scheme, check_func in {'doi': check_doi, 'isbn': check_isbn}.items():
         if scheme not in mi.get_identifiers():
             for k, v in info.items():
                 if k != 'xmp_metadata':
@@ -163,9 +156,7 @@ def get_metadata(stream, cover=True):
     return mi
 
 
-get_quick_metadata = partial(get_metadata, cover=False)
-
-#from ebook_converter.utils.podofo import set_metadata as podofo_set_metadata
+get_quick_metadata = functools.partial(get_metadata, cover=False)
 
 
 def set_metadata(stream, mi):

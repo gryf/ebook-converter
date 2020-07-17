@@ -3,12 +3,10 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 
 from lxml import etree
 
 from ebook_converter import CurrentDir, xml_replace_entities
-from ebook_converter.constants_old import isbsd, islinux, isosx
 from ebook_converter.ebooks import ConversionError, DRMError
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ptempfile import PersistentTemporaryFile
@@ -16,19 +14,8 @@ from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.ipc import eintr_retry_call
 
 
-PDFTOHTML = 'pdftohtml'
-
-
 def popen(cmd, **kw):
     return subprocess.Popen(cmd, **kw)
-
-
-if isosx and hasattr(sys, 'frameworks_dir'):
-    base = os.path.join(os.path.dirname(sys.frameworks_dir), 'utils.app',
-                        'Contents', 'MacOS')
-    PDFTOHTML = os.path.join(base, PDFTOHTML)
-if (islinux or isbsd) and getattr(sys, 'frozen', False):
-    PDFTOHTML = os.path.join(sys.executables_location, 'bin', 'pdftohtml')
 
 
 def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
@@ -49,12 +36,9 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
         def a(x):
             return os.path.basename(x)
 
-        exe = PDFTOHTML
-        cmd = [exe, '-enc', 'UTF-8', '-noframes', '-p', '-nomerge',
+        cmd = ['pdftohtml', '-enc', 'UTF-8', '-noframes', '-p', '-nomerge',
                '-nodrm', a(pdfsrc), a(index)]
 
-        if isbsd:
-            cmd.remove('-nodrm')
         if no_images:
             cmd.append('-i')
         if as_xml:
@@ -105,11 +89,9 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
 
                 i.write(raw.encode('utf-8'))
 
-            cmd = [exe, '-f', '1', '-l', '1', '-xml', '-i', '-enc', 'UTF-8',
-                   '-noframes', '-p', '-nomerge', '-nodrm', '-q', '-stdout',
-                   a(pdfsrc)]
-            if isbsd:
-                cmd.remove('-nodrm')
+            cmd = ['pdftohtml', '-f', '1', '-l', '1', '-xml', '-i', '-enc',
+                   'UTF-8', '-noframes', '-p', '-nomerge', '-nodrm', '-q',
+                   '-stdout', a(pdfsrc)]
             p = popen(cmd, stdout=subprocess.PIPE)
             raw = p.stdout.read().strip()
             if p.wait() == 0 and raw:

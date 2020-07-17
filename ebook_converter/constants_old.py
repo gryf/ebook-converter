@@ -6,11 +6,10 @@ import os
 import sys
 
 
-__appname__   = 'calibre'
+__appname__ = 'ebook-converter'
 numeric_version = (4, 12, 0)
-__version__   = '.'.join(map(str, numeric_version))
-git_version   = None
-__author__    = "Kovid Goyal <kovid@kovidgoyal.net>"
+__version__ = '.'.join([str(x) for x in numeric_version])
+__author__ = "foobar"
 
 '''
 Various run time constants.
@@ -18,16 +17,14 @@ Various run time constants.
 
 
 _plat = sys.platform.lower()
-isosx     = 'darwin' in _plat
-isnewosx  = isosx and getattr(sys, 'new_app_bundle', False)
+isosx = 'darwin' in _plat
+isnewosx = isosx and getattr(sys, 'new_app_bundle', False)
 isfreebsd = 'freebsd' in _plat
 isnetbsd = 'netbsd' in _plat
 isdragonflybsd = 'dragonfly' in _plat
-isbsd = isfreebsd or isnetbsd or isdragonflybsd
 ishaiku = 'haiku1' in _plat
-islinux   = True
-isfrozen  = hasattr(sys, 'frozen')
-isunix = isosx or islinux or ishaiku
+isfrozen = hasattr(sys, 'frozen')
+isunix = True
 isportable = os.getenv('CALIBRE_PORTABLE_BUILD') is not None
 isxp = isoldvista = False
 is64bit = sys.maxsize > (1 << 32)
@@ -40,7 +37,7 @@ TOC_DIALOG_APP_UID = 'com.calibre-ebook.toc-editor'
 try:
     preferred_encoding = locale.getpreferredencoding()
     codecs.lookup(preferred_encoding)
-except:
+except Exception:
     preferred_encoding = 'utf-8'
 
 fcntl = importlib.import_module('fcntl')
@@ -214,12 +211,9 @@ del dv
 
 def get_version():
     '''Return version string for display to user '''
-    if git_version is not None:
-        v = git_version
-    else:
-        v = __version__
-        if numeric_version[-1] == 0:
-            v = v[:-2]
+    v = __version__
+    if numeric_version[-1] == 0:
+        v = v[:-2]
     if is_running_from_develop:
         v += '*'
 

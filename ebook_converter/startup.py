@@ -5,6 +5,7 @@ import builtins
 import fcntl
 import locale
 import sys
+import threading
 
 from ebook_converter import constants_old
 
@@ -22,7 +23,9 @@ if not _run_once:
     try:
         base_dir()
     except EnvironmentError:
-        pass  # Ignore this error during startup, so we can show a better error message to the user later.
+        # Ignore this error during startup, so we can show a better error
+        # message to the user later.
+        pass
 
     #
     # Convert command line arguments to unicode
@@ -51,7 +54,6 @@ if not _run_once:
     import ebook_converter.utils.resources as resources
     resources
 
-    #
     # Initialize locale
     # Import string as we do not want locale specific
     # string.whitespace/printable, on windows especially, this causes problems.
@@ -87,28 +89,26 @@ if not _run_once:
         bound_signal.connect(slot, **kw)
     builtins.__dict__['connect_lambda'] = connect_lambda
 
-    if constants_old.islinux or constants_old.isosx or constants_old.isfreebsd:
-        # Name all threads at the OS level created using the threading module, see
-        # http://bugs.python.org/issue15500
-        import threading
+    # Name all threads at the OS level created using the threading module, see
+    # http://bugs.python.org/issue15500
 
-        orig_start = threading.Thread.start
+    orig_start = threading.Thread.start
 
-        def new_start(self):
-            orig_start(self)
-            try:
-                name = self.name
-                if not name or name.startswith('Thread-'):
-                    name = self.__class__.__name__
-                    if name == 'Thread':
-                        name = self.name
-                if name:
-                    if isinstance(name, str):
-                        name = name.encode('ascii', 'replace').decode('ascii')
-                    constants_old.plugins['speedup'][0].set_thread_name(name[:15])
-            except Exception:
-                pass  # Don't care about failure to set name
-        threading.Thread.start = new_start
+    def new_start(self):
+        orig_start(self)
+        try:
+            name = self.name
+            if not name or name.startswith('Thread-'):
+                name = self.__class__.__name__
+                if name == 'Thread':
+                    name = self.name
+            if name:
+                if isinstance(name, str):
+                    name = name.encode('ascii', 'replace').decode('ascii')
+                constants_old.plugins['speedup'][0].set_thread_name(name[:15])
+        except Exception:
+            pass  # Don't care about failure to set name
+    threading.Thread.start = new_start
 
 
 def test_lopen():
