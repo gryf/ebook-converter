@@ -13,25 +13,9 @@ builtins.__dict__['dynamic_property'] = lambda func: func(None)
 
 
 _run_once = False
-winutil = winutilerror = None
 
 if not _run_once:
     _run_once = True
-    from importlib import import_module
-
-    class DeVendor(object):
-
-        def find_spec(self, fullname, path, target=None):
-            spec = None
-            if fullname == 'calibre.web.feeds.feedparser':
-                m = import_module('feedparser')
-                spec = m.__spec__
-            elif fullname.startswith('calibre.ebooks.markdown'):
-                m = import_module(fullname[len('calibre.ebooks.'):])
-                spec = m.__spec__
-            return spec
-
-    sys.meta_path.insert(0, DeVendor())
 
     # Ensure that all temp files/dirs are created under a calibre tmp dir
     from ebook_converter.ptempfile import base_dir
