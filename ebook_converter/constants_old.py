@@ -1,8 +1,11 @@
+import atexit
 import collections
 import importlib
 import locale
 import os
+import shutil
 import sys
+import tempfile
 
 
 __appname__ = 'ebook-converter'
@@ -78,32 +81,26 @@ cconfd = os.getenv('CALIBRE_CONFIG_DIRECTORY')
 if cconfd is not None:
     config_dir = os.path.abspath(cconfd)
 
-bdir = os.path.abspath(os.path.expanduser(os.getenv('XDG_CONFIG_HOME', '~/.config')))
+bdir = os.path.abspath(os.path.expanduser(os.getenv('XDG_CONFIG_HOME',
+                                                    '~/.config')))
 config_dir = os.path.join(bdir, 'calibre')
 try:
     os.makedirs(config_dir, mode=CONFIG_DIR_MODE)
-except:
+except IOError:
     pass
 if not os.path.exists(config_dir) or \
         not os.access(config_dir, os.W_OK) or not \
         os.access(config_dir, os.X_OK):
     print('No write acces to', config_dir, 'using a temporary dir instead')
-    import tempfile, atexit
     config_dir = tempfile.mkdtemp(prefix='calibre-config-')
 
     def cleanup_cdir():
         try:
-            import shutil
             shutil.rmtree(config_dir)
-        except:
+        except OSError:
             pass
     atexit.register(cleanup_cdir)
 # }}}
-
-
-dv = os.getenv('CALIBRE_DEVELOP_FROM')
-is_running_from_develop = bool(getattr(sys, 'frozen', False) and dv and os.path.abspath(dv) in sys.path)
-del dv
 
 
 def get_version():
@@ -111,7 +108,5 @@ def get_version():
     v = __version__
     if numeric_version[-1] == 0:
         v = v[:-2]
-    if is_running_from_develop:
-        v += '*'
 
     return v
