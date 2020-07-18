@@ -3,15 +3,10 @@ from struct import pack
 from io import BytesIO
 
 from ebook_converter.ebooks.oeb import base
-from ebook_converter.constants_old import isosx
 from ebook_converter.ebooks.mobi.utils import (utf8_text, to_base)
 from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.ebooks.metadata import authors_to_sort_string
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 EXTH_CODES = {
     'creator': 100,
@@ -45,10 +40,10 @@ COLLAPSE_RE = re.compile(r'[ \t\r\n\v]+')
 
 
 def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
-        share_not_sync=True, cover_offset=None, thumbnail_offset=None,
-        start_offset=None, mobi_doctype=2, num_of_resources=None,
-        kf8_unknown_count=0, be_kindlegen2=False, kf8_header_index=None,
-        page_progression_direction=None, primary_writing_mode=None):
+               share_not_sync=True, cover_offset=None, thumbnail_offset=None,
+               start_offset=None, mobi_doctype=2, num_of_resources=None,
+               kf8_unknown_count=0, be_kindlegen2=False, kf8_header_index=None,
+               page_progression_direction=None, primary_writing_mode=None):
     exth = BytesIO()
     nrecs = 0
 
@@ -67,7 +62,7 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
         elif term == 'rights':
             try:
                 rights = utf8_text(str(metadata.rights[0]))
-            except:
+            except Exception:
                 rights = b'Unknown'
             exth.write(pack(b'>II', EXTH_CODES['rights'], len(rights) + 8))
             exth.write(rights)
@@ -125,7 +120,7 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
             exth.write(b'EBOK')
             nrecs += 1
     else:
-        ids = {0x101:b'NWPR', 0x103:b'MAGZ'}.get(mobi_doctype, None)
+        ids = {0x101: b'NWPR', 0x103: b'MAGZ'}.get(mobi_doctype, None)
         if ids:
             exth.write(pack(b'>II', 501, 12))
             exth.write(ids)
@@ -145,7 +140,8 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
     exth.write(datestr)
     nrecs += 1
     if is_periodical:
-        exth.write(pack(b'>II', EXTH_CODES['lastupdatetime'], len(datestr) + 8))
+        exth.write(pack(b'>II', EXTH_CODES['lastupdatetime'],
+                        len(datestr) + 8))
         exth.write(datestr)
         nrecs += 1
 
@@ -154,10 +150,10 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
         vals = {204: mv, 205: 2, 206: 9, 207: 0}
     elif is_periodical:
         # Pretend to be amazon's super secret periodical generator
-        vals = {204:201, 205:2, 206:0, 207:101}
+        vals = {204: 201, 205: 2, 206: 0, 207: 101}
     else:
         # Pretend to be kindlegen 1.2
-        vals = {204:201, 205:1, 206:2, 207:33307}
+        vals = {204: 201, 205: 1, 206: 2, 207: 33307}
     for code, val in vals.items():
         exth.write(pack(b'>III', code, 12, val))
         nrecs += 1
@@ -168,14 +164,17 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
 
     if cover_offset is not None:
         exth.write(pack(b'>III', EXTH_CODES['coveroffset'], 12,
-            cover_offset))
+                        cover_offset))
         exth.write(pack(b'>III', EXTH_CODES['hasfakecover'], 12, 0))
         nrecs += 2
     if thumbnail_offset is not None:
         exth.write(pack(b'>III', EXTH_CODES['thumboffset'], 12,
-            thumbnail_offset))
-        thumbnail_uri_str = ('kindle:embed:%s' %(to_base(thumbnail_offset, base=32, min_num_digits=4))).encode('utf-8')
-        exth.write(pack(b'>II', EXTH_CODES['kf8_thumbnail_uri'], len(thumbnail_uri_str) + 8))
+                        thumbnail_offset))
+        thumbnail_uri_str = ('kindle:embed:%s' %
+                             to_base(thumbnail_offset, base=32,
+                                     min_num_digits=4)).encode('utf-8')
+        exth.write(pack(b'>II', EXTH_CODES['kf8_thumbnail_uri'],
+                        len(thumbnail_uri_str) + 8))
         exth.write(thumbnail_uri_str)
         nrecs += 2
 
@@ -186,34 +185,35 @@ def build_exth(metadata, prefer_author_sort=False, is_periodical=False,
             start_offset = [start_offset]
         for so in start_offset:
             if so is not None:
-                exth.write(pack(b'>III', EXTH_CODES['startreading'], 12,
-                    so))
+                exth.write(pack(b'>III', EXTH_CODES['startreading'], 12, so))
                 nrecs += 1
 
     if kf8_header_index is not None:
         exth.write(pack(b'>III', EXTH_CODES['kf8_header_index'], 12,
-            kf8_header_index))
+                        kf8_header_index))
         nrecs += 1
 
     if num_of_resources is not None:
         exth.write(pack(b'>III', EXTH_CODES['num_of_resources'], 12,
-            num_of_resources))
+                        num_of_resources))
         nrecs += 1
 
     if kf8_unknown_count is not None:
         exth.write(pack(b'>III', EXTH_CODES['kf8_unknown_count'], 12,
-            kf8_unknown_count))
+                        kf8_unknown_count))
         nrecs += 1
 
     if primary_writing_mode:
         pwm = primary_writing_mode.encode('utf-8')
-        exth.write(pack(b'>II', EXTH_CODES['primary_writing_mode'], len(pwm) + 8))
+        exth.write(pack(b'>II', EXTH_CODES['primary_writing_mode'],
+                        len(pwm) + 8))
         exth.write(pwm)
         nrecs += 1
 
     if page_progression_direction in {'rtl', 'ltr', 'default'}:
         ppd = page_progression_direction.encode('ascii')
-        exth.write(pack(b'>II', EXTH_CODES['page_progression_direction'], len(ppd) + 8))
+        exth.write(pack(b'>II', EXTH_CODES['page_progression_direction'],
+                        len(ppd) + 8))
         exth.write(ppd)
         nrecs += 1
 

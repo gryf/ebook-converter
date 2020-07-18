@@ -16,7 +16,6 @@ del err
 
 
 def collator():
-    __import__('pdb').set_trace()
     global _collator, _locale
     if _collator is None:
         if _locale is None:
@@ -34,7 +33,6 @@ def collator():
 
 
 def primary_collator():
-    __import__('pdb').set_trace()
     'Ignores case differences and accented characters'
     global _primary_collator
     if _primary_collator is None:
@@ -44,7 +42,6 @@ def primary_collator():
 
 
 def sort_collator():
-    __import__('pdb').set_trace()
     'Ignores case differences and recognizes numbers in strings (if the tweak is set)'
     global _sort_collator
     if _sort_collator is None:
@@ -55,7 +52,6 @@ def sort_collator():
 
 
 def numeric_collator():
-    __import__('pdb').set_trace()
     'Uses natural sorting for numbers inside strings so something2 will sort before something10'
     global _numeric_collator
     if _numeric_collator is None:
@@ -66,7 +62,6 @@ def numeric_collator():
 
 
 def case_sensitive_collator():
-    __import__('pdb').set_trace()
     'Always sorts upper case letter before lower case'
     global _case_sensitive_collator
     if _case_sensitive_collator is None:

@@ -3,8 +3,7 @@ from collections import defaultdict
 from threading import Thread
 
 from ebook_converter import walk
-from ebook_converter.constants_old import isosx
-from ebook_converter.constants_old import plugins, DEBUG
+from ebook_converter.constants_old import DEBUG
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
 
@@ -90,15 +89,6 @@ def fc_list():
 
 
 def font_dirs():
-    if isosx:
-        return [
-                '/Library/Fonts',
-                '/System/Library/Fonts',
-                '/usr/share/fonts',
-                '/var/root/Library/Fonts',
-                os.path.expanduser('~/.fonts'),
-                os.path.expanduser('~/Library/Fonts'),
-                ]
     return fc_list()
 # }}}
 

@@ -2,14 +2,8 @@ import importlib
 import sys
 import zipfile
 
-from ebook_converter.constants_old import numeric_version, isosx
+from ebook_converter.constants_old import numeric_version
 from ebook_converter.ptempfile import PersistentTemporaryFile
-
-
-platform = 'linux'
-
-if isosx:
-    platform = 'osx'
 
 
 class PluginNotFound(ValueError):
@@ -482,7 +476,8 @@ class CatalogPlugin(Plugin):
 
         # TODO(gryf): remove this entire abomination in favor of map and lazy
         # importing if needed.
-        from ebook_converter.customize.builtins import plugins as builtin_plugins
+        from ebook_converter.customize.builtins import plugins as \
+            builtin_plugins
         if not type(self) in builtin_plugins:
             raise ValueError(f'Plugin type "{self.__str__}" not found')
 
@@ -526,8 +521,8 @@ class InterfaceActionBase(Plugin):
         ac = self.actual_plugin_
         if ac is None:
             mod, cls = self.actual_plugin.split(':')
-            ac = getattr(importlib.import_module(mod), cls)(gui,
-                    self.site_customization)
+            ac = getattr(importlib.import_module(mod),
+                         cls)(gui, self.site_customization)
             self.actual_plugin_ = ac
         return ac
 

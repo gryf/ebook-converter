@@ -30,8 +30,6 @@ if not _run_once:
     #
     # Convert command line arguments to unicode
     enc = constants_old.preferred_encoding
-    if constants_old.isosx:
-        enc = 'utf-8'
     for i in range(1, len(sys.argv)):
         if not isinstance(sys.argv[i], str):
             sys.argv[i] = sys.argv[i].decode(enc, 'replace')
@@ -62,13 +60,14 @@ if not _run_once:
     import string
     string
     try:
-        locale.setlocale(locale.LC_ALL, '')  # set the locale to the user's default locale
-    except:
+        # set the locale to the user's default locale
+        locale.setlocale(locale.LC_ALL, '')
+    except Exception:
         dl = locale.getdefaultlocale()
         try:
             if dl:
                 locale.setlocale(locale.LC_ALL, dl[0])
-        except:
+        except Exception:
             pass
 
     def connect_lambda(bound_signal, self, func, **kw):

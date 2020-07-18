@@ -17,14 +17,11 @@ Various run time constants.
 
 
 _plat = sys.platform.lower()
-isosx = 'darwin' in _plat
-isnewosx = isosx and getattr(sys, 'new_app_bundle', False)
 isfreebsd = 'freebsd' in _plat
 isnetbsd = 'netbsd' in _plat
 isdragonflybsd = 'dragonfly' in _plat
 ishaiku = 'haiku1' in _plat
 isfrozen = hasattr(sys, 'frozen')
-isunix = True
 isportable = os.getenv('CALIBRE_PORTABLE_BUILD') is not None
 isxp = isoldvista = False
 is64bit = sys.maxsize > (1 << 32)

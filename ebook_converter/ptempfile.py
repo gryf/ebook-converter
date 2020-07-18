@@ -1,13 +1,13 @@
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 """
 Provides platform independent temporary files that persist even after
 being closed.
 """
-import tempfile, os, atexit
+import atexit
+import os
+import tempfile
 
 from ebook_converter.constants_old import __version__, __appname__, \
-        filesystem_encoding, isosx
+        filesystem_encoding
 
 
 def cleanup(path):
@@ -15,7 +15,7 @@ def cleanup(path):
         import os as oss
         if oss.path.exists(path):
             oss.remove(path)
-    except:
+    except Exception:
         pass
 
 
@@ -26,7 +26,7 @@ def remove_dir(x):
     try:
         import shutil
         shutil.rmtree(x, ignore_errors=True)
-    except:
+    except Exception:
         pass
 
 
@@ -36,7 +36,7 @@ def determined_remove_dir(x):
             import shutil
             shutil.rmtree(x)
             return
-        except:
+        except Exception:
             import os  # noqa
             if os.path.exists(x):
                 # In case some other program has one of the temp files open.
@@ -47,7 +47,7 @@ def determined_remove_dir(x):
     try:
         import shutil
         shutil.rmtree(x, ignore_errors=True)
-    except:
+    except Exception:
         pass
 
 
@@ -67,13 +67,15 @@ def osx_cache_dir():
         import ctypes
         libc = ctypes.CDLL(None)
         buf = ctypes.create_string_buffer(512)
-        l = libc.confstr(65538, ctypes.byref(buf), len(buf))  # _CS_DARWIN_USER_CACHE_DIR = 65538
-        if 0 < l < len(buf):
+        # _CS_DARWIN_USER_CACHE_DIR = 65538
+        buflen = libc.confstr(65538, ctypes.byref(buf), len(buf))
+        if 0 < buflen < len(buf):
             try:
                 q = buf.value.decode('utf-8').rstrip('\0')
             except ValueError:
                 pass
-            if q and os.path.isdir(q) and os.access(q, os.R_OK | os.W_OK | os.X_OK):
+            if q and os.path.isdir(q) and os.access(q, os.R_OK | os.W_OK |
+                                                    os.X_OK):
                 _osx_cache_dir = q
                 return q
 
@@ -98,20 +100,12 @@ def base_dir():
         else:
             base = os.environ.get('CALIBRE_TEMP_DIR', None)
             prefix = app_prefix('tmp_')
-            if base is None:
-                if isosx:
-                    # Use the cache dir rather than the temp dir for temp files as Apple
-                    # thinks deleting unused temp files is a good idea. See note under
-                    # _CS_DARWIN_USER_TEMP_DIR here
-                    # https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man3/confstr.3.html
-                    base = osx_cache_dir()
-
             _base_dir = tempfile.mkdtemp(prefix=prefix, dir=base)
             atexit.register(remove_dir, _base_dir)
 
         try:
             tempfile.gettempdir()
-        except:
+        except Exception:
             # Widows temp vars set to a path not encodable in mbcs
             # Use our temp dir
             tempfile.tempdir = _base_dir
@@ -144,10 +138,10 @@ def _make_dir(suffix, prefix, base):
 
 
 class PersistentTemporaryFile(object):
-
     """
-    A file-like object that is a temporary file that is available even after being closed on
-    all platforms. It is automatically deleted on normal program termination.
+    A file-like object that is a temporary file that is available even after
+    being closed on all platforms. It is automatically deleted on normal
+    program termination.
     """
     _file = None
 
@@ -177,15 +171,15 @@ class PersistentTemporaryFile(object):
     def __del__(self):
         try:
             self.close()
-        except:
+        except Exception:
             pass
 
 
 def PersistentTemporaryDirectory(suffix='', prefix='', dir=None):
-    '''
+    """
     Return the path to a newly created temporary directory that will
     be automatically deleted on application exit.
-    '''
+    """
     if dir is None:
         dir = base_dir()
     tdir = _make_dir(suffix, prefix, dir)
@@ -195,10 +189,9 @@ def PersistentTemporaryDirectory(suffix='', prefix='', dir=None):
 
 
 class TemporaryDirectory(object):
-
-    '''
+    """
     A temporary directory to be used in a with statement.
-    '''
+    """
 
     def __init__(self, suffix='', prefix='', dir=None, keep=False):
         self.suffix = suffix
@@ -227,7 +220,10 @@ class TemporaryFile(object):
             suffix = ''
         if dir is None:
             dir = base_dir()
-        self.prefix, self.suffix, self.dir, self.mode = prefix, suffix, dir, mode
+        self.mode = mode
+        self.dir = dir
+        self.suffix = suffix
+        self.prefix = prefix
         self._file = None
 
     def __enter__(self):
@@ -244,7 +240,7 @@ class TemporaryFile(object):
 class SpooledTemporaryFile(tempfile.SpooledTemporaryFile):
 
     def __init__(self, max_size=0, suffix="", prefix="", dir=None, mode='w+b',
-            bufsize=-1):
+                 bufsize=-1):
         if prefix is None:
             prefix = ''
         if suffix is None:
@@ -253,7 +249,8 @@ class SpooledTemporaryFile(tempfile.SpooledTemporaryFile):
             dir = base_dir()
         self._name = None
         tempfile.SpooledTemporaryFile.__init__(self, max_size=max_size,
-                suffix=suffix, prefix=prefix, dir=dir, mode=mode)
+                                               suffix=suffix, prefix=prefix,
+                                               dir=dir, mode=mode)
 
     @property
     def name(self):
