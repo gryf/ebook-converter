@@ -16,11 +16,6 @@ Various run time constants.
 '''
 
 
-_plat = sys.platform.lower()
-isfreebsd = 'freebsd' in _plat
-isnetbsd = 'netbsd' in _plat
-isdragonflybsd = 'dragonfly' in _plat
-ishaiku = 'haiku1' in _plat
 isfrozen = hasattr(sys, 'frozen')
 isportable = os.getenv('CALIBRE_PORTABLE_BUILD') is not None
 isxp = isoldvista = False
@@ -40,38 +35,17 @@ except Exception:
 fcntl = importlib.import_module('fcntl')
 dark_link_color = '#6cb4ee'
 
-_osx_ver = None
 
-
-def get_osx_version():
-    global _osx_ver
-    if _osx_ver is None:
-        import platform
-        from collections import namedtuple
-        OSX = namedtuple('OSX', 'major minor tertiary')
-        try:
-            ver = platform.mac_ver()[0].split('.')
-            if len(ver) == 2:
-                ver.append(0)
-            _osx_ver = OSX(*map(int, ver))  # no2to3
-        except Exception:
-            _osx_ver = OSX(0, 0, 0)
-    return _osx_ver
-
-
-filesystem_encoding = sys.getfilesystemencoding()
-if filesystem_encoding is None:
-    filesystem_encoding = 'utf-8'
-else:
-    try:
-        if codecs.lookup(filesystem_encoding).name == 'ascii':
-            filesystem_encoding = 'utf-8'
-            # On linux, unicode arguments to os file functions are coerced to an ascii
-            # bytestring if sys.getfilesystemencoding() == 'ascii', which is
-            # just plain dumb. This is fixed by the icu.py module which, when
-            # imported changes ascii to utf-8
-    except Exception:
+filesystem_encoding = sys.getfilesystemencoding() or 'utf-8'
+try:
+    if codecs.lookup(filesystem_encoding).name == 'ascii':
         filesystem_encoding = 'utf-8'
+        # On linux, unicode arguments to os file functions are coerced to an
+        # ascii bytestring if sys.getfilesystemencoding() == 'ascii', which is
+        # just plain dumb. This is fixed by the icu.py module which, when
+        # imported changes ascii to utf-8
+except Exception:
+    filesystem_encoding = 'utf-8'
 
 
 DEBUG = os.getenv('CALIBRE_DEBUG') is not None
