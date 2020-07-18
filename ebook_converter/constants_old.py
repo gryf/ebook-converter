@@ -1,4 +1,3 @@
-import codecs
 import collections
 import importlib
 import locale
@@ -11,32 +10,14 @@ numeric_version = (4, 12, 0)
 __version__ = '.'.join([str(x) for x in numeric_version])
 __author__ = "foobar"
 
-'''
+"""
 Various run time constants.
-'''
+"""
 
 
 FAKE_PROTOCOL = 'ebco'
-try:
-    preferred_encoding = locale.getpreferredencoding()
-    codecs.lookup(preferred_encoding)
-except Exception:
-    preferred_encoding = 'utf-8'
-
-
+preferred_encoding = locale.getpreferredencoding()
 filesystem_encoding = sys.getfilesystemencoding() or 'utf-8'
-try:
-    if codecs.lookup(filesystem_encoding).name == 'ascii':
-        filesystem_encoding = 'utf-8'
-        # On linux, unicode arguments to os file functions are coerced to an
-        # ascii bytestring if sys.getfilesystemencoding() == 'ascii', which is
-        # just plain dumb. This is fixed by the icu.py module which, when
-        # imported changes ascii to utf-8
-        # TODO(gryf): this is not true for py3
-except Exception:
-    filesystem_encoding = 'utf-8'
-
-
 DEBUG = os.getenv('CALIBRE_DEBUG') is not None
 
 
