@@ -16,24 +16,12 @@ Various run time constants.
 '''
 
 
-isfrozen = hasattr(sys, 'frozen')
-isportable = os.getenv('CALIBRE_PORTABLE_BUILD') is not None
-isxp = isoldvista = False
-is64bit = sys.maxsize > (1 << 32)
-FAKE_PROTOCOL, FAKE_HOST = 'clbr', 'internal.invalid'
-VIEWER_APP_UID = 'com.calibre-ebook.viewer'
-EDITOR_APP_UID = 'com.calibre-ebook.edit-book'
-MAIN_APP_UID = 'com.calibre-ebook.main-gui'
-STORE_DIALOG_APP_UID = 'com.calibre-ebook.store-dialog'
-TOC_DIALOG_APP_UID = 'com.calibre-ebook.toc-editor'
+FAKE_PROTOCOL = 'ebco'
 try:
     preferred_encoding = locale.getpreferredencoding()
     codecs.lookup(preferred_encoding)
 except Exception:
     preferred_encoding = 'utf-8'
-
-fcntl = importlib.import_module('fcntl')
-dark_link_color = '#6cb4ee'
 
 
 filesystem_encoding = sys.getfilesystemencoding() or 'utf-8'
@@ -44,6 +32,7 @@ try:
         # ascii bytestring if sys.getfilesystemencoding() == 'ascii', which is
         # just plain dumb. This is fixed by the icu.py module which, when
         # imported changes ascii to utf-8
+        # TODO(gryf): this is not true for py3
 except Exception:
     filesystem_encoding = 'utf-8'
 
@@ -54,50 +43,6 @@ DEBUG = os.getenv('CALIBRE_DEBUG') is not None
 def debug():
     global DEBUG
     DEBUG = True
-
-
-def _get_cache_dir():
-    import errno
-    confcache = os.path.join(config_dir, 'caches')
-    try:
-        os.makedirs(confcache)
-    except EnvironmentError as err:
-        if err.errno != errno.EEXIST:
-            raise
-    if isportable:
-        return confcache
-    ccd = os.getenv('CALIBRE_CACHE_DIRECTORY')
-    if ccd is not None:
-        ans = os.path.abspath(ccd)
-        try:
-            os.makedirs(ans)
-            return ans
-        except EnvironmentError as err:
-            if err.errno == errno.EEXIST:
-                return ans
-
-    candidate = os.getenv('XDG_CACHE_HOME', '~/.cache')
-    candidate = os.path.join(os.path.expanduser(candidate),
-                                __appname__)
-    if isinstance(candidate, bytes):
-        try:
-            candidate = candidate.decode(filesystem_encoding)
-        except ValueError:
-            candidate = confcache
-    try:
-        os.makedirs(candidate)
-    except EnvironmentError as err:
-        if err.errno != errno.EEXIST:
-            candidate = confcache
-    return candidate
-
-
-def cache_dir():
-    ans = getattr(cache_dir, 'ans', None)
-    if ans is None:
-        ans = cache_dir.ans = os.path.realpath(_get_cache_dir())
-    return ans
-
 
 
 # plugins {{{
@@ -136,7 +81,7 @@ class Plugins(collections.Mapping):
 
     def __getitem__(self, name):
         if name not in self.plugins:
-            raise KeyError('No plugin named %r'%name)
+            raise KeyError('No plugin named %r' % name)
         self.load_plugin(name)
         return self._plugins[name]
 
@@ -189,9 +134,3 @@ def get_version():
         v += '*'
 
     return v
-
-
-def get_portable_base():
-    'Return path to the directory that contains calibre-portable.exe or None'
-    if isportable:
-        return os.path.dirname(os.path.dirname(os.getenv('CALIBRE_PORTABLE_BUILD')))
