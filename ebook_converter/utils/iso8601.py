@@ -1,14 +1,10 @@
 from datetime import datetime
 
-from dateutil.tz import tzlocal, tzutc, tzoffset
-
-from ebook_converter.constants_old import plugins
-# speedup, err = plugins['speedup']
-# if not speedup:
-    # raise RuntimeError(err)
+import dateutil.tz
+import dateutil.parser
 
 
-class SafeLocalTimeZone(tzlocal):
+class SafeLocalTimeZone(dateutil.tz.tzlocal):
 
     def _isdst(self, dt):
         # This method in tzlocal raises ValueError if dt is out of range (in
@@ -31,25 +27,18 @@ class SafeLocalTimeZone(tzlocal):
         return False
 
 
-utc_tz = tzutc()
+utc_tz = dateutil.tz.tzutc()
 local_tz = SafeLocalTimeZone()
-del tzutc, tzlocal
-UNDEFINED_DATE = datetime(101,1,1, tzinfo=utc_tz)
+UNDEFINED_DATE = datetime(101, 1, 1, tzinfo=utc_tz)
 
 
 def parse_iso8601(date_string, assume_utc=False, as_utc=True):
     if not date_string:
         return UNDEFINED_DATE
-    dt, aware, tzseconds = speedup.parse_iso8601(date_string)
+    dt = dateutil.parser.isoparse(date_string)
     tz = utc_tz if assume_utc else local_tz
-    if aware:  # timezone was specified
-        if tzseconds == 0:
-            tz = utc_tz
-        else:
-            sign = '-' if tzseconds < 0 else '+'
-            description = "%s%02d:%02d" % (sign, abs(tzseconds) // 3600, (abs(tzseconds) % 3600) // 60)
-            tz = tzoffset(description, tzseconds)
-    dt = dt.replace(tzinfo=tz)
+    if not dt.tzinfo:  # timezone wasn't specified
+        dt = dt.replace(tzinfo=tz)
     if as_utc and tz is utc_tz:
         return dt
     return dt.astimezone(utc_tz if as_utc else local_tz)
