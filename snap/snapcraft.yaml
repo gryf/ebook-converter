@@ -4,7 +4,7 @@ version: '0.1'
 summary: Commandline tool for converting between several e-books formats
 description: |
   Commandline tool for converting between several e-books formats, based on Calibre 
-project.
+  project.
 
 grade: stable 
 confinement: strict 
