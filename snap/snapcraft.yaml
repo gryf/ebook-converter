@@ -1,0 +1,27 @@
+name: ebook-converter 
+base: core18 
+version: '0.1' 
+summary: Commandline tool for converting between several e-books formats
+description: |
+  Commandline tool for converting between several e-books formats, based on Calibre 
+  project.
+
+grade: stable 
+confinement: strict 
+
+parts:
+  ebook-convert:
+    build-packages:
+      - build-essential
+      - pkg-config
+      - libxml2-dev
+    plugin: python
+    python-version: python3
+    source: https://github.com/gryf/ebook-converter.git
+
+apps:
+  ebook-converter:
+   command: bin/ebook-converter
+   plugs:
+        - home
+        - mount-observe
