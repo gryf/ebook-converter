@@ -11,7 +11,6 @@ import pkg_resources
 import re
 import traceback
 
-from ebook_converter.constants_old import CONFIG_DIR_MODE
 from ebook_converter.constants_old import config_dir
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.constants_old import preferred_encoding
@@ -116,11 +115,6 @@ def json_loads(raw):
     if isinstance(raw, bytes):
         raw = raw.decode('utf-8')
     return json.loads(raw, object_hook=from_json)
-
-
-def make_config_dir():
-    if not os.path.exists(plugin_dir):
-        os.makedirs(plugin_dir, mode=CONFIG_DIR_MODE)
 
 
 class Option(object):
@@ -400,20 +394,6 @@ class Config(ConfigInterface):
         if not self.option_set.has_option(name):
             raise ValueError('The option %s is not defined.' % name)
 
-        if not os.path.exists(config_dir):
-            make_config_dir()
-
-        with open(self.config_file_path) as f:
-            src = f.read()
-            opts = self.option_set.parse_string(src)
-            setattr(opts, name, val)
-            src = self.option_set.serialize(opts)
-            f.seek(0)
-            f.truncate()
-            if isinstance(src, str):
-                src = src.encode('utf-8')
-            f.write(src)
-
 
 class StringConfig(ConfigInterface):
     """
@@ -593,21 +573,6 @@ def normalize_tweak(val):
     return val
 
 
-def write_custom_tweaks(tweaks_dict):
-    make_config_dir()
-    tweaks_dict = make_unicode(tweaks_dict)
-    changed_tweaks = {}
-    default_tweaks = exec_tweaks(default_tweaks_raw())
-    for key, cval in tweaks_dict.items():
-        if (key in default_tweaks and
-                normalize_tweak(cval) == normalize_tweak(default_tweaks[key])):
-            continue
-        changed_tweaks[key] = cval
-    raw = json_dumps(changed_tweaks)
-    with open(tweaks_file(), 'wb') as f:
-        f.write(raw)
-
-
 def exec_tweaks(path):
     if isinstance(path, bytes):
         raw = path
@@ -623,43 +588,13 @@ def exec_tweaks(path):
     return x
 
 
-def read_custom_tweaks():
-    make_config_dir()
-    tf = tweaks_file()
-    ans = {}
-    if os.path.exists(tf):
-        with open(tf, 'rb') as f:
-            raw = f.read()
-        raw = raw.strip()
-        if not raw:
-            return ans
-        try:
-            return json_loads(raw)
-        except Exception:
-            import traceback
-            traceback.print_exc()
-            return ans
-    old_tweaks_file = tf.rpartition('.')[0] + '.py'
-    if os.path.exists(old_tweaks_file):
-        ans = exec_tweaks(old_tweaks_file)
-        ans = make_unicode(ans)
-        write_custom_tweaks(ans)
-    return ans
-
-
 def default_tweaks_raw():
     return pkg_resources.resource_filename('ebook_converter',
                                            'data/default_tweaks.py')
 
 
 def read_tweaks():
-    default_tweaks = exec_tweaks(default_tweaks_raw())
-    try:
-        custom_tweaks = read_custom_tweaks()
-    except Exception:
-        custom_tweaks = {}
-    default_tweaks.update(custom_tweaks)
-    return default_tweaks
+    return exec_tweaks(default_tweaks_raw())
 
 
 tweaks = read_tweaks()
