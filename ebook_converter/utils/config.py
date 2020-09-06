@@ -1,9 +1,10 @@
 """
 Manage application-wide preferences.
 """
+import copy
 import optparse
 import os
-from copy import deepcopy
+import traceback
 
 from ebook_converter import constants
 from ebook_converter import constants_old
@@ -28,7 +29,7 @@ class CustomHelpFormatter(optparse.IndentedHelpFormatter):
     def format_heading(self, heading):
         from ebook_converter.utils.terminal import colored
         return "%*s%s:\n" % (self.current_indent, '',
-                                 colored(heading, fg='blue', bold=True))
+                             colored(heading, fg='blue', bold=True))
 
     def format_option(self, option):
         import textwrap
@@ -39,11 +40,12 @@ class CustomHelpFormatter(optparse.IndentedHelpFormatter):
         opt_width = self.help_position - self.current_indent - 2
         if len(opts) > opt_width:
             opts = "%*s%s\n" % (self.current_indent, "",
-                                    colored(opts, fg='green'))
+                                colored(opts, fg='green'))
             indent_first = self.help_position
         else:                       # start help on same line as opts
             opts = "%*s%-*s  " % (self.current_indent, "", opt_width +
-                    len(colored('', fg='green')), colored(opts, fg='green'))
+                                  len(colored('', fg='green')),
+                                  colored(opts, fg='green'))
             indent_first = 0
         result.append(opts)
         if option.help:
@@ -82,9 +84,11 @@ class OptionParser(optparse.OptionParser):
         if version is None:
             version = '%%prog (%s %s)' % (constants_old.__appname__,
                                           constants.VERSION)
-        optparse.OptionParser.__init__(self, usage=usage, version=version, epilog=epilog,
-                               formatter=CustomHelpFormatter(),
-                               conflict_handler=conflict_handler, **kwds)
+        optparse.OptionParser.__init__(self, usage=usage, version=version,
+                                       epilog=epilog,
+                                       formatter=CustomHelpFormatter(),
+                                       conflict_handler=conflict_handler,
+                                       **kwds)
         self.gui_mode = gui_mode
 
     def print_usage(self, file=None):
@@ -108,15 +112,15 @@ class OptionParser(optparse.OptionParser):
         optparse.OptionParser.error(self, msg)
 
     def merge(self, parser):
-        '''
-        Add options from parser to self. In case of conflicts, conflicting options from
-        parser are skipped.
-        '''
-        opts   = list(parser.option_list)
+        """
+        Add options from parser to self. In case of conflicts, conflicting
+        options from parser are skipped.
+        """
+        opts = list(parser.option_list)
         groups = list(parser.option_groups)
 
         def merge_options(options, container):
-            for opt in deepcopy(options):
+            for opt in copy.deepcopy(options):
                 if not self.has_option(opt.get_opt_string()):
                     container.add_option(opt)
 
@@ -127,11 +131,12 @@ class OptionParser(optparse.OptionParser):
             merge_options(group.option_list, g)
 
     def subsume(self, group_name, msg=''):
-        '''
+        """
         Move all existing options into a subgroup named
         C{group_name} with description C{msg}.
-        '''
-        opts = [opt for opt in self.options_iter() if opt.get_opt_string() not in ('--version', '--help')]
+        """
+        opts = [opt for opt in self.options_iter()
+                if opt.get_opt_string() not in ('--version', '--help')]
         self.option_groups = []
         subgroup = self.add_option_group(group_name, msg)
         for opt in opts:
@@ -153,11 +158,11 @@ class OptionParser(optparse.OptionParser):
                 return opt
 
     def merge_options(self, lower, upper):
-        '''
+        """
         Merge options in lower and upper option lists into upper.
         Default values in upper are overridden by
         non default values in lower.
-        '''
+        """
         for dest in lower.__dict__.keys():
             if dest not in upper.__dict__:
                 continue
@@ -327,8 +332,7 @@ class XMLConfig(dict):
                     d = self.raw_to_object(raw) if raw.strip() else {}
                 except SystemError:
                     pass
-                except:
-                    import traceback
+                except Exception:
                     traceback.print_exc()
                     d = {}
         if clear_current:
