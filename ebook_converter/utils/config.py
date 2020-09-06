@@ -11,11 +11,6 @@ from ebook_converter import constants_old
 from ebook_converter.utils.config_base import json_dumps, json_loads
 
 
-def check_config_write_access():
-    return (os.access(constants_old.config_dir, os.W_OK) and
-            os.access(constants_old.config_dir, os.X_OK))
-
-
 class CustomHelpFormatter(optparse.IndentedHelpFormatter):
 
     def format_usage(self, usage):
@@ -175,103 +170,6 @@ class OptionParser(optparse.OptionParser):
         if isinstance(args[0], (str, bytes)):
             args = list(args)
         return optparse.OptionParser.add_option_group(self, *args, **kwargs)
-
-
-class DynamicConfig(dict):
-    '''
-    A replacement for QSettings that supports dynamic config keys.
-    Returns `None` if a config key is not found. Note that the config
-    data is stored in a JSON file.
-    '''
-
-    def __init__(self, name='dynamic'):
-        dict.__init__(self, {})
-        self.name = name
-        self.defaults = {}
-        self.refresh()
-
-    @property
-    def file_path(self):
-        return os.path.join(constants_old.config_dir, self.name+'.pickle.json')
-
-    def decouple(self, prefix):
-        self.name = prefix + self.name
-        self.refresh()
-
-    def read_old_serialized_representation(self):
-        from ebook_converter.utils.serialize import pickle_loads
-        path = self.file_path.rpartition('.')[0]
-        try:
-            with open(path, 'rb') as f:
-                raw = f.read()
-        except EnvironmentError:
-            raw = b''
-        try:
-            d = pickle_loads(raw).copy()
-        except Exception:
-            d = {}
-        return d
-
-    def refresh(self, clear_current=True):
-        d = {}
-        migrate = False
-        if clear_current:
-            self.clear()
-        if os.path.exists(self.file_path):
-            with open(self.file_path) as f:
-                raw = f.read()
-            if raw:
-                try:
-                    d = json_loads(raw)
-                except Exception as err:
-                    print('Failed to de-serialize JSON representation of stored dynamic data for {} with error: {}'.format(
-                        self.name, err))
-            else:
-                d = self.read_old_serialized_representation()
-                migrate = bool(d)
-        else:
-            d = self.read_old_serialized_representation()
-            migrate = bool(d)
-        if migrate and d:
-            raw = json_dumps(d, ignore_unserializable=True)
-            with open(self.file_path) as f:
-                f.seek(0), f.truncate()
-                f.write(raw)
-
-        self.update(d)
-
-    def __getitem__(self, key):
-        try:
-            return dict.__getitem__(self, key)
-        except KeyError:
-            return self.defaults.get(key, None)
-
-    def get(self, key, default=None):
-        try:
-            return dict.__getitem__(self, key)
-        except KeyError:
-            return self.defaults.get(key, default)
-
-    def __setitem__(self, key, val):
-        dict.__setitem__(self, key, val)
-        self.commit()
-
-    def set(self, key, val):
-        self.__setitem__(key, val)
-
-    def commit(self):
-        if not getattr(self, 'name', None):
-            return
-        if not os.path.exists(self.file_path):
-            make_config_dir()
-        raw = json_dumps(self)
-        with open(self.file_path) as f:
-            f.seek(0)
-            f.truncate()
-            f.write(raw)
-
-
-dynamic = DynamicConfig()
 
 
 class XMLConfig(dict):
