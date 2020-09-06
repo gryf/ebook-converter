@@ -6,6 +6,7 @@ from ebook_converter import walk
 from ebook_converter.constants_old import DEBUG
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
+from ebook_converter.utils import config
 
 
 class NoFonts(ValueError):
@@ -277,8 +278,7 @@ class FontScanner(Thread):
 
     def reload_cache(self):
         if not hasattr(self, 'cache'):
-            from ebook_converter.utils.config import JSONConfig
-            self.cache = JSONConfig('fonts/scanner_cache')
+            self.cache = config.JSONConfig('ebook-converter-scanner-cache')
         else:
             self.cache.refresh()
         if self.cache.get('version', None) != self.CACHE_VERSION:

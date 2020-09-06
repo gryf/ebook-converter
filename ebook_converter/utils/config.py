@@ -172,26 +172,17 @@ class OptionParser(optparse.OptionParser):
         return optparse.OptionParser.add_option_group(self, *args, **kwargs)
 
 
-class XMLConfig(dict):
+class JSONConfig(dict):
 
-    '''
-    Similar to :class:`DynamicConfig`, except that it uses an XML storage
-    backend instead of a pickle file.
+    EXTENSION = '.json'
 
-    See `https://docs.python.org/dev/library/plistlib.html`_ for the supported
-    data types.
-    '''
-
-    EXTENSION = '.plist'
-
-    def __init__(self, rel_path_to_cf_file,
-                 base_path=constants_old.config_dir):
+    def __init__(self, relative_conf_file):
         dict.__init__(self)
         self.no_commit = False
         self.defaults = {}
-        self.file_path = os.path.join(base_path,
-                *(rel_path_to_cf_file.split('/')))
-        self.file_path = os.path.abspath(self.file_path)
+        self.file_path = os.path.join(self._get_cache_dir(),
+                                      relative_conf_file)
+
         if not self.file_path.endswith(self.EXTENSION):
             self.file_path += self.EXTENSION
 
@@ -210,15 +201,15 @@ class XMLConfig(dict):
             pass
 
     def raw_to_object(self, raw):
-        from ebook_converter.polyglot.plistlib import loads
-        return loads(raw)
+        return json_loads(raw)
 
     def to_raw(self):
-        from ebook_converter.polyglot.plistlib import dumps
-        return dumps(self)
+        return json_dumps(self)
 
     def decouple(self, prefix):
-        self.file_path = os.path.join(os.path.dirname(self.file_path), prefix + os.path.basename(self.file_path))
+        self.file_path = os.path.join(os.path.dirname(self.file_path),
+                                      prefix +
+                                      os.path.basename(self.file_path))
         self.refresh()
 
     def refresh(self, clear_current=True):
@@ -237,30 +228,24 @@ class XMLConfig(dict):
             self.clear()
         self.update(d)
 
+    def _get_cache_dir(self):
+        if os.getenv('XDG_CACHE_HOME'):
+            return os.getenv('XDG_CACHE_HOME')
+        return os.path.join(os.path.expanduser('~/'), '.cache')
+
     def __getitem__(self, key):
-        from ebook_converter.polyglot.plistlib import Data
         try:
-            ans = dict.__getitem__(self, key)
-            if isinstance(ans, Data):
-                ans = ans.data
-            return ans
+            return dict.__getitem__(self, key)
         except KeyError:
-            return self.defaults.get(key, None)
+            return self.defaults[key]
 
     def get(self, key, default=None):
-        from ebook_converter.polyglot.plistlib import Data
         try:
-            ans = dict.__getitem__(self, key)
-            if isinstance(ans, Data):
-                ans = ans.data
-            return ans
+            return dict.__getitem__(self, key)
         except KeyError:
             return self.defaults.get(key, default)
 
     def __setitem__(self, key, val):
-        from ebook_converter.polyglot.plistlib import Data
-        if isinstance(val, bytes):
-            val = Data(val)
         dict.__setitem__(self, key, val)
         self.commit()
 
@@ -295,33 +280,6 @@ class XMLConfig(dict):
 
     def __exit__(self, *args):
         self.no_commit = False
-        self.commit()
-
-
-class JSONConfig(XMLConfig):
-
-    EXTENSION = '.json'
-
-    def raw_to_object(self, raw):
-        return json_loads(raw)
-
-    def to_raw(self):
-        return json_dumps(self)
-
-    def __getitem__(self, key):
-        try:
-            return dict.__getitem__(self, key)
-        except KeyError:
-            return self.defaults[key]
-
-    def get(self, key, default=None):
-        try:
-            return dict.__getitem__(self, key)
-        except KeyError:
-            return self.defaults.get(key, default)
-
-    def __setitem__(self, key, val):
-        dict.__setitem__(self, key, val)
         self.commit()
 
 
