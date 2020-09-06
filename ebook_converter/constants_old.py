@@ -77,22 +77,19 @@ plugins = Plugins()
 
 CONFIG_DIR_MODE = 0o700
 
-cconfd = os.getenv('CALIBRE_CONFIG_DIRECTORY')
-if cconfd is not None:
-    config_dir = os.path.abspath(cconfd)
-
 bdir = os.path.abspath(os.path.expanduser(os.getenv('XDG_CONFIG_HOME',
                                                     '~/.config')))
-config_dir = os.path.join(bdir, 'calibre')
+config_dir = os.path.join(bdir, 'ebook-converter')
 try:
     os.makedirs(config_dir, mode=CONFIG_DIR_MODE)
 except IOError:
     pass
+
 if not os.path.exists(config_dir) or \
         not os.access(config_dir, os.W_OK) or not \
         os.access(config_dir, os.X_OK):
     print('No write acces to', config_dir, 'using a temporary dir instead')
-    config_dir = tempfile.mkdtemp(prefix='calibre-config-')
+    config_dir = tempfile.mkdtemp(prefix='ec-config-')
 
     def cleanup_cdir():
         try:
