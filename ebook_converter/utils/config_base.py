@@ -1,15 +1,15 @@
-import json
+import base64
 import collections
 import copy
+import datetime
 import functools
+import json
 import numbers
 import os
+import pickle
 import pkg_resources
 import re
 import traceback
-import pickle
-import datetime
-import base64
 
 from ebook_converter.constants_old import CONFIG_DIR_MODE
 from ebook_converter.constants_old import config_dir
@@ -521,7 +521,6 @@ def create_global_prefs(conf_obj=None):
               help='Add new formats to existing book records')
     c.add_opt('check_for_dupes_on_ctl', default=False,
               help='Check for duplicates when copying to another library')
-    c.add_opt('installation_uuid', default=None, help='Installation UUID')
     c.add_opt('new_book_tags', default=[],
               help='Tags to apply to books added to the library')
     c.add_opt('mark_new_books', default=False, help='Mark newly added books. '
@@ -565,9 +564,6 @@ def create_global_prefs(conf_obj=None):
 
 
 prefs = ConfigProxy(create_global_prefs())
-if prefs['installation_uuid'] is None:
-    import uuid
-    prefs['installation_uuid'] = str(uuid.uuid4())
 
 # Read tweaks
 
