@@ -281,19 +281,3 @@ class JSONConfig(dict):
     def __exit__(self, *args):
         self.no_commit = False
         self.commit()
-
-
-class DevicePrefs:
-
-    def __init__(self, global_prefs):
-        self.global_prefs = global_prefs
-        self.overrides = {}
-
-    def set_overrides(self, **kwargs):
-        self.overrides = kwargs.copy()
-
-    def __getitem__(self, key):
-        return self.overrides.get(key, self.global_prefs[key])
-
-
-device_prefs = DevicePrefs(prefs)
