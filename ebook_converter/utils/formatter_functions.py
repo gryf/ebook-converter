@@ -9,7 +9,7 @@ from math import trunc
 from ebook_converter import human_readable
 from ebook_converter.constants_old import DEBUG
 from ebook_converter.ebooks.metadata import title_sort
-from ebook_converter.utils.config import tweaks
+from ebook_converter.utils.config_base import tweaks
 from ebook_converter.utils.titlecase import titlecase
 from ebook_converter.utils.icu import capitalize, strcmp, sort_key
 from ebook_converter.utils.date import parse_date, format_date, now, UNDEFINED_DATE

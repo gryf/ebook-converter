@@ -18,7 +18,7 @@ from ebook_converter.ebooks.metadata.utils import (
     create_manifest_item, ensure_unique, normalize_languages, parse_opf,
     pretty_print_opf
 )
-from ebook_converter.utils.config import from_json, to_json
+from ebook_converter.utils.config_base import from_json, to_json
 from ebook_converter.utils.date import (fix_only_date, is_date_undefined,
                                         isoformat, parse_date as parse_date_,
                                         utcnow, w3cdtf)

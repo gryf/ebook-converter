@@ -7,17 +7,7 @@ from copy import deepcopy
 
 from ebook_converter import constants
 from ebook_converter import constants_old
-from ebook_converter.utils.config_base import (
-    Config, ConfigInterface, ConfigProxy, Option, OptionSet, OptionValues,
-    StringConfig, json_dumps, json_loads, make_config_dir, plugin_dir, prefs,
-    tweaks, from_json, to_json
-)
-
-
-if False:
-    # Make pyflakes happy
-    Config, ConfigProxy, Option, OptionValues, StringConfig, OptionSet,
-    ConfigInterface, tweaks, plugin_dir, prefs, from_json, to_json
+from ebook_converter.utils.config_base import json_dumps, json_loads
 
 
 def check_config_write_access():

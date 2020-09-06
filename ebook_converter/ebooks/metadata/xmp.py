@@ -173,7 +173,7 @@ def read_series(root):
 
 
 def read_user_metadata(mi, root):
-    from ebook_converter.utils.config import from_json
+    from ebook_converter.utils.config_base import from_json
     from ebook_converter.ebooks.metadata.book.json_codec import \
         decode_is_multiple
     fields = set()
@@ -452,7 +452,7 @@ def create_series(calibre, series, series_index):
 
 
 def create_user_metadata(calibre, all_user_metadata):
-    from ebook_converter.utils.config import to_json
+    from ebook_converter.utils.config_base import to_json
     from ebook_converter.ebooks.metadata.book.json_codec import \
         object_to_unicode, encode_is_multiple
 

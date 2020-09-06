@@ -33,7 +33,7 @@ from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.utils.date import parse_date, isoformat
 from ebook_converter.utils.localization import get_lang, canonicalize_lang
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
-from ebook_converter.utils.config import tweaks
+from ebook_converter.utils.config_base import tweaks
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -504,7 +504,7 @@ class TitleSortField(MetadataField):
 
 def serialize_user_metadata(metadata_elem, all_user_metadata,
                             tail='\n'+(' '*8)):
-    from ebook_converter.utils.config import to_json
+    from ebook_converter.utils.config_base import to_json
     from ebook_converter.ebooks.metadata.book.json_codec import \
         object_to_unicode, encode_is_multiple
 
@@ -654,7 +654,7 @@ class OPF(object):  # {{{
     def read_user_metadata(self):
         self._user_metadata_ = {}
         temp = Metadata('x', ['x'])
-        from ebook_converter.utils.config import from_json
+        from ebook_converter.utils.config_base import from_json
         from ebook_converter.ebooks.metadata.book.json_codec import \
             decode_is_multiple
         elems = self.root.xpath('//*[name() = "meta" and starts-with(@name,'

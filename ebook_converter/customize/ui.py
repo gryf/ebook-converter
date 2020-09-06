@@ -12,6 +12,7 @@ from ebook_converter.customize import profiles
 from ebook_converter.customize import builtins
 from ebook_converter.ebooks import metadata
 from ebook_converter.utils import config as cfg
+from ebook_converter.utils import config_base
 
 
 builtin_names = frozenset(p.name for p in builtins.plugins)
@@ -23,7 +24,7 @@ class NameConflict(ValueError):
 
 
 def _config():
-    c = cfg.Config('customize')
+    c = config_base.Config('customize')
     c.add_opt('plugins', default={}, help='Installed plugins')
     c.add_opt('filetype_mapping', default={},
               help='Mapping for filetype plugins')
@@ -32,7 +33,7 @@ def _config():
     c.add_opt('disabled_plugins', default=set(), help='Disabled plugins')
     c.add_opt('enabled_plugins', default=set(), help='Enabled plugins')
 
-    return cfg.ConfigProxy(c)
+    return config_base.ConfigProxy(c)
 
 
 config = _config()

@@ -10,7 +10,7 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 def db(path=None, read_only=False):
     from ebook_converter.db.legacy import LibraryDatabase
-    from ebook_converter.utils.config import prefs
+    from ebook_converter.utils.config_base import prefs
     return LibraryDatabase(os.path.expanduser(path) if path else prefs['library_path'],
             read_only=read_only)
 
@@ -69,7 +69,7 @@ def generate_test_db(library_path,  # {{{
 
 
 def current_library_path():
-    from ebook_converter.utils.config import prefs
+    from ebook_converter.utils.config_base import prefs
     path = prefs['library_path']
     if path:
         path = path.replace('\\', '/')
