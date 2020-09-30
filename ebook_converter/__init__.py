@@ -107,13 +107,6 @@ def walk(dir):
             yield os.path.join(record[0], f)
 
 
-def my_unichr(num):
-    try:
-        return chr(num)
-    except (ValueError, OverflowError):
-        return '?'
-
-
 def entity_to_unicode(match, exceptions=[], encoding='cp1252',
                       result_exceptions={}):
     """
@@ -133,6 +126,12 @@ def entity_to_unicode(match, exceptions=[], encoding='cp1252',
                               like < or > that can be specified by various
                               actual entities.
     """
+
+    def my_unichr(num):
+        try:
+            return chr(num)
+        except (ValueError, OverflowError):
+            return '?'
 
     def check(ch):
         return result_exceptions.get(ch, ch)
