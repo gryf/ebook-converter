@@ -6,7 +6,6 @@ Created on 13 Jan 2011
 import inspect, re, traceback, numbers
 from math import trunc
 
-from ebook_converter import human_readable
 from ebook_converter.constants_old import DEBUG
 from ebook_converter.ebooks.metadata import title_sort
 from ebook_converter.utils.config_base import tweaks
@@ -860,14 +859,28 @@ class BuiltinHumanReadable(BuiltinFormatterFunction):
     arg_count = 1
     category = 'Formatting values'
     __doc__ = doc = ('human_readable(v) -- return a string '
-                      'representing the number v in KB, MB, GB, etc.'
-            )
+                     'representing the number v in KB, MB, GB, etc.')
 
     def evaluate(self, formatter, kwargs, mi, locals, val):
         try:
-            return human_readable(round(float(val)))
-        except:
+            return self.human_readable(round(float(val)))
+        except Exception:
             return ''
+
+    def _human_readable(self, size, sep=' '):
+        """ Convert a size in bytes into a human readable form """
+        divisor, suffix = 1, "B"
+        for i, candidate in enumerate(('B', 'KB', 'MB', 'GB', 'TB', 'PB',
+                                       'EB')):
+            if size < (1 << ((i + 1) * 10)):
+                divisor, suffix = (1 << (i * 10)), candidate
+                break
+        size = str(float(size)/divisor)
+        if size.find(".") > -1:
+            size = size[:size.find(".")+2]
+        if size.endswith('.0'):
+            size = size[:-2]
+        return size + sep + suffix
 
 
 class BuiltinFormatNumber(BuiltinFormatterFunction):
