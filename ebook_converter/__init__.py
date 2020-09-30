@@ -1,11 +1,9 @@
 import html
-import logging
 import math
 import mimetypes
 import os
 import pkg_resources
 import re
-import sys
 
 from functools import partial
 
@@ -65,27 +63,6 @@ def sanitize_file_name(name, substitute='_'):
     if one.startswith('.'):
         one = '_' + one[1:]
     return one
-
-
-def setup_cli_handlers(logger, level):
-    if os.getenv('CALIBRE_WORKER') and logger.handlers:
-        return
-    logger.setLevel(level)
-    if level == logging.WARNING:
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
-        handler.setLevel(logging.WARNING)
-    elif level == logging.INFO:
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setFormatter(logging.Formatter())
-        handler.setLevel(logging.INFO)
-    elif level == logging.DEBUG:
-        handler = logging.StreamHandler(sys.stderr)
-        handler.setLevel(logging.DEBUG)
-        handler.setFormatter(logging.Formatter('[%(levelname)s] %(filename)s:'
-                                               '%(lineno)s: %(message)s'))
-
-    logger.addHandler(handler)
 
 
 def fit_image(width, height, pwidth, pheight):
