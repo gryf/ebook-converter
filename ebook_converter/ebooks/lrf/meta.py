@@ -669,7 +669,7 @@ Show/edit the metadata in an LRF file.\n\n'''),
     # LRF is first created. Since this will change as the book is reflowed, it
     # is probably not worth using.
     # parser.add_option("-p", "--page", action="store", type="string", \
-    #                dest="page", help=_("Don't know what this is for"))
+    #                dest="page", help="Don't know what this is for")
 
     return parser
 
