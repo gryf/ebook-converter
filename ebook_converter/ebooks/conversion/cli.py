@@ -3,16 +3,17 @@ Command line interface to conversion sub-system
 """
 import collections
 import json
+import mimetypes
 import numbers
 import optparse
 import os
+import pkg_resources
 import re
 import sys
 
 from ebook_converter.utils.config import OptionParser
 from ebook_converter.utils.logging import Log
 from ebook_converter.customize.conversion import OptionRecommendation
-from ebook_converter import init_mimetypes
 
 
 USAGE = '%prog ' + '''\
@@ -352,7 +353,8 @@ def read_sr_patterns(path, log=None):
 
 def main(args=sys.argv):
     log = Log()
-    init_mimetypes()
+    mimetypes.init([pkg_resources.resource_filename('ebook_converter',
+                                                    'data/mime.types')])
     parser, plumber = create_option_parser(args, log)
     opts, leftover_args = parser.parse_args(args)
     if len(leftover_args) > 3:

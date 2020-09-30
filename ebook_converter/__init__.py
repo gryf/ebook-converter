@@ -1,26 +1,12 @@
 import html
 import math
-import mimetypes
 import os
-import pkg_resources
 import re
 
 from functools import partial
 
 from ebook_converter import constants_old
 from ebook_converter.ebooks.html_entities import html5_entities
-
-
-def init_mimetypes():
-    mimetypes.init([pkg_resources.resource_filename('ebook_converter',
-                                                    'data/mime.types')])
-
-
-def guess_extension(*args, **kwargs):
-    ext = mimetypes.guess_extension(*args, **kwargs)
-    if not ext and args and args[0] == 'application/x-palmreader':
-        ext = '.pdb'
-    return ext
 
 
 def sanitize_file_name(name, substitute='_'):
