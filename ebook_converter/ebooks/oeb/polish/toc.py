@@ -8,8 +8,8 @@ import urllib.parse
 from lxml import etree
 from lxml.builder import ElementMaker
 
-from ebook_converter import __version__
 from ebook_converter import constants as const
+from ebook_converter import constants_old
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.polish.errors import MalformedMarkup
 from ebook_converter.ebooks.oeb.polish.utils import guess_type, extract
@@ -608,7 +608,7 @@ def create_ncx(toc, to_href, btitle, lang, uid):
                      name='dtb:uid', content=str(uid))
     etree.SubElement(head, base.tag('ncx', 'meta'),
                      name='dtb:depth', content=str(toc.depth))
-    generator = ''.join(['calibre (', __version__, ')'])
+    generator = ''.join(['calibre (', constants_old.__version__, ')'])
     etree.SubElement(head, base.tag('ncx', 'meta'),
                      name='dtb:generator', content=generator)
     etree.SubElement(head, base.tag('ncx', 'meta'), name='dtb:totalPageCount',

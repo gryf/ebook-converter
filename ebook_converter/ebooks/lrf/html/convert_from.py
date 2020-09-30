@@ -20,9 +20,9 @@ import math
 
 import bs4
 
-from ebook_converter import __appname__, entity_to_unicode, fit_image, \
+from ebook_converter import entity_to_unicode, fit_image, \
         force_unicode
-from ebook_converter.constants_old import filesystem_encoding, \
+from ebook_converter.constants_old import __appname__, filesystem_encoding, \
         preferred_encoding
 from ebook_converter.devices.interface import DevicePlugin as Device
 from ebook_converter.ebooks import ConversionError

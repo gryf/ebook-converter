@@ -1,14 +1,10 @@
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
+import os
+import sys
+
+from ebook_converter import constants_old
 
 
-import sys, os
-
-from ebook_converter import config_dir
-
-
-user_dir = os.path.join(config_dir, 'resources')
+user_dir = os.path.join(constants_old.config_dir, 'resources')
 
 
 class PathResolver(object):
@@ -22,9 +18,8 @@ class PathResolver(object):
             try:
                 return os.path.exists(path) and os.path.isdir(path) and \
                        os.listdir(path)
-            except:
-                pass
-            return False
+            except Exception:
+                return False
 
         self.default_path = sys.resources_location
 

@@ -8,15 +8,7 @@ import re
 from functools import partial
 
 from ebook_converter import constants_old
-from ebook_converter.constants_old import \
-    __appname__, __version__, __author__, \
-    config_dir
 from ebook_converter.ebooks.html_entities import html5_entities
-
-
-if False:
-    # Prevent pyflakes from complaining
-    __appname__, __version__, __author__, config_dir
 
 
 def init_mimetypes():

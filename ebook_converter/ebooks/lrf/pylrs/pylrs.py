@@ -49,7 +49,7 @@ from ebook_converter.utils.date import isoformat
 DEFAULT_SOURCE_ENCODING = "cp1252"      # default is us-windows character set
 DEFAULT_GENREADING      = "fs"          # default is yes to both lrf and lrs
 
-from ebook_converter import __appname__, __version__
+from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter import entity_to_unicode
 
 
