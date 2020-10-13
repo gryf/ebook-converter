@@ -1,5 +1,4 @@
 import html
-import math
 import os
 import re
 
@@ -7,30 +6,6 @@ from functools import partial
 
 from ebook_converter import constants_old
 from ebook_converter.ebooks.html_entities import html5_entities
-
-
-def fit_image(width, height, pwidth, pheight):
-    """
-    Fit image in box of width pwidth and height pheight.
-    @param width: Width of image
-    @param height: Height of image
-    @param pwidth: Width of box
-    @param pheight: Height of box
-    @return: scaled, new_width, new_height. scaled is True iff new_width
-             and/or new_height is different from width or height.
-    """
-    scaled = height > pheight or width > pwidth
-    if height > pheight:
-        corrf = pheight / float(height)
-        width, height = math.floor(corrf*width), pheight
-    if width > pwidth:
-        corrf = pwidth / float(width)
-        width, height = pwidth, math.floor(corrf*height)
-    if height > pheight:
-        corrf = pheight / float(height)
-        width, height = math.floor(corrf*width), pheight
-
-    return scaled, int(width), int(height)
 
 
 class CurrentDir(object):

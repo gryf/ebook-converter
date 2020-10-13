@@ -1,4 +1,4 @@
-from ebook_converter import fit_image
+# from ebook_converter.util import img
 from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter.gui2 import ensure_app, config, load_builtin_fonts, pixmap_to_data
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
@@ -28,7 +28,7 @@ from ebook_converter.utils.config import JSONConfig
 #            bottom = footer_block.position.y - 50
 #            logo = QImage(logo_path or I('library.png'))
 #            pwidth, pheight = rect.width(), bottom - top
-#            scaled, width, height = fit_image(logo.width(), logo.height(), pwidth, pheight)
+#            scaled, width, height = img.fit_image(logo.width(), logo.height(), pwidth, pheight)
 #            x, y = (pwidth - width) // 2, (pheight - height) // 2
 #            rect = QRect(x, top + y, width, height)
 #            painter.setRenderHint(QPainter.SmoothPixmapTransform)

@@ -6,9 +6,9 @@ import urllib.parse
 
 from lxml import etree
 
-from ebook_converter import fit_image
 from ebook_converter.ebooks.docx.images import pt_to_emu
 from ebook_converter.utils.filenames import ascii_filename
+from ebook_converter.utils import img as uimg
 from ebook_converter.utils.imghdr import identify
 
 
@@ -101,7 +101,8 @@ class ImagesManager(object):
         img = self.images[href]
         name = urllib.parse.unquote(posixpath.basename(href))
         width, height = style.img_size(img.width, img.height)
-        scaled, width, height = fit_image(width, height, self.page_width, self.page_height)
+        scaled, width, height = uimg.fit_image(width, height, self.page_width,
+                                               self.page_height)
         width, height = map(pt_to_emu, (width, height))
 
         makeelement, namespaces = self.document_relationships.namespace.makeelement, self.document_relationships.namespace.namespaces

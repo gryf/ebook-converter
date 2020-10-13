@@ -1,4 +1,5 @@
 import errno
+import math
 import os
 import shutil
 import subprocess
@@ -11,7 +12,7 @@ from threading import Thread
 #from PyQt5.QtCore import QBuffer, QByteArray, Qt
 #from PyQt5.QtGui import QColor, QImage, QImageReader, QImageWriter, QPixmap, QTransform
 
-from ebook_converter import fit_image, force_unicode
+from ebook_converter import force_unicode
 from ebook_converter.constants_old import plugins
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.utils.config_base import tweaks
@@ -22,6 +23,30 @@ from ebook_converter.utils.imghdr import what
 # imageops, imageops_err = plugins['imageops']
 # if imageops is None:
     # raise RuntimeError(imageops_err)
+
+
+def fit_image(width, height, pwidth, pheight):
+    """
+    Fit image in box of width pwidth and height pheight.
+    @param width: Width of image
+    @param height: Height of image
+    @param pwidth: Width of box
+    @param pheight: Height of box
+    @return: scaled, new_width, new_height. scaled is True iff new_width
+             and/or new_height is different from width or height.
+    """
+    scaled = height > pheight or width > pwidth
+    if height > pheight:
+        corrf = pheight / float(height)
+        width, height = math.floor(corrf*width), pheight
+    if width > pwidth:
+        corrf = pwidth / float(width)
+        width, height = pwidth, math.floor(corrf*height)
+    if height > pheight:
+        corrf = pheight / float(height)
+        width, height = math.floor(corrf*width), pheight
+
+    return scaled, int(width), int(height)
 
 
 class NotImage(ValueError):

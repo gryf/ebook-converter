@@ -19,9 +19,9 @@ import itertools
 import math
 
 import bs4
+from PIL import Image as PILImage
 
-from ebook_converter import entity_to_unicode, fit_image, \
-        force_unicode
+from ebook_converter import entity_to_unicode, force_unicode
 from ebook_converter.constants_old import __appname__, filesystem_encoding, \
         preferred_encoding
 from ebook_converter.devices.interface import DevicePlugin as Device
@@ -37,8 +37,7 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import (
     RuledLine, Span, Sub, Sup, TextBlock
 )
 from ebook_converter.ptempfile import PersistentTemporaryFile
-
-from PIL import Image as PILImage
+from ebook_converter.utils import img as uimg
 
 
 def strip_style_comments(match):
@@ -1075,7 +1074,7 @@ class HTMLConverter(object):
             finally:
                 pt.close()
 
-        scaled, width, height = fit_image(width, height, pwidth, pheight)
+        scaled, width, height = uimg.fit_image(width, height, pwidth, pheight)
         if scaled:
             path = scale_image(width, height)
 
@@ -1956,7 +1955,8 @@ def process_file(path, options, logger):
                 corrf = pwidth/width
                 width, height = pwidth, int(corrf*height)
 
-            scaled, width, height = fit_image(width, height, pwidth, pheight)
+            scaled, width, height = uimg.fit_image(width, height, pwidth,
+                                                   pheight)
             try:
                 cim = im.resize((width, height),
                                 PILImage

@@ -1,9 +1,4 @@
-from ebook_converter import fit_image
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
+from ebook_converter.utils import img as uimg
 
 
 class RescaleImages(object):
@@ -57,7 +52,9 @@ class RescaleImages(object):
                 except Exception:
                     self.log.exception('Failed to convert image %s from CMYK to RGB' % item.href)
 
-                scaled, new_width, new_height = fit_image(width, height, page_width, page_height)
+                scaled, new_width, new_height = uimg.fit_image(width, height,
+                                                               page_width,
+                                                               page_height)
                 if scaled:
                     new_width = max(1, new_width)
                     new_height = max(1, new_height)
