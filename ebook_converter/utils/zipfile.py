@@ -7,7 +7,7 @@ import binascii
 from contextlib import closing
 from tempfile import SpooledTemporaryFile
 
-from ebook_converter import sanitize_file_name
+from ebook_converter.utils import filenames as fms
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.ebooks.chardet import detect
 from ebook_converter.polyglot.builtins import as_bytes
@@ -1135,7 +1135,7 @@ class ZipFile:
                 os.makedirs(upperdirs)
             except:  # Added by Kovid
                 targetpath = os.path.join(base_target,
-                        sanitize_file_name(fname))
+                        fms.sanitize_file_name(fname))
                 upperdirs = os.path.dirname(targetpath)
                 if upperdirs and not os.path.exists(upperdirs):
                     os.makedirs(upperdirs)
@@ -1156,7 +1156,7 @@ class ZipFile:
                 except:
                     # Try sanitizing the file name to remove invalid characters
                     components = list(os.path.split(targetpath))
-                    components[-1] = sanitize_file_name(components[-1])
+                    components[-1] = fms.sanitize_file_name(components[-1])
                     targetpath = os.sep.join(components)
                     with open(targetpath, 'wb') as target:
                         shutil.copyfileobj(source, target)

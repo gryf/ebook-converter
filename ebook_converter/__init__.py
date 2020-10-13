@@ -9,40 +9,6 @@ from ebook_converter import constants_old
 from ebook_converter.ebooks.html_entities import html5_entities
 
 
-def sanitize_file_name(name, substitute='_'):
-    """
-    Sanitize the filename `name`. All invalid characters are replaced by
-    `substitute`. The set of invalid characters is the union of the invalid
-    characters in Windows, macOS and Linux. Also removes leading and trailing
-    whitespace.
-
-    **WARNING:** This function also replaces path separators, so only pass
-    file names and not full paths to it.
-    """
-
-    if isinstance(name, bytes):
-        name = name.decode(constants_old.filesystem_encoding, 'replace')
-    if isinstance(substitute, bytes):
-        substitute = substitute.decode(constants_old.filesystem_encoding,
-                                       'replace')
-    chars = (substitute
-             if c in set(('\\', '|', '?', '*', '<', '"', ':', '>', '+', '/') +
-                         tuple(map(chr, range(32)))) else c for c in name)
-    one = ''.join(chars)
-    one = re.sub(r'\s', ' ', one).strip()
-    bname, ext = os.path.splitext(one)
-    one = re.sub(r'^\.+$', '_', bname)
-    one = one.replace('..', substitute)
-    one += ext
-    # Windows doesn't like path components that end with a period or space
-    if one and one[-1] in ('.', ' '):
-        one = one[:-1]+'_'
-    # Names starting with a period are hidden on Unix
-    if one.startswith('.'):
-        one = '_' + one[1:]
-    return one
-
-
 def fit_image(width, height, pwidth, pheight):
     """
     Fit image in box of width pwidth and height pheight.

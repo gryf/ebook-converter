@@ -3,7 +3,7 @@ from functools import partial
 from collections import Counter, defaultdict
 import urllib.parse
 
-from ebook_converter import sanitize_file_name
+from ebook_converter.utils import filenames as fms
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
 from ebook_converter.ebooks.oeb.base import css_text
 from ebook_converter.ebooks.oeb.polish.css import iter_declarations, remove_property_value
@@ -203,7 +203,7 @@ def rename_files(container, file_map):
 
 def replace_file(container, name, path, basename, force_mt=None):
     dirname, base = name.rpartition('/')[0::2]
-    nname = sanitize_file_name(basename)
+    nname = fms.sanitize_file_name(basename)
     if dirname:
         nname = dirname + '/' + nname
     with open(path, 'rb') as src:
