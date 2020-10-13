@@ -27,13 +27,6 @@ class CurrentDir(object):
             pass
 
 
-def walk(dir):
-    """A nice interface to os.walk"""
-    for record in os.walk(dir):
-        for f in record[-1]:
-            yield os.path.join(record[0], f)
-
-
 def entity_to_unicode(match, exceptions=[], encoding='cp1252',
                       result_exceptions={}):
     """

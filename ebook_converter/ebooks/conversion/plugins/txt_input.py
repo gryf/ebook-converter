@@ -1,6 +1,6 @@
 import os
 
-from ebook_converter import _ent_pat, walk, xml_entity_to_unicode
+from ebook_converter import _ent_pat, xml_entity_to_unicode
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 
 
@@ -157,10 +157,12 @@ class TXTInput(InputFormatPlugin):
             zf = ZipFile(stream)
             zf.extractall('.')
 
-            for x in walk('.'):
-                if os.path.splitext(x)[1].lower() in ('.txt', '.text'):
-                    with open(x, 'rb') as tf:
-                        txt += tf.read() + b'\n\n'
+            for root, _, fnames in os.walk('.'):
+                for x in fnames:
+                    x = os.path.join(root, x)
+                    if os.path.splitext(x)[1].lower() in ('.txt', '.text'):
+                        with open(x, 'rb') as tf:
+                            txt += tf.read() + b'\n\n'
         else:
             if getattr(stream, 'name', None):
                 base_dir = os.path.dirname(stream.name)

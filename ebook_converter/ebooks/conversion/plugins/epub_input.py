@@ -265,7 +265,6 @@ class EPUBInput(InputFormatPlugin):
 
     def convert(self, stream, options, file_ext, log, accelerators):
         from ebook_converter.utils.zipfile import ZipFile
-        from ebook_converter import walk
         from ebook_converter.ebooks import DRMError
 
         _path_or_stream = getattr(stream, 'name', 'stream')
@@ -281,11 +280,13 @@ class EPUBInput(InputFormatPlugin):
         encfile = os.path.abspath(os.path.join('META-INF', 'encryption.xml'))
         opf = self.find_opf()
         if opf is None:
-            for f in walk('.'):
-                if f.lower().endswith('.opf') and '__MACOSX' not in f and \
-                        not os.path.basename(f).startswith('.'):
-                    opf = os.path.abspath(f)
-                    break
+            for root, _, fnames in os.walk('.'):
+                for f in fnames:
+                    f = os.path.join(root, f)
+                    if f.lower().endswith('.opf') and '__MACOSX' not in f and \
+                            not os.path.basename(f).startswith('.'):
+                        opf = os.path.abspath(f)
+                        break
 
         if opf is None:
             raise ValueError('%s is not a valid EPUB file (could not find '

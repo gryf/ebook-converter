@@ -5,7 +5,6 @@ import sys
 
 from lxml import etree
 
-from ebook_converter import walk
 from ebook_converter.ebooks.metadata import authors_to_sort_string
 from ebook_converter.ebooks.metadata import string_to_authors
 from ebook_converter.ebooks.metadata.book.base import Metadata
@@ -113,9 +112,11 @@ class DOCX(object):
             extractall(stream, self.tdir)
 
         self.names = {}
-        for f in walk(self.tdir):
-            name = os.path.relpath(f, self.tdir).replace(os.sep, '/')
-            self.names[name] = f
+        for root, _, fnames in os.walk(self.tdir):
+            for f in fnames:
+                f = os.path.join(root, f)
+                name = os.path.relpath(f, self.tdir).replace(os.sep, '/')
+                self.names[name] = f
 
     def exists(self, name):
         return name in self.names

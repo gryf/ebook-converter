@@ -13,7 +13,7 @@ from odf.opendocument import load as odLoad
 from odf.draw import Frame as odFrame, Image as odImage
 from odf.namespaces import TEXTNS as odTEXTNS
 
-from ebook_converter import CurrentDir, walk
+from ebook_converter import CurrentDir
 from ebook_converter.ebooks.oeb.base import _css_logger
 from ebook_converter.polyglot.builtins import as_bytes
 
@@ -296,8 +296,9 @@ class Extract(ODF2XHTML):
             zf = ZipFile(stream, 'r')
             self.extract_pictures(zf)
             opf = OPFCreator(os.path.abspath(os.getcwd()), mi)
-            opf.create_manifest([(os.path.abspath(f2), None) for f2 in
-                walk(os.getcwd())])
+            opf.create_manifest([(os.path.abspath(os.path.join(r, f2)), None)
+                                 for r, _, fnames in os.walk(os.getcwd())
+                                 for f2 in fnames])
             opf.create_spine([os.path.abspath('index.xhtml')])
             with open('metadata.opf', 'wb') as f:
                 opf.render(f)

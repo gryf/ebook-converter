@@ -16,7 +16,7 @@ import css_parser
 from lxml import etree
 
 from ebook_converter import constants as const
-from ebook_converter import CurrentDir, walk
+from ebook_converter import CurrentDir
 from ebook_converter.customize.ui import plugin_for_input_format, plugin_for_output_format
 from ebook_converter.ebooks import escape_xpath_attr
 from ebook_converter.ebooks.chardet import xml_to_unicode
@@ -1153,12 +1153,14 @@ class EpubContainer(Container):
         # Ensure all filenames are in NFC normalized form
         # has no effect on HFS+ filesystems as they always store filenames
         # in NFD form
-        for filename in walk(self.root):
-            n = unicodedata.normalize('NFC', filename)
-            if n != filename:
-                s = filename + 'suff1x'
-                os.rename(filename, s)
-                os.rename(s, n)
+        for root, _, fnames in os.walk(self.root):
+            for filename in fnames:
+                filename = os.path.join(root, filename)
+                n = unicodedata.normalize('NFC', filename)
+                if n != filename:
+                    s = filename + 'suff1x'
+                    os.rename(filename, s)
+                    os.rename(s, n)
 
         container_path = join(self.root, 'META-INF', 'container.xml')
         if not exists(container_path):

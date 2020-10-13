@@ -2,7 +2,6 @@ import os
 from collections import defaultdict
 from threading import Thread
 
-from ebook_converter import walk
 from ebook_converter.constants_old import DEBUG
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.utils.fonts.metadata import FontMetadata, UnsupportedFont
@@ -296,7 +295,9 @@ class FontScanner(Thread):
             if not os.path.isdir(folder):
                 continue
             try:
-                files = tuple(walk(folder))
+                files = tuple([os.path.join(root, f)
+                               for root, _, fnames in os.walk(folder)
+                               for f in fnames])
             except EnvironmentError as e:
                 if DEBUG:
                     print(f'Failed to walk font folder: {folder}, {e}')

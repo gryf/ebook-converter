@@ -2,12 +2,6 @@ import os
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
 from ebook_converter.constants_old import numeric_version
-from ebook_converter import walk
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 
 class RecipeDisabled(Exception):
@@ -141,9 +135,11 @@ class RecipeInput(InputFormatPlugin):
             if f.endswith('.opf'):
                 return os.path.abspath(f)
 
-        for f in walk('.'):
-            if f.endswith('.opf'):
-                return os.path.abspath(f)
+        for root, _, fnames in os.walk('.'):
+            for f in fnames:
+                f = os.path.join(root, f)
+                if f.endswith('.opf'):
+                    return os.path.abspath(f)
 
     def postprocess_book(self, oeb, opts, log):
         if self.recipe_object is not None:
