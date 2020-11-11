@@ -12,11 +12,11 @@ from threading import Thread
 #from PyQt5.QtCore import QBuffer, QByteArray, Qt
 #from PyQt5.QtGui import QColor, QImage, QImageReader, QImageWriter, QPixmap, QTransform
 
-from ebook_converter import force_unicode
 from ebook_converter.constants_old import plugins
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.utils.filenames import atomic_rename
+from ebook_converter.utils import encoding as uenc
 from ebook_converter.utils.imghdr import what
 
 # Utilities {{{
@@ -586,7 +586,7 @@ def run_optimizer(file_path, cmd, as_filter=False, input_data=None):
             outw = Thread(name='CopyOutput', target=copy, args=(p.stdout, outf))
             outw.daemon = True
             outw.start()
-        raw = force_unicode(stderr.read())
+        raw = uenc.force_unicode(stderr.read())
         if p.wait() != 0:
             return raw
         else:

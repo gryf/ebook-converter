@@ -7,9 +7,10 @@ import json
 import numbers
 import os
 import pickle
-import pkg_resources
 import re
 import traceback
+
+import pkg_resources
 
 from ebook_converter.constants_old import config_dir
 from ebook_converter.constants_old import filesystem_encoding
@@ -75,7 +76,8 @@ def from_json(obj):
     return obj
 
 
-def force_unicode(x):
+def _force_unicode(x):
+    # TODO(gryf): eliminate cases, when this kind of functions are needed.
     try:
         return x.decode(preferred_encoding)
     except UnicodeDecodeError:
@@ -87,7 +89,7 @@ def force_unicode(x):
 
 def force_unicode_recursive(obj):
     if isinstance(obj, bytes):
-        return force_unicode(obj)
+        return _force_unicode(obj)
     if isinstance(obj, (list, tuple)):
         return type(obj)(map(force_unicode_recursive, obj))
     if isinstance(obj, dict):

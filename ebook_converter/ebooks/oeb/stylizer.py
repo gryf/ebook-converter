@@ -12,12 +12,12 @@ from css_parser import (profile as cssprofiles, parseString, parseStyle, log as
         css_parser_log, CSSParser, profiles, replaceUrls)
 
 from ebook_converter import constants as const
-from ebook_converter import force_unicode
 from ebook_converter.ebooks import unit_convert
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.normalize_css import DEFAULTS, normalizers
 from ebook_converter.css_selectors import Select, SelectorError, INAPPROPRIATE_PSEUDO_CLASSES
 from ebook_converter.tinycss.media3 import CSSMedia3Parser
+from ebook_converter.utils import encoding as uenc
 
 
 css_parser_log.setLevel(logging.WARN)
@@ -223,10 +223,10 @@ class Stylizer(object):
                 for x in elem:
                     t = getattr(x, 'text', None)
                     if t:
-                        text += '\n\n' + force_unicode(t, 'utf-8')
+                        text += '\n\n' + uenc.force_unicode(t, 'utf-8')
                     t = getattr(x, 'tail', None)
                     if t:
-                        text += '\n\n' + force_unicode(t, 'utf-8')
+                        text += '\n\n' + uenc.force_unicode(t, 'utf-8')
                 if text:
                     text = oeb.css_preprocessor(text)
                     # We handle @import rules separately

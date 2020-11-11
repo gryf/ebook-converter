@@ -3,12 +3,12 @@ import functools
 
 from css_parser.css import CSSRule, CSSStyleDeclaration
 
-from ebook_converter import force_unicode
 from ebook_converter.css_selectors import parse, SelectorSyntaxError
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.polish import pretty
 from ebook_converter.utils.icu import numeric_sort_key
 from ebook_converter.css_selectors import Select, SelectorError
+from ebook_converter.utils import encoding as uenc
 
 
 def filter_used_rules(rules, log, select):
@@ -137,7 +137,7 @@ def remove_unused_css(container, report=None, remove_unused_classes=False,
                 if unused_rules:
                     num_of_removed_rules += len(unused_rules)
                     [sheet.cssRules.remove(r) for r in unused_rules]
-                    style.text = force_unicode(sheet.cssText, 'utf-8')
+                    style.text = uenc.force_unicode(sheet.cssText, 'utf-8')
                     pretty.pretty_script_or_style(container, style)
                     container.dirty(name)
 
@@ -241,7 +241,7 @@ def transform_inline_styles(container, name, transform_sheet, transform_style):
             sheet = container.parse_css(style.text)
             if transform_sheet(sheet):
                 changed = True
-                style.text = force_unicode(sheet.cssText, 'utf-8')
+                style.text = uenc.force_unicode(sheet.cssText, 'utf-8')
                 pretty.pretty_script_or_style(container, style)
     for elem in root.xpath('//*[@style]'):
         text = elem.get('style', None)
@@ -253,8 +253,9 @@ def transform_inline_styles(container, name, transform_sheet, transform_style):
                     del elem.attrib['style']
                 else:
                     elem.set('style',
-                             force_unicode(style.getCssText(separator=' '),
-                                           'utf-8'))
+                             uenc.force_unicode(style
+                                                .getCssText(separator=' '),
+                                                'utf-8'))
     return changed
 
 

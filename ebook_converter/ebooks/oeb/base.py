@@ -17,12 +17,12 @@ from lxml import etree
 from lxml import html
 
 from ebook_converter import constants as const
-from ebook_converter import force_unicode
 from ebook_converter.constants_old import filesystem_encoding, __version__
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ebooks.conversion.preprocess import CSSPreProcessor
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.utils.cleantext import clean_xml_chars
+from ebook_converter.utils import encoding as uenc
 from ebook_converter.utils.short_uuid import uuid4
 
 
@@ -1074,7 +1074,7 @@ class Manifest(object):
         def sort_key(self):
             href = self.href
             if isinstance(href, bytes):
-                href = force_unicode(href)
+                href = uenc.force_unicode(href)
 
             if isinstance(self.spine_position, numbers.Number):
                 sp = self.spine_position

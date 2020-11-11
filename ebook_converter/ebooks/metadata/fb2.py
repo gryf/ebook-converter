@@ -12,10 +12,10 @@ from lxml import etree
 from ebook_converter.utils.date import parse_only_date
 from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.utils.imghdr import identify
-from ebook_converter import force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation, check_isbn
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.polyglot.binary import as_base64_unicode
+from ebook_converter.utils import encoding as uenc
 
 
 NAMESPACES = {'fb2': 'http://www.gribuser.ru/xml/fictionbook/2.0',
@@ -110,7 +110,7 @@ def get_metadata(stream):
     if book_title:
         book_title = str(book_title)
     else:
-        book_title = force_unicode(os.path.splitext(
+        book_title = uenc.force_unicode(os.path.splitext(
             os.path.basename(getattr(stream, 'name', 'Unknown')))[0])
     mi = MetaInformation(book_title, authors)
 

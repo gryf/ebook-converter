@@ -9,9 +9,9 @@ import shutil
 from math import ceil
 
 from ebook_converter import constants_old
-from ebook_converter import force_unicode
 from ebook_converter.constants_old import (filesystem_encoding,
                                            preferred_encoding)
+from ebook_converter.utils import encoding as uenc
 from ebook_converter.utils.localization import get_udc
 
 
@@ -183,7 +183,7 @@ def case_preserving_open_file(path, mode='wb', mkdir_mode=0o777):
 
     path = os.path.abspath(path)
 
-    sep = force_unicode(os.sep, 'ascii')
+    sep = uenc.force_unicode(os.sep, 'ascii')
 
     if path.endswith(sep):
         path = path[:-1]

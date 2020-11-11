@@ -5,9 +5,10 @@ from lxml import etree
 from lxml import html
 
 from ebook_converter import constants as const
-from ebook_converter import xml_replace_entities, force_unicode
+from ebook_converter import xml_replace_entities
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
+from ebook_converter.utils import encoding as uenc
 
 
 RECOVER_PARSER = etree.XMLParser(recover=True, no_network=True,
@@ -159,7 +160,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
     if log is None:
         log = LOG
 
-    filename = force_unicode(filename, enc=filesystem_encoding)
+    filename = uenc.force_unicode(filename, enc=filesystem_encoding)
 
     if not isinstance(data, str):
         if decoder is not None:

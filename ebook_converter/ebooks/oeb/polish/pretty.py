@@ -1,10 +1,10 @@
 import textwrap
 
 from ebook_converter import constants as const
-from ebook_converter import force_unicode
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.polish.utils import guess_type
+from ebook_converter.utils import encoding as uenc
 from ebook_converter.utils.icu import sort_key
 
 
@@ -157,8 +157,9 @@ def pretty_script_or_style(container, child):
     if child.text:
         indent = indent_for_tag(child)
         if child.tag.endswith('style'):
-            child.text = force_unicode(pretty_css(container, '', child.text),
-                                       'utf-8')
+            child.text = uenc.force_unicode(pretty_css(container, '',
+                                                       child.text),
+                                            'utf-8')
         child.text = textwrap.dedent(child.text)
         child.text = '\n' + '\n'.join([(indent + x) if x else ''
                                        for x in child.text.splitlines()])

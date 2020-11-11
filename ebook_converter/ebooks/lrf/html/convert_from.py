@@ -21,7 +21,7 @@ import math
 import bs4
 from PIL import Image as PILImage
 
-from ebook_converter import entity_to_unicode, force_unicode
+from ebook_converter import entity_to_unicode
 from ebook_converter.constants_old import __appname__, filesystem_encoding, \
         preferred_encoding
 from ebook_converter.devices.interface import DevicePlugin as Device
@@ -37,6 +37,7 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import (
     RuledLine, Span, Sub, Sup, TextBlock
 )
 from ebook_converter.ptempfile import PersistentTemporaryFile
+from ebook_converter.utils import encoding as uenc
 from ebook_converter.utils import img as uimg
 
 
@@ -1935,8 +1936,8 @@ class HTMLConverter(object):
 
 def process_file(path, options, logger):
     path = os.path.abspath(path)
-    default_title = force_unicode(os.path.splitext(os.path.basename(path))[0],
-                                  filesystem_encoding)
+    default_title = os.path.splitext(os.path .basename(path))[0]
+    default_title = uenc.force_unicode(default_title, filesystem_encoding)
     dirpath = os.path.dirname(path)
 
     tpath = ''

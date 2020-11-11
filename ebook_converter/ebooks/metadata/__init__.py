@@ -8,9 +8,9 @@ import re
 import sys
 import urllib.parse
 
-from ebook_converter import force_unicode
 from ebook_converter.utils.config_base import tweaks
 from ebook_converter.polyglot.urllib import unquote
+from ebook_converter.utils import encoding as uenc
 
 
 try:
@@ -43,7 +43,7 @@ def remove_bracketed_text(src, brackets=None):
     from collections import Counter
     counts = Counter()
     buf = []
-    src = force_unicode(src)
+    src = uenc.force_unicode(src)
     rmap = {v: k for k, v in brackets.items()}
     for char in src:
         if char in brackets:
@@ -75,7 +75,7 @@ def author_to_author_sort(author, method=None):
     if method == 'copy':
         return author
 
-    prefixes = {force_unicode(y).lower()
+    prefixes = {uenc.force_unicode(y).lower()
                 for y in tweaks['author_name_prefixes']}
     prefixes |= {y+'.' for y in prefixes}
     while True:
@@ -87,7 +87,7 @@ def author_to_author_sort(author, method=None):
         else:
             break
 
-    suffixes = {force_unicode(y).lower()
+    suffixes = {uenc.force_unicode(y).lower()
                 for y in tweaks['author_name_suffixes']}
     suffixes |= {y+'.' for y in suffixes}
 

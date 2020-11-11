@@ -14,12 +14,12 @@ from lxml.etree import XPath as _XPath
 from lxml import etree
 
 from ebook_converter import constants as const
-from ebook_converter import force_unicode
 from ebook_converter.ebooks.epub import rules
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.polish.split import do_split
 from ebook_converter.polyglot.urllib import unquote
 from ebook_converter.css_selectors import Select, SelectorError
+from ebook_converter.utils import encoding as uenc
 
 
 __license__ = 'GPL v3'
@@ -86,10 +86,12 @@ class Split(object):
             stylesheets = [x.data for x in self.oeb.manifest if x.media_type in
                            base.OEB_STYLES]
             for rule in rules(stylesheets):
-                before = force_unicode(getattr(rule.style.getPropertyCSSValue(
-                    'page-break-before'), 'cssText', '').strip().lower())
-                after = force_unicode(getattr(rule.style.getPropertyCSSValue(
-                    'page-break-after'), 'cssText', '').strip().lower())
+                before = uenc.force_unicode(
+                    getattr(rule.style.getPropertyCSSValue(
+                        'page-break-before'), 'cssText', '').strip().lower())
+                after = uenc.force_unicode(
+                    getattr(rule.style.getPropertyCSSValue(
+                        'page-break-after'), 'cssText', '').strip().lower())
                 try:
                     if before and before not in {'avoid', 'auto', 'inherit'}:
                         self.page_break_selectors.add((rule.selectorText,

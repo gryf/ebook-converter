@@ -4,8 +4,8 @@ Edit metadata in RTF files.
 import codecs
 import re
 
-from ebook_converter import force_unicode
 from ebook_converter.ebooks.metadata import MetaInformation
+from ebook_converter.utils import encoding as uenc
 
 title_pat = re.compile(br'\{\\info.*?\{\\title(.*?)(?<!\\)\}', re.DOTALL)
 author_pat = re.compile(br'\{\\info.*?\{\\author(.*?)(?<!\\)\}', re.DOTALL)
@@ -74,7 +74,7 @@ def detect_codepage(stream):
 
 def encode(unistr):
     if not isinstance(unistr, str):
-        unistr = force_unicode(unistr)
+        unistr = uenc.force_unicode(unistr)
     return ''.join(c if ord(c) < 128 else
                    '\\u{}?'.format(ord(c)) for c in unistr)
 

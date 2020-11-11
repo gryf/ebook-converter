@@ -119,21 +119,24 @@ def reset_base_dir():
     base_dir()
 
 
-def force_unicode(x):
+def _force_unicode(x):
     # Cannot use the implementation in calibre.__init__ as it causes a circular
     # dependency
+    # NOTE(gryf): Congratulations! that's a 3rd function in this codebase
+    # called force_unicode! I guess that forcing unicode on text objects is
+    # some kind of hobby.
     if isinstance(x, bytes):
         x = x.decode(filesystem_encoding)
     return x
 
 
 def _make_file(suffix, prefix, base):
-    suffix, prefix = map(force_unicode, (suffix, prefix))  # no2to3
+    suffix, prefix = map(_force_unicode, (suffix, prefix))  # no2to3
     return tempfile.mkstemp(suffix, prefix, dir=base)
 
 
 def _make_dir(suffix, prefix, base):
-    suffix, prefix = map(force_unicode, (suffix, prefix))  # no2to3
+    suffix, prefix = map(_force_unicode, (suffix, prefix))  # no2to3
     return tempfile.mkdtemp(suffix, prefix, base)
 
 
