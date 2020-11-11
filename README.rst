@@ -107,10 +107,7 @@ managers), i.e:
    $ . venv/bin/activate
    (venv) $ git clone https://github.com/gryf/ebook-converter
    (venv) $ cd ebook-converter
-   (venv) $ # you can either use pip or just setuptools:
-   (venv) $ pip install .
-   (venv) $ # OR
-   (venv) $ python setup.py install
+   (venv) $ pip install -r requirements.txt .
 
 Simple as that. And from now on, you can issue converter:
 
