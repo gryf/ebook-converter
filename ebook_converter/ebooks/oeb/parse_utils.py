@@ -5,10 +5,10 @@ from lxml import etree
 from lxml import html
 
 from ebook_converter import constants as const
-from ebook_converter import xml_replace_entities
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.ebooks.chardet import xml_to_unicode, strip_encoding_declarations
 from ebook_converter.utils import encoding as uenc
+from ebook_converter.utils import entities
 
 
 RECOVER_PARSER = etree.XMLParser(recover=True, no_network=True,
@@ -208,9 +208,8 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
         data = etree.fromstring(data)
         check_for_html5(pre, data)
     except (HTML5Doc, etree.XMLSyntaxError):
-        log.debug('Initial parse failed, using more'
-                ' forgiving parsers')
-        raw = data = xml_replace_entities(raw)
+        log.debug('Initial parse failed, using more forgiving parsers')
+        raw = data = entities.xml_replace_entities(raw)
         try:
             data = etree.fromstring(data)
             check_for_html5(pre, data)

@@ -4,10 +4,10 @@ from lxml import etree
 import html5_parser
 
 from ebook_converter import constants as const
-from ebook_converter import xml_replace_entities
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.utils.cleantext import clean_xml_chars
+from ebook_converter.utils import entities
 
 
 def parse_html5(raw, decoder=None, log=None, discard_namespaces=False,
@@ -16,7 +16,7 @@ def parse_html5(raw, decoder=None, log=None, discard_namespaces=False,
     if isinstance(raw, bytes):
         raw = xml_to_unicode(raw)[0] if decoder is None else decoder(raw)
     if replace_entities:
-        raw = xml_replace_entities(raw)
+        raw = entities.xml_replace_entities(raw)
     if fix_newlines:
         raw = raw.replace('\r\n', '\n').replace('\r', '\n')
     raw = clean_xml_chars(raw)
@@ -61,7 +61,8 @@ def parse(raw, decoder=None, log=None, line_numbers=True,
         raw = xml_to_unicode(raw)[0] if decoder is None else decoder(raw)
     raw = handle_private_entities(raw)
     if replace_entities:
-        raw = xml_replace_entities(raw).replace('\0', '')  # Handle &#0;
+        # Handle &#0;
+        raw = entities.xml_replace_entities(raw).replace('\0', '')
     raw = raw.replace('\r\n', '\n').replace('\r', '\n')
 
     # Remove any preamble before the opening html tag as it can cause problems,

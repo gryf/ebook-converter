@@ -23,7 +23,7 @@ from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils.localization import get_lang
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants_old import __appname__, __version__
-from ebook_converter import xml_replace_entities
+from ebook_converter.utils import entities
 from ebook_converter.polyglot.urllib import unquote
 
 
@@ -107,7 +107,8 @@ class OEBReader(object):
         try:
             opf = etree.fromstring(data)
         except etree.XMLSyntaxError:
-            data = xml_replace_entities(clean_xml_chars(data), encoding=None)
+            data = entities.xml_replace_entities(clean_xml_chars(data),
+                                                 encoding=None)
             try:
                 opf = etree.fromstring(data)
                 self.logger.warn('OPF contains invalid HTML named entities')
