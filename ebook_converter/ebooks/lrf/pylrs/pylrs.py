@@ -50,7 +50,7 @@ DEFAULT_SOURCE_ENCODING = "cp1252"      # default is us-windows character set
 DEFAULT_GENREADING      = "fs"          # default is yes to both lrf and lrs
 
 from ebook_converter.constants_old import __appname__, __version__
-from ebook_converter import entity_to_unicode
+from ebook_converter.utils import entities
 
 
 class LrsError(Exception):
@@ -737,7 +737,8 @@ class TableOfContents(object):
 class TocLabel(object):
 
     def __init__(self, label, textBlock):
-        self.label = escape(re.sub(r'&(\S+?);', entity_to_unicode, label))
+        self.label = escape(re.sub(r'&(\S+?);', entities.entity_to_unicode,
+                                   label))
         self.textBlock = textBlock
 
     def toElement(self, se):

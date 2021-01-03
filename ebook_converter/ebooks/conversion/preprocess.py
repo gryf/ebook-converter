@@ -3,14 +3,14 @@ import json
 import math
 import re
 
-from ebook_converter import entity_to_unicode
+from ebook_converter.utils import entities
 
 
 XMLDECL_RE = re.compile(r'^\s*<[?]xml.*?[?]>')
 SVG_NS = 'http://www.w3.org/2000/svg'
 XLINK_NS = 'http://www.w3.org/1999/xlink'
 
-convert_entities = functools.partial(entity_to_unicode,
+convert_entities = functools.partial(entities.entity_to_unicode,
                                      result_exceptions={'<': '&lt;',
                                                         '>': '&gt;',
                                                         "'": '&apos;',

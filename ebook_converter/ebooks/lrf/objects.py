@@ -6,8 +6,9 @@ import struct
 import zlib
 
 from ebook_converter.ebooks.lrf import LRFParseError, PRS500_PROFILE
-from ebook_converter import entity_to_unicode, prepare_string_for_xml
+from ebook_converter import prepare_string_for_xml
 from ebook_converter.ebooks.lrf.tags import Tag
+from ebook_converter.utils import entities
 
 ruby_tags = {0xF575: ['rubyAlignAndAdjust', 'W'],
              0xF576: ['rubyoverhang', 'W', {0: 'none', 1: 'auto'}],
@@ -713,7 +714,8 @@ class Text(LRFStream):
         s = str(text, "utf-16-le")
         if s:
             s = s.translate(self.text_map)
-            self.content.append(self.entity_pattern.sub(entity_to_unicode, s))
+            self.content.append(self.entity_pattern
+                                .sub(entities.entity_to_unicode, s))
 
     def end_container(self, tag, stream):
         self.content.append(None)

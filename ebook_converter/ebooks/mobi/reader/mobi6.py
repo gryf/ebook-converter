@@ -9,7 +9,7 @@ import textwrap
 
 from lxml import html, etree
 
-from ebook_converter import xml_entity_to_unicode, entity_to_unicode
+from ebook_converter import xml_entity_to_unicode
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
 from ebook_converter.ebooks import DRMError, unit_convert
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
@@ -20,6 +20,7 @@ from ebook_converter.ebooks.metadata import MetaInformation
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator, OPF
 from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.reader.headers import BookHeader
+from ebook_converter.utils import entities
 from ebook_converter.utils.img import save_cover_data_to, gif_data_to_png_data
 from ebook_converter.utils.img import AnimatedGIF
 from ebook_converter.utils.imghdr import what
@@ -759,7 +760,8 @@ class MobiReader(object):
                                                          ':text()')])
                             except Exception:
                                 text = ''
-                            text = ent_pat.sub(entity_to_unicode, text)
+                            text = ent_pat.sub(entities.entity_to_unicode,
+                                               text)
                             item = tocobj.add_item(toc.partition('#')[0],
                                                    href[1:], text)
                             item.left_space = int(self.get_left_whitespace(x))

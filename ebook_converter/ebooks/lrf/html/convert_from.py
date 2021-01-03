@@ -21,7 +21,6 @@ import math
 import bs4
 from PIL import Image as PILImage
 
-from ebook_converter import entity_to_unicode
 from ebook_converter.constants_old import __appname__, filesystem_encoding, \
         preferred_encoding
 from ebook_converter.devices.interface import DevicePlugin as Device
@@ -39,6 +38,7 @@ from ebook_converter.ebooks.lrf.pylrs.pylrs import (
 from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils import encoding as uenc
 from ebook_converter.utils import img as uimg
+from ebook_converter.utils import entities
 
 
 def strip_style_comments(match):
@@ -90,7 +90,7 @@ MARKUP_MASSAGE = [  # Close <a /> tags
 
                   # Replace entities
                   (re.compile(r'&(\S+?);'),
-                   functools.partial(entity_to_unicode,
+                   functools.partial(entities.entity_to_unicode,
                                      exceptions=['lt', 'gt', 'amp', 'quot'])),
 
                   # Remove comments from within style tags as they can mess up
