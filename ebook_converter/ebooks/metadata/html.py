@@ -11,7 +11,7 @@ from lxml.etree import Comment
 from ebook_converter.ebooks.metadata import string_to_authors, authors_to_string
 from ebook_converter.ebooks.metadata.book.base import Metadata
 from ebook_converter.ebooks.chardet import xml_to_unicode
-from ebook_converter import replace_entities
+from ebook_converter.utils import entities
 from ebook_converter.utils.date import parse_date, is_date_undefined
 
 
@@ -73,7 +73,8 @@ def handle_comment(data, comment_tags):
         except KeyError:
             pass
         if field:
-            comment_tags[field].append(replace_entities(match.group('content')))
+            comment_tags[field].append(
+                entities.replace_entities(match.group('content')))
 
 
 def parse_metadata(src):

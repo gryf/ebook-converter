@@ -3,7 +3,7 @@ import os
 import re
 import mimetypes
 
-from ebook_converter import replace_entities
+from ebook_converter.utils import entities
 
 
 def _upper(string):
@@ -185,7 +185,7 @@ def parse_css(data, fname='<string>', is_declaration=False, decode=None, log_lev
 
 
 def handle_entities(text, func):
-    return func(replace_entities(text))
+    return func(entities.replace_entities(text))
 
 
 def apply_func_to_match_groups(match, func=_upper,

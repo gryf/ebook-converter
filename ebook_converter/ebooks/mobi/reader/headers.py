@@ -1,13 +1,13 @@
 import struct, re, os
 
-from ebook_converter import replace_entities
 from ebook_converter.utils.date import parse_date
 from ebook_converter.ebooks.mobi import MobiError
 from ebook_converter.ebooks.metadata import MetaInformation, check_isbn
 from ebook_converter.ebooks.mobi.langcodes import main_language, sub_language, mobi2iana
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
-from ebook_converter.utils.localization import canonicalize_lang
 from ebook_converter.utils.config_base import tweaks
+from ebook_converter.utils import entities
+from ebook_converter.utils.localization import canonicalize_lang
 
 
 __license__ = 'GPL v3'
@@ -106,7 +106,8 @@ class EXTHHeader(object):  # {{{
             # else:
             #    print 'unknown record', idx, repr(content)
         if title:
-            self.mi.title = replace_entities(clean_xml_chars(clean_ascii_chars(title)))
+            title = clean_xml_chars(clean_ascii_chars(title))
+            self.mi.title = entities.replace_entities(title)
 
     def process_metadata(self, idx, content, codec):
         if idx == 100:

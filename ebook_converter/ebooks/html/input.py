@@ -8,7 +8,7 @@ import sys
 import urllib.parse
 
 from ebook_converter.ebooks.chardet import detect_xml_encoding
-from ebook_converter import replace_entities
+from ebook_converter.utils import entities
 
 
 class Link(object):
@@ -154,7 +154,7 @@ class HTMLFile(object):
                 url = match.group(i)
                 if url:
                     break
-            url = replace_entities(url)
+            url = entities.replace_entities(url)
             try:
                 link = self.resolve(url)
             except ValueError:

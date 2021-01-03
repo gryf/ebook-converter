@@ -29,11 +29,6 @@ class CurrentDir(object):
 _ent_pat = re.compile(r'&(\S+?);')
 
 
-def replace_entities(raw, encoding='cp1252'):
-    return _ent_pat.sub(partial(entities.entity_to_unicode, encoding=encoding),
-                        raw)
-
-
 def xml_replace_entities(raw, encoding='cp1252'):
     return _ent_pat.sub(partial(entities.xml_entity_to_unicode,
                                 encoding=encoding), raw)

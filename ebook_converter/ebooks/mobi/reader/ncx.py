@@ -1,14 +1,10 @@
 import os
 
-from ebook_converter import replace_entities
 from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.mobi.reader.headers import NULL_INDEX
 from ebook_converter.ebooks.mobi.reader.index import read_index
+from ebook_converter.utils import entities
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 tag_fieldname_map = {
         1:  ['pos',0],
@@ -87,7 +83,8 @@ def build_toc(index_entries):
         for item in level_map[lvl]:
             parent = num_map[item['parent']]
             child = parent.add_item(item['href'], item['idtag'],
-                    replace_entities(item['text'], encoding=None))
+                                    entities.replace_entities(item['text'],
+                                                              encoding=None))
             num_map[item['num']] = child
 
     # Set play orders in depth first order
