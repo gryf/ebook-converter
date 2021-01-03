@@ -1,18 +1,14 @@
 """
 Read content from Haodoo.net pdb file.
 """
-import struct
 import os
+import struct
 
-from ebook_converter import prepare_string_for_xml
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.metadata import MetaInformation
 from ebook_converter.ebooks.txt.processor import opf_writer, HTML_TEMPLATE
+from ebook_converter.utils import entities
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kan-Ru Chen <kanru@kanru.info>'
-__docformat__ = 'restructuredtext en'
 
 BPDB_IDENT = b'BOOKMTIT'
 UPDB_IDENT = b'BOOKMTIU'
@@ -133,7 +129,7 @@ class Reader(FormatReader):
                     line = '<h1 class="chapter">' + line + '</h1>\n'
                     title_added = True
                 else:
-                    line = prepare_string_for_xml(line)
+                    line = entities.prepare_string_for_xml(line)
                 lines.append('<p>%s</p>' % line)
             if not title_added:
                 lines.insert(0, '<h1 class="chapter">' + title + '</h1>\n')

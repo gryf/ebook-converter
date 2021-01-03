@@ -3,11 +3,11 @@ Read content from txt file.
 """
 import os, re
 
-from ebook_converter import prepare_string_for_xml
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 
 from ebook_converter.ebooks.conversion.preprocess import DocAnalysis
 from ebook_converter.utils.cleantext import clean_ascii_chars
+from ebook_converter.utils import entities
 
 
 HTML_TEMPLATE = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>%s </title></head><body>\n%s\n</body></html>'
@@ -87,7 +87,8 @@ def convert_basic(txt, title='', epub_split_size_kb=0):
     for line in txt.split('\n'):
         if line.strip():
             blank_count = 0
-            lines.append(u'<p>%s</p>' % prepare_string_for_xml(line.replace('\n', ' ')))
+            lines.append(u'<p>%s</p>' % entities
+                         .prepare_string_for_xml(line.replace('\n', ' ')))
         else:
             blank_count += 1
             if blank_count == 2:

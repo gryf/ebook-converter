@@ -8,11 +8,11 @@ import urllib.parse
 from functools import partial
 from lxml import html
 
-from ebook_converter import prepare_string_for_xml
 from ebook_converter import constants as const
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
+from ebook_converter.utils import entities
 from ebook_converter.utils.logging import default_log
 from ebook_converter.polyglot.builtins import as_bytes
 
@@ -57,7 +57,7 @@ class OEB2HTML(object):
     def mlize_spine(self, oeb_book):
         output = [
             u'<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" /><title>%s</title></head><body>' % (
-                prepare_string_for_xml(self.book_title))
+                entities.prepare_string_for_xml(self.book_title))
         ]
         for item in oeb_book.spine:
             self.log.debug('Converting %s to HTML...' % item.href)
@@ -136,7 +136,7 @@ class OEB2HTML(object):
         return css
 
     def prepare_string_for_html(self, raw):
-        raw = prepare_string_for_xml(raw)
+        raw = entities.prepare_string_for_xml(raw)
         raw = raw.replace(u'\u00ad', '&shy;')
         raw = raw.replace(u'\u2014', '&mdash;')
         raw = raw.replace(u'\u2013', '&ndash;')
@@ -189,7 +189,8 @@ class OEB2HTMLNoCSSizer(OEB2HTML):
         # Turn the rest of the attributes into a string we can write with the tag.
         at = ''
         for k, v in attribs.items():
-            at += ' %s="%s"' % (k, prepare_string_for_xml(v, attribute=True))
+            at += ' %s="%s"' % (k, entities
+                                .prepare_string_for_xml(v, attribute=True))
 
         # Write the tag.
         text.append('<%s%s' % (tag, at))
@@ -281,7 +282,8 @@ class OEB2HTMLInlineCSSizer(OEB2HTML):
         # Turn the rest of the attributes into a string we can write with the tag.
         at = ''
         for k, v in attribs.items():
-            at += ' %s="%s"' % (k, prepare_string_for_xml(v, attribute=True))
+            at += ' %s="%s"' % (k, entities
+                                .prepare_string_for_xml(v, attribute=True))
 
         # Turn style into strings for putting in the tag.
         style_t = ''
@@ -336,7 +338,8 @@ class OEB2HTMLClassCSSizer(OEB2HTML):
             css = u'<link href="style.css" rel="stylesheet" type="text/css" />'
         else:
             css =  u'<style type="text/css">' + self.get_css(oeb_book) + u'</style>'
-        title = u'<title>%s</title>' % prepare_string_for_xml(self.book_title)
+        title = (u'<title>%s</title>' %
+                 entities.prepare_string_for_xml(self.book_title))
         output = [u'<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />'] + \
             [css] + [title, u'</head><body>'] + output + [u'</body></html>']
         return ''.join(output)
@@ -373,7 +376,8 @@ class OEB2HTMLClassCSSizer(OEB2HTML):
         # Turn the rest of the attributes into a string we can write with the tag.
         at = ''
         for k, v in attribs.items():
-            at += ' %s="%s"' % (k, prepare_string_for_xml(v, attribute=True))
+            at += ' %s="%s"' % (k,
+                entities.prepare_string_for_xml(v, attribute=True))
 
         # Write the tag.
         text.append('<%s%s' % (tag, at))

@@ -6,7 +6,7 @@ import struct
 import zlib
 
 from ebook_converter.ebooks.lrf import LRFParseError, PRS500_PROFILE
-from ebook_converter import prepare_string_for_xml
+from ebook_converter.utils import entities
 from ebook_converter.ebooks.lrf.tags import Tag
 from ebook_converter.utils import entities
 
@@ -877,7 +877,7 @@ class Text(LRFStream):
         open_containers = collections.deque()
         for c in self.content:
             if isinstance(c, str):
-                s += prepare_string_for_xml(c).replace('\0', '')
+                s += entities.prepare_string_for_xml(c).replace('\0', '')
             elif c is None:
                 if open_containers:
                     p = open_containers.pop()

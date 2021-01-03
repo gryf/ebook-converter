@@ -2,10 +2,10 @@ import re
 
 import bs4
 
-from ebook_converter import prepare_string_for_xml
 from ebook_converter.constants_old import preferred_encoding
 from ebook_converter.ebooks.BeautifulSoup import html5_parser
 from ebook_converter.utils.html2text import html2text
+from ebook_converter.utils import entities
 
 
 # Hackish - ignoring sentences ending or beginning in numbers to avoid
@@ -51,7 +51,7 @@ def comments_to_html(comments):
         return comments
 
     if '<' not in comments:
-        comments = prepare_string_for_xml(comments)
+        comments = entities.prepare_string_for_xml(comments)
         parts = [u'<p class="description">%s</p>'%x.replace(u'\n', u'<br />')
                 for x in comments.split('\n\n')]
         return '\n'.join(parts)

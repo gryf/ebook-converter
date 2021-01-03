@@ -10,11 +10,11 @@ import uuid
 from lxml import etree
 
 from ebook_converter import constants as const
-from ebook_converter import prepare_string_for_xml
 from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.polyglot.binary import as_base64_unicode
+from ebook_converter.utils import entities
 from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.utils.localization import lang_as_iso639_1
 
@@ -149,13 +149,16 @@ class FB2MLizer(object):
                 author_middle = ' '.join(author_parts[1:-1])
                 author_last = author_parts[-1]
             metadata['author'] += '<author>'
-            metadata['author'] += ('<first-name>%s</first-name>' %
-                                   prepare_string_for_xml(author_first))
+            metadata['author'] += (
+                '<first-name>%s</first-name>' %
+                entities.prepare_string_for_xml(author_first))
             if author_middle:
-                metadata['author'] += ('<middle-name>%s</middle-name>' %
-                                       prepare_string_for_xml(author_middle))
-            metadata['author'] += ('<last-name>%s</last-name>' %
-                                   prepare_string_for_xml(author_last))
+                metadata['author'] += (
+                    '<middle-name>%s</middle-name>' %
+                    entities.prepare_string_for_xml(author_middle))
+            metadata['author'] += (
+                '<last-name>%s</last-name>' %
+                entities.prepare_string_for_xml(author_last))
             metadata['author'] += '</author>'
         if not metadata['author']:
             metadata['author'] = ('<author><first-name></first-name>'
@@ -164,7 +167,7 @@ class FB2MLizer(object):
         metadata['keywords'] = ''
         tags = list(map(str, self.oeb_book.metadata.subject))
         if tags:
-            tags = ', '.join(prepare_string_for_xml(x) for x in tags)
+            tags = ', '.join(entities.prepare_string_for_xml(x) for x in tags)
             metadata['keywords'] = '<keywords>%s</keywords>' % tags
 
         metadata['sequence'] = ''
@@ -172,7 +175,8 @@ class FB2MLizer(object):
             index = '1'
             if self.oeb_book.metadata.series_index:
                 index = self.oeb_book.metadata.series_index[0]
-            seq = prepare_string_for_xml(str(self.oeb_book.metadata.series[0]))
+            seq = entities.prepare_string_for_xml(str(self.oeb_book.metadata
+                                                      .series[0]))
             metadata['sequence'] = ('<sequence name="%s" number="%s"/>' %
                                     (seq, index))
 
@@ -193,7 +197,8 @@ class FB2MLizer(object):
             pass
         else:
             year = ('<year>%s</year>' %
-                    prepare_string_for_xml(date.value.partition('-')[0]))
+                    entities.prepare_string_for_xml(date.value
+                                                    .partition('-')[0]))
 
         try:
             publisher = self.oeb_book.metadata['publisher'][0]
@@ -201,11 +206,12 @@ class FB2MLizer(object):
             pass
         else:
             publisher = ('<publisher>%s</publisher>' %
-                         prepare_string_for_xml(publisher.value))
+                         entities.prepare_string_for_xml(publisher.value))
 
         for x in identifiers:
             if x.get(base.tag('opf', 'scheme'), None).lower() == 'isbn':
-                isbn = '<isbn>%s</isbn>' % prepare_string_for_xml(x.value)
+                isbn = ('<isbn>%s</isbn>' %
+                        entities.prepare_string_for_xml(x.value))
 
         metadata['year'] = year
         metadata['isbn'] = isbn
@@ -213,7 +219,7 @@ class FB2MLizer(object):
         for key, value in metadata.items():
             if key not in ('author', 'cover', 'sequence', 'keywords', 'year',
                            'publisher', 'isbn'):
-                metadata[key] = prepare_string_for_xml(value)
+                metadata[key] = entities.prepare_string_for_xml(value)
 
         try:
             comments = self.oeb_book.metadata['description'][0]
@@ -221,7 +227,8 @@ class FB2MLizer(object):
             metadata['comments'] = ''
         else:
             from ebook_converter.utils.html2text import html2text
-            annot = prepare_string_for_xml(html2text(comments.value).strip())
+            annot = entities.prepare_string_for_xml(html2text(comments
+                                                              .value).strip())
             metadata['comments'] = f'<annotation><p>{annot}</p></annotation>'
 
         # Keep the indentation level of the description the same as the body.
@@ -583,7 +590,7 @@ class FB2MLizer(object):
         if hasattr(elem_tree, 'text') and elem_tree.text:
             if not self.in_p:
                 fb2_out.append('<p>')
-            fb2_out.append(prepare_string_for_xml(elem_tree.text))
+            fb2_out.append(entities.prepare_string_for_xml(elem_tree.text))
             if not self.in_p:
                 fb2_out.append('</p>')
 
@@ -600,7 +607,7 @@ class FB2MLizer(object):
         if hasattr(elem_tree, 'tail') and elem_tree.tail:
             if not self.in_p:
                 fb2_out.append('<p>')
-            fb2_out.append(prepare_string_for_xml(elem_tree.tail))
+            fb2_out.append(entities.prepare_string_for_xml(elem_tree.tail))
             if not self.in_p:
                 fb2_out.append('</p>')
 
