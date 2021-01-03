@@ -9,7 +9,6 @@ import textwrap
 
 from lxml import html, etree
 
-from ebook_converter import xml_entity_to_unicode
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
 from ebook_converter.ebooks import DRMError, unit_convert
 from ebook_converter.ebooks.chardet import strip_encoding_declarations
@@ -183,7 +182,8 @@ class MobiReader(object):
                                      self.processed_html)
 
         self.processed_html = strip_encoding_declarations(self.processed_html)
-        self.processed_html = re.sub(r'&(\S+?);', xml_entity_to_unicode,
+        self.processed_html = re.sub(r'&(\S+?);',
+                                     entities.xml_entity_to_unicode,
                                      self.processed_html)
         image_name_map = self.extract_images(processed_records, output_dir)
         self.replace_page_breaks()

@@ -1,9 +1,8 @@
-import re, codecs
+import codecs
+import re
 
+from ebook_converter.utils import entities
 
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 _encoding_pats = (
     # XML declaration
@@ -94,8 +93,7 @@ def find_declared_encoding(raw, limit=50*1024):
 
 
 def substitute_entites(raw):
-    from ebook_converter import xml_entity_to_unicode
-    return ENTITY_PATTERN.sub(xml_entity_to_unicode, raw)
+    return ENTITY_PATTERN.sub(entities.xml_entity_to_unicode, raw)
 
 
 _CHARSET_ALIASES = {"macintosh" : "mac-roman",

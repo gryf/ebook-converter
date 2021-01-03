@@ -27,12 +27,6 @@ class CurrentDir(object):
 
 
 _ent_pat = re.compile(r'&(\S+?);')
-xml_entity_to_unicode = partial(entities.entity_to_unicode,
-                                result_exceptions={'"': '&quot;',
-                                                   "'": '&apos;',
-                                                   '<': '&lt;',
-                                                   '>': '&gt;',
-                                                   '&': '&amp;'})
 
 
 def replace_entities(raw, encoding='cp1252'):
@@ -41,7 +35,8 @@ def replace_entities(raw, encoding='cp1252'):
 
 
 def xml_replace_entities(raw, encoding='cp1252'):
-    return _ent_pat.sub(partial(xml_entity_to_unicode, encoding=encoding), raw)
+    return _ent_pat.sub(partial(entities.xml_entity_to_unicode,
+                                encoding=encoding), raw)
 
 
 def prepare_string_for_xml(raw, attribute=False):

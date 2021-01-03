@@ -1,12 +1,10 @@
 import os
 
-from ebook_converter import _ent_pat, xml_entity_to_unicode
-from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
+from ebook_converter import _ent_pat
+from ebook_converter.customize.conversion import InputFormatPlugin
+from ebook_converter.customize.conversion import OptionRecommendation
+from ebook_converter.utils import entities
 
-
-__license__ = 'GPL 3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
 
 MD_EXTENSIONS = {
     'abbr': 'Abbreviations',
@@ -200,7 +198,7 @@ class TXTInput(InputFormatPlugin):
         txt = txt.decode(ienc, 'replace')
 
         # Replace entities
-        txt = _ent_pat.sub(xml_entity_to_unicode, txt)
+        txt = _ent_pat.sub(entities.xml_entity_to_unicode, txt)
 
         # Normalize line endings
         txt = normalize_line_endings(txt)
