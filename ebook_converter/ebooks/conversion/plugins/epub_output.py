@@ -8,15 +8,10 @@ from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.customize.conversion import OutputFormatPlugin
 from ebook_converter.customize.conversion import OptionRecommendation
-
 from ebook_converter.ptempfile import TemporaryDirectory
-from ebook_converter import CurrentDir
 from ebook_converter.polyglot.builtins import as_bytes
+from ebook_converter.utils import directory
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 block_level_tags = (
       'address',
@@ -320,7 +315,7 @@ class EPUBOutput(OutputFormatPlugin):
             raise ValueError('UUID identifier %r is invalid'% _uuid)
         key = bytearray(from_hex_bytes((key + key)[:32]))
         paths = []
-        with CurrentDir(tdir):
+        with directory.CurrentDir(tdir):
             paths = [os.path.join(*x.split('/')) for x in uris]
             uris = dict(zip(uris, paths))
             fonts = []

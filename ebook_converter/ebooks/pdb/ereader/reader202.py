@@ -5,15 +5,10 @@ Makebook.
 import os
 import struct
 
-from ebook_converter import CurrentDir
+from ebook_converter.utils import directory
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.pdb.ereader import EreaderError
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
 
 
 class HeaderRecord(object):
@@ -102,7 +97,7 @@ class Reader202(FormatReader):
         html = '<html><head><title>%s</title></head><body>%s</body></html>' % \
             (title, pml_to_html(pml))
 
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             with open('index.html', 'wb') as index:
                 self.log.debug('Writing text to index.html')
                 index.write(html.encode('utf-8'))
@@ -110,7 +105,7 @@ class Reader202(FormatReader):
         if not os.path.exists(os.path.join(output_dir, 'images/')):
             os.makedirs(os.path.join(output_dir, 'images/'))
         images = []
-        with CurrentDir(os.path.join(output_dir, 'images/')):
+        with directory.CurrentDir(os.path.join(output_dir, 'images/')):
             for i in range(self.header_record.non_text_offset, len(self.sections)):
                 name, img = self.get_image(i)
                 if name:
@@ -124,7 +119,7 @@ class Reader202(FormatReader):
         return opf_path
 
     def create_opf(self, output_dir, images):
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             opf = OPFCreator(output_dir, self.mi)
 
             manifest = [('index.html', None)]
@@ -159,7 +154,7 @@ class Reader202(FormatReader):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             for i in range(0, self.header_record.num_image_pages):
                 name, img = self.get_image(self.header_record.image_data_offset + i)
                 with open(name, 'wb') as imgf:

@@ -5,15 +5,10 @@ from lxml import etree
 
 from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
-from ebook_converter import CurrentDir
 from ebook_converter.polyglot.urllib import unquote
 from ebook_converter.ebooks.oeb.base import OPF_MIME, NCX_MIME, PAGE_MAP_MIME, OEB_STYLES
 from ebook_converter.ebooks.oeb.normalize_css import condense_sheet
-
-
-__license__ = 'GPL 3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
+from ebook_converter.utils import directory
 
 
 class OEBOutput(OutputFormatPlugin):
@@ -30,7 +25,7 @@ class OEBOutput(OutputFormatPlugin):
         self.log, self.opts = log, opts
         if not os.path.exists(output_path):
             os.makedirs(output_path)
-        with CurrentDir(output_path):
+        with directory.CurrentDir(output_path):
             results = oeb_book.to_opf2(page_map=True)
             for key in (OPF_MIME, NCX_MIME, PAGE_MAP_MIME):
                 href, root = results.pop(key, [None, None])

@@ -16,7 +16,6 @@ import css_parser
 from lxml import etree
 
 from ebook_converter import constants as const
-from ebook_converter import CurrentDir
 from ebook_converter.customize.ui import plugin_for_input_format, plugin_for_output_format
 from ebook_converter.ebooks import escape_xpath_attr
 from ebook_converter.ebooks.chardet import xml_to_unicode
@@ -41,6 +40,7 @@ from ebook_converter.ebooks.oeb.polish.utils import (
     CommentFinder, PositionFinder, guess_type, parse_css
 )
 from ebook_converter.ptempfile import PersistentTemporaryDirectory, PersistentTemporaryFile
+from ebook_converter.utils import directory
 from ebook_converter.utils.filenames import hardlink_file, nlinks_file
 from ebook_converter.utils.ipc.simple_worker import WorkerError, fork_job
 from ebook_converter.utils.logging import default_log
@@ -1393,7 +1393,7 @@ def do_explode(path, dest):
     with open(path, 'rb') as stream:
         mr = MobiReader(stream, default_log, None, None)
 
-        with CurrentDir(dest):
+        with directory.CurrentDir(dest):
             mr = Mobi8Reader(mr, default_log, for_tweak=True)
             opf = os.path.abspath(mr())
             obfuscated_fonts = mr.encrypted_fonts

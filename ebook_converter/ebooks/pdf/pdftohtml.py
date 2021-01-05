@@ -6,11 +6,11 @@ import subprocess
 
 from lxml import etree
 
-from ebook_converter import CurrentDir
 from ebook_converter.ebooks import ConversionError, DRMError
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils.cleantext import clean_xml_chars
+from ebook_converter.utils import directory
 from ebook_converter.utils import entities
 from ebook_converter.utils.ipc import eintr_retry_call
 
@@ -32,7 +32,7 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
     with open(pdf_path, 'rb') as src, open(pdfsrc, 'wb') as dest:
         shutil.copyfileobj(src, dest)
 
-    with CurrentDir(output_dir):
+    with directory.CurrentDir(output_dir):
 
         def a(x):
             return os.path.basename(x)

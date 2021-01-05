@@ -15,8 +15,9 @@ from threading import Thread
 from ebook_converter.constants_old import plugins
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.utils.config_base import tweaks
-from ebook_converter.utils.filenames import atomic_rename
+from ebook_converter.utils import directory
 from ebook_converter.utils import encoding as uenc
+from ebook_converter.utils.filenames import atomic_rename
 from ebook_converter.utils.imghdr import what
 
 # Utilities {{{
@@ -646,11 +647,10 @@ def encode_jpeg(file_path, quality=80):
 def test():  # {{{
     # TODO(gryf): move this test to separate file.
     from ebook_converter.ptempfile import TemporaryDirectory
-    from ebook_converter import CurrentDir
     from glob import glob
     # TODO(gryf): make the sample image out of pillow or smth
     # img = image_from_data(I('lt.png', data=True, allow_user_override=False))
-    with TemporaryDirectory() as tdir, CurrentDir(tdir):
+    with TemporaryDirectory() as tdir, directory.CurrentDir(tdir):
         save_image(img, 'test.jpg')
         ret = optimize_jpeg('test.jpg')
         if ret is not None:

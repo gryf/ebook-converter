@@ -3,8 +3,8 @@ Defines the plugin system for conversions.
 """
 import re, os, shutil, numbers
 
-from ebook_converter import CurrentDir
 from ebook_converter.customize import Plugin
+from ebook_converter.utils import directory
 
 
 class ConversionOption(object):
@@ -204,7 +204,7 @@ class InputFormatPlugin(Plugin):
             # In case stdout is broken
             pass
 
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             for x in os.listdir('.'):
                 shutil.rmtree(x) if os.path.isdir(x) else os.remove(x)
 

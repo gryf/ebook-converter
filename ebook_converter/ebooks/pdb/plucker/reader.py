@@ -4,7 +4,7 @@ import zlib
 
 from collections import OrderedDict
 
-from ebook_converter import CurrentDir
+from ebook_converter.utils import directory
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
 from ebook_converter.ebooks.compression.palmdoc import decompress_doc
 from ebook_converter.utils.imghdr import identify
@@ -358,7 +358,7 @@ class Reader(FormatReader):
         # text recored into a separate file. We will reference the
         # home.html file as the first file and let the HTML input
         # plugin assemble the order based on hyperlinks.
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             for uid, num in self.uid_text_secion_number.items():
                 self.log.debug('Writing record with uid: %s as %s.html' % (uid, uid))
                 with open('%s.html' % uid, 'wb') as htmlf:
@@ -377,7 +377,7 @@ class Reader(FormatReader):
         images = set()
         if not os.path.exists(os.path.join(output_dir, 'images/')):
             os.makedirs(os.path.join(output_dir, 'images/'))
-        with CurrentDir(os.path.join(output_dir, 'images/')):
+        with directory.CurrentDir(os.path.join(output_dir, 'images/')):
             # Single images.
             for uid, num in self.uid_image_section_number.items():
                 section_header, section_data = self.sections[num]

@@ -13,7 +13,7 @@ from odf.opendocument import load as odLoad
 from odf.draw import Frame as odFrame, Image as odImage
 from odf.namespaces import TEXTNS as odTEXTNS
 
-from ebook_converter import CurrentDir
+from ebook_converter.utils import directory
 from ebook_converter.ebooks.oeb.base import _css_logger
 from ebook_converter.polyglot.builtins import as_bytes
 
@@ -266,7 +266,7 @@ class Extract(ODF2XHTML):
 
         if not os.path.exists(odir):
             os.makedirs(odir)
-        with CurrentDir(odir):
+        with directory.CurrentDir(odir):
             log('Extracting ODT file...')
             stream.seek(0)
             mi = get_metadata(stream, 'odt')

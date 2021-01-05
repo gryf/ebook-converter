@@ -5,8 +5,8 @@ import shutil, textwrap, codecs, os
 
 from ebook_converter import constants as const
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
-from ebook_converter import CurrentDir
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
+from ebook_converter.utils import directory
 
 
 __license__ = 'GPL v3'
@@ -98,7 +98,7 @@ class ComicInput(InputFormatPlugin):
         tdir = PersistentTemporaryDirectory('_comic_collection')
         zipextract(stream, tdir)
         comics = []
-        with CurrentDir(tdir):
+        with directory.CurrentDir(tdir):
             if not os.path.exists('comics.txt'):
                 raise ValueError((
                     '%s is not a valid comic collection'

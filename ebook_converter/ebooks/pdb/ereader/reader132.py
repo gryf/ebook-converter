@@ -6,16 +6,11 @@ import re
 import struct
 import zlib
 
-from ebook_converter import CurrentDir
 from ebook_converter.ebooks import DRMError
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 from ebook_converter.ebooks.pdb.ereader import EreaderError
 from ebook_converter.ebooks.pdb.formatreader import FormatReader
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
+from ebook_converter.utils import directory
 
 
 class HeaderRecord(object):
@@ -149,7 +144,7 @@ class Reader132(FormatReader):
 
         html += '</body></html>'
 
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             with open('index.html', 'wb') as index:
                 self.log.debug('Writing text to index.html')
                 index.write(html.encode('utf-8'))
@@ -157,7 +152,7 @@ class Reader132(FormatReader):
         if not os.path.exists(os.path.join(output_dir, 'images/')):
             os.makedirs(os.path.join(output_dir, 'images/'))
         images = []
-        with CurrentDir(os.path.join(output_dir, 'images/')):
+        with directory.CurrentDir(os.path.join(output_dir, 'images/')):
             for i in range(0, self.header_record.num_image_pages):
                 name, img = self.get_image(self.header_record.image_data_offset + i)
                 images.append(name)
@@ -170,7 +165,7 @@ class Reader132(FormatReader):
         return opf_path
 
     def create_opf(self, output_dir, images, toc):
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             if 'cover.png' in images:
                 self.mi.cover = os.path.join('images', 'cover.png')
 
@@ -210,7 +205,7 @@ class Reader132(FormatReader):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             for i in range(0, self.header_record.num_image_pages):
                 name, img = self.get_image(self.header_record.image_data_offset + i)
                 with open(name, 'wb') as imgf:

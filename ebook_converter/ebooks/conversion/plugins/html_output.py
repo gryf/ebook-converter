@@ -5,16 +5,12 @@ import shutil
 
 from lxml import etree
 
-from ebook_converter import CurrentDir
 from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
 from ebook_converter.ebooks.oeb.base import element
 from ebook_converter.polyglot.urllib import unquote
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils.cleantext import clean_xml_chars
-
-__license__ = 'GPL 3'
-__copyright__ = '2010, Fabian Grassl <fg@jusmeum.de>'
-__docformat__ = 'restructuredtext en'
+from ebook_converter.utils import directory
 
 
 def relpath(*args):
@@ -52,7 +48,7 @@ class HTMLOutput(OutputFormatPlugin):
         Generate table of contents
         '''
 
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             def build_node(current_node, parent=None):
                 if parent is None:
                     parent = etree.Element('ul')
@@ -158,7 +154,7 @@ class HTMLOutput(OutputFormatPlugin):
                 t = t.encode('utf-8')
             f.write(t)
 
-        with CurrentDir(output_dir):
+        with directory.CurrentDir(output_dir):
             for item in oeb_book.manifest:
                 path = os.path.abspath(unquote(item.href))
                 dir = os.path.dirname(path)
