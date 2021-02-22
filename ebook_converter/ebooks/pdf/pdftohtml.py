@@ -12,7 +12,6 @@ from ebook_converter.ptempfile import PersistentTemporaryFile
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils import directory
 from ebook_converter.utils import entities
-from ebook_converter.utils.ipc import eintr_retry_call
 
 
 def popen(cmd, **kw):
@@ -33,12 +32,8 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
         shutil.copyfileobj(src, dest)
 
     with directory.CurrentDir(output_dir):
-
-        def a(x):
-            return os.path.basename(x)
-
         cmd = ['pdftohtml', '-enc', 'UTF-8', '-noframes', '-p', '-nomerge',
-               '-nodrm', a(pdfsrc), a(index)]
+               '-nodrm', os.path.basename(pdfsrc), os.path.basename(index)]
 
         if no_images:
             cmd.append('-i')
@@ -46,19 +41,22 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
             cmd.append('-xml')
 
         logf = PersistentTemporaryFile('pdftohtml_log')
+
         try:
-            p = popen(cmd, stderr=logf._fd, stdout=logf._fd,
-                      stdin=subprocess.PIPE)
+            ret = subprocess.call(cmd, stderr=logf._fd, stdout=logf._fd)
         except OSError as err:
             if err.errno == errno.ENOENT:
                 raise ConversionError('Could not find pdftohtml, check it is '
                                       'in your PATH')
             else:
                 raise
-        ret = eintr_retry_call(p.wait)
+
         logf.flush()
         logf.close()
-        out = open(logf.name, 'rb').read().decode('utf-8', 'replace').strip()
+
+        with open(logf.name) as fobj:
+            out = fobj.read().strip()
+
         if ret != 0:
             raise ConversionError('pdftohtml failed with return code: '
                                   '%d\n%s' % (ret, out))
@@ -92,10 +90,10 @@ def pdftohtml(output_dir, pdf_path, no_images, as_xml=False):
 
             cmd = ['pdftohtml', '-f', '1', '-l', '1', '-xml', '-i', '-enc',
                    'UTF-8', '-noframes', '-p', '-nomerge', '-nodrm', '-q',
-                   '-stdout', a(pdfsrc)]
-            p = popen(cmd, stdout=subprocess.PIPE)
-            raw = p.stdout.read().strip()
-            if p.wait() == 0 and raw:
+                   '-stdout', os.path.basename(pdfsrc)]
+
+            raw = subprocess.check_output(cmd).strip()
+            if raw:
                 parse_outline(raw, output_dir)
 
         try:
