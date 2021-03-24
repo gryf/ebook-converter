@@ -700,13 +700,6 @@ plugins += [
 ]
 # }}}
 
-# Catalog plugins {{{
-from ebook_converter.library.catalogs.csv_xml import CSV_XML
-from ebook_converter.library.catalogs.bibtex import BIBTEX
-from ebook_converter.library.catalogs.epub_mobi import EPUB_MOBI
-plugins += [CSV_XML, BIBTEX, EPUB_MOBI]
-# }}}
-
 # Profiles {{{
 from ebook_converter.customize.profiles import input_profiles, output_profiles
 plugins += input_profiles + output_profiles
