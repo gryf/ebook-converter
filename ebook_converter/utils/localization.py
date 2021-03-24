@@ -10,9 +10,6 @@ def is_rtl():
     return get_lang()[:2].lower() in {'he', 'ar'}
 
 
-_lang_trans = None
-
-
 lcdata = {'abday': ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'),
           'abmon': ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
                     'Sep', 'Oct', 'Nov', 'Dec'),
@@ -83,18 +80,6 @@ def _load_iso639():
                    'name_map': nm}
 
     return _iso639
-
-
-def get_iso_language(lang_trans, lang):
-    iso639 = _load_iso639()
-    ans = lang
-    lang = lang.split('_')[0].lower()
-    if len(lang) == 2:
-        ans = iso639['by_2'].get(lang, ans)
-    elif len(lang) == 3:
-        if lang in iso639['by_3']:
-            ans = iso639['by_3'][lang]
-    return lang_trans(ans)
 
 
 def langcode_to_name(lc, localize=True):
