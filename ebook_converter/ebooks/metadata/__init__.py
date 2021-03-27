@@ -425,11 +425,3 @@ def check_doi(doi):
     if doi_check is not None:
         return doi_check.group()
     return None
-
-
-def rating_to_stars(value, allow_half_stars=False, star='★', half='½'):
-    r = max(0, min(int(value or 0), 10))
-    ans = star * (r // 2)
-    if allow_half_stars and r % 2:
-        ans += half
-    return ans

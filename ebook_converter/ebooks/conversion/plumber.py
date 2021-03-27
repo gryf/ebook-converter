@@ -1108,11 +1108,6 @@ OptionRecommendation(name='search_replace',
                 self.log.error('Invalid font size key: %r ignoring'%fkey)
                 fkey = self.opts.dest.fkey
 
-        from ebook_converter.ebooks.oeb.transforms.jacket import Jacket
-        Jacket()(self.oeb, self.opts, self.user_metadata)
-        pr(0.4)
-        self.flush()
-
         if self.opts.debug_pipeline is not None:
             out_dir = os.path.join(self.opts.debug_pipeline, 'structure')
             self.dump_oeb(self.oeb, out_dir)
