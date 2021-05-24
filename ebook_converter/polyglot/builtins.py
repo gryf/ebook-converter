@@ -1,6 +1,3 @@
-import importlib
-
-
 def as_bytes(x, encoding='utf-8'):
     if isinstance(x, str):
         return x.encode(encoding)
