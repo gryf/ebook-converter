@@ -1,12 +1,7 @@
 import os
 
 from ebook_converter.customize.conversion import InputFormatPlugin, OptionRecommendation
-from ebook_converter.polyglot.builtins import as_bytes
-
-
-__license__ = 'GPL 3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
+from ebook_converter import polyglot
 
 
 class PDFInput(InputFormatPlugin):
@@ -72,7 +67,8 @@ class PDFInput(InputFormatPlugin):
             ncxid = opf.manifest.id_for_path('toc.ncx')
             if ncxid:
                 with open('metadata.opf', 'r+b') as f:
-                    raw = f.read().replace(b'<spine', b'<spine toc="%s"' % as_bytes(ncxid))
+                    raw = f.read().replace(b'<spine', b'<spine toc="%s"' %
+                                           polyglot.as_bytes(ncxid))
                     f.seek(0)
                     f.write(raw)
 

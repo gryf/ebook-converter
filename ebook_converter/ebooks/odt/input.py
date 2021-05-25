@@ -15,7 +15,7 @@ from odf.namespaces import TEXTNS as odTEXTNS
 
 from ebook_converter.utils import directory
 from ebook_converter.ebooks.oeb.base import _css_logger
-from ebook_converter.polyglot.builtins import as_bytes
+from ebook_converter import polyglot
 
 
 class Extract(ODF2XHTML):
@@ -292,7 +292,7 @@ class Extract(ODF2XHTML):
             except:
                 log.exception('Failed to filter CSS, conversion may be slow')
             with open('index.xhtml', 'wb') as f:
-                f.write(as_bytes(html))
+                f.write(polyglot.as_bytes(html))
             zf = ZipFile(stream, 'r')
             self.extract_pictures(zf)
             opf = OPFCreator(os.path.abspath(os.getcwd()), mi)

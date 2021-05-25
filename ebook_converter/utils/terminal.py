@@ -1,5 +1,9 @@
-import os, sys, re
-import fcntl, termios, struct
+import fcntl
+import os
+import re
+import struct
+import sys
+import termios
 
 
 def fmt(code):

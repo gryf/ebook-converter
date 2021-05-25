@@ -8,6 +8,7 @@ import tempfile
 
 from ebook_converter.constants_old import __version__, __appname__, \
         filesystem_encoding
+from ebook_converter import polyglot
 
 
 def cleanup(path):
@@ -90,9 +91,8 @@ def base_dir():
         td = os.environ.get('CALIBRE_WORKER_TEMP_DIR', None)
         if td is not None:
             from ebook_converter.utils.serialize import msgpack_loads
-            from ebook_converter.polyglot.binary import from_hex_bytes
             try:
-                td = msgpack_loads(from_hex_bytes(td))
+                td = msgpack_loads(polyglot.from_hex_bytes(td))
             except Exception:
                 td = None
         if td and os.path.exists(td):

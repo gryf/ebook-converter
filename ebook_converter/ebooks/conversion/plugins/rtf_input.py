@@ -8,7 +8,7 @@ from lxml import etree
 
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.customize.conversion import OptionRecommendation
-from ebook_converter.polyglot.builtins import as_bytes
+from ebook_converter import polyglot
 
 
 border_style_map = {'single': 'solid',
@@ -296,7 +296,7 @@ class RTFInput(InputFormatPlugin):
         result = transform(doc)
         html = u'index.xhtml'
         with open(html, 'wb') as f:
-            res = as_bytes(transform.tostring(result))
+            res = polyglot.as_bytes(transform.tostring(result))
             # res = res[:100].replace('xmlns:html', 'xmlns') + res[100:]
             # clean multiple \n
             res = re.sub(b'\n+', b'\n', res)

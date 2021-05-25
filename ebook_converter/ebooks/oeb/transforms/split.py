@@ -17,7 +17,7 @@ from ebook_converter import constants as const
 from ebook_converter.ebooks.epub import rules
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb.polish.split import do_split
-from ebook_converter.polyglot.urllib import unquote
+from ebook_converter import polyglot
 from ebook_converter.css_selectors import Select, SelectorError
 from ebook_converter.utils import encoding as uenc
 
@@ -189,7 +189,7 @@ class Split(object):
             nhref = anchor_map[frag if frag else None]
             nhref = self.current_item.relhref(nhref)
             if frag:
-                nhref = '#'.join((unquote(nhref), frag))
+                nhref = '#'.join((polyglot.unquote(nhref), frag))
 
             return nhref
         return url

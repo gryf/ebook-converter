@@ -5,7 +5,7 @@ import urllib.parse
 from lxml import etree
 
 from ebook_converter.utils.imghdr import identify
-from ebook_converter.polyglot.urllib import unquote
+from ebook_converter import polyglot
 
 
 class CoverManager(object):
@@ -113,7 +113,7 @@ class CoverManager(object):
             if href is not None:
                 templ = self.non_svg_template if self.no_svg_cover \
                         else self.svg_template
-                tp = templ % unquote(href)
+                tp = templ % polyglot.unquote(href)
                 id, href = m.generate('titlepage', 'titlepage.xhtml')
                 item = m.add(id, href, mimetypes.guess_type('t.xhtml')[0],
                              data=etree.fromstring(tp))

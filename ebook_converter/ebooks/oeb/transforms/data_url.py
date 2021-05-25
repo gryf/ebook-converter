@@ -3,8 +3,7 @@ import re
 import urllib.parse
 
 from ebook_converter.ebooks.oeb.base import XPath
-from ebook_converter.polyglot.binary import from_base64_bytes
-from ebook_converter.polyglot.builtins import as_bytes
+from ebook_converter import polyglot
 
 
 class DataURL(object):
@@ -27,14 +26,14 @@ class DataURL(object):
                 if ';base64' in header:
                     data = re.sub(r'\s+', '', data)
                     try:
-                        data = from_base64_bytes(data)
+                        data = polyglot.from_base64_bytes(data)
                     except Exception:
                         self.log.error('Found invalid base64 encoded data '
                                        'URI, ignoring it')
                         continue
                 else:
                     data = urllib.parse.unquote(data)
-                data = as_bytes(data)
+                data = polyglot.as_bytes(data)
                 fmt = what(None, data)
                 if not fmt:
                     self.log.warn('Image encoded as data URL has unknown '

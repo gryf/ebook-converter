@@ -13,7 +13,7 @@ from ebook_converter import constants as const
 from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb import parse_utils
-from ebook_converter.polyglot.binary import as_base64_unicode
+from ebook_converter import polyglot
 from ebook_converter.utils import entities
 from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.utils.localization import lang_as_iso639_1
@@ -355,10 +355,10 @@ class FB2MLizer(object):
                     if item.media_type not in ('image/jpeg', 'image/png'):
                         imdata = save_cover_data_to(item.data,
                                                     compression_quality=70)
-                        raw_data = as_base64_unicode(imdata)
+                        raw_data = polyglot.as_base64_unicode(imdata)
                         content_type = 'image/jpeg'
                     else:
-                        raw_data = as_base64_unicode(item.data)
+                        raw_data = polyglot.as_base64_unicode(item.data)
                         content_type = item.media_type
                     # Don't put the encoded image on a single line.
                     step = 72

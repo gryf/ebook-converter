@@ -1,20 +1,18 @@
-import codecs, zlib, numbers
-from io import BytesIO
+import codecs
 from datetime import datetime
+import io
+import numbers
+import zlib
 
 from ebook_converter.utils.logging import default_log
-from ebook_converter.polyglot.binary import as_hex_bytes
+from ebook_converter import polyglot
 
-
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
 
 pdf_float = lambda x: f"{x:.1f}"
 
 EOL = b'\n'
 
-# Sizes {{{
+# Sizes
 inch = 72.0
 cm = inch / 2.54
 mm = cm * 0.1
@@ -45,10 +43,9 @@ B2 = (_BW*2, _BH*2)
 B1 = (_BH*4, _BW*2)
 B0 = (_BW*4, _BH*4)
 
-PAPER_SIZES = {k:globals()[k.upper()] for k in ('a0 a1 a2 a3 a4 a5 a6 b0 b1 b2'
-               ' b3 b4 b5 b6 letter legal').split()}
-
-# }}}
+PAPER_SIZES = {k: globals()[k.upper()] for k in ('a0 a1 a2 a3 a4 a5 a6 b0 b1 '
+                                                 'b2 b3 b4 b5 b6 letter '
+                                                 'legal').split()}
 
 
 def fmtnum(o):
@@ -70,12 +67,12 @@ def serialize(o, stream):
     elif o is None:
         stream.write_raw(b'null')
     elif isinstance(o, datetime):
-        val = o.strftime("D:%Y%m%d%H%M%%02d%z")%min(59, o.second)
+        val = o.strftime("D:%Y%m%d%H%M%%02d%z") % min(59, o.second)
         if datetime.tzinfo is not None:
-            val = "(%s'%s')"%(val[:-2], val[-2:])
+            val = "(%s'%s')" % (val[:-2], val[-2:])
         stream.write(val.encode('ascii'))
     else:
-        raise ValueError('Unknown object: %r'%o)
+        raise ValueError('Unknown object: %r' % o)
 
 
 class Name(str):
@@ -83,7 +80,7 @@ class Name(str):
     def pdf_serialize(self, stream):
         raw = self.encode('ascii')
         if len(raw) > 126:
-            raise ValueError('Name too long: %r'%self)
+            raise ValueError('Name too long: %r' % self)
         raw = bytearray(raw)
         sharp = ord(b'#')
         buf = (
@@ -96,7 +93,8 @@ def escape_pdf_string(bytestring):
     indices = []
     bad = []
     ba = bytearray(bytestring)
-    bad_map = {10:ord('n'), 13:ord('r'), 12:ord('f'), 8:ord('b'), 9:ord('\t'), 92:ord('\\')}
+    bad_map = {10: ord('n'), 13: ord('r'), 12: ord('f'),
+               8: ord('b'), 9: ord('\t'), 92: ord('\\')}
     for i, num in enumerate(ba):
         if num == 40:  # (
             indices.append((i, 40))
@@ -134,7 +132,7 @@ class UTF16String(str):
         if False:
             # Disabled as the parentheses based strings give easier to debug
             # PDF files
-            stream.write(b'<' + as_hex_bytes(raw) + b'>')
+            stream.write(b'<' + polyglot.as_hex_bytes(raw) + b'>')
         else:
             stream.write(b'('+escape_pdf_string(raw)+b')')
 
@@ -143,9 +141,9 @@ class Dictionary(dict):
 
     def pdf_serialize(self, stream):
         stream.write(b'<<' + EOL)
-        sorted_keys = sorted(self,
-                             key=lambda x:({'Type':'1', 'Subtype':'2'}.get(
-                                 x, x)+x))
+        sorted_keys = sorted(self, key=lambda x: ({'Type': '1',
+                                                  'Subtype': '2'}
+                                                  .get(x, x) + x))
         for k in sorted_keys:
             serialize(Name(k), stream)
             stream.write(b' ')
@@ -177,10 +175,10 @@ class Array(list):
         stream.write(b']')
 
 
-class Stream(BytesIO):
+class Stream(io.BytesIO):
 
     def __init__(self, compress=False):
-        BytesIO.__init__(self)
+        io.BytesIO.__init__(self)
         self.compress = compress
         self.filters = Array()
 
@@ -213,7 +211,7 @@ class Stream(BytesIO):
                                   raw.encode('ascii'))
 
     def write_raw(self, raw):
-        BytesIO.write(self, raw)
+        io.BytesIO.write(self, raw)
 
 
 class Reference(object):
@@ -222,11 +220,11 @@ class Reference(object):
         self.num, self.obj = num, obj
 
     def pdf_serialize(self, stream):
-        raw = '%d 0 R'%self.num
+        raw = '%d 0 R' % self.num
         stream.write(raw.encode('ascii'))
 
     def __repr__(self):
-        return '%d 0 R'%self.num
+        return '%d 0 R' % self.num
 
     def __str__(self):
         return repr(self)

@@ -30,11 +30,11 @@ from ebook_converter.ebooks.metadata.utils import parse_opf, \
 from ebook_converter.ebooks.metadata import string_to_authors, \
         MetaInformation, check_isbn
 from ebook_converter.ebooks.metadata.book.base import Metadata
+from ebook_converter import polyglot
 from ebook_converter.utils.date import parse_date, isoformat
 from ebook_converter.utils.localization import get_lang, canonicalize_lang
 from ebook_converter.utils.cleantext import clean_ascii_chars, clean_xml_chars
 from ebook_converter.utils.config_base import tweaks
-from ebook_converter.polyglot.urllib import unquote
 
 
 pretty_print_opf = False
@@ -838,7 +838,7 @@ class OPF(object):  # {{{
 
     def unquote_urls(self):
         def get_href(item):
-            raw = unquote(item.get('href', ''))
+            raw = polyglot.unquote(item.get('href', ''))
             if not isinstance(raw, str):
                 raw = raw.decode('utf-8')
             return raw

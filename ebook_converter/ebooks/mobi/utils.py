@@ -5,7 +5,7 @@ from io import BytesIO
 from ebook_converter.utils.img import save_cover_data_to, scale_image, image_to_data, image_from_data, resize_image, png_data_to_gif_data
 from ebook_converter.utils.imghdr import what
 from ebook_converter.ebooks import normalize
-from ebook_converter.polyglot.builtins import as_bytes
+from ebook_converter import polyglot
 from ebook_converter.tinycss.color3 import parse_color_string
 
 
@@ -61,7 +61,7 @@ def decode_hex_number(raw, codec='utf-8'):
 
 
 def encode_string(raw):
-    ans = bytearray(as_bytes(raw))
+    ans = bytearray(polyglot.as_bytes(raw))
     ans.insert(0, len(ans))
     return bytes(ans)
 

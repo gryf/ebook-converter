@@ -10,7 +10,7 @@ from tempfile import SpooledTemporaryFile
 from ebook_converter.utils import filenames as fms
 from ebook_converter.constants_old import filesystem_encoding
 from ebook_converter.ebooks.chardet import detect
-from ebook_converter.polyglot.builtins import as_bytes
+from ebook_converter import polyglot
 
 try:
     import zlib  # We may need its compression method
@@ -330,7 +330,7 @@ class ZipInfo (object):
         if os.sep != '/':
             os_sep, sep = os.sep, '/'
             if isinstance(filename, bytes):
-                os_sep, sep = as_bytes(os_sep), b'/'
+                os_sep, sep = polyglot.as_bytes(os_sep), b'/'
             if os_sep in filename:
                 filename = filename.replace(os_sep, sep)
 

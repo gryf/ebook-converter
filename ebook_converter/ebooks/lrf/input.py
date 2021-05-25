@@ -5,7 +5,7 @@ import textwrap
 
 from lxml import etree
 
-from ebook_converter.polyglot.builtins import as_bytes
+from ebook_converter import polyglot
 
 
 class Canvas(etree.XSLTExtension):
@@ -292,7 +292,7 @@ class Styles(etree.XSLTExtension):
             return '\n\t'.join(ans)
 
         with open(name, 'wb') as f:
-            f.write(as_bytes(self.CSS))
+            f.write(polyglot.as_bytes(self.CSS))
             for (w, sel) in [(self.text_styles, 'ts'), (self.block_styles,
                 'bs')]:
                 for i, s in enumerate(w):
@@ -300,7 +300,7 @@ class Styles(etree.XSLTExtension):
                         continue
                     rsel = '.%s%d'%(sel, i)
                     s = join(s)
-                    f.write(as_bytes(rsel + ' {\n\t' + s + '\n}\n\n'))
+                    f.write(polyglot.as_bytes(rsel + ' {\n\t' + s + '\n}\n\n'))
 
     def execute(self, context, self_node, input_node, output_parent):
         if input_node.tag == 'TextStyle':

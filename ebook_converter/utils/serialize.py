@@ -1,3 +1,6 @@
+from ebook_converter import polyglot
+
+
 MSGPACK_MIME = 'application/x-msgpack'
 CANARY = 'jPoAv3zOyHvQ5JFNYg4hJ9'
 
@@ -56,11 +59,11 @@ def json_dumps(data, **kw):
 
 
 def decode_metadata(x, for_json):
-    from ebook_converter.polyglot.binary import from_base64_bytes
     from ebook_converter.ebooks.metadata.book.serialize import metadata_from_dict
     obj = metadata_from_dict(x)
     if for_json and obj.cover_data and obj.cover_data[1]:
-        obj.cover_data = obj.cover_data[0], from_base64_bytes(obj.cover_data[1])
+        obj.cover_data = (obj.cover_data[0],
+                          polyglot.from_base64_bytes(obj.cover_data[1]))
     return obj
 
 

@@ -5,17 +5,12 @@ import os
 from lxml import html
 from lxml.html import builder
 
-from ebook_converter.polyglot.urllib import unquote as _unquote
 from ebook_converter.ebooks.oeb.base import urlquote
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants_old import filesystem_encoding
-from ebook_converter.polyglot.builtins import as_bytes
-
-__license__ = 'GPL v3'
-__copyright__ = ('2008, Kovid Goyal <kovid at kovidgoyal.net>, '
-                 'and Alex Bramley <a.bramley at gmail.com>.')
+from ebook_converter import polyglot
 
 
 class CHMInput(InputFormatPlugin):
@@ -133,7 +128,7 @@ class CHMInput(InputFormatPlugin):
         def unquote(x):
             if isinstance(x, str):
                 x = x.encode('utf-8')
-            return _unquote(x).decode('utf-8')
+            return polyglot.unquote(x).decode('utf-8')
 
         def unquote_path(x):
             y = unquote(x)
@@ -175,7 +170,7 @@ class CHMInput(InputFormatPlugin):
                                     pretty_print=True)
                 f.write(raw)
             else:
-                f.write(as_bytes(hhcdata))
+                f.write(polyglot.as_bytes(hhcdata))
         return htmlpath, toc
 
     def _read_file(self, name):

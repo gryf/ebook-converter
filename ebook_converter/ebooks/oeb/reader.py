@@ -24,7 +24,7 @@ from ebook_converter.utils.localization import get_lang
 from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter.utils import entities
-from ebook_converter.polyglot.urllib import unquote
+from ebook_converter import polyglot
 
 
 class OEBReader(object):
@@ -641,7 +641,7 @@ class OEBReader(object):
         with TemporaryDirectory('_html_cover') as tdir:
             writer = OEBWriter()
             writer(self.oeb, tdir)
-            path = os.path.join(tdir, unquote(hcover.href))
+            path = os.path.join(tdir, polyglot.unquote(hcover.href))
             data = render_html_svg_workaround(path, self.logger)
             if not data:
                 data = b''

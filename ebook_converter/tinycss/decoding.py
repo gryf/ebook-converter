@@ -11,7 +11,7 @@
 import operator
 import re
 
-from ebook_converter.polyglot.binary import from_hex_bytes
+from ebook_converter import polyglot
 
 
 __all__ = ['decode']  # Everything else is implementation detail
@@ -94,7 +94,8 @@ def try_encoding(css_bytes, encoding, fallback=True):
 
 
 def hex2re(hex_data):
-    return re.escape(from_hex_bytes(hex_data.replace(' ', '').encode('ascii')))
+    return re.escape(polyglot.from_hex_bytes(hex_data.replace(' ', '')
+                                             .encode('ascii')))
 
 
 class Slicer(object):

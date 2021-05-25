@@ -14,7 +14,7 @@ from ebook_converter.utils.img import save_cover_data_to
 from ebook_converter.utils.imghdr import identify
 from ebook_converter.ebooks.metadata import MetaInformation, check_isbn
 from ebook_converter.ebooks.chardet import xml_to_unicode
-from ebook_converter.polyglot.binary import as_base64_unicode
+from ebook_converter import polyglot
 from ebook_converter.utils import encoding as uenc
 
 
@@ -389,7 +389,7 @@ def _rnd_pic_file_name(prefix='calibre_cover_', size=32, ext='jpg'):
 
 def _encode_into_jpeg(data):
     data = save_cover_data_to(data)
-    return as_base64_unicode(data)
+    return polyglot.as_base64_unicode(data)
 
 
 def _set_cover(title_info, mi, ctx):

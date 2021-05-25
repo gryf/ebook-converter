@@ -5,7 +5,7 @@ from lxml import etree
 
 from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
-from ebook_converter.polyglot.urllib import unquote
+from ebook_converter import polyglot
 from ebook_converter.ebooks.oeb.base import OPF_MIME, NCX_MIME, PAGE_MAP_MIME, OEB_STYLES
 from ebook_converter.ebooks.oeb.normalize_css import condense_sheet
 from ebook_converter.utils import directory
@@ -56,7 +56,7 @@ class OEBOutput(OutputFormatPlugin):
                         not self.opts.expand_css and item.media_type in OEB_STYLES and hasattr(
                             item.data, 'cssText') and 'nook' not in self.opts.output_profile.short_name):
                     condense_sheet(item.data)
-                path = os.path.abspath(unquote(item.href))
+                path = os.path.abspath(polyglot.unquote(item.href))
                 dir = os.path.dirname(path)
                 if not os.path.exists(dir):
                     os.makedirs(dir)

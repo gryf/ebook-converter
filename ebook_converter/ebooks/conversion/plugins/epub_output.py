@@ -9,7 +9,7 @@ from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.customize.conversion import OutputFormatPlugin
 from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter.ptempfile import TemporaryDirectory
-from ebook_converter.polyglot.builtins import as_bytes
+from ebook_converter import polyglot
 from ebook_converter.utils import directory
 
 
@@ -266,7 +266,8 @@ class EPUBOutput(OutputFormatPlugin):
                     extra_entries=extra_entries) as epub:
                 epub.add_dir(tdir)
                 if encryption is not None:
-                    epub.writestr('META-INF/encryption.xml', as_bytes(encryption))
+                    epub.writestr('META-INF/encryption.xml',
+                                  polyglot.as_bytes(encryption))
                 if metadata_xml is not None:
                     epub.writestr('META-INF/metadata.xml',
                             metadata_xml.encode('utf-8'))
@@ -308,12 +309,10 @@ class EPUBOutput(OutputFormatPlugin):
             pass
 
     def encrypt_fonts(self, uris, tdir, _uuid):  # {{{
-        from ebook_converter.polyglot.binary import from_hex_bytes
-
         key = re.sub(r'[^a-fA-F0-9]', '', _uuid)
         if len(key) < 16:
             raise ValueError('UUID identifier %r is invalid'% _uuid)
-        key = bytearray(from_hex_bytes((key + key)[:32]))
+        key = bytearray(polyglot.from_hex_bytes((key + key)[:32]))
         paths = []
         with directory.CurrentDir(tdir):
             paths = [os.path.join(*x.split('/')) for x in uris]

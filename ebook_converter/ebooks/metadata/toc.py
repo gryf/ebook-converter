@@ -11,7 +11,7 @@ from lxml.builder import ElementMaker
 from ebook_converter.constants_old import __appname__, __version__
 from ebook_converter.ebooks.chardet import xml_to_unicode
 from ebook_converter.utils.cleantext import clean_xml_chars
-from ebook_converter.polyglot.urllib import unquote
+from ebook_converter import polyglot
 
 
 NCX_NS = "http://www.daisy.org/z3986/2005/ncx/"
@@ -31,7 +31,7 @@ def parse_html_toc(data):
     root = parse(clean_xml_chars(data), maybe_xhtml=True, keep_doctype=False,
                  sanitize_names=True)
     for a in root.xpath('//*[@href and local-name()="a"]'):
-        purl = urllib.parse.urlparse(unquote(a.get('href')))
+        purl = urllib.parse.urlparse(polyglot.unquote(a.get('href')))
         href, fragment = purl[2], purl[5]
         if not fragment:
             fragment = None
@@ -149,7 +149,7 @@ class TOC(list):
 
         if toc is not None:
             if toc.lower() not in ('ncx', 'ncxtoc'):
-                toc = urllib.parse.urlparse(unquote(toc))[2]
+                toc = urllib.parse.urlparse(polyglot.unquote(toc))[2]
                 toc = toc.replace('/', os.sep)
                 if not os.path.isabs(toc):
                     toc = os.path.join(self.base_path, toc)
@@ -219,7 +219,8 @@ class TOC(list):
                     content = content[0]
                     # if get_attr(content, attr='src'):
                     purl = urllib.parse.urlparse(content.get('src'))
-                    href, fragment = unquote(purl[2]), unquote(purl[5])
+                    href = polyglot.unquote(purl[2])
+                    fragment = polyglot.unquote(purl[5])
                     nd = dest.add_item(href, fragment, text)
                     nd.play_order = play_order
 

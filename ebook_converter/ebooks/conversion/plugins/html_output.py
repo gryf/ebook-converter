@@ -7,7 +7,7 @@ from lxml import etree
 
 from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
 from ebook_converter.ebooks.oeb.base import element
-from ebook_converter.polyglot.urllib import unquote
+from ebook_converter import polyglot
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils.cleantext import clean_xml_chars
 from ebook_converter.utils import directory
@@ -56,7 +56,8 @@ class HTMLOutput(OutputFormatPlugin):
                     parent = element(parent, ('ul'))
                 for node in current_node.nodes:
                     point = element(parent, 'li')
-                    href = relpath(os.path.abspath(unquote(node.href)),
+                    href = relpath(os.path.abspath(polyglot
+                                                   .unquote(node.href)),
                                    os.path.dirname(ref_url))
                     if isinstance(href, bytes):
                         href = href.decode('utf-8')
@@ -84,7 +85,6 @@ class HTMLOutput(OutputFormatPlugin):
         from lxml import etree
         from ebook_converter.utils import zipfile
         from templite import Templite
-        from ebook_converter.polyglot.urllib import unquote
         from ebook_converter.ebooks.html.meta import EasyMeta
 
         # read template files
@@ -156,7 +156,7 @@ class HTMLOutput(OutputFormatPlugin):
 
         with directory.CurrentDir(output_dir):
             for item in oeb_book.manifest:
-                path = os.path.abspath(unquote(item.href))
+                path = os.path.abspath(polyglot.unquote(item.href))
                 dir = os.path.dirname(path)
                 if not os.path.exists(dir):
                     os.makedirs(dir)
@@ -169,7 +169,7 @@ class HTMLOutput(OutputFormatPlugin):
                     item.unload_data_from_memory(memory=path)
 
             for item in oeb_book.spine:
-                path = os.path.abspath(unquote(item.href))
+                path = os.path.abspath(polyglot.unquote(item.href))
                 dir = os.path.dirname(path)
                 root = item.data.getroottree()
 

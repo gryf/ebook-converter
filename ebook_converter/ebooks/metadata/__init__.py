@@ -9,7 +9,7 @@ import sys
 import urllib.parse
 
 from ebook_converter.utils.config_base import tweaks
-from ebook_converter.polyglot.urllib import unquote
+from ebook_converter import polyglot
 from ebook_converter.utils import encoding as uenc
 
 
@@ -248,9 +248,11 @@ class Resource(object):
                 pc = url[2]
                 if isinstance(pc, str):
                     pc = pc.encode('utf-8')
-                pc = unquote(pc).decode('utf-8')
-                self.path = os.path.abspath(os.path.join(basedir, pc.replace('/', os.sep)))
-                self.fragment = unquote(url[-1])
+                pc = polyglot.unquote(pc).decode('utf-8')
+                self.path = os.path.abspath(os.path.join(basedir,
+                                                         pc.replace('/',
+                                                                    os.sep)))
+                self.fragment = polyglot.unquote(url[-1])
 
     def href(self, basedir=None):
         '''

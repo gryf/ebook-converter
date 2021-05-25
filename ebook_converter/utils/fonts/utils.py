@@ -2,7 +2,7 @@ import struct
 from io import BytesIO
 from collections import defaultdict
 
-from ebook_converter.polyglot.builtins import as_bytes
+from ebook_converter import polyglot
 
 
 __license__ = 'GPL v3'
@@ -38,7 +38,7 @@ def get_tables(raw):
 
 def get_table(raw, name):
     ''' Get the raw table bytes for the specified table in the font '''
-    name = as_bytes(name.lower())
+    name = polyglot.as_bytes(name.lower())
     for table_tag, table, table_index, table_offset, table_checksum in get_tables(raw):
         if table_tag.lower() == name:
             return table, table_index, table_offset, table_checksum
