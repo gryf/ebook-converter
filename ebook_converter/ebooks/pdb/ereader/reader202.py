@@ -87,7 +87,7 @@ class Reader202(FormatReader):
 
         pml = ''
         for i in range(1, self.header_record.num_text_pages + 1):
-            self.log.debug('Extracting text page %i' % i)
+            self.log.debug('Extracting text page %s', i)
             pml += self.get_text_page(i)
 
         title = self.mi.title
@@ -111,7 +111,7 @@ class Reader202(FormatReader):
                 if name:
                     images.append(name)
                     with open(name, 'wb') as imgf:
-                        self.log.debug('Writing image %s to images/' % name)
+                        self.log.debug('Writing image %s to images/', name)
                         imgf.write(img)
 
         opf_path = self.create_opf(output_dir, images)

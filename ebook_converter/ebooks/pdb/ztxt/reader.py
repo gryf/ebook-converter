@@ -54,7 +54,7 @@ class Reader(FormatReader):
         if (self.header_record.flags & 0x01) == 0:
             raise zTXTError('Only compression method 1 (random access) is supported')
 
-        self.log.debug('Foud ztxt version: %i.%i' % (vmajor, vminor))
+        self.log.debug('Foud ztxt version: %s.%s', vmajor, vminor)
 
         # Initalize the decompressor
         self.uncompressor = zlib.decompressobj()
@@ -73,7 +73,7 @@ class Reader(FormatReader):
 
         self.log.info('Decompressing text...')
         for i in range(1, self.header_record.num_records + 1):
-            self.log.debug('\tDecompressing text section %i' % i)
+            self.log.debug('\tDecompressing text section %s', i)
             raw_txt += self.decompress_text(i)
 
         self.log.info('Converting text to OEB...')

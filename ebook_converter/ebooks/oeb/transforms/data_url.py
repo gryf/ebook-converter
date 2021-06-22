@@ -36,16 +36,16 @@ class DataURL(object):
                 data = polyglot.as_bytes(data)
                 fmt = what(None, data)
                 if not fmt:
-                    self.log.warn('Image encoded as data URL has unknown '
-                                  'format, ignoring')
+                    self.log.warning('Image encoded as data URL has unknown '
+                                     'format, ignoring')
                     continue
                 img.set('src',
                         item.relhref(self.convert_image_data_uri(data, fmt,
                                                                  oeb)))
 
     def convert_image_data_uri(self, data, fmt, oeb):
-        self.log('Found image encoded as data URI converting it to normal '
-                 'image')
+        self.log.info('Found image encoded as data URI converting it to '
+                      'normal image')
         item_id, item_href = oeb.manifest.generate('data-url-image',
                                                    'data-url-image.' + fmt)
         oeb.manifest.add(item_id, item_href,

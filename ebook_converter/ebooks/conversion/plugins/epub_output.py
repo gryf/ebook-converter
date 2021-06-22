@@ -214,8 +214,8 @@ class EPUBOutput(OutputFormatPlugin):
         self.workaround_sony_quirks()
 
         if self.oeb.toc.count() == 0:
-            self.log.warn('This EPUB file has no Table of Contents. '
-                    'Creating a default TOC')
+            self.log.warning('This EPUB file has no Table of Contents. '
+                             'Creating a default TOC')
             first = next(iter(self.oeb.spine))
             self.oeb.toc.add('Start', first.href)
 
@@ -229,7 +229,7 @@ class EPUBOutput(OutputFormatPlugin):
         encrypted_fonts = getattr(input_plugin, 'encrypted_fonts', [])
 
         if _uuid is None:
-            self.log.warn('No UUID identifier found')
+            self.log.warning('No UUID identifier found')
             _uuid = str(uuid.uuid4())
             oeb.metadata.add('identifier', _uuid, scheme='uuid', id=_uuid)
 
@@ -281,7 +281,7 @@ class EPUBOutput(OutputFormatPlugin):
                 os.mkdir(opts.extract_to)
                 with ZipFile(output_path) as zf:
                     zf.extractall(path=opts.extract_to)
-                self.log.info('EPUB extracted to', opts.extract_to)
+                self.log.info('EPUB extracted to %s', opts.extract_to)
 
     def upgrade_to_epub3(self, tdir, opf):
         self.log.info('Upgrading to EPUB 3...')
@@ -323,7 +323,7 @@ class EPUBOutput(OutputFormatPlugin):
                 if not os.path.exists(path):
                     uris.pop(uri)
                     continue
-                self.log.debug('Encrypting font:', uri)
+                self.log.debug('Encrypting font: %s', uri)
                 with open(path, 'r+b') as f:
                     data = f.read(1024)
                     if len(data) >= 1024:
@@ -332,7 +332,7 @@ class EPUBOutput(OutputFormatPlugin):
                         f.write(bytes(bytearray(data[i] ^ key[i%16]
                                                 for i in range(1024))))
                     else:
-                        self.log.warn('Font', path, 'is invalid, ignoring')
+                        self.log.warning('Font %s is invalid, ignoring', path)
                 if not isinstance(uri, str):
                     uri = uri.decode('utf-8')
                 fonts.append('''
@@ -385,8 +385,9 @@ class EPUBOutput(OutputFormatPlugin):
                 _base, _, frag = href.partition('#')
                 frag = urllib.parse.unquote(frag)
                 if frag and frag_pat.match(frag) is None:
-                    self.log.warn(
-                            'Removing fragment identifier %r from TOC as Adobe Digital Editions cannot handle it'%frag)
+                    self.log.warning('Removing fragment identifier %r from '
+                                     'TOC as Adobe Digital Editions cannot '
+                                     'handle it', frag)
                     node.href = _base
 
         for x in self.oeb.spine:
@@ -530,8 +531,8 @@ class EPUBOutput(OutputFormatPlugin):
                     for x in self.oeb.spine:
                         if x.href == href:
                             if frag_is_at_top(x.data, frag):
-                                self.log.debug('Removing anchor from TOC href:',
-                                        href+'#'+frag)
+                                self.log.debug('Removing anchor from TOC '
+                                               'href: %s#%s', href, frag)
                                 toc.href = href
                             break
             for x in toc:

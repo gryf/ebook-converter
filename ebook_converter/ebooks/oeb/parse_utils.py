@@ -65,7 +65,7 @@ def merge_multiple_html_heads_and_bodies(root, log=None):
             body.append(x)
     tuple(map(root.append, (head, body)))
     if log is not None:
-        log.warn('Merging multiple <head> and <body> sections')
+        log.warning('Merging multiple <head> and <body> sections')
     return root
 
 
@@ -122,7 +122,7 @@ def clean_word_doc(data, log):
     for match in re.finditer(r'xmlns:(\S+?)=".*?microsoft.*?"', data):
         prefixes.append(match.group(1))
     if prefixes:
-        log.warn('Found microsoft markup, cleaning...')
+        log.warning('Found microsoft markup, cleaning...')
         # Remove empty tags as they are not rendered by browsers
         # but can become renderable HTML tags like <p/> if the
         # document is parsed by an HTML parser
@@ -214,13 +214,13 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
             data = etree.fromstring(data)
             check_for_html5(pre, data)
         except (HTML5Doc, etree.XMLSyntaxError):
-            log.debug('Parsing %s as HTML' % filename)
+            log.debug('Parsing %s as HTML', filename)
             data = raw
             try:
                 data = html5_parse(data)
             except Exception:
-                log.exception(
-                    'HTML 5 parsing failed, falling back to older parsers')
+                log.exception('HTML 5 parsing failed, falling back to older '
+                              'parsers')
                 data = _html4_parse(data)
 
     if has_html4_doctype or data.tag == 'HTML' or (len(data) and (data[-1].get('LANG') or data[-1].get('DIR'))):
@@ -239,7 +239,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
     if barename(data.tag) != 'html':
         if barename(data.tag) in non_html_file_tags:
             raise NotHTML(data.tag)
-        log.warn('File %r does not appear to be (X)HTML'%filename)
+        log.warning('File %s does not appear to be (X)HTML', filename)
         nroot = etree.fromstring('<html></html>')
         has_body = False
         for child in list(data):
@@ -248,7 +248,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
                 break
         parent = nroot
         if not has_body:
-            log.warn('File %r appears to be a HTML fragment'%filename)
+            log.warning('File %s appears to be a HTML fragment', filename)
             nroot = etree.fromstring('<html><body/></html>')
             parent = nroot[0]
         for child in list(data.iter()):
@@ -260,7 +260,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
 
     # Force into the XHTML namespace
     if not namespace(data.tag):
-        log.warn('Forcing', filename, 'into XHTML namespace')
+        log.warning('Forcing %s into XHTML namespace', filename)
         data.attrib['xmlns'] = const.XHTML_NS
         data = etree.tostring(data, encoding='unicode')
 
@@ -272,10 +272,8 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
             try:
                 data = etree.fromstring(data)
             except etree.XMLSyntaxError:
-                log.warn('Stripping comments from %s'%
-                        filename)
-                data = re.compile(r'<!--.*?-->', re.DOTALL).sub('',
-                        data)
+                log.warning('Stripping comments from %s', filename)
+                data = re.compile(r'<!--.*?-->', re.DOTALL).sub('', data)
                 data = data.replace(
                     "<?xml version='1.0' encoding='utf-8'?><o:p></o:p>",
                     '')
@@ -283,7 +281,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
                 try:
                     data = etree.fromstring(data)
                 except etree.XMLSyntaxError:
-                    log.warn('Stripping meta tags from %s'% filename)
+                    log.warning('Stripping meta tags from %s', filename)
                     data = re.sub(r'<meta\s+[^>]+?>', '', data)
                     data = etree.fromstring(data)
     elif namespace(data.tag) != const.XHTML_NS:
@@ -308,7 +306,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
     head = xpath(data, '/h:html/h:head')
     head = head[0] if head else None
     if head is None:
-        log.warn('File %s missing <head/> element' % filename)
+        log.warning('File %s missing <head/> element', filename)
         head = etree.Element(XHTML('head'))
         data.insert(0, head)
         title = etree.SubElement(head, XHTML('title'))
@@ -335,7 +333,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
             body.getparent().remove(body)
             data.append(body)
         else:
-            log.warn('File %s missing <body/> element' % filename)
+            log.warning('File %s missing <body/> element', filename)
             etree.SubElement(data, XHTML('body'))
 
     # Remove microsoft office markup

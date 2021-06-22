@@ -45,12 +45,14 @@ class RescaleImages(object):
 
                 try:
                     if self.check_colorspaces and img.mode == 'CMYK':
-                        self.log.warn(
-                            'The image %s is in the CMYK colorspace, converting it '
-                            'to RGB as Adobe Digital Editions cannot display CMYK' % item.href)
+                        self.log.warning('The image %s is in the CMYK '
+                                         'colorspace, converting it to RGB as '
+                                         'Adobe Digital Editions cannot '
+                                         'display CMYK', item.href)
                         img = img.convert('RGB')
                 except Exception:
-                    self.log.exception('Failed to convert image %s from CMYK to RGB' % item.href)
+                    self.log.exception('Failed to convert image %s from CMYK '
+                                       'to RGB', item.href)
 
                 scaled, new_width, new_height = uimg.fit_image(width, height,
                                                                page_width,
@@ -58,18 +60,20 @@ class RescaleImages(object):
                 if scaled:
                     new_width = max(1, new_width)
                     new_height = max(1, new_height)
-                    self.log('Rescaling image from %dx%d to %dx%d'%(
-                        width, height, new_width, new_height), item.href)
+                    self.log('Rescaling image from %sx%s to %sx%s %s', width,
+                             height, new_width, new_height, item.href)
                     try:
                         img = img.resize((new_width, new_height))
                     except Exception:
-                        self.log.exception('Failed to rescale image: %s' % item.href)
+                        self.log.exception('Failed to rescale image: %s',
+                                           item.href)
                         continue
                     buf = BytesIO()
                     try:
                         img.save(buf, ext)
                     except Exception:
-                        self.log.exception('Failed to rescale image: %s' % item.href)
+                        self.log.exception('Failed to rescale image: %s',
+                                           item.href)
                     else:
                         item.data = buf.getvalue()
                         item.unload_data_from_memory()

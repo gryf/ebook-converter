@@ -34,19 +34,19 @@ class RemoveFirstImage:
                 continue
             removed = self.remove_images(item)
             if removed > 0:
-                self.log('Removed first image')
+                self.log.info('Removed first image')
                 body = XPath('//h:body')(item.data)
                 if body:
                     raw = xml2text(body[0]).strip()
                     imgs = XPath('//h:img|//svg:svg')(item.data)
                     if not raw and not imgs:
-                        self.log('Removing %s as it has no content' %
-                                 item.href)
+                        self.log.info('Removing %s as it has no content',
+                                      item.href)
                         self.oeb.manifest.remove(item)
                         deleted_item = item
                 break
         else:
-            self.log.warn('Could not find first image to remove')
+            self.log.warning('Could not find first image to remove')
         if deleted_item is not None:
             for item in list(self.oeb.toc):
                 href = urllib.parse.urldefrag(item.href)[0]

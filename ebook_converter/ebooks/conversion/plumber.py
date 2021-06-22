@@ -854,8 +854,8 @@ OptionRecommendation(name='search_replace',
                     try:
                         val = float(val)
                     except ValueError:
-                        self.log.warn('Values of series index and rating must'
-                                      ' be numbers. Ignoring', val)
+                        self.log.warning('Values of series index and rating '
+                                         'must be numbers. Ignoring %s', val)
                         continue
                 elif x in ('timestamp', 'pubdate'):
                     try:
@@ -882,8 +882,8 @@ OptionRecommendation(name='search_replace',
         self.opts_to_mi(mi)
         if mi.cover:
             if mi.cover.startswith('http:') or mi.cover.startswith('https:'):
-                self.log.warn("TODO: Cover image is on remote server, "
-                              "implement downloading using requests")
+                self.log.warning("TODO: Cover image is on remote server, "
+                                 "implement downloading using requests")
             ext = mi.cover.rpartition('.')[-1].lower().strip()
             if ext not in ('png', 'jpg', 'jpeg', 'gif'):
                 ext = 'jpg'
@@ -909,8 +909,8 @@ OptionRecommendation(name='search_replace',
                 if x.short_name == sval:
                     setattr(self.opts, attr, x)
                     return
-            self.log.warn(
-                'Profile (%s) %r is no longer available, using default'%(which, sval))
+            self.log.warning('Profile (%s) %r is no longer available, using '
+                             'default', which, sval)
             for x in profiles():
                 if x.short_name == 'default':
                     setattr(self.opts, attr, x)
@@ -925,14 +925,16 @@ OptionRecommendation(name='search_replace',
         if self.opts.verbose:
             self.log.filter_level = self.log.DEBUG
         if self.changed_options:
-            self.log('Conversion options changed from defaults:')
+            self.log.info('Conversion options changed from defaults:')
             for rec in self.changed_options:
                 if rec.option.name not in ('username', 'password'):
-                    self.log(' ', '%s:' % rec.option.name, repr(rec.recommended_value))
+                    self.log.info(' %s', rec.option.name,
+                                  repr(rec.recommended_value))
         if self.opts.verbose > 1:
             self.log.debug('Resolved conversion options')
             try:
-                self.log.debug('ebook_converter version:', constants.VERSION)
+                self.log.debug('ebook_converter version: %s',
+                               constants.VERSION)
                 odict = dict(self.opts.__dict__)
                 for x in ('username', 'password'):
                     odict.pop(x, None)
@@ -968,7 +970,7 @@ OptionRecommendation(name='search_replace',
                 self.input_plugin.save_download(zf)
             zf.close()
 
-        self.log.info('Input debug saved to:', out_dir)
+        self.log.info('Input debug saved to: %s', out_dir)
 
     def run(self):
         '''
@@ -1022,7 +1024,8 @@ OptionRecommendation(name='search_replace',
             from ebook_converter.ebooks.azw4.reader import unwrap
             unwrap(stream, self.output)
             self.ui_reporter(1.)
-            self.log(self.output_fmt.upper(), 'output written to', self.output)
+            self.log.info('%s output written to %s', self.output_fmt.upper(),
+                          self.output)
             self.flush()
             return
 
@@ -1056,7 +1059,7 @@ OptionRecommendation(name='search_replace',
             if self.opts.debug_pipeline is not None:
                 out_dir = os.path.join(self.opts.debug_pipeline, 'parsed')
                 self.dump_oeb(self.oeb, out_dir)
-                self.log('Parsed HTML written to:', out_dir)
+                self.log.info('Parsed HTML written to: %s', out_dir)
             self.input_plugin.specialize(self.oeb, self.opts, self.log,
                     self.output_fmt)
 
@@ -1105,13 +1108,13 @@ OptionRecommendation(name='search_replace',
             try:
                 fkey = list(map(float, fkey.split(',')))
             except Exception:
-                self.log.error('Invalid font size key: %r ignoring'%fkey)
+                self.log.error('Invalid font size key: %s ignoring', fkey)
                 fkey = self.opts.dest.fkey
 
         if self.opts.debug_pipeline is not None:
             out_dir = os.path.join(self.opts.debug_pipeline, 'structure')
             self.dump_oeb(self.oeb, out_dir)
-            self.log('Structured HTML written to:', out_dir)
+            self.log.info('Structured HTML written to: %s', out_dir)
 
         if self.opts.extra_css and os.path.exists(self.opts.extra_css):
             with open(self.opts.extra_css, 'rb') as f:
@@ -1187,9 +1190,9 @@ OptionRecommendation(name='search_replace',
         if self.opts.debug_pipeline is not None:
             out_dir = os.path.join(self.opts.debug_pipeline, 'processed')
             self.dump_oeb(self.oeb, out_dir)
-            self.log('Processed HTML written to:', out_dir)
+            self.log.info('Processed HTML written to: %s', out_dir)
 
-        self.log.info('Creating %s...'%self.output_plugin.name)
+        self.log.info('Creating %s...', self.output_plugin.name)
         our = CompositeProgressReporter(0.67, 1., self.ui_reporter)
         self.output_plugin.report_progress = our
         our(0., 'Running %s plugin' % self.output_plugin.name)
@@ -1200,7 +1203,8 @@ OptionRecommendation(name='search_replace',
         self.ui_reporter(1.)
         run_plugins_on_postprocess(self.output, self.output_fmt)
 
-        self.log(self.output_fmt.upper(), 'output written to', self.output)
+        self.log.info('%s output written to %s', self.output_fmt.upper(),
+                      self.output)
         self.flush()
 
 
@@ -1230,7 +1234,7 @@ def create_oebbook(log, path_or_stream, opts, reader=None,
     if specialize is not None:
         oeb = specialize(oeb) or oeb
     # Read OEB Book into OEBBook
-    log('Parsing all content...')
+    log.info('Parsing all content...')
     oeb.removed_items_to_ignore = removed_items
     if reader is None:
         from ebook_converter.ebooks.oeb.reader import OEBReader
@@ -1241,11 +1245,11 @@ def create_oebbook(log, path_or_stream, opts, reader=None,
 
 
 def create_dummy_plumber(input_format, output_format):
-    from ebook_converter.utils.logging import Log
+    from ebook_converter.utils import logging
     input_format = input_format.lower()
     output_format = output_format.lower()
     output_path = 'dummy.'+output_format
-    log = Log()
+    log = logging.default_log
     log.outputs = []
     input_file = 'dummy.'+input_format
     if input_format in ARCHIVE_FMTS:

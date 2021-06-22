@@ -188,7 +188,7 @@ class FB2MLizer(object):
                 metadata['id'] = str(x).split(':')[-1]
                 break
         if metadata['id'] is None:
-            self.log.warn('No UUID identifier found')
+            self.log.warning('No UUID identifier found')
             metadata['id'] = str(uuid.uuid4())
 
         try:
@@ -311,7 +311,7 @@ class FB2MLizer(object):
             self.section_level += 1
 
         for item in self.oeb_book.spine:
-            self.log.debug('Converting %s to FictionBook2 XML' % item.href)
+            self.log.debug('Converting %s to FictionBook2 XML', item.href)
             stylizer = Stylizer(item.data, item.href, self.oeb_book, self.opts,
                                 self.opts.output_profile)
 
@@ -369,7 +369,7 @@ class FB2MLizer(object):
                                                  content_type, data))
                 except Exception as e:
                     self.log.error('Error: Could not include file %s because '
-                                   '%s.' % (item.href, e))
+                                   '%s.', item.href, e)
         return '\n'.join(images)
 
     def create_flat_toc(self, nodes, level):
@@ -528,7 +528,7 @@ class FB2MLizer(object):
                 fb2_out.append('<image l:href="#%s"/>' %
                                self.image_hrefs[ihref])
             else:
-                self.log.warn(u'Ignoring image not in manifest: %s' % ihref)
+                self.log.warning('Ignoring image not in manifest: %s', ihref)
         if tag in ('br', 'hr') or ems >= 1:
             if ems < 1:
                 multiplier = 1

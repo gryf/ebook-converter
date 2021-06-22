@@ -241,11 +241,14 @@ class Stylizer(object):
                                 continue
                             hrefs = self.oeb.manifest.hrefs
                             if ihref not in hrefs:
-                                self.logger.warn('Ignoring missing stylesheet in @import rule:', rule.href)
+                                self.logger.warning('Ignoring missing '
+                                                    'stylesheet in @import '
+                                                    'rule: %s', rule.href)
                                 continue
                             sitem = hrefs[ihref]
                             if sitem.media_type not in base.OEB_STYLES:
-                                self.logger.warn('CSS @import of non-CSS file %r' % rule.href)
+                                self.logger.warning('CSS @import of non-CSS '
+                                                    'file %s', rule.href)
                                 continue
                             stylesheets.append(sitem.data)
                     # Make links to resources absolute, since these rules will
@@ -261,14 +264,12 @@ class Stylizer(object):
                 path = item.abshref(href)
                 sitem = oeb.manifest.hrefs.get(path, None)
                 if sitem is None:
-                    self.logger.warn(
-                        'Stylesheet %r referenced by file %r not in manifest' %
-                        (path, item.href))
+                    self.logger.warning('Stylesheet %s referenced by file %s '
+                                        'not in manifest', path, item.href)
                     continue
                 if not hasattr(sitem.data, 'cssRules'):
-                    self.logger.warn(
-                    'Stylesheet %r referenced by file %r is not CSS'%(path,
-                        item.href))
+                    self.logger.warning('Stylesheet %s referenced by file %s '
+                                        'is not CSS', path, item.href)
                     continue
                 stylesheets.append(sitem.data)
         csses = {'extra_css':extra_css, 'user_css':user_css}
@@ -280,9 +281,8 @@ class Stylizer(object):
                             validate=False)
                     stylesheets.append(stylesheet)
                 except Exception:
-                    self.logger.exception('Failed to parse %s, ignoring.'%w)
-                    self.logger.debug('Bad css: ')
-                    self.logger.debug(x)
+                    self.logger.exception('Failed to parse %s, ignoring.', w)
+                    self.logger.debug('Bad css: %s', x)
 
         # using oeb to store the rules, page rule and font face rules
         # and generating them again if opts, profile or stylesheets are different
@@ -303,7 +303,8 @@ class Stylizer(object):
             try:
                 matches = tuple(select(text))
             except SelectorError as err:
-                self.logger.error('Ignoring CSS rule with invalid selector: %r (%s)' % (text, err))
+                self.logger.error('Ignoring CSS rule with invalid selector: '
+                                  '%s (%s)', text, err)
                 continue
 
             if fl is not None:
@@ -367,11 +368,11 @@ class Stylizer(object):
     def _fetch_css_file(self, path):
         hrefs = self.oeb.manifest.hrefs
         if path not in hrefs:
-            self.logger.warn('CSS import of missing file %r' % path)
+            self.logger.warning('CSS import of missing file %s', path)
             return (None, None)
         item = hrefs[path]
         if item.media_type not in base.OEB_STYLES:
-            self.logger.warn('CSS import of non-CSS file %r' % path)
+            self.logger.warning('CSS import of non-CSS file %r', path)
             return (None, None)
         data = item.data.cssText
         if not isinstance(data, bytes):

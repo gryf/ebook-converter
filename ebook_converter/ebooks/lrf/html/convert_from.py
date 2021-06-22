@@ -331,9 +331,9 @@ class HTMLConverter(object):
                         if link['path'] == path:
                             self.links.remove(link)
                             break
-                    self.log.warn('Could not process '+path)
+                    self.log.warning('Could not process %s', path)
                     if self.verbose:
-                        self.log.exception(' ')
+                        self.log.exception(' ')  # WAT
             self.links = self.process_links()
             self.link_level += 1
             paths = [link['path'] for link in self.links]
@@ -400,7 +400,7 @@ class HTMLConverter(object):
                 with open(os.path.join(tdir,
                                        'html2lrf-verbose.html'), 'wb') as f:
                     f.write(str(soup).encode('utf-8'))
-                    self.log.info('Written preprocessed HTML to '+f.name)
+                    self.log.info('Written preprocessed HTML to %s', f.name)
             except Exception:
                 pass
 
@@ -416,8 +416,8 @@ class HTMLConverter(object):
                 self.css[selector] = self.override_css[selector]
 
         self.file_name = os.path.basename(path)
-        self.log.info('Processing %s' % (path if self.verbose else
-                                         self.file_name))
+        self.log.info('Processing %s', path if self.verbose else
+                      self.file_name)
 
         if not os.path.exists(path):
             # convertlit replaces & with %26 in file names
@@ -589,7 +589,7 @@ class HTMLConverter(object):
                 try:
                     index = self.book.pages().index(opage)
                 except ValueError:
-                    self.log.warning('%s is an empty file' % self.file_name)
+                    self.log.warning('%s is an empty file', self.file_name)
                     tb = self.book.create_text_block()
                     self.current_page.append(tb)
                     return tb
@@ -656,7 +656,7 @@ class HTMLConverter(object):
                hasattr(target.parent, 'objId'):
                 self.book.addTocEntry(ascii_text, tb)
             else:
-                self.log.debug("Cannot add link %s to TOC" % ascii_text)
+                self.log.debug("Cannot add link %s to TOC", ascii_text)
 
         def get_target_block(fragment, targets):
             '''Return the correct block for the <a name> element'''
@@ -1617,7 +1617,7 @@ class HTMLConverter(object):
                                                  tag[key]] = self.current_block
                                     self.current_block.must_append = True
                         else:
-                            self.log.debug('Could not follow link to ',
+                            self.log.debug('Could not follow link to %s',
                                            tag['href'])
                             self.process_children(tag, tag_css, tag_pseudo_css)
                 elif tag.has_attr('name') or tag.has_attr('id'):
@@ -1642,7 +1642,8 @@ class HTMLConverter(object):
                         self.process_image(path, tag_css, width, height,
                                            dropcaps=dropcaps, rescale=True)
                     elif not urllib.parse.urlparse(tag['src'])[0]:
-                        self.log.warn('Could not find image: '+tag['src'])
+                        self.log.warning('Could not find image: %s',
+                                         tag['src'])
                 else:
                     self.log.debug("Failed to process: %s", tag)
             elif tagname in ['style', 'link']:
@@ -1665,8 +1666,8 @@ class HTMLConverter(object):
                             self.page_break_found = True
                         ncss, npcss = self.parse_css(src)
                     except IOError:
-                        self.log.warn('Could not read stylesheet: %s',
-                                      tag['href'])
+                        self.log.warning('Could not read stylesheet: %s',
+                                         tag['href'])
                 if ncss:
                     update_css(ncss, self.css)
                     self.css.update(self.override_css)
@@ -1876,10 +1877,10 @@ class HTMLConverter(object):
                     self.process_table(tag, tag_css)
                 except Exception as err:
                     self.log.warning('An error occurred while processing a '
-                                     'table: %s. Ignoring table markup.' %
+                                     'table: %s. Ignoring table markup.',
                                      repr(err))
-                    self.log.exception('')
-                    self.log.debug('Bad table:\n%s' % str(tag)[:300])
+                    self.log.exception('')  # WAT
+                    self.log.debug('Bad table:\n%s', str(tag)[:300])
                     self.in_table = False
                     self.process_children(tag, tag_css, tag_pseudo_css)
                 finally:
@@ -1977,7 +1978,7 @@ def process_file(path, options, logger):
                 tpath = tf.name
             # PIL sometimes fails, for example on interlaced PNG files
             except IOError as err:
-                logger.warn('Could not read cover image: %s', err)
+                logger.warning('Could not read cover image: %s', err)
                 options.cover = None
         else:
             raise ConversionError('Cannot read from: %s', options.cover)

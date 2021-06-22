@@ -904,7 +904,7 @@ class Manifest(object):
         def _parse_xhtml(self, data):
             orig_data = data
             fname = urllib.parse.unquote(self.href)
-            self.oeb.log.debug('Parsing', fname, '...')
+            self.oeb.log.debug('Parsing %s ...', fname)
             self.oeb.html_preprocessor.current_href = self.href
             try:
                 data = parse_utils.parse_html(data, log=self.oeb.log,
@@ -924,7 +924,7 @@ class Manifest(object):
             if has_html in data:
                 return self._parse_xhtml(data)
 
-            self.oeb.log.debug('Converting', self.href, '...')
+            self.oeb.log.debug('Converting %s ...', self.href)
 
             from ebook_converter.ebooks.txt.processor import convert_markdown
 
@@ -941,7 +941,7 @@ class Manifest(object):
             from css_parser.css import CSSRule
             log.setLevel(logging.WARN)
             log.raiseExceptions = False
-            self.oeb.log.debug('Parsing', self.href, '...')
+            self.oeb.log.debug('Parsing %s ...', self.href)
             data = self.oeb.decode(data)
             data = self.oeb.css_preprocessor(data, add_namespace=False)
             parser = CSSParser(loglevel=logging.WARNING,
@@ -957,11 +957,11 @@ class Manifest(object):
         def _fetch_css(self, path):
             hrefs = self.oeb.manifest.hrefs
             if path not in hrefs:
-                self.oeb.logger.warn('CSS import of missing file %r' % path)
+                self.oeb.logger.warning('CSS import of missing file %s', path)
                 return (None, None)
             item = hrefs[path]
             if item.media_type not in OEB_STYLES:
-                self.oeb.logger.warn('CSS import of non-CSS file %r' % path)
+                self.oeb.logger.warning('CSS import of non-CSS file %s', path)
                 return (None, None)
             data = item.data.cssText
             enc = None if isinstance(data, str) else 'utf-8'
@@ -1002,8 +1002,8 @@ class Manifest(object):
             elif mt in OEB_STYLES:
                 data = self._parse_css(data)
             elif mt == 'text/plain':
-                self.oeb.log.warn('%s contains data in TXT format' % self.href,
-                                  'converting to HTML')
+                self.oeb.log.warning('%s contains data in TXT format. '
+                                     'Converting to HTML', self.href)
                 data = self._parse_txt(data)
                 self.media_type = XHTML_MIME
             self._data = data

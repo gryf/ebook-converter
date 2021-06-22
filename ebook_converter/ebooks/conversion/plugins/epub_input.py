@@ -146,7 +146,7 @@ class EPUBInput(InputFormatPlugin):
             if len(spine) > 1:
                 for item in spine:
                     if item.get('idref') == titlepage_id:
-                        log('Found HTML cover', titlepage_href)
+                        log.info('Found HTML cover %s', titlepage_href)
                         if self.for_viewer:
                             item.attrib.pop('linear', None)
                         else:
@@ -192,7 +192,7 @@ class EPUBInput(InputFormatPlugin):
         elem = [x for x in manifest if x.get('id', '') == idref]
         if not elem or elem[0].get('href', None) != guide_cover:
             return
-        log('Found HTML cover', guide_cover)
+        log.info('Found HTML cover %s', guide_cover)
 
         # Remove from spine as covers must be treated
         # specially
@@ -272,8 +272,8 @@ class EPUBInput(InputFormatPlugin):
             zf = ZipFile(stream)
             zf.extractall(os.getcwd())
         except Exception:
-            log.exception('EPUB appears to be invalid ZIP file, trying a'
-                          ' more forgiving ZIP parser')
+            log.exception('EPUB appears to be invalid ZIP file, trying a '
+                          'more forgiving ZIP parser')
             from ebook_converter.utils.localunzip import extractall
             stream.seek(0)
             extractall(stream)

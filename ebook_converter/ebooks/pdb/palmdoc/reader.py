@@ -55,7 +55,7 @@ class Reader(FormatReader):
 
         self.log.info('Decompressing text...')
         for i in range(1, self.header_record.num_records + 1):
-            self.log.debug('\tDecompressing text section %i' % i)
+            self.log.debug('\tDecompressing text section %s', i)
             raw_txt += self.decompress_text(i)
 
         self.log.info('Converting text to OEB...')

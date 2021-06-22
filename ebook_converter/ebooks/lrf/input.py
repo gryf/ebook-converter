@@ -48,7 +48,8 @@ class Canvas(etree.XSLTExtension):
                 table.append(tr)
                 for obj, x, y in self.get_objects(canvas):
                     if obj.tag != 'TextBlock':
-                        self.log.warn(obj.tag, 'elements in Canvas not supported')
+                        self.log.warning('%s elements in Canvas not supported',
+                                         obj.tag)
                         continue
                     td = table.makeelement('td')
                     self.text_block.render_block(obj, td)
@@ -168,7 +169,7 @@ class TextBlock(etree.XSLTExtension):
         if deepest < 500:
             return
 
-        self.log.warn('Found deeply nested spans. Flattening.')
+        self.log.warning('Found deeply nested spans. Flattening.')
         # with open('/t/before.xml', 'wb') as f:
         #    f.write(etree.tostring(node, method='xml'))
 
@@ -270,7 +271,7 @@ class TextBlock(etree.XSLTExtension):
             self.add_text_to = (img, 'tail')
             self.add_text(child.tail)
         else:
-            self.log.warn('Unhandled Text element:', child.tag)
+            self.log.warning('Unhandled Text element: %s', child.tag)
 
 
 class Styles(etree.XSLTExtension):

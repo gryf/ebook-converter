@@ -1,8 +1,3 @@
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-
 class Clean(object):
     '''Clean up guide, leaving only known values '''
 
@@ -28,7 +23,8 @@ class Clean(object):
             if covers:
                 ref = covers[0][0]
                 if len(covers) > 1:
-                    self.log('Choosing %s:%s as the cover'%(ref.type, ref.href))
+                    self.log.info('Choosing %s:%s as the cover', ref.type,
+                                  ref.href)
                 ref.type = 'cover'
                 self.oeb.guide.refs['cover'] = ref
 

@@ -5,11 +5,6 @@ from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.ebooks.oeb.base import XPath
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-
 class RemoveAdobeMargins(object):
     '''
     Remove margins specified in Adobe's page templates.
@@ -19,12 +14,13 @@ class RemoveAdobeMargins(object):
         self.oeb, self.opts, self.log = oeb, opts, log
 
         for item in self.oeb.manifest:
-            if item.media_type in {
-                'application/vnd.adobe-page-template+xml', 'application/vnd.adobe.page-template+xml',
-                'application/adobe-page-template+xml', 'application/adobe.page-template+xml',
-            } and hasattr(item.data, 'xpath'):
-                self.log('Removing page margins specified in the'
-                        ' Adobe page template')
+            if (item.media_type in {'application/vnd.adobe-page-template+xml',
+                                    'application/vnd.adobe.page-template+xml',
+                                    'application/adobe-page-template+xml',
+                                    'application/adobe.page-template+xml'} and
+                    hasattr(item.data, 'xpath')):
+                self.log.info('Removing page margins specified in the '
+                              'Adobe page template')
                 for elem in item.data.xpath(
                         '//*[@margin-bottom or @margin-top '
                         'or @margin-left or @margin-right]'):
@@ -59,7 +55,7 @@ class RemoveFakeMargins(object):
         if stylesheet is None:
             return
 
-        self.log('Removing fake margins...')
+        self.log.info('Removing fake margins...')
 
         stylesheet = stylesheet.data
 
@@ -73,8 +69,8 @@ class RemoveFakeMargins(object):
             try:
                 self.process_level(level)
             except NegativeTextIndent:
-                self.log.debug('Negative text indent detected at level '
-                        ' %s, ignoring this level'%level)
+                self.log.debug('Negative text indent detected at level %s, '
+                               'ignoring this level', level)
 
     def get_margins(self, elem):
         cls = elem.get('class', None)
@@ -102,19 +98,21 @@ class RemoveFakeMargins(object):
             self.stats[level+'_left'][lm] += 1
             self.stats[level+'_right'][rm] += 1
 
-        self.log.debug(level, ' left margin stats:', self.stats[level+'_left'])
-        self.log.debug(level, ' right margin stats:', self.stats[level+'_right'])
+        self.log.debug('%s left margin stats: %s', level,
+                       self.stats[level+'_left'])
+        self.log.debug('%s right margin stats: %s', level,
+                       self.stats[level+'_right'])
 
         remove_left = self.analyze_stats(self.stats[level+'_left'])
         remove_right = self.analyze_stats(self.stats[level+'_right'])
 
         if remove_left:
             mcl = self.stats[level+'_left'].most_common(1)[0][0]
-            self.log('Removing level %s left margin of:'%level, mcl)
+            self.log.info('Removing level %s left margin of: %s', level, mcl)
 
         if remove_right:
             mcr = self.stats[level+'_right'].most_common(1)[0][0]
-            self.log('Removing level %s right margin of:'%level, mcr)
+            self.log.info('Removing level %s right margin of: %s', level, mcr)
 
         if remove_left or remove_right:
             for elem in elems:
@@ -151,7 +149,7 @@ class RemoveFakeMargins(object):
         remove = set()
         for k, v in self.levels.items():
             num = len(v)
-            self.log.debug('Found %d items of level:'%num, k)
+            self.log.debug('Found %s items of level: %s', num, k)
             level = int(k.split('_')[-1])
             tag = k.split('_')[0]
             if tag == 'p' and num < 25:
@@ -169,7 +167,7 @@ class RemoveFakeMargins(object):
 
         for k in remove:
             self.levels.pop(k)
-            self.log.debug('Ignoring level', k)
+            self.log.debug('Ignoring level %s', k)
 
     def analyze_stats(self, stats):
         if not stats:

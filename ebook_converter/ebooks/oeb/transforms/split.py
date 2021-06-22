@@ -59,7 +59,8 @@ class Split(object):
     def __call__(self, oeb, opts):
         self.oeb = oeb
         self.log = oeb.log
-        self.log('Splitting markup on page breaks and flow limits, if any...')
+        self.log.info('Splitting markup on page breaks and flow limits, if '
+                      'any...')
         self.opts = opts
         self.map = {}
         for item in list(self.oeb.manifest.items):
@@ -127,8 +128,7 @@ class Split(object):
                         page_breaks.add(elem)
             except SelectorError as err:
                 self.log.warn('Ignoring page breaks specified with invalid '
-                              'CSS selector: %r (%s)' %
-                              (selector, err))
+                              'CSS selector: %s (%s)', selector, err)
 
         for i, elem in enumerate(item.data.iter('*')):
             try:
@@ -221,13 +221,13 @@ class FlowSplitter(object):
 
         if self.max_flow_size > 0:
             lt_found = False
-            self.log('\tLooking for large trees in %s...' % item.href)
+            self.log.info('\tLooking for large trees in %s...', item.href)
             trees = list(self.trees)
             self.tree_map = {}
             for i, tree in enumerate(trees):
                 size = len(tostring(tree.getroot()))
                 if size > self.max_flow_size:
-                    self.log('\tFound large tree #%d' % i)
+                    self.log.info('\tFound large tree #%s', i)
                     lt_found = True
                     self.split_trees = []
                     self.split_to_size(tree)
@@ -240,7 +240,7 @@ class FlowSplitter(object):
 
         self.was_split = len(self.trees) > 1
         if self.was_split:
-            self.log('\tSplit into %d parts' % len(self.trees))
+            self.log('\tSplit into %s parts', len(self.trees))
         self.commit()
 
     def split_on_page_breaks(self, orig_tree):
@@ -259,7 +259,7 @@ class FlowSplitter(object):
                 tree = self.trees[i]
                 elem = pattern(tree)
                 if elem:
-                    self.log.debug('\t\tSplitting on page-break at id=%s' %
+                    self.log.debug('\t\tSplitting on page-break at id=%s',
                                    elem[0].get('id'))
                     before_tree, after_tree = self.do_split(tree, elem[0],
                                                             before)
@@ -322,10 +322,10 @@ class FlowSplitter(object):
         return True
 
     def split_text(self, text, root, size):
-        self.log.debug('\t\t\tSplitting text of length: %d' % len(text))
+        self.log.debug('\t\t\tSplitting text of length: %d', len(text))
         rest = text.replace('\r', '')
         parts = re.split('\n\n', rest)
-        self.log.debug('\t\t\t\tFound %d parts' % len(parts))
+        self.log.debug('\t\t\t\tFound %d parts', len(parts))
         if max(map(len, parts)) > size:
             raise SplitError('Cannot split as file contains a <pre> tag '
                              'with a very large paragraph', root)
@@ -364,7 +364,7 @@ class FlowSplitter(object):
         split_point, before = self.find_split_point(root)
         if split_point is None:
             raise SplitError(self.item.href, root)
-        self.log.debug('\t\t\tSplit point:', split_point.tag,
+        self.log.debug('\t\t\tSplit point: %s %s', split_point.tag,
                        tree.getpath(split_point))
 
         trees = self.do_split(tree, split_point, before)
@@ -380,10 +380,10 @@ class FlowSplitter(object):
                 continue
             elif size <= self.max_flow_size:
                 self.split_trees.append(t)
-                self.log.debug('\t\t\tCommitted sub-tree #%d (%d KB)' %
-                               (len(self.split_trees), size/1024.))
+                self.log.debug('\t\t\tCommitted sub-tree #%s (%s KB)',
+                               len(self.split_trees), size/1024.)
             else:
-                self.log.debug('\t\t\tSplit tree still too large: %d KB' %
+                self.log.debug('\t\t\tSplit tree still too large: %d KB',
                                size/1024)
                 self.split_to_size(t)
 

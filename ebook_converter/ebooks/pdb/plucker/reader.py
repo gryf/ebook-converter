@@ -360,7 +360,8 @@ class Reader(FormatReader):
         # plugin assemble the order based on hyperlinks.
         with directory.CurrentDir(output_dir):
             for uid, num in self.uid_text_secion_number.items():
-                self.log.debug('Writing record with uid: %s as %s.html' % (uid, uid))
+                self.log.debug('Writing record with uid: %s as %s.html',
+                               uid, uid)
                 with open('%s.html' % uid, 'wb') as htmlf:
                     html = u'<html><body>'
                     section_header, section_data = self.sections[num]
@@ -393,11 +394,14 @@ class Reader(FormatReader):
                     try:
                         save_cover_data_to(idata, '%s.jpg' % uid, compression_quality=70)
                         images.add(uid)
-                        self.log.debug('Wrote image with uid %s to images/%s.jpg' % (uid, uid))
+                        self.log.debug('Wrote image with uid %s to '
+                                       'images/%s.jpg', uid, uid)
                     except Exception as e:
-                        self.log.error('Failed to write image with uid %s: %s' % (uid, e))
+                        self.log.error('Failed to write image with uid %s: %s',
+                                       uid, e)
                 else:
-                    self.log.error('Failed to write image with uid %s: No data.' % uid)
+                    self.log.error('Failed to write image with uid %s: '
+                                   'No data.', uid)
             # Composite images.
             # We're going to use the already compressed .jpg images here.
             for uid, num in self.uid_composite_image_section_number.items():
@@ -436,9 +440,11 @@ class Reader(FormatReader):
                             y_off += largest_height
                     with open('%s.jpg' % uid) as out:
                         out.write(canvas.export(compression_quality=70))
-                    self.log.debug('Wrote composite image with uid %s to images/%s.jpg' % (uid, uid))
+                    self.log.debug('Wrote composite image with uid %s to '
+                                   'images/%s.jpg', uid, uid)
                 except Exception as e:
-                    self.log.error('Failed to write composite image with uid %s: %s' % (uid, e))
+                    self.log.error('Failed to write composite image with '
+                                   'uid %s: %s', uid, e)
 
         # Run the HTML through the html processing plugin.
         from ebook_converter.customize.ui import plugin_for_input_format

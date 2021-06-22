@@ -5,11 +5,6 @@ from ebook_converter.utils.fonts.sfnt.subset import subset, NoGlyphs, Unsupporte
 from ebook_converter.tinycss.fonts3 import parse_font_family
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-
 def get_font_properties(rule, default=None):
     '''
     Given a CSS rule, extract normalized font properties from
@@ -19,7 +14,7 @@ def get_font_properties(rule, default=None):
     props = {}
     s = rule.style
     for q in ('font-family', 'src', 'font-weight', 'font-stretch',
-            'font-style'):
+              'font-style'):
         g = 'uri' if q == 'src' else 'value'
         try:
             val = s.getProperty(q).propertyValue[0]
@@ -149,18 +144,19 @@ class SubsetFonts(object):
 
         for font in fonts.values():
             if not font['chars']:
-                self.log('The font %s is unused. Removing it.'%font['src'])
+                self.log('The font %s is unused. Removing it.', font['src'])
                 remove(font)
                 continue
             try:
                 raw, old_stats, new_stats = subset(font['item'].data, font['chars'])
             except NoGlyphs:
-                self.log('The font %s has no used glyphs. Removing it.'%font['src'])
+                self.log('The font %s has no used glyphs. Removing it.',
+                         font['src'])
                 remove(font)
                 continue
             except UnsupportedFont as e:
-                self.log.warn('The font %s is unsupported for subsetting. %s'%(
-                    font['src'], e))
+                self.log.warning('The font %s is unsupported for subsetting. '
+                                 '%s', font['src'], e)
                 sz = len(font['item'].data)
                 totals[0] += sz
                 totals[1] += sz
@@ -168,16 +164,16 @@ class SubsetFonts(object):
                 font['item'].data = raw
                 nlen = sum(new_stats.values())
                 olen = sum(old_stats.values())
-                self.log('Decreased the font %s to %.1f%% of its original size'%
-                        (font['src'], nlen/olen *100))
+                self.log('Decreased the font %s to %.1f%% of its original '
+                         'size', font['src'], nlen/olen * 100)
                 totals[0] += nlen
                 totals[1] += olen
 
             font['item'].unload_data_from_memory()
 
         if totals[0]:
-            self.log('Reduced total font size to %.1f%% of original'%
-                    (totals[0]/totals[1] * 100))
+            self.log('Reduced total font size to %.1f%% of original',
+                     totals[0]/totals[1] * 100)
 
     def find_embedded_fonts(self):
         '''

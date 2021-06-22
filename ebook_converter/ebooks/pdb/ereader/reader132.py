@@ -112,7 +112,7 @@ class Reader132(FormatReader):
 
         pml = ''
         for i in range(1, self.header_record.num_text_pages + 1):
-            self.log.debug('Extracting text page %i' % i)
+            self.log.debug('Extracting text page %s', i)
             pml += self.get_text_page(i)
         hizer = PML_HTMLizer()
         html += hizer.parse_pml(pml, 'index.html')
@@ -123,7 +123,7 @@ class Reader132(FormatReader):
             footnoteids = re.findall(
                 '\\w+(?=\x00)', self.section_data(self.header_record.footnote_offset).decode('cp1252' if self.encoding is None else self.encoding))
             for fid, i in enumerate(range(self.header_record.footnote_offset + 1, self.header_record.footnote_offset + self.header_record.footnote_count)):
-                self.log.debug('Extracting footnote page %i' % i)
+                self.log.debug('Extracting footnote page %s', i)
                 if fid < len(footnoteids):
                     fid = footnoteids[fid]
                 else:
@@ -135,7 +135,7 @@ class Reader132(FormatReader):
             sidebarids = re.findall(
                 '\\w+(?=\x00)', self.section_data(self.header_record.sidebar_offset).decode('cp1252' if self.encoding is None else self.encoding))
             for sid, i in enumerate(range(self.header_record.sidebar_offset + 1, self.header_record.sidebar_offset + self.header_record.sidebar_count)):
-                self.log.debug('Extracting sidebar page %i' % i)
+                self.log.debug('Extracting sidebar page %s', i)
                 if sid < len(sidebarids):
                     sid = sidebarids[sid]
                 else:
@@ -157,7 +157,7 @@ class Reader132(FormatReader):
                 name, img = self.get_image(self.header_record.image_data_offset + i)
                 images.append(name)
                 with open(name, 'wb') as imgf:
-                    self.log.debug('Writing image %s to images/' % name)
+                    self.log.debug('Writing image %s to images/', name)
                     imgf.write(img)
 
         opf_path = self.create_opf(output_dir, images, toc)

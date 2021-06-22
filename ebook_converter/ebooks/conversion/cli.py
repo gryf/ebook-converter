@@ -12,7 +12,7 @@ import re
 import sys
 
 from ebook_converter.utils.config import OptionParser
-from ebook_converter.utils.logging import Log
+from ebook_converter.utils import logging
 from ebook_converter.customize.conversion import OptionRecommendation
 
 
@@ -66,7 +66,7 @@ def check_command_line_options(parser, args, log):
     if (not input_file.endswith('.recipe') and
             not os.access(input_file, os.R_OK) and
             not ('-h' in args or '--help' in args)):
-        log.error('Cannot read from', input_file)
+        log.error('Cannot read from %s', input_file)
         raise SystemExit(1)
     if input_file.endswith('.recipe') and not os.access(input_file, os.R_OK):
         input_file = args[1]
@@ -267,7 +267,7 @@ class ProgressBar(object):
     def __call__(self, frac, msg=''):
         if msg:
             percent = int(frac*100)
-            self.log('%d%% %s' % (percent, msg))
+            self.log.info('%d%% %s' % (percent, msg))
 
 
 def create_option_parser(args, log):
@@ -275,20 +275,18 @@ def create_option_parser(args, log):
         from ebook_converter.constants_old import __appname__
         from ebook_converter.constants_old import __author__
         from ebook_converter.constants_old import __version__
-        log(os.path.basename(args[0]), '('+__appname__, __version__+')')
-        log('Created by:', __author__)
+        log.info("%s (%s, %s)", os.path.basename(args[0]), __appname__,
+                 __version__)
+        log.info('Created by: %s', __author__)
         raise SystemExit(0)
     if '--list-recipes' in args:
         from ebook_converter.web.feeds.recipes.collection import \
                 get_builtin_recipe_titles
-        log('Available recipes:')
+        log.info('Available recipes:')
         titles = sorted(get_builtin_recipe_titles())
         for title in titles:
-            try:
-                log('\t'+title)
-            except Exception:
-                log('\t'+repr(title))
-        log('%d recipes available' % len(titles))
+            log.info('\t%s', title)
+        log.info('%d recipes available', len(titles))
         raise SystemExit(0)
 
     parser = option_parser()
@@ -352,7 +350,7 @@ def read_sr_patterns(path, log=None):
 
 
 def main(args=sys.argv):
-    log = Log()
+    log = logging.default_log
     mimetypes.init([pkg_resources.resource_filename('ebook_converter',
                                                     'data/mime.types')])
     parser, plumber = create_option_parser(args, log)
@@ -386,7 +384,7 @@ def main(args=sys.argv):
 
     plumber.run()
 
-    log('Output saved to', ' ', plumber.output)
+    log.info('Output saved to %s', plumber.output)
 
     return 0
 

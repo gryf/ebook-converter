@@ -182,8 +182,8 @@ class CSSFlattener(object):
             else:
                 from ebook_converter.ebooks.oeb.normalize_css import normalize_filter_css
                 self.filter_css = frozenset(normalize_filter_css(self.filter_css))
-                self.oeb.log.debug('Filtering CSS properties: %s'%
-                    ', '.join(self.filter_css))
+                self.oeb.log.debug('Filtering CSS properties: %s',
+                                   ', '.join(self.filter_css))
 
         for item in oeb.manifest.values():
             # Make all links to resources absolute, as these sheets will be
@@ -231,13 +231,13 @@ class CSSFlattener(object):
             msg = ('No embeddable fonts found for family: %r'%family)
             if failure_critical:
                 raise ValueError(msg)
-            self.oeb.log.warn(msg)
+            self.oeb.log.warning(msg)
             return body_font_family, efi
         if not faces:
             msg = ('No embeddable fonts found for family: %r'%family)
             if failure_critical:
                 raise ValueError(msg)
-            self.oeb.log.warn(msg)
+            self.oeb.log.warning(msg)
             return body_font_family, efi
 
         for i, font in enumerate(faces):
@@ -258,7 +258,7 @@ class CSSFlattener(object):
             if i == 0:
                 generic_family = panose_to_css_generic_family(font['panose'])
                 body_font_family = "'%s',%s"%(font['font-family'], generic_family)
-                self.oeb.log('Embedding font: %s'%font['font-family'])
+                self.oeb.log.info('Embedding font: %s', font['font-family'])
             for k in ('font-weight', 'font-style', 'font-stretch'):
                 if font[k] != 'normal':
                     cfont[k] = font[k]
@@ -323,8 +323,7 @@ class CSSFlattener(object):
             sbase = max(list(sizes.items()), key=operator.itemgetter(1))[0]
         except:
             sbase = 12.0
-        self.oeb.logger.info(
-            "Source base font size is %0.05fpt" % sbase)
+        self.oeb.logger.info("Source base font size is %0.05fpt", sbase)
         return sbase
 
     def clean_edges(self, cssdict, style, fsize):
@@ -346,8 +345,7 @@ class CSSFlattener(object):
                     try:
                         value = round(value / slineh) * dlineh
                     except:
-                        self.oeb.logger.warning(
-                                'Invalid length:', value)
+                        self.oeb.logger.warning('Invalid length: %s', value)
                         value = 0.0
                     cssdict[property] = "%0.5fem" % (value / fsize)
 

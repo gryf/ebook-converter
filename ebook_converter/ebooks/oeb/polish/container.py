@@ -1141,8 +1141,8 @@ class EpubContainer(Container):
                     zf = ZipFile(stream)
                     zf.extractall(tdir)
                 except:
-                    log.exception('EPUB appears to be invalid ZIP file, trying a'
-                            ' more forgiving ZIP parser')
+                    log.exception('EPUB appears to be invalid ZIP file, '
+                                  'trying a more forgiving ZIP parser')
                     from ebook_converter.utils.localunzip import extractall
                     stream.seek(0)
                     extractall(stream, path=tdir)
@@ -1481,7 +1481,7 @@ class AZW3Container(Container):
             'ebook_converter.ebooks.oeb.polish.container', 'do_explode',
             args=(pathtoazw3, tdir), no_output=True)['result']
         except WorkerError as e:
-            log(e.orig_tb)
+            log.error(e.orig_tb)
             raise InvalidMobi('Failed to explode MOBI')
         super(AZW3Container, self).__init__(tdir, opf_path, log)
         self.obfuscated_fonts = {x.replace(os.sep, '/') for x in obfuscated_fonts}

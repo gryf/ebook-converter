@@ -58,7 +58,7 @@ class OEB2HTML(object):
                   '<title>%s</title></head>'
                   '<body>' % entities.prepare_string_for_xml(self.book_title)]
         for item in oeb_book.spine:
-            self.log.debug('Converting %s to HTML...' % item.href)
+            self.log.debug('Converting %s to HTML...', item.href)
             self.rewrite_ids(item.data, item)
             base.rewrite_links(item.data, partial(self.rewrite_link,
                                                   page=item))
@@ -342,7 +342,7 @@ class OEB2HTMLClassCSSizer(OEB2HTML):
     def mlize_spine(self, oeb_book):
         output = []
         for item in oeb_book.spine:
-            self.log.debug('Converting %s to HTML...' % item.href)
+            self.log.debug('Converting %s to HTML...', item.href)
             self.rewrite_ids(item.data, item)
             base.rewrite_links(item.data, partial(self.rewrite_link,
                                                   page=item))

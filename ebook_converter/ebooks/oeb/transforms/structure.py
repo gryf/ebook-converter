@@ -51,7 +51,7 @@ class DetectStructure(object):
         self.log = oeb.log
         self.oeb = oeb
         self.opts = opts
-        self.log('Detecting structure...')
+        self.log.info('Detecting structure...')
 
         self.detect_chapters()
         if self.oeb.auto_generated_toc or opts.use_auto_toc:
@@ -67,15 +67,15 @@ class DetectStructure(object):
                 self.oeb.toc = orig_toc
             else:
                 self.oeb.auto_generated_toc = True
-                self.log('Auto generated TOC with %d entries.' %
-                         self.oeb.toc.count())
+                self.log.info('Auto generated TOC with %s entries.',
+                              self.oeb.toc.count())
 
         if opts.toc_filter is not None:
             regexp = re.compile(opts.toc_filter)
             for node in list(self.oeb.toc.iter()):
                 if not node.title or regexp.search(node.title) is not None:
-                    self.log('Filtering', node.title if node.title else
-                             'empty node', 'from TOC')
+                    self.log.info('Filtering %s from TOC', node.title if
+                                  node.title else 'empty node')
                     self.oeb.toc.remove(node)
 
         if opts.page_breaks_before is not None:
@@ -112,8 +112,8 @@ class DetectStructure(object):
         try:
             expr = XPath(expr)
         except Exception:
-            self.log.warn('Invalid start reading at XPath expression, '
-                          'ignoring: %s' % expr)
+            self.log.warning('Invalid start reading at XPath expression, '
+                             'ignoring: %s', expr)
             return
         for item in self.oeb.spine:
             if not hasattr(item.data, 'xpath'):
@@ -129,11 +129,11 @@ class DetectStructure(object):
                 if 'text' in self.oeb.guide:
                     self.oeb.guide.remove('text')
                 self.oeb.guide.add('text', 'Start', item.href+'#'+eid)
-                self.log('Setting start reading at position to %s in %s' %
-                         (self.opts.start_reading_at, item.href))
+                self.log.info('Setting start reading at position to %s in %s',
+                              self.opts.start_reading_at, item.href)
                 return
-        self.log.warn("Failed to find start reading at position: %s" %
-                      self.opts.start_reading_at)
+        self.log.warning("Failed to find start reading at position: %s",
+                         self.opts.start_reading_at)
 
     def get_toc_parts_for_xpath(self, expr):
         # if an attribute is selected by the xpath expr then truncate it
@@ -155,8 +155,8 @@ class DetectStructure(object):
                 len(ans)
                 return ans
             except Exception:
-                self.log.warn('Invalid chapter expression, ignoring: %s' %
-                              expr)
+                self.log.warning('Invalid chapter expression, ignoring: %s',
+                                 expr)
                 return []
 
         if self.opts.chapter:
@@ -175,7 +175,7 @@ class DetectStructure(object):
                 c[item] += 1
                 text = base.xml2text(elem).strip()
                 text = re.sub(r'\s+', ' ', text.strip())
-                self.log('\tDetected chapter:', text[:50])
+                self.log.info('\tDetected chapter: %s', text[:50])
                 if chapter_mark == 'none':
                     continue
                 if chapter_mark == 'rule':
@@ -221,7 +221,7 @@ class DetectStructure(object):
                 try:
                     purl = urllib.parse.urlparse(href)
                 except ValueError:
-                    self.log.warning('Ignoring malformed URL:', href)
+                    self.log.warning('Ignoring malformed URL: %s', href)
                     continue
                 if not purl[0] or purl[0] == 'file':
                     href, frag = purl.path, purl.fragment
@@ -240,13 +240,14 @@ class DetectStructure(object):
                                 play_order=self.oeb.toc.next_play_order())
                             num += 1
                         except ValueError:
-                            self.oeb.log.exception('Failed to process link: '
-                                                   '%r' % href)
+                            self.oeb.log.critical('Failed to process link: %s',
+                                                  href)
                             # Most likely an incorrectly URL encoded link
                             continue
                         if self.opts.max_toc_links > 0 and \
                                 num >= self.opts.max_toc_links:
-                            self.log('Maximum TOC links reached, stopping.')
+                            self.log.info('Maximum TOC links reached, '
+                                          'stopping.')
                             return
 
     def elem_to_link(self, item, elem, title_attribute, counter):
@@ -277,7 +278,7 @@ class DetectStructure(object):
                 len(ans)
                 return ans
             except Exception:
-                self.log.warn('Invalid ToC expression, ignoring: %s' % expr)
+                self.log.warning('Invalid ToC expression, ignoring: %s', expr)
                 return []
 
         for document in self.oeb.spine:

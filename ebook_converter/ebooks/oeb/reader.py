@@ -111,14 +111,14 @@ class OEBReader(object):
                                                  encoding=None)
             try:
                 opf = etree.fromstring(data)
-                self.logger.warn('OPF contains invalid HTML named entities')
+                self.logger.warning('OPF contains invalid HTML named entities')
             except etree.XMLSyntaxError:
                 data = re.sub(r'(?is)<tours>.+</tours>', '', data)
                 data = data.replace('<dc-metadata>',
                                     '<dc-metadata xmlns:dc="'
                                     'http://purl.org/metadata/dublin_core">')
                 opf = etree.fromstring(data)
-                self.logger.warn('OPF contains invalid tours section')
+                self.logger.warning('OPF contains invalid tours section')
 
         ns = parse_utils.namespace(opf.tag)
         if ns not in ('', const.OPF1_NS, const.OPF2_NS):
@@ -172,7 +172,7 @@ class OEBReader(object):
                 except KeyboardInterrupt:
                     raise
                 except Exception:
-                    self.logger.exception('Failed to parse content in %s' %
+                    self.logger.exception('Failed to parse content in %s',
                                           item.href)
                     bad.append(item)
                     self.oeb.manifest.remove(item)
@@ -195,7 +195,7 @@ class OEBReader(object):
                         data = item.data
                     except Exception:
                         self.oeb.log.exception('Failed to read from manifest '
-                                               'entry with id: %s, ignoring' %
+                                               'entry with id: %s, ignoring',
                                                item.id)
                         invalid.add(item)
                         continue
@@ -216,7 +216,7 @@ class OEBReader(object):
                             scheme = urllib.parse.urlparse(href).scheme
                         except Exception:
                             self.oeb.log.exception('Skipping invalid href: '
-                                                   '%r' % href)
+                                                   '%s', href)
                             continue
                         if not scheme and href not in known:
                             new.add(href)
@@ -244,12 +244,13 @@ class OEBReader(object):
                     continue
                 if not self.oeb.container.exists(href):
                     if href not in warned:
-                        self.logger.warn('Referenced file %r not found' % href)
+                        self.logger.warning('Referenced file %s not found',
+                                            href)
                         warned.add(href)
                     continue
                 if href not in warned:
-                    self.logger.warn('Referenced file %r not in manifest' %
-                                     href)
+                    self.logger.warning('Referenced file %s not in manifest',
+                                        href)
                     warned.add(href)
                 id, _ = manifest.generate(id='added')
                 guessed = mimetypes.guess_type(href)[0]
@@ -275,13 +276,13 @@ class OEBReader(object):
                 media_type = media_type.lower()
             fallback = elem.get('fallback')
             if href in manifest.hrefs:
-                self.logger.warn('Duplicate manifest entry for %r' % href)
+                self.logger.warning('Duplicate manifest entry for %s', href)
                 continue
             if not self.oeb.container.exists(href):
-                self.logger.warn('Manifest item %r not found' % href)
+                self.logger.warning('Manifest item %s not found', href)
                 continue
             if id in manifest.ids:
-                self.logger.warn('Duplicate manifest id %r' % id)
+                self.logger.warning('Duplicate manifest id %s', id)
                 id, href = manifest.generate(id, href)
             manifest.add(id, href, media_type, fallback)
         invalid = self._manifest_prune_invalid()
@@ -323,8 +324,8 @@ class OEBReader(object):
             if item.href in removed_items_to_ignore:
                 continue
             if version >= 2:
-                self.logger.warn(
-                    'Spine-referenced file %r not in spine' % item.href)
+                self.logger.warning('Spine-referenced file %s not in spine',
+                                    item.href)
             spine.add(item, linear=False)
 
     def _spine_from_opf(self, opf):
@@ -333,7 +334,7 @@ class OEBReader(object):
         for elem in base.xpath(opf, '/o2:package/o2:spine/o2:itemref'):
             idref = elem.get('idref')
             if idref not in manifest.ids:
-                self.logger.warn('Spine item %r not found' % idref)
+                self.logger.warning('Spine item %s not found', idref)
                 continue
             item = manifest.ids[idref]
             if (item.media_type.lower() in base.OEB_DOCS and
@@ -346,8 +347,8 @@ class OEBReader(object):
                     item.media_type = base.XHTML_MIME
                     spine.add(item, elem.get('linear'))
                 else:
-                    self.oeb.log.warn('The item %s is not a XML document.'
-                                      ' Removing it from spine.' % item.href)
+                    self.oeb.log.warning('The item %s is not a XML document.'
+                                         ' Removing it from spine.', item.href)
         if len(spine) == 0:
             raise base.OEBError("Spine is empty")
         self._spine_add_extra()
@@ -369,7 +370,8 @@ class OEBReader(object):
                         corrected_href = href
                         break
                 if corrected_href is None:
-                    self.logger.warn('Guide reference %r not found' % ref_href)
+                    self.logger.warning('Guide reference %s not found',
+                                        ref_href)
                     continue
                 ref_href = corrected_href
             typ = elem.get('type')
@@ -411,7 +413,7 @@ class OEBReader(object):
             if path and path not in self.oeb.manifest.hrefs:
                 path = base.urlnormalize(path)
             if href and path not in self.oeb.manifest.hrefs:
-                self.logger.warn('TOC reference %r not found' % href)
+                self.logger.warning('TOC reference %s not found', href)
                 gc = base.xpath(child, 'ncx:navPoint')
                 if not gc:
                     # This node is useless
@@ -488,7 +490,7 @@ class OEBReader(object):
                 continue
             path, _ = urllib.parse.urldefrag(base.urlnormalize(href))
             if path not in self.oeb.manifest.hrefs:
-                self.logger.warn('TOC reference %r not found' % href)
+                self.logger.warning('TOC reference %s not found', href)
                 continue
             id = site.get('id')
             toc.add(title, href, id=id)
@@ -528,7 +530,7 @@ class OEBReader(object):
         return True
 
     def _toc_from_spine(self, opf):
-        self.log.warn('Generating default TOC from spine...')
+        self.log.warning('Generating default TOC from spine...')
         toc = self.oeb.toc
         titles = []
         headers = []
@@ -656,7 +658,7 @@ class OEBReader(object):
             if item is not None and item.media_type in base.OEB_IMAGES:
                 return item
             else:
-                self.logger.warn('Invalid cover image @id %r' % id)
+                self.logger.warning('Invalid cover image @id %s', id)
         hcover = self.oeb.spine[0]
         if 'cover' in self.oeb.guide:
             href = self.oeb.guide['cover'].href
@@ -705,8 +707,8 @@ class OEBReader(object):
             items = [x for x in self.oeb.manifest if x.href == href]
             for x in items:
                 if x not in self.oeb.spine:
-                    self.oeb.log.warn('Removing duplicate manifest item with '
-                                      'id:', x.id)
+                    self.oeb.log.warning('Removing duplicate manifest item '
+                                         'with id: %s', x.id)
                     self.oeb.manifest.remove_duplicate_item(x)
 
     def _all_from_opf(self, opf):

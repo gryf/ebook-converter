@@ -20,7 +20,7 @@ class LRFInput(InputFormatPlugin):
         from ebook_converter.ebooks.lrf.input import MediaType, Styles, \
                 TextBlock, Canvas, ImageBlock, RuledLine
         self.log = log
-        self.log('Generating XML')
+        self.log.info('Generating XML')
         from ebook_converter.ebooks.lrf.lrfparser import LRFDocument
         d = LRFDocument(stream)
         d.parse()
@@ -50,7 +50,7 @@ class LRFInput(InputFormatPlugin):
                 if imgstr:
                     plot_map[ro] = imgstr[0].get('file')
 
-        self.log('Converting XML to HTML...')
+        self.log.info('Converting XML to HTML...')
 
         with open(pkg_resources.
                   resource_filename('ebook_converter',

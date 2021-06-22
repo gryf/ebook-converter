@@ -117,8 +117,9 @@ class UniqueFilenames(object):  # {{{
                 self.seen_filenames.add(fname)
 
         if self.rename_map:
-            self.log('Found non-unique filenames, renaming to support broken'
-                    ' EPUB readers like FBReader, Aldiko and Stanza...')
+            self.log.info('Found non-unique filenames, renaming to support '
+                          'broken EPUB readers like FBReader, Aldiko and '
+                          'Stanza...')
             from pprint import pformat
             self.log.debug(pformat(self.rename_map))
 
@@ -173,8 +174,8 @@ class FlatFilenames(object):  # {{{
                 oeb.spine.insert(isp, nitem, item.linear)
 
         if self.rename_map:
-            self.log('Found non-flat filenames, renaming to support broken'
-                    ' EPUB readers like FBReader...')
+            self.log.info('Found non-flat filenames, renaming to support '
+                          'broken EPUB readers like FBReader...')
             from pprint import pformat
             self.log.debug(pformat(self.rename_map))
             self.log.debug(pformat(self.renamed_items_map))

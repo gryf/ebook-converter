@@ -24,7 +24,8 @@ class Extract(ODF2XHTML):
         if not os.path.exists('Pictures'):
             os.makedirs('Pictures')
         for name in zf.namelist():
-            if name.startswith('Pictures') and name not in {'Pictures', 'Pictures/'}:
+            if (name.startswith('Pictures') and
+                    name not in {'Pictures', 'Pictures/'}):
                 data = zf.read(name)
                 with open(name, 'wb') as f:
                     f.write(data)
@@ -46,13 +47,13 @@ class Extract(ODF2XHTML):
         self.extract_css(root, log)
         self.epubify_markup(root, log)
         self.apply_list_starts(root, log)
-        html = etree.tostring(root, encoding='utf-8',
-                xml_declaration=True)
+        html = etree.tostring(root, encoding='utf-8', xml_declaration=True)
         return html
 
     def extract_css(self, root, log):
         ans = []
-        for s in root.xpath('//*[local-name() = "style" and @type="text/css"]'):
+        for s in root.xpath('//*[local-name() = "style" and '
+                            '@type="text/css"]'):
             ans.append(s.text)
             s.getparent().remove(s)
 
@@ -63,11 +64,11 @@ class Extract(ODF2XHTML):
             if ns:
                 ns = '{%s}'%ns
             etree.SubElement(head, ns+'link', {'type':'text/css',
-                'rel':'stylesheet', 'href':'odfpy.css'})
+                                               'rel':'stylesheet',
+                                               'href':'odfpy.css'})
 
         css = u'\n\n'.join(ans)
-        parser = CSSParser(loglevel=logging.WARNING,
-                            log=_css_logger)
+        parser = CSSParser(loglevel=logging.WARNING, log=_css_logger)
         self.css = parser.parseString(css, validate=False)
 
         with open('odfpy.css', 'wb') as f:
@@ -209,7 +210,8 @@ class Extract(ODF2XHTML):
         for frm in self.document.topnode.getElementsByType(odFrame):
             try:
                 if frm.getAttrNS(odTEXTNS,u'anchor-type') == 'page':
-                    log.warn('Document has Pictures anchored to Page, will all end up before first page!')
+                    log.warning('Document has Pictures anchored to Page, will '
+                                'all end up before first page!')
                     break
             except ValueError:
                 pass
@@ -234,7 +236,8 @@ class Extract(ODF2XHTML):
                         # now it should be safe to remove the text:p
                         parent = para.parentNode
                         parent.removeChild(para)
-                        log("Removed cover image paragraph from document...")
+                        log.info("Removed cover image paragraph from "
+                                 "document...")
                         break
 
     def filter_load(self, odffile, mi, log):
@@ -267,7 +270,7 @@ class Extract(ODF2XHTML):
         if not os.path.exists(odir):
             os.makedirs(odir)
         with directory.CurrentDir(odir):
-            log('Extracting ODT file...')
+            log.info('Extracting ODT file...')
             stream.seek(0)
             mi = get_metadata(stream, 'odt')
             if not mi.title:
