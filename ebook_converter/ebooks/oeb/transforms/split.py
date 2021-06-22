@@ -22,9 +22,6 @@ from ebook_converter.css_selectors import Select, SelectorError
 from ebook_converter.utils import encoding as uenc
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
 XPath = functools.partial(_XPath, namespaces=const.XPNSMAP)
 
 SPLIT_POINT_ATTR = 'csp'
@@ -128,7 +125,7 @@ class Split(object):
                         page_breaks.add(elem)
             except SelectorError as err:
                 self.log.warn('Ignoring page breaks specified with invalid '
-                              'CSS selector: %s (%s)', selector, err)
+                              'CSS selector: %r (%s)', selector, err)
 
         for i, elem in enumerate(item.data.iter('*')):
             try:
@@ -227,7 +224,7 @@ class FlowSplitter(object):
             for i, tree in enumerate(trees):
                 size = len(tostring(tree.getroot()))
                 if size > self.max_flow_size:
-                    self.log.info('\tFound large tree #%s', i)
+                    self.log.info('\tFound large tree #%d', i)
                     lt_found = True
                     self.split_trees = []
                     self.split_to_size(tree)
@@ -240,7 +237,7 @@ class FlowSplitter(object):
 
         self.was_split = len(self.trees) > 1
         if self.was_split:
-            self.log('\tSplit into %s parts', len(self.trees))
+            self.log('\tSplit into %d parts', len(self.trees))
         self.commit()
 
     def split_on_page_breaks(self, orig_tree):
@@ -380,7 +377,7 @@ class FlowSplitter(object):
                 continue
             elif size <= self.max_flow_size:
                 self.split_trees.append(t)
-                self.log.debug('\t\t\tCommitted sub-tree #%s (%s KB)',
+                self.log.debug('\t\t\tCommitted sub-tree #%d (%d KB)',
                                len(self.split_trees), size/1024.)
             else:
                 self.log.debug('\t\t\tSplit tree still too large: %d KB',

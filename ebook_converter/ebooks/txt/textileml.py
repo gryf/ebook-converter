@@ -14,11 +14,6 @@ from ebook_converter.ebooks import unit_convert
 from ebook_converter.ebooks.textile.unsmarten import unsmarten
 
 
-__license__ = 'GPL 3'
-__copyright__ = '2011, Leigh Parry <leighparry@blueyonder.co.uk>'
-__docformat__ = 'restructuredtext en'
-
-
 class TextileMLizer(OEB2HTML):
 
     MAX_EM = 10

@@ -87,7 +87,7 @@ class Reader202(FormatReader):
 
         pml = ''
         for i in range(1, self.header_record.num_text_pages + 1):
-            self.log.debug('Extracting text page %s', i)
+            self.log.debug('Extracting text page %i', i)
             pml += self.get_text_page(i)
 
         title = self.mi.title

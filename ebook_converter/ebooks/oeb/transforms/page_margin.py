@@ -149,7 +149,7 @@ class RemoveFakeMargins(object):
         remove = set()
         for k, v in self.levels.items():
             num = len(v)
-            self.log.debug('Found %s items of level: %s', num, k)
+            self.log.debug('Found %d items of level: %s', num, k)
             level = int(k.split('_')[-1])
             tag = k.split('_')[0]
             if tag == 'p' and num < 25:

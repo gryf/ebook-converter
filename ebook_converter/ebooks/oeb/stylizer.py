@@ -248,7 +248,7 @@ class Stylizer(object):
                             sitem = hrefs[ihref]
                             if sitem.media_type not in base.OEB_STYLES:
                                 self.logger.warning('CSS @import of non-CSS '
-                                                    'file %s', rule.href)
+                                                    'file %r', rule.href)
                                 continue
                             stylesheets.append(sitem.data)
                     # Make links to resources absolute, since these rules will
@@ -264,11 +264,11 @@ class Stylizer(object):
                 path = item.abshref(href)
                 sitem = oeb.manifest.hrefs.get(path, None)
                 if sitem is None:
-                    self.logger.warning('Stylesheet %s referenced by file %s '
+                    self.logger.warning('Stylesheet %r referenced by file %r '
                                         'not in manifest', path, item.href)
                     continue
                 if not hasattr(sitem.data, 'cssRules'):
-                    self.logger.warning('Stylesheet %s referenced by file %s '
+                    self.logger.warning('Stylesheet %r referenced by file %r '
                                         'is not CSS', path, item.href)
                     continue
                 stylesheets.append(sitem.data)
@@ -304,7 +304,7 @@ class Stylizer(object):
                 matches = tuple(select(text))
             except SelectorError as err:
                 self.logger.error('Ignoring CSS rule with invalid selector: '
-                                  '%s (%s)', text, err)
+                                  '%r (%s)', text, err)
                 continue
 
             if fl is not None:
@@ -368,7 +368,7 @@ class Stylizer(object):
     def _fetch_css_file(self, path):
         hrefs = self.oeb.manifest.hrefs
         if path not in hrefs:
-            self.logger.warning('CSS import of missing file %s', path)
+            self.logger.warning('CSS import of missing file %r', path)
             return (None, None)
         item = hrefs[path]
         if item.media_type not in base.OEB_STYLES:

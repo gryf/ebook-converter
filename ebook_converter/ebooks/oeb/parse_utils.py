@@ -239,7 +239,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
     if barename(data.tag) != 'html':
         if barename(data.tag) in non_html_file_tags:
             raise NotHTML(data.tag)
-        log.warning('File %s does not appear to be (X)HTML', filename)
+        log.warning('File %r does not appear to be (X)HTML', filename)
         nroot = etree.fromstring('<html></html>')
         has_body = False
         for child in list(data):
@@ -248,7 +248,7 @@ def parse_html(data, log=None, decoder=None, preprocessor=None,
                 break
         parent = nroot
         if not has_body:
-            log.warning('File %s appears to be a HTML fragment', filename)
+            log.warning('File %r appears to be a HTML fragment', filename)
             nroot = etree.fromstring('<html><body/></html>')
             parent = nroot[0]
         for child in list(data.iter()):

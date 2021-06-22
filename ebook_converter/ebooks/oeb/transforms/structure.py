@@ -67,7 +67,7 @@ class DetectStructure(object):
                 self.oeb.toc = orig_toc
             else:
                 self.oeb.auto_generated_toc = True
-                self.log.info('Auto generated TOC with %s entries.',
+                self.log.info('Auto generated TOC with %d entries.',
                               self.oeb.toc.count())
 
         if opts.toc_filter is not None:
@@ -240,7 +240,7 @@ class DetectStructure(object):
                                 play_order=self.oeb.toc.next_play_order())
                             num += 1
                         except ValueError:
-                            self.oeb.log.critical('Failed to process link: %s',
+                            self.oeb.log.critical('Failed to process link: %r',
                                                   href)
                             # Most likely an incorrectly URL encoded link
                             continue

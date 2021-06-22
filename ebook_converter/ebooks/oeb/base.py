@@ -957,11 +957,11 @@ class Manifest(object):
         def _fetch_css(self, path):
             hrefs = self.oeb.manifest.hrefs
             if path not in hrefs:
-                self.oeb.logger.warning('CSS import of missing file %s', path)
+                self.oeb.logger.warning('CSS import of missing file %r', path)
                 return (None, None)
             item = hrefs[path]
             if item.media_type not in OEB_STYLES:
-                self.oeb.logger.warning('CSS import of non-CSS file %s', path)
+                self.oeb.logger.warning('CSS import of non-CSS file %r', path)
                 return (None, None)
             data = item.data.cssText
             enc = None if isinstance(data, str) else 'utf-8'

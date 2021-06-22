@@ -285,7 +285,7 @@ def create_option_parser(args, log):
         log.info('Available recipes:')
         titles = sorted(get_builtin_recipe_titles())
         for title in titles:
-            log.info('\t%s', title)
+            log.info('\t%r', title)
         log.info('%d recipes available', len(titles))
         raise SystemExit(0)
 

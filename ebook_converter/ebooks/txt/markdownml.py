@@ -11,12 +11,6 @@ from ebook_converter.ebooks.oeb.base import XHTML, barename, namespace, rewrite_
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 
 
-__license__ = 'GPL 3'
-__copyright__ = ('2011, John Schember <john@nachtimwald.com> 2011, '
-                 'Leigh Parry <leighparry@blueyonder.co.uk>')
-__docformat__ = 'restructuredtext en'
-
-
 class MarkdownMLizer(OEB2HTML):
 
     def extract_content(self, oeb_book, opts):

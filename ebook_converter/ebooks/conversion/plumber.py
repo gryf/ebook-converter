@@ -1108,7 +1108,7 @@ OptionRecommendation(name='search_replace',
             try:
                 fkey = list(map(float, fkey.split(',')))
             except Exception:
-                self.log.error('Invalid font size key: %s ignoring', fkey)
+                self.log.error('Invalid font size key: %r ignoring', fkey)
                 fkey = self.opts.dest.fkey
 
         if self.opts.debug_pipeline is not None:

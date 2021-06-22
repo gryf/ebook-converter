@@ -216,7 +216,7 @@ class OEBReader(object):
                             scheme = urllib.parse.urlparse(href).scheme
                         except Exception:
                             self.oeb.log.exception('Skipping invalid href: '
-                                                   '%s', href)
+                                                   '%r', href)
                             continue
                         if not scheme and href not in known:
                             new.add(href)
@@ -244,12 +244,12 @@ class OEBReader(object):
                     continue
                 if not self.oeb.container.exists(href):
                     if href not in warned:
-                        self.logger.warning('Referenced file %s not found',
+                        self.logger.warning('Referenced file %r not found',
                                             href)
                         warned.add(href)
                     continue
                 if href not in warned:
-                    self.logger.warning('Referenced file %s not in manifest',
+                    self.logger.warning('Referenced file %r not in manifest',
                                         href)
                     warned.add(href)
                 id, _ = manifest.generate(id='added')
@@ -276,13 +276,13 @@ class OEBReader(object):
                 media_type = media_type.lower()
             fallback = elem.get('fallback')
             if href in manifest.hrefs:
-                self.logger.warning('Duplicate manifest entry for %s', href)
+                self.logger.warning('Duplicate manifest entry for %r', href)
                 continue
             if not self.oeb.container.exists(href):
-                self.logger.warning('Manifest item %s not found', href)
+                self.logger.warning('Manifest item %r not found', href)
                 continue
             if id in manifest.ids:
-                self.logger.warning('Duplicate manifest id %s', id)
+                self.logger.warning('Duplicate manifest id %r', id)
                 id, href = manifest.generate(id, href)
             manifest.add(id, href, media_type, fallback)
         invalid = self._manifest_prune_invalid()
@@ -324,7 +324,7 @@ class OEBReader(object):
             if item.href in removed_items_to_ignore:
                 continue
             if version >= 2:
-                self.logger.warning('Spine-referenced file %s not in spine',
+                self.logger.warning('Spine-referenced file %r not in spine',
                                     item.href)
             spine.add(item, linear=False)
 
@@ -334,7 +334,7 @@ class OEBReader(object):
         for elem in base.xpath(opf, '/o2:package/o2:spine/o2:itemref'):
             idref = elem.get('idref')
             if idref not in manifest.ids:
-                self.logger.warning('Spine item %s not found', idref)
+                self.logger.warning('Spine item %r not found', idref)
                 continue
             item = manifest.ids[idref]
             if (item.media_type.lower() in base.OEB_DOCS and
@@ -370,7 +370,7 @@ class OEBReader(object):
                         corrected_href = href
                         break
                 if corrected_href is None:
-                    self.logger.warning('Guide reference %s not found',
+                    self.logger.warning('Guide reference %r not found',
                                         ref_href)
                     continue
                 ref_href = corrected_href
@@ -413,7 +413,7 @@ class OEBReader(object):
             if path and path not in self.oeb.manifest.hrefs:
                 path = base.urlnormalize(path)
             if href and path not in self.oeb.manifest.hrefs:
-                self.logger.warning('TOC reference %s not found', href)
+                self.logger.warning('TOC reference %r not found', href)
                 gc = base.xpath(child, 'ncx:navPoint')
                 if not gc:
                     # This node is useless
@@ -490,7 +490,7 @@ class OEBReader(object):
                 continue
             path, _ = urllib.parse.urldefrag(base.urlnormalize(href))
             if path not in self.oeb.manifest.hrefs:
-                self.logger.warning('TOC reference %s not found', href)
+                self.logger.warning('TOC reference %r not found', href)
                 continue
             id = site.get('id')
             toc.add(title, href, id=id)
@@ -658,7 +658,7 @@ class OEBReader(object):
             if item is not None and item.media_type in base.OEB_IMAGES:
                 return item
             else:
-                self.logger.warning('Invalid cover image @id %s', id)
+                self.logger.warning('Invalid cover image @id %r', id)
         hcover = self.oeb.spine[0]
         if 'cover' in self.oeb.guide:
             href = self.oeb.guide['cover'].href
