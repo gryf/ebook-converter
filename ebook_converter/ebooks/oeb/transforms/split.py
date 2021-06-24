@@ -230,14 +230,14 @@ class FlowSplitter(object):
                     self.split_to_size(tree)
                     self.tree_map[tree] = self.split_trees
             if not lt_found:
-                self.log('\tNo large trees found')
+                self.log.info('\tNo large trees found')
             self.trees = []
             for x in trees:
                 self.trees.extend(self.tree_map.get(x, [x]))
 
         self.was_split = len(self.trees) > 1
         if self.was_split:
-            self.log('\tSplit into %d parts', len(self.trees))
+            self.log.info('\tSplit into %d parts', len(self.trees))
         self.commit()
 
     def split_on_page_breaks(self, orig_tree):
