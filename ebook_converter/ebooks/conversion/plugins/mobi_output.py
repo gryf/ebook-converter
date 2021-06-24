@@ -2,11 +2,6 @@ from ebook_converter.customize.conversion import (OutputFormatPlugin,
         OptionRecommendation)
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-
 def remove_html_cover(oeb, log):
     from ebook_converter.ebooks.oeb.base import OEB_DOCS
 
@@ -17,10 +12,10 @@ def remove_html_cover(oeb, log):
     del oeb.guide['cover']
     item = oeb.manifest.hrefs[href]
     if item.spine_position is not None:
-        log.warn('Found an HTML cover: ', item.href, 'removing it.',
-                'If you find some content missing from the output MOBI, it '
-                'is because you misidentified the HTML cover in the input '
-                'document')
+        log.warning('Found an HTML cover: %s', 'removing it. If you find some '
+                    'content missing from the output MOBI, it is because you '
+                    'misidentified the HTML cover in the input document',
+                    item.href)
         oeb.spine.remove(item)
         if item.media_type in OEB_DOCS:
             oeb.manifest.remove(item)
@@ -117,7 +112,8 @@ class MOBIOutput(OutputFormatPlugin):
         found = 'masthead' in self.oeb.guide
         if not found:
             from ebook_converter.ebooks import generate_masthead
-            self.oeb.log.debug('No masthead found in manifest, generating default mastheadImage...')
+            self.oeb.log.debug('No masthead found in manifest, generating '
+                               'default mastheadImage...')
             raw = generate_masthead(str(self.oeb.metadata['title'][0]))
             id, href = self.oeb.manifest.generate('masthead', 'masthead')
             self.oeb.manifest.add(id, href, 'image/gif', data=raw)
@@ -132,7 +128,7 @@ class MOBIOutput(OutputFormatPlugin):
             return
         if toc and toc[0].klass != 'periodical':
             one, two = self.oeb.spine[0], self.oeb.spine[1]
-            self.log('Converting TOC for MOBI periodical indexing...')
+            self.log.info('Converting TOC for MOBI periodical indexing...')
 
             articles = {}
             if toc.depth() < 3:
@@ -206,7 +202,7 @@ class MOBIOutput(OutputFormatPlugin):
             extract_mobi(output_path, opts)
             return
 
-        self.log('Creating MOBI 6 output')
+        self.log.info('Creating MOBI 6 output')
         self.write_mobi(input_plugin, output_path, kf8, resources)
 
     def create_kf8(self, resources, for_joint=False):
@@ -232,7 +228,8 @@ class MOBIOutput(OutputFormatPlugin):
             rasterizer = SVGRasterizer()
             rasterizer(oeb, opts)
         except Unavailable:
-            self.log.warn('SVG rasterizer unavailable, SVG will not be converted')
+            self.log.warning('SVG rasterizer unavailable, SVG will not be '
+                             'converted')
         else:
             # Add rasterized SVG images
             resources.add_extra_images()

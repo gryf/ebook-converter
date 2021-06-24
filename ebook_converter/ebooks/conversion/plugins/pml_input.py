@@ -6,11 +6,6 @@ from ebook_converter.customize.conversion import InputFormatPlugin
 from ebook_converter.ptempfile import TemporaryDirectory
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
-
 class PMLInput(InputFormatPlugin):
 
     name        = 'PML Input'
@@ -107,7 +102,7 @@ class PMLInput(InputFormatPlugin):
                     html_path = os.path.join(os.getcwd(), html_name)
 
                     pages.append(html_name)
-                    log.debug('Processing PML item %s...' % pml)
+                    log.debug('Processing PML item %s...', pml)
                     ttoc = self.process_pml(pml, html_path)
                     toc += ttoc
                 images = self.get_images(stream, tdir, True)

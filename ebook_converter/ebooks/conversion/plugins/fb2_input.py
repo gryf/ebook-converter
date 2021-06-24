@@ -90,7 +90,7 @@ class FB2Input(InputFormatPlugin):
             ss = f.read()
         ss = ss.replace("__FB_NS__", fb_ns)
         if options.no_inline_fb2_toc:
-            log('Disabling generation of inline FB2 TOC')
+            log.info('Disabling generation of inline FB2 TOC')
             ss = re.compile(r'<!-- BUILD TOC -->.*<!-- END BUILD TOC -->',
                             re.DOTALL).sub('', ss)
 
@@ -180,7 +180,7 @@ class FB2Input(InputFormatPlugin):
                     data = base64_decode(raw)
                 except TypeError:
                     self.log.exception('Binary data with id=%s is corrupted, '
-                                       'ignoring' % elem.get('id'))
+                                       'ignoring', elem.get('id'))
                 else:
                     with open(fname, 'wb') as f:
                         f.write(data)

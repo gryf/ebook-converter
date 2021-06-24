@@ -34,13 +34,16 @@ class OEBOutput(OutputFormatPlugin):
                         try:
                             self.workaround_nook_cover_bug(root)
                         except:
-                            self.log.exception('Something went wrong while trying to'
-                                    ' workaround Nook cover bug, ignoring')
+                            self.log.exception('Something went wrong while '
+                                               'trying to workaround Nook '
+                                               'cover bug, ignoring')
                         try:
                             self.workaround_pocketbook_cover_bug(root)
                         except:
-                            self.log.exception('Something went wrong while trying to'
-                                    ' workaround Pocketbook cover bug, ignoring')
+                            self.log.exception('Something went wrong while '
+                                               'trying to workaround '
+                                               'Pocketbook cover bug, '
+                                               'ignoring')
                         self.migrate_lang_code(root)
                     raw = etree.tostring(root, pretty_print=True,
                             encoding='utf-8', xml_declaration=True)
@@ -80,9 +83,10 @@ class OEBOutput(OutputFormatPlugin):
                 manifest_item = manifest_items_with_id(covid)
                 if len(manifest_item) == 1 and \
                         manifest_item[0].get('media-type',
-                                '').startswith('image/'):
-                    self.log.warn('The cover image has an id != "cover". Renaming'
-                            ' to work around bug in Nook Color')
+                                             '').startswith('image/'):
+                    self.log.warning('The cover image has an id != "cover". '
+                                     'Renaming to work around bug in Nook '
+                                     'Color')
 
                     from ebook_converter.ebooks.oeb.base import uuid_id
                     newid = uuid_id()

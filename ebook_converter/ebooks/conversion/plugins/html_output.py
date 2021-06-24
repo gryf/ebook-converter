@@ -228,7 +228,7 @@ class HTMLOutput(OutputFormatPlugin):
                 shutil.rmtree(opts.extract_to)
             os.makedirs(opts.extract_to)
             zfile.extractall(opts.extract_to)
-            self.log('Zip file extracted to', opts.extract_to)
+            self.log.info('Zip file extracted to %s', opts.extract_to)
 
         zfile.close()
 

@@ -1,14 +1,15 @@
-import unittest, sys, argparse
+import argparse
+import sys
+import unittest
 
-from lxml import etree, html
+from lxml import etree
+from lxml import html
 
-from ebook_converter.css_selectors.errors import SelectorSyntaxError, ExpressionError
-from ebook_converter.css_selectors.parser import tokenize, parse
+from ebook_converter.css_selectors.errors import ExpressionError
+from ebook_converter.css_selectors.errors import SelectorSyntaxError
+from ebook_converter.css_selectors.parser import parse
+from ebook_converter.css_selectors.parser import tokenize
 from ebook_converter.css_selectors.select import Select
-
-
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
 
 
 class TestCSSSelectors(unittest.TestCase):

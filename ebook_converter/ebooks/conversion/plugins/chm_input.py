@@ -28,7 +28,7 @@ class CHMInput(InputFormatPlugin):
         from ebook_converter.ebooks.chm.reader import CHMReader
         log.debug('Opening CHM file')
         rdr = CHMReader(chm_path, log, input_encoding=self.opts.input_encoding)
-        log.debug('Extracting CHM to %s' % output_dir)
+        log.debug('Extracting CHM to %s', output_dir)
         rdr.extract_content(output_dir, debug_dump=debug_dump)
         self._chm_reader = rdr
         return rdr.hhc_path
@@ -53,8 +53,8 @@ class CHMInput(InputFormatPlugin):
 
             # closing stream so CHM can be opened by external library
             stream.close()
-            log.debug('tdir=%s' % tdir)
-            log.debug('stream.name=%s' % stream.name)
+            log.debug('tdir=%s', tdir)
+            log.debug('stream.name=%s', stream.name)
             debug_dump = False
             odi = options.debug_pipeline
             if odi:
@@ -121,7 +121,7 @@ class CHMInput(InputFormatPlugin):
                                  resolve_entities=True)[0]
         hhcroot = html.fromstring(hhcdata)
         toc = self._process_nodes(hhcroot)
-        log.debug('Found %d section nodes' % toc.count())
+        log.debug('Found %d section nodes', toc.count())
         htmlpath = os.path.splitext(hhcpath)[0] + ".html"
         base = os.path.dirname(os.path.abspath(htmlpath))
 

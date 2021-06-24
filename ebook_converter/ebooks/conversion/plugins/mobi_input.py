@@ -3,11 +3,6 @@ import os
 from ebook_converter.customize.conversion import InputFormatPlugin
 
 
-__license__ = 'GPL 3'
-__copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-
 class MOBIInput(InputFormatPlugin):
 
     name        = 'MOBI Input'
@@ -37,7 +32,7 @@ class MOBIInput(InputFormatPlugin):
                 mr.extract_content('.', parse_cache)
 
         if mr.kf8_type is not None:
-            log('Found KF8 MOBI of type %r'%mr.kf8_type)
+            log.info('Found KF8 MOBI of type %r', mr.kf8_type)
             if mr.kf8_type == 'joint':
                 self.mobi_is_joint = True
             from ebook_converter.ebooks.mobi.reader.mobi8 import Mobi8Reader

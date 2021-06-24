@@ -63,7 +63,7 @@ class RecipeInput(InputFormatPlugin):
             if os.environ.get('CALIBRE_RECIPE_URN'):
                 from ebook_converter.web.feeds.recipes.collection import get_custom_recipe, get_builtin_recipe_by_id
                 urn = os.environ['CALIBRE_RECIPE_URN']
-                log('Downloading recipe urn: ' + urn)
+                log.info('Downloading recipe urn: %s', urn)
                 rtype, recipe_id = urn.partition(':')[::2]
                 if not recipe_id:
                     raise ValueError('Invalid recipe urn: ' + urn)
@@ -80,7 +80,7 @@ class RecipeInput(InputFormatPlugin):
                 with open(recipe_or_file, 'rb') as f:
                     self.recipe_source = f.read()
                 recipe = compile_recipe(self.recipe_source)
-                log('Using custom recipe')
+                log.info('Using custom recipe')
             else:
                 from ebook_converter.web.feeds.recipes.collection import (
                         get_builtin_recipe_by_title, get_builtin_recipe_titles)
@@ -98,16 +98,16 @@ class RecipeInput(InputFormatPlugin):
                     recipe = compile_recipe(raw)
                     self.recipe_source = raw
                     if recipe.requires_version > numeric_version:
-                        log.warn(
-                        'Downloaded recipe needs calibre version at least: %s' %
-                        ('.'.join(recipe.requires_version)))
+                        log.warning('Downloaded recipe needs calibre version '
+                                    'at least: %s',
+                                    '.'.join(recipe.requires_version))
                         builtin = True
                 except:
-                    log.exception('Failed to compile downloaded recipe. Falling '
-                            'back to builtin one')
+                    log.exception('Failed to compile downloaded recipe. '
+                                  'Falling back to builtin one')
                     builtin = True
                 if builtin:
-                    log('Using bundled builtin recipe')
+                    log.info('Using bundled builtin recipe')
                     raw = get_builtin_recipe_by_title(title, log=log,
                             download_recipe=False)
                     if raw is None:
@@ -115,7 +115,7 @@ class RecipeInput(InputFormatPlugin):
                     recipe = compile_recipe(raw)
                     self.recipe_source = raw
                 else:
-                    log('Using downloaded builtin recipe')
+                    log.info('Using downloaded builtin recipe')
 
             if recipe is None:
                 raise ValueError('%r is not a valid recipe file or builtin recipe' %

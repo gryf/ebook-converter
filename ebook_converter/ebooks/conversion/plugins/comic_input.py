@@ -9,11 +9,6 @@ from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils import directory
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
-
-
 class ComicInput(InputFormatPlugin):
 
     name        = 'Comic Input'
@@ -152,7 +147,7 @@ class ComicInput(InputFormatPlugin):
                 self.log.warning('Could not process the following pages '
                 '(run with --verbose to see why):')
                 for f in failures:
-                    self.log.warning('\t', f)
+                    self.log.warning('\t%s', f)
             if not new_pages:
                 raise ValueError('Could not find any valid pages in comic: %s'
                         % comic)

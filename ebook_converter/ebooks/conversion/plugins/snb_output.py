@@ -5,11 +5,6 @@ from ebook_converter.ptempfile import TemporaryDirectory
 from ebook_converter.constants_old import __appname__, __version__
 
 
-__license__ = 'GPL 3'
-__copyright__ = '2010, Li Fanxi <lifanxi@freemindworld.com>'
-__docformat__ = 'restructuredtext en'
-
-
 class SNBOutput(OutputFormatPlugin):
 
     name = 'SNB Output'
@@ -57,7 +52,8 @@ class SNBOutput(OutputFormatPlugin):
             rasterizer = SVGRasterizer()
             rasterizer(oeb_book, opts)
         except Unavailable:
-            log.warn('SVG rasterizer unavailable, SVG will not be converted')
+            log.warning('SVG rasterizer unavailable, SVG will not be '
+                        'converted')
 
         # Create temp dir
         with TemporaryDirectory('_snb_output') as tdir:
@@ -120,8 +116,8 @@ class SNBOutput(OutputFormatPlugin):
             tocBody = etree.SubElement(tocInfoTree, "body")
             outputFiles = {}
             if oeb_book.toc.count() == 0:
-                log.warn('This SNB file has no Table of Contents. '
-                    'Creating a default TOC')
+                log.warning('This SNB file has no Table of Contents. Creating '
+                            'a default TOC')
                 first = next(iter(oeb_book.spine))
                 oeb_book.toc.add('Start page', first.href)
             else:
@@ -141,7 +137,7 @@ class SNBOutput(OutputFormatPlugin):
                 if tocitem.href.find('#') != -1:
                     item = tocitem.href.split('#')
                     if len(item) != 2:
-                        log.error('Error in TOC item: %s' % tocitem)
+                        log.error('Error in TOC item: %s', tocitem)
                     else:
                         if item[0] in outputFiles:
                             outputFiles[item[0]].append((item[1], tocitem.title))
@@ -178,16 +174,18 @@ class SNBOutput(OutputFormatPlugin):
                 from ebook_converter.ebooks.oeb.base import OEB_DOCS, OEB_IMAGES
                 if m.hrefs[item.href].media_type in OEB_DOCS:
                     if item.href not in outputFiles:
-                        log.debug('File %s is unused in TOC. Continue in last chapter' % item.href)
+                        log.debug('File %s is unused in TOC. Continue in last '
+                                  'chapter', item.href)
                         mergeLast = True
                     else:
                         if oldTree is not None and mergeLast:
-                            log.debug('Output the modified chapter again: %s' % lastName)
+                            log.debug('Output the modified chapter again: %s',
+                                      lastName)
                             with open(os.path.join(snbcDir, lastName), 'wb') as f:
                                 f.write(etree.tostring(oldTree, pretty_print=True, encoding='utf-8'))
                             mergeLast = False
 
-                    log.debug('Converting %s to snbc...' % item.href)
+                    log.debug('Converting %s to snbc...', item.href)
                     snbwriter = SNBMLizer(log)
                     snbcTrees = None
                     if not mergeLast:
@@ -201,12 +199,12 @@ class SNBOutput(OutputFormatPlugin):
                             with open(os.path.join(snbcDir, lastName), 'wb') as f:
                                 f.write(etree.tostring(oldTree, pretty_print=True, encoding='utf-8'))
                     else:
-                        log.debug('Merge %s with last TOC item...' % item.href)
+                        log.debug('Merge %s with last TOC item...', item.href)
                         snbwriter.merge_content(oldTree, oeb_book, item,
                                                 [('', "Start")], opts)
 
             # Output the last one if needed
-            log.debug('Output the last modified chapter again: %s' % lastName)
+            log.debug('Output the last modified chapter again: %s', lastName)
             if oldTree is not None and mergeLast:
                 with open(os.path.join(snbcDir, lastName), 'wb') as f:
                     f.write(etree.tostring(oldTree, pretty_print=True, encoding='utf-8'))
@@ -214,7 +212,7 @@ class SNBOutput(OutputFormatPlugin):
 
             for item in m:
                 if m.hrefs[item.href].media_type in OEB_IMAGES:
-                    log.debug('Converting image: %s ...' % item.href)
+                    log.debug('Converting image: %s ...', item.href)
                     content = m.hrefs[item.href].data
                     # Convert & Resize image
                     self.HandleImage(content, os.path.join(snbiDir, ProcessFileName(item.href)))

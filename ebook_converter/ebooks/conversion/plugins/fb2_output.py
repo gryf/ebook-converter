@@ -3,11 +3,6 @@ import os
 from ebook_converter.customize.conversion import OutputFormatPlugin, OptionRecommendation
 
 
-__license__ = 'GPL 3'
-__copyright__ = '2009, John Schember <john@nachtimwald.com>'
-__docformat__ = 'restructuredtext en'
-
-
 class FB2Output(OutputFormatPlugin):
 
     name = 'FB2 Output'
@@ -177,7 +172,8 @@ class FB2Output(OutputFormatPlugin):
             rasterizer = SVGRasterizer()
             rasterizer(oeb_book, opts)
         except Unavailable:
-            log.warn('SVG rasterizer unavailable, SVG will not be converted')
+            log.warning('SVG rasterizer unavailable, SVG will not be '
+                        'converted')
 
         linearize_jacket(oeb_book)
 

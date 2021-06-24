@@ -40,8 +40,8 @@ class LITInput(InputFormatPlugin):
                     from ebook_converter.ebooks.txt.processor import \
                         convert_basic, separate_paragraphs_single_line
                     from ebook_converter.ebooks.chardet import xml_to_unicode
-                    self.log('LIT file with all text in singe <pre> tag '
-                             'detected')
+                    self.log.info('LIT file with all text in singe <pre> tag '
+                                  'detected')
                     html = separate_paragraphs_single_line(pre.text)
                     html = convert_basic(html).replace('<html>',
                                                        '<html xmlns="%s">' %

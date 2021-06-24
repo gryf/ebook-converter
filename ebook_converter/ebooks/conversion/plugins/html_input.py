@@ -101,7 +101,7 @@ class HTMLInput(InputFormatPlugin):
         if not metadata.language:
             l = canonicalize_lang(getattr(opts, 'language', None))
             if not l:
-                oeb.logger.warn('Language not specified')
+                oeb.logger.warning('Language not specified')
                 l = get_lang().replace('_', '-')
             metadata.add('language', l)
         if not metadata.creator:
@@ -109,12 +109,12 @@ class HTMLInput(InputFormatPlugin):
             if a:
                 a = string_to_authors(a)
             if not a:
-                oeb.logger.warn('Creator not specified')
+                oeb.logger.warning('Creator not specified')
                 a = [self.oeb.translate('Unknown')]
             for aut in a:
                 metadata.add('creator', aut)
         if not metadata.title:
-            oeb.logger.warn('Title not specified')
+            oeb.logger.warning('Title not specified')
             metadata.add('title', self.oeb.translate('Unknown'))
         bookid = str(uuid.uuid4())
         metadata.add('identifier', bookid, id='uuid_id', scheme='uuid')
@@ -141,14 +141,14 @@ class HTMLInput(InputFormatPlugin):
 
         self.added_resources = {}
         self.log = log
-        self.log('Normalizing filename cases')
+        self.log.info('Normalizing filename cases')
         for path, href in htmlfile_map.items():
             self.added_resources[path] = href
         self.urlnormalize, self.DirContainer = urlnormalize, DirContainer
         self.urldefrag = urllib.parse.urldefrag
         self.BINARY_MIME = BINARY_MIME
 
-        self.log('Rewriting HTML links')
+        self.log.info('Rewriting HTML links')
         for f in filelist:
             path = f.path
             dpath = os.path.dirname(path)
@@ -208,12 +208,12 @@ class HTMLInput(InputFormatPlugin):
             try:
                 link_ = link_.decode('utf-8', 'error')
             except:
-                self.log.warn('Failed to decode link %r. Ignoring'%link_)
+                self.log.warning('Failed to decode link %r. Ignoring', link_)
                 return None, None
         try:
             l = Link(link_, base if base else os.getcwd())
         except:
-            self.log.exception('Failed to process link: %r'%link_)
+            self.log.exception('Failed to process link: %r', link_)
             return None, None
         if l.path is None:
             # Not a local resource
@@ -237,7 +237,7 @@ class HTMLInput(InputFormatPlugin):
         if not os.access(link, os.R_OK):
             return link_
         if os.path.isdir(link):
-            self.log.warn(link_, 'is a link to a directory. Ignoring.')
+            self.log.warning(link_, 'is a link to a directory. Ignoring.')
             return link_
         if link not in self.added_resources:
             bhref = os.path.basename(link)
@@ -245,7 +245,7 @@ class HTMLInput(InputFormatPlugin):
             guessed = mimetypes.guess_type(href)[0]
             media_type = guessed or self.BINARY_MIME
             if media_type == 'text/plain':
-                self.log.warn('Ignoring link to text file %r'%link_)
+                self.log.warning('Ignoring link to text file %r', link_)
                 return None
             if media_type == self.BINARY_MIME:
                 # Check for the common case, images
@@ -257,7 +257,7 @@ class HTMLInput(InputFormatPlugin):
                     if img:
                         media_type = mimetypes.guess_type('dummy.'+img)[0] or self.BINARY_MIME
 
-            self.oeb.log.debug('Added', link)
+            self.oeb.log.debug('Added %s', link)
             self.oeb.container = self.DirContainer(os.path.dirname(link),
                     self.oeb.log, ignore_opf=True)
             # Load into memory
@@ -287,6 +287,6 @@ class HTMLInput(InputFormatPlugin):
                 raw = f.read().decode('utf-8', 'replace')
             raw = self.oeb.css_preprocessor(raw, add_namespace=False)
         except:
-            self.log.exception('Failed to read CSS file: %r'%link)
+            self.log.exception('Failed to read CSS file: %r', link)
             return (None, None)
         return (None, raw)

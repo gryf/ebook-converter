@@ -197,9 +197,9 @@ class InputFormatPlugin(Plugin):
     def __call__(self, stream, options, file_ext, log,
                  accelerators, output_dir):
         try:
-            log('InputFormatPlugin: %s running'%self.name)
+            log.info('InputFormatPlugin: %s running', self.name)
             if hasattr(stream, 'name'):
-                log('on', stream.name)
+                log.info('on: %s', stream.name)
         except:
             # In case stdout is broken
             pass

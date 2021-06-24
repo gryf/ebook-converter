@@ -64,9 +64,9 @@ class RTFInput(InputFormatPlugin):
                 debug_dir = u'rtfdebug'
                 run_lev = 4
                 indent_out = 1
-                self.log('Running RTFParser in debug mode')
+                self.log.info('Running RTFParser in debug mode')
             except Exception:
-                self.log.warn('Impossible to run RTFParser in debug mode')
+                self.log.warning('Impossible to run RTFParser in debug mode')
         parser = ParseRtf(
             in_file=stream,
             out_file=ofile,
@@ -122,7 +122,7 @@ class RTFInput(InputFormatPlugin):
     def extract_images(self, picts):
         from ebook_converter.utils.imghdr import what
         from binascii import unhexlify
-        self.log('Extracting images...')
+        self.log.info('Extracting images...')
 
         with open(picts, 'rb') as f:
             raw = f.read()
@@ -154,7 +154,7 @@ class RTFInput(InputFormatPlugin):
             try:
                 imap[count] = self.convert_image(val)
             except Exception:
-                self.log.exception('Failed to convert', val)
+                self.log.exception('Failed to convert %s', val)
         return imap
 
     def convert_image(self, name):
@@ -163,7 +163,7 @@ class RTFInput(InputFormatPlugin):
         try:
             return self.rasterize_wmf(name)
         except Exception:
-            self.log.exception('Failed to convert WMF image %r' % name)
+            self.log.exception('Failed to convert WMF image %r', name)
         return self.replace_wmf(name)
 
     def replace_wmf(self, name):
@@ -258,7 +258,7 @@ class RTFInput(InputFormatPlugin):
         from ebook_converter.ebooks.rtf.input import InlineClass
         self.opts = options
         self.log = log
-        self.log('Converting RTF to XML...')
+        self.log.info('Converting RTF to XML...')
         try:
             xml = self.generate_xml(stream.name)
         except RtfInvalidCodeException as e:
@@ -275,7 +275,7 @@ class RTFInput(InputFormatPlugin):
             except Exception:
                 self.log.exception('Failed to extract images...')
 
-        self.log('Parsing XML...')
+        self.log.info('Parsing XML...')
         doc = etree.fromstring(xml)
         border_styles = self.convert_borders(doc)
         for pict in doc.xpath('//rtf:pict[@num]',
@@ -286,7 +286,7 @@ class RTFInput(InputFormatPlugin):
             if name is not None:
                 pict.set('num', name)
 
-        self.log('Converting XML to HTML...')
+        self.log.info('Converting XML to HTML...')
         inline_class = InlineClass(self.log)
         with open(pkg_resources.resource_filename('ebook_converter',
                                                   'data/rtf.xsl')) as fobj:

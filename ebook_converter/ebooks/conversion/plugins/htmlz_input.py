@@ -55,8 +55,8 @@ class HTMLZInput(InputFormatPlugin):
         # HTMLZ archive probably won't turn out as the user expects. With
         # Multiple HTML files ZIP input should be used in place of HTMLZ.
         if multiple_html:
-            log.warn('Multiple HTML files found in the archive. Only %s will '
-                     'be used.' % index)
+            log.warning('Multiple HTML files found in the archive. Only %s '
+                        'will be used.', index)
 
         if index:
             with open(index, 'rb') as tf:

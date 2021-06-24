@@ -4,10 +4,6 @@ from collections import namedtuple
 from ebook_converter.customize import Plugin
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-
-
 class DevicePlugin(Plugin):
     """
     Defines the interface that should be implemented by backends that
@@ -16,7 +12,7 @@ class DevicePlugin(Plugin):
     type = 'Device interface'
 
     #: Ordered list of supported formats
-    FORMATS     = ["lrf", "rtf", "pdf", "txt"]
+    FORMATS = ["lrf", "rtf", "pdf", "txt"]
     # If True, the config dialog will not show the formats box
     HIDE_FORMATS_CONFIG_BOX = False
 
