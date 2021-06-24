@@ -230,7 +230,8 @@ class Dehyphenator(object):
         if len(firsthalf) > 4 and self.prefixes.match(firsthalf) is None:
             lookupword = self.removeprefix.sub('', lookupword)
         if self.verbose > 2:
-            self.log("lookup word is: "+lookupword+", orig is: " + hyphenated)
+            self.log.info("lookup word is: %s, orig is: %s", lookupword,
+                          hyphenated)
         try:
             searchresult = self.html.find(lookupword.lower())
         except Exception:
@@ -238,41 +239,42 @@ class Dehyphenator(object):
         if self.format == 'html_cleanup' or self.format == 'txt_cleanup':
             if self.html.find(lookupword) != -1 or searchresult != -1:
                 if self.verbose > 2:
-                    self.log("    Cleanup:returned dehyphenated word: " +
-                             dehyphenated)
+                    self.log.info("    Cleanup:returned dehyphenated word: %s",
+                                  dehyphenated)
                 return dehyphenated
             elif self.html.find(hyphenated) != -1:
                 if self.verbose > 2:
-                    self.log("        Cleanup:returned hyphenated word: " +
-                             hyphenated)
+                    self.log.info("        Cleanup:returned hyphenated word: "
+                                  "%s", hyphenated)
                 return hyphenated
             else:
                 if self.verbose > 2:
-                    self.log("            Cleanup:returning original text " +
-                             firsthalf + " + linefeed " + secondhalf)
+                    self.log.info("            Cleanup:returning original "
+                                  "text %s + linefeed %s", firsthalf,
+                                  secondhalf)
                 return firsthalf+'\u2014'+wraptags+secondhalf
 
         else:
             if (self.format == 'individual_words' and
                     len(firsthalf) + len(secondhalf) <= 6):
                 if self.verbose > 2:
-                    self.log("too short, returned hyphenated word: " +
-                             hyphenated)
+                    self.log.info("too short, returned hyphenated word: %s",
+                                  hyphenated)
                 return hyphenated
             if len(firsthalf) <= 2 and len(secondhalf) <= 2:
                 if self.verbose > 2:
-                    self.log("too short, returned hyphenated word: " +
-                             hyphenated)
+                    self.log.info("too short, returned hyphenated word: %s",
+                                  hyphenated)
                 return hyphenated
             if self.html.find(lookupword) != -1 or searchresult != -1:
                 if self.verbose > 2:
-                    self.log("     returned dehyphenated word: " +
-                             dehyphenated)
+                    self.log.info("     returned dehyphenated word: ",
+                                  dehyphenated)
                 return dehyphenated
             else:
                 if self.verbose > 2:
-                    self.log("          returned hyphenated word: " +
-                             hyphenated)
+                    self.log.info("          returned hyphenated word: ",
+                                  hyphenated)
                 return hyphenated
 
     def __call__(self, html, format, length=1):
@@ -537,8 +539,8 @@ class HTMLPreProcessor(object):
                 rules.insert(0, (search_re, replace_txt))
                 user_sr_rules[(search_re, replace_txt)] = search_pattern
             except Exception as e:
-                self.log.error('Failed to parse %r regexp because %s' %
-                               (search, e))
+                self.log.error('Failed to parse %r regexp because %s',
+                               search, e)
 
         # search / replace using the sr?_search / sr?_replace options
         for i in range(1, 4):
@@ -619,8 +621,8 @@ class HTMLPreProcessor(object):
             except Exception as e:
                 if rule in user_sr_rules:
                     self.log.error('User supplied search & replace rule: %s '
-                                   '-> %s failed with error: %s, ignoring.' %
-                                   (user_sr_rules[rule], rule[1], e))
+                                   '-> %s failed with error: %s, ignoring.',
+                                   user_sr_rules[rule], rule[1], e)
                 else:
                     raise
 

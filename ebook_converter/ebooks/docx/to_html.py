@@ -324,11 +324,11 @@ class Convert(object):
             try:
                 seraw = self.docx.read(sename)
             except KeyError:
-                self.log.warn('Settings %s do not exist' % sename)
+                self.log.warning('Settings %s do not exist', sename)
             except EnvironmentError as e:
                 if e.errno != errno.ENOENT:
                     raise
-                self.log.warn('Settings %s file missing' % sename)
+                self.log.warning('Settings %s file missing', sename)
             else:
                 self.settings(etree.fromstring(seraw))
 
@@ -336,14 +336,14 @@ class Convert(object):
             try:
                 foraw = self.docx.read(foname)
             except KeyError:
-                self.log.warn('Footnotes %s do not exist' % foname)
+                self.log.warning('Footnotes %s do not exist', foname)
             else:
                 forel = self.docx.get_relationships(foname)
         if enname is not None:
             try:
                 enraw = self.docx.read(enname)
             except KeyError:
-                self.log.warn('Endnotes %s do not exist' % enname)
+                self.log.warning('Endnotes %s do not exist', enname)
             else:
                 enrel = self.docx.get_relationships(enname)
         footnotes(etree.fromstring(foraw) if foraw else None, forel,
@@ -354,7 +354,7 @@ class Convert(object):
             try:
                 raw = self.docx.read(fname)
             except KeyError:
-                self.log.warn('Fonts table %s does not exist' % fname)
+                self.log.warning('Fonts table %s does not exist', fname)
             else:
                 fonts(etree.fromstring(raw), embed_relationships, self.docx,
                       self.dest_dir)
@@ -363,7 +363,7 @@ class Convert(object):
             try:
                 raw = self.docx.read(tname)
             except KeyError:
-                self.log.warn('Styles %s do not exist' % sname)
+                self.log.warning('Styles %s do not exist', sname)
             else:
                 self.theme(etree.fromstring(raw))
 
@@ -372,7 +372,7 @@ class Convert(object):
             try:
                 raw = self.docx.read(sname)
             except KeyError:
-                self.log.warn('Styles %s do not exist' % sname)
+                self.log.warning('Styles %s do not exist', sname)
             else:
                 self.styles(etree.fromstring(raw), fonts, self.theme)
                 styles_loaded = True
@@ -383,7 +383,7 @@ class Convert(object):
             try:
                 raw = self.docx.read(nname)
             except KeyError:
-                self.log.warn('Numbering styles %s do not exist' % nname)
+                self.log.warning('Numbering styles %s do not exist', nname)
             else:
                 numbering(etree.fromstring(raw), self.styles,
                           self.docx.get_relationships(nname)[0])
@@ -619,8 +619,8 @@ class Convert(object):
             if anchor and anchor in self.anchor_map:
                 span.set('href', '#' + self.anchor_map[anchor])
                 continue
-            self.log.warn('Hyperlink with unknown target (rid=%s, anchor=%s), '
-                          'ignoring' % (rid, anchor))
+            self.log.warning('Hyperlink with unknown target (rid=%s, '
+                             'anchor=%s), ignoring', rid, anchor)
             # hrefs that point nowhere give epubcheck a hernia. The element
             # should be styled explicitly by Word anyway.
             # span.set('href', '#')
@@ -645,8 +645,8 @@ class Convert(object):
                 if anchor in self.anchor_map:
                     span.set('href', '#' + self.anchor_map[anchor])
                     continue
-                self.log.warn('Hyperlink field with unknown anchor: %s' %
-                              anchor)
+                self.log.warning('Hyperlink field with unknown anchor: %s',
+                                 anchor)
             else:
                 if url in self.anchor_map:
                     span.set('href', '#' + self.anchor_map[url])

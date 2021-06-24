@@ -49,7 +49,8 @@ class ImagesManager(object):
             try:
                 fmt, width, height = identify(item.data)
             except Exception:
-                self.log.warning('Replacing corrupted image with blank: %s' % href)
+                self.log.warning('Replacing corrupted image with blank: %s',
+                                 href)
                 item.data = I('blank.png', data=True, allow_user_override=False)
                 fmt, width, height = identify(item.data)
             image_fname = 'media/' + self.create_filename(href, fmt)

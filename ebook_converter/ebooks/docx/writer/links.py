@@ -6,10 +6,6 @@ import uuid
 from ebook_converter.utils.filenames import ascii_text
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
-
 def start_text(tag, prefix_len=0, top_level=True):
     ans = tag.text or ''
     limit = 50 - prefix_len
@@ -123,7 +119,8 @@ class LinksManager(object):
                     bmark = self.anchor_map[(href, self.top_anchor)]
                 return make_link(parent, anchor=bmark, tooltip=tooltip)
             else:
-                self.log.warn('Ignoring internal hyperlink with href (%s) pointing to unknown destination' % url)
+                self.log.warning('Ignoring internal hyperlink with href (%s) '
+                                 'pointing to unknown destination', url)
         if purl.scheme in {'http', 'https', 'ftp'}:
             if url not in self.external_links:
                 self.external_links[url] = self.document_relationships.add_relationship(url, self.namespace.names['LINKS'], target_mode='External')

@@ -10,9 +10,6 @@ from ebook_converter.utils.localization import lang_as_iso639_1
 from ebook_converter.tinycss.css21 import CSS21Parser
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2015, Kovid Goyal <kovid at kovidgoyal.net>'
-
 css_parser = CSS21Parser()
 
 border_edges = ('left', 'top', 'right', 'bottom')
@@ -738,8 +735,9 @@ class StylesManager(object):
             text_style.seq = i
         self.descendant_text_styles = sorted(descendant_style_map, key=attrgetter('seq'))
 
-        self.log.debug('%d Text Styles %d Combined styles' % tuple(map(len, (
-            self.descendant_text_styles, self.combined_styles))))
+        self.log.debug('%d Text Styles %d Combined styles',
+                       len(self.descendant_text_styles),
+                       len(self.combined_styles))
 
         self.primary_heading_style = None
         if heading_styles:

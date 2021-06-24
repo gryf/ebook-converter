@@ -7,10 +7,6 @@ from ebook_converter.ebooks.metadata.toc import TOC
 from ebook_converter.ebooks.oeb.polish.toc import elem_to_toc_text
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
-
 def from_headings(body, log, namespace, num_levels=3):
     ' Create a TOC from headings in the document '
     tocroot = TOC()
@@ -48,7 +44,7 @@ def from_headings(body, log, namespace, num_levels=3):
             level_prev[i] = None
 
     if len(tuple(tocroot.flat())) > 1:
-        log('Generating Table of Contents from headings')
+        log.info('Generating Table of Contents from headings')
         return tocroot
 
 
@@ -127,7 +123,8 @@ def from_toc(docx, link_map, styles, object_map, log, namespace):
                         ml = 0
                     toc.append(TI(txt, href[1:], ml))
     if toc:
-        log('Found Word Table of Contents, using it to generate the Table of Contents')
+        log.info('Found Word Table of Contents, using it to generate the '
+                 'Table of Contents')
         return structure_toc(toc)
 
 

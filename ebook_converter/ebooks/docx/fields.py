@@ -152,7 +152,8 @@ class Fields(object):
                 if func is not None:
                     func(field, field_parsers[field.name], log)
                 elif field.name not in unknown_fields:
-                    log.warn('Encountered unknown field: %s, ignoring it.' % field.name)
+                    log.warning('Encountered unknown field: %s, ignoring it.',
+                                field.name)
                     unknown_fields.add(field.name)
 
     def get_runs(self, field):
@@ -187,7 +188,8 @@ class Fields(object):
             for runs in self.get_runs(field):
                 self.hyperlink_fields.append(({'anchor':dest}, runs))
         else:
-            log.warn('Unsupported reference field (%s), ignoring: %r' % (field.name, ref))
+            log.warning('Unsupported reference field (%s), ignoring: %r',
+                        field.name, ref)
 
     parse_noteref = parse_ref
 

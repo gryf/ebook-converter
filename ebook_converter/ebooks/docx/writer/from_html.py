@@ -430,7 +430,7 @@ class Convert(object):
         self.current_link = self.current_lang = None
 
         for item in self.oeb.spine:
-            self.log.debug('Processing', item.href)
+            self.log.debug('Processing %s', item.href)
             self.process_item(item)
         if self.add_toc:
             self.links_manager.process_toc_links(self.oeb)

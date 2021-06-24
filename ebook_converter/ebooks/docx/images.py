@@ -8,10 +8,6 @@ from ebook_converter.utils.img import resize_to_fit, image_to_data
 from ebook_converter.utils.imghdr import what
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2013, Kovid Goyal <kovid at kovidgoyal.net>'
-
-
 class LinkedImageNotFound(ValueError):
 
     def __init__(self, fname):
@@ -135,12 +131,14 @@ class Images(object):
         ext = what(None, raw) or base.rpartition('.')[-1] or 'jpeg'
         if ext == 'emf':
             # For an example, see: https://bugs.launchpad.net/bugs/1224849
-            self.log('Found an EMF image: %s, trying to extract embedded raster image' % fname)
+            self.log.info('Found an EMF image: %s, trying to extract '
+                          'embedded raster image', fname)
             from ebook_converter.utils.wmf.emf import emf_unwrap
             try:
                 raw = emf_unwrap(raw)
             except Exception:
-                self.log.exception('Failed to extract embedded raster image from EMF')
+                self.log.exception('Failed to extract embedded raster image '
+                                   'from EMF')
             else:
                 ext = 'png'
         base = base.rpartition('.')[0]
@@ -216,7 +214,8 @@ class Images(object):
                     try:
                         src = self.generate_filename(rid, name)
                     except LinkedImageNotFound as err:
-                        self.log.warn('Linked image: %s not found, ignoring' % err.fname)
+                        self.log.warning('Linked image: %s not found, '
+                                         'ignoring', err.fname)
                         continue
                     img = IMG(src='images/%s' % src)
                     img.set('alt', alt or 'Image')
@@ -277,7 +276,8 @@ class Images(object):
                 try:
                     src = self.generate_filename(rid)
                 except LinkedImageNotFound as err:
-                    self.log.warn('Linked image: %s not found, ignoring' % err.fname)
+                    self.log.warning('Linked image: %s not found, ignoring',
+                                     err.fname)
                     continue
                 img = IMG(src='images/%s' % src, style="display:block")
                 alt = get(imagedata, 'o:title')
