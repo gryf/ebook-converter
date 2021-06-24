@@ -15,9 +15,6 @@ from ebook_converter.ebooks.mobi.utils import convert_color_for_font_tag
 from ebook_converter.utils.imghdr import identify
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.cam>'
-
 MBP_NS = 'http://mobipocket.com/ns/mbp'
 
 
@@ -455,13 +452,12 @@ class MobiMLizer(object):
                 try:
                     item = self.oeb.manifest.hrefs[base.urlnormalize(href)]
                 except:
-                    self.oeb.logger.warn('Failed to find image:',
-                            href)
+                    self.oeb.logger.warning('Failed to find image:', href)
                 else:
                     try:
                         width, height = identify(item.data)[1:]
                     except Exception:
-                        self.oeb.logger.warn('Invalid image:', href)
+                        self.oeb.logger.warning('Invalid image:', href)
                     else:
                         if 'width' not in istate.attrib and 'height' not in \
                                     istate.attrib:

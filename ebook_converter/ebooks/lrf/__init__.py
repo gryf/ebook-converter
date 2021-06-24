@@ -10,11 +10,6 @@ from ebook_converter.ebooks.lrf.fonts import FONT_FILE_MAP
 from ebook_converter.ebooks import ConversionError
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
-__docformat__ = "epytext"
-
-
 class LRFParseError(Exception):
     pass
 
@@ -46,17 +41,17 @@ def find_custom_fonts(options, logger):
         f = family(options.serif_family)
         fonts['serif'] = font_scanner.legacy_fonts_for_family(f)
         if not fonts['serif']:
-            logger.warn('Unable to find serif family %s'%f)
+            logger.warning('Unable to find serif family %s', f)
     if options.sans_family:
         f = family(options.sans_family)
         fonts['sans'] = font_scanner.legacy_fonts_for_family(f)
         if not fonts['sans']:
-            logger.warn('Unable to find sans family %s'%f)
+            logger.warning('Unable to find sans family %s', f)
     if options.mono_family:
         f = family(options.mono_family)
         fonts['mono'] = font_scanner.legacy_fonts_for_family(f)
         if not fonts['mono']:
-            logger.warn('Unable to find mono family %s'%f)
+            logger.warning('Unable to find mono family %s', f)
     return fonts
 
 

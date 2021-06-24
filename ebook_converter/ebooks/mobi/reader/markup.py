@@ -36,7 +36,8 @@ def update_internal_links(mobi8_reader, log):
                         filename, idtag = mr.get_id_tag_by_pos_fid(
                             int(posfid, 32), int(offset, 32))
                     except ValueError:
-                        log.warn('Invalid link, points to nowhere, ignoring')
+                        log.warning('Invalid link, points to nowhere, '
+                                    'ignoring')
                         replacement = b'#'
                     else:
                         suffix = (b'#' + idtag) if idtag else b''
@@ -49,7 +50,8 @@ def update_internal_links(mobi8_reader, log):
         try:
             parts.append(raw.decode(mr.header.codec))
         except UnicodeDecodeError:
-            log.warn('Failed to decode text in KF8 part, replacing bad bytes')
+            log.warning('Failed to decode text in KF8 part, replacing bad '
+                        'bytes')
             parts.append(raw.decode(mr.header.codec, 'replace'))
 
     # All parts are now unicode and have no internal links
@@ -130,7 +132,8 @@ def update_flow_links(mobi8_reader, resource_map, log):
             try:
                 flow = flow.decode(mr.header.codec)
             except UnicodeDecodeError:
-                log.error('Flow part has invalid %s encoded bytes'%mr.header.codec)
+                log.error('Flow part has invalid %s encoded bytes',
+                          mr.header.codec)
                 flow = flow.decode(mr.header.codec, 'replace')
 
         # links to raster image files from image tags
@@ -146,8 +149,8 @@ def update_flow_links(mobi8_reader, resource_map, log):
                         replacement = '"%s"'%('../'+ href)
                         tag = img_index_pattern.sub(replacement, tag, 1)
                     else:
-                        log.warn('Referenced image %s was not recognized '
-                                'as a valid image in %s' % (num, tag))
+                        log.warning('Referenced image %s was not recognized '
+                                    'as a valid image in %s', num, tag)
                 srcpieces[j] = tag
         flow = "".join(srcpieces)
 
@@ -164,16 +167,16 @@ def update_flow_links(mobi8_reader, resource_map, log):
                     replacement = '"%s"'%('../'+ href)
                     tag = url_img_index_pattern.sub(replacement, tag, 1)
                 else:
-                    log.warn('Referenced image %s was not recognized as a '
-                    'valid image in %s' % (num, tag))
+                    log.warning('Referenced image %s was not recognized as a '
+                                'valid image in %s', num, tag)
 
             # process links to fonts
             for m in font_index_pattern.finditer(tag):
                 num = int(m.group(1), 32)
                 href = resource_map[num-1]
                 if href is None:
-                    log.warn('Referenced font %s was not recognized as a '
-                    'valid font in %s' % (num, tag))
+                    log.warning('Referenced font %s was not recognized as a '
+                                'valid font in %s', num, tag)
                 else:
                     replacement = '"%s"'%('../'+ href)
                     if href.endswith('.failed'):
@@ -200,7 +203,8 @@ def update_flow_links(mobi8_reader, resource_map, log):
                         num = int(m.group(1), 32)
                         fi = mr.flowinfo[num]
                     except IndexError:
-                        log.warn('Ignoring invalid flow reference in tag', tag)
+                        log.warning('Ignoring invalid flow reference in '
+                                    'tag %s', tag)
                         tag = ''
                     else:
                         if fi.format == 'inline':
@@ -237,7 +241,8 @@ def insert_flows_into_markup(parts, flows, mobi8_reader, log):
                     try:
                         fi = mr.flowinfo[num]
                     except IndexError:
-                        log.warn('Ignoring invalid flow reference: %s'%m.group())
+                        log.warning('Ignoring invalid flow reference: %s',
+                                    m.group())
                         tag = ''
                     else:
                         if fi.format == 'inline':
@@ -273,8 +278,8 @@ def insert_images_into_markup(parts, resource_map, log):
                         replacement = '"%s"'%('../' + href)
                         tag = img_index_pattern.sub(replacement, tag, 1)
                     else:
-                        log.warn('Referenced image %s was not recognized as '
-                                'a valid image in %s' % (num, tag))
+                        log.warning('Referenced image %s was not recognized '
+                                    'as a valid image in %s', num, tag)
                 srcpieces[j] = tag
         part = "".join(srcpieces)
         # store away modified version
@@ -296,8 +301,8 @@ def insert_images_into_markup(parts, resource_map, log):
                         replacement = '%s%s%s'%(osep, '../' + href, csep)
                         tag = img_index_pattern.sub(replacement, tag, 1)
                     else:
-                        log.warn('Referenced image %s was not recognized as '
-                                'a valid image in %s' % (num, tag))
+                        log.warning('Referenced image %s was not recognized '
+                                    'as a valid image in %s', num, tag)
                 srcpieces[j] = tag
         part = "".join(srcpieces)
         # store away modified version

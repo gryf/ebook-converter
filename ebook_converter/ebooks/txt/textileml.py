@@ -53,7 +53,8 @@ class TextileMLizer(OEB2HTML):
     def mlize_spine(self, oeb_book):
         output = ['']
         for item in oeb_book.spine:
-            self.log.debug('Converting %s to Textile formatted TXT...', item.href)
+            self.log.debug('Converting %s to Textile formatted TXT...',
+                           item.href)
             self.rewrite_ids(item.data, item)
             rewrite_links(item.data, partial(self.rewrite_link, page=item))
             stylizer = Stylizer(item.data, item.href, oeb_book, self.opts, self.opts.output_profile)

@@ -444,8 +444,8 @@ class Indexer(object):  # {{{
         if self.is_periodical and self.masthead_offset is None:
             raise ValueError('Periodicals must have a masthead')
 
-        self.log('Generating MOBI index for a %s'%('periodical' if
-            self.is_periodical else 'book'))
+        self.log('Generating MOBI index for a %s', 'periodical' if
+                 self.is_periodical else 'book')
         self.is_flat_periodical = False
         if self.is_periodical:
             periodical_node = next(iter(oeb.toc))
@@ -634,8 +634,8 @@ class Indexer(object):  # {{{
                 offset = id_offsets[node.href]
                 label = self.cncx[node.title]
             except:
-                self.log.warn('TOC item %s [%s] not found in document'%(
-                    node.title, node.href))
+                self.log.warn('TOC item %s [%s] not found in document',
+                              node.title, node.href)
                 continue
 
             if offset in seen:

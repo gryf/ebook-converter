@@ -1,11 +1,6 @@
 from ebook_converter.ebooks.oeb.base import XPath
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
-
 class CSSCleanup(object):
 
     def __init__(self, log, opts):
@@ -34,7 +29,7 @@ def remove_duplicate_anchors(oeb):
                 anchor = tag.get(attr)
                 if anchor is not None:
                     if anchor in seen:
-                        oeb.log.debug('Removing duplicate anchor:', anchor)
+                        oeb.log.debug('Removing duplicate anchor: %s', anchor)
                         tag.attrib.pop(attr)
                     else:
                         seen.add(anchor)

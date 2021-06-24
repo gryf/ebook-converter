@@ -231,7 +231,7 @@ class MobiReader(object):
                              keep_doctype=False, sanitize_names=True)
 
         if root.tag != 'html':
-            self.log.warn('File does not have opening <html> tag')
+            self.log.warning('File does not have opening <html> tag')
             nroot = html.fromstring('<html><head></head><body></body></html>')
             bod = nroot.find('body')
             for child in list(root):
@@ -242,7 +242,7 @@ class MobiReader(object):
         htmls = list(root.xpath('//html'))
 
         if len(htmls) > 1:
-            self.log.warn('Markup contains multiple <html> tags, merging.')
+            self.log.warning('Markup contains multiple <html> tags, merging.')
             # Merge all <head> and <body> sections
             for h in htmls:
                 p = h.getparent()
@@ -833,9 +833,9 @@ class MobiReader(object):
     def warn_about_trailing_entry_corruption(self):
         if not self.warned_about_trailing_entry_corruption:
             self.warned_about_trailing_entry_corruption = True
-            self.log.warn('The trailing data entries in this MOBI file are '
-                          'corrupted, you might see corrupted text in the '
-                          'output')
+            self.log.warning('The trailing data entries in this MOBI file are '
+                             'corrupted, you might see corrupted text in the '
+                             'output')
 
     def text_section(self, index):
         data = self.sections[index][0]

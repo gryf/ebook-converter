@@ -205,9 +205,9 @@ class Mobi8Reader(object):
                     # This can happen for some badly formed KF8 files, see for
                     # example, https://bugs.launchpad.net/bugs/1082669
                     if not inspos_warned:
-                        self.log.warn('The div table for %s has incorrect '
-                                      'insert positions. Calculating '
-                                      'manually.' % skelname)
+                        self.log.warning('The div table for %s has incorrect '
+                                         'insert positions. Calculating '
+                                         'manually.', skelname)
                         inspos_warned = True
                     bp, ep = locate_beg_end_of_tag(skeleton, aidtext if
                                                    isinstance(aidtext, bytes)
@@ -396,8 +396,8 @@ class Mobi8Reader(object):
                 try:
                     href, idtag = self.get_id_tag_by_pos_fid(*pos_fid)
                 except ValueError:
-                    self.log.warn('Invalid entry in NCX (title: %s), '
-                                  'ignoring' % entry['text'])
+                    self.log.warning('Invalid entry in NCX (title: %s), '
+                                     'ignoring', entry['text'])
                     remove.append(entry)
                     continue
 
@@ -436,10 +436,10 @@ class Mobi8Reader(object):
                     font = read_font_record(data)
                     href = "fonts/%05d.%s" % (fname_idx, font['ext'])
                     if font['err']:
-                        self.log.warn('Reading font record %d failed: %s' %
-                                      (fname_idx, font['err']))
+                        self.log.warning('Reading font record %d failed: %s',
+                                         fname_idx, font['err'])
                         if font['headers']:
-                            self.log.debug('Font record headers: %s' %
+                            self.log.debug('Font record headers: %s',
                                            font['headers'])
                     with open(href.replace('/', os.sep), 'wb') as f:
                         f.write(font['font_data'] if font['font_data'] else
@@ -484,7 +484,7 @@ class Mobi8Reader(object):
             mi.cover = resource_map[self.cover_offset]
 
         if len(list(toc)) < 2:
-            self.log.warn('KF8 has no metadata Table of Contents')
+            self.log.warning('KF8 has no metadata Table of Contents')
 
             for ref in guide:
                 if ref.type == 'toc':

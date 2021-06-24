@@ -380,7 +380,7 @@ class Serializer(object):
             is_start = (href and href == start_href)
             # Iterate over all filepos items
             if href not in id_offsets:
-                self.logger.warn('Hyperlink target %r not found' % href)
+                self.logger.warning('Hyperlink target %r not found', href)
                 # Link to the top of the document, better than just ignoring
                 href, _ = urllib.parse.urldefrag(href)
             if href in self.id_offsets:

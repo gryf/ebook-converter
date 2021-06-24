@@ -12,10 +12,6 @@ from ebook_converter.ebooks.mobi.utils import (encint, encode_trailing_data,
 from ebook_converter.ebooks.mobi.writer2.indexer import Indexer
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
-
 # Disabled as I dont care about uncrossable breaks
 WRITE_UNCROSSABLE_BREAKS = False
 NULL_INDEX = 0xffffffff
@@ -89,7 +85,7 @@ class MobiWriter(object):
     def generate_index(self):
         self.primary_index_record_idx = None
         if self.oeb.toc.count() < 1:
-            self.log.warn('No TOC, MOBI index not generated')
+            self.log.warning('No TOC, MOBI index not generated')
             return
         try:
             self.indexer = Indexer(self.serializer, self.last_text_record_idx,

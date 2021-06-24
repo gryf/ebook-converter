@@ -97,7 +97,7 @@ class Resources(object):
             try:
                 data = self.process_image(item.data)
             except:
-                self.log.warn('Bad image file %r' % item.href)
+                self.log.warning('Bad image file %r', item.href)
                 continue
             else:
                 if mh_href and item.href == mh_href:
@@ -117,7 +117,7 @@ class Resources(object):
                         data = rescale_image(item.data, dimen=MAX_THUMB_DIMEN,
                             maxsizeb=MAX_THUMB_SIZE)
                     except:
-                        self.log.warn('Failed to generate thumbnail')
+                        self.log.warning('Failed to generate thumbnail')
                     else:
                         self.image_indices.add(len(self.records))
                         self.records.append(data)
@@ -145,7 +145,7 @@ class Resources(object):
             try:
                 data = self.process_image(item.data)
             except:
-                self.log.warn('Bad image file %r' % item.href)
+                self.log.warning('Bad image file %r', item.href)
             else:
                 self.records.append(data)
                 self.item_map[item.href] = len(self.records)

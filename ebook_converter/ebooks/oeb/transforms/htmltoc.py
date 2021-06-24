@@ -62,7 +62,7 @@ class HTMLTOCAdder(object):
         title = self.title or oeb.translate(DEFAULT_TITLE)
         style = self.style
         if style not in STYLE_CSS:
-            oeb.logger.error('Unknown TOC style %r' % style)
+            oeb.logger.error('Unknown TOC style %r', style)
             style = 'nested'
         id, css_href = oeb.manifest.generate('tocstyle', 'tocstyle.css')
         oeb.manifest.add(id, css_href, base.CSS_MIME, data=STYLE_CSS[style])

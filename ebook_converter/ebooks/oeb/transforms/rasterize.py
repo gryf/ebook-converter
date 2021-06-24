@@ -65,17 +65,19 @@ class SVGRasterizer(object):
                 box = [float(x) for x in filter(None, re.split('[, ]', view_box))]
                 sizes = [box[2]-box[0], box[3] - box[1]]
             except (TypeError, ValueError, IndexError):
-                logger.warn('SVG image has invalid viewBox="%s", ignoring the viewBox' % view_box)
+                logger.warning('SVG image has invalid viewBox="%s", ignoring '
+                               'the viewBox', view_box)
             else:
                 for image in elem.xpath('descendant::*[local-name()="image" and '
                         '@height and contains(@height, "%")]'):
-                    logger.info('Found SVG image height in %, trying to convert...')
+                    logger.info('Found SVG image height in %, trying to '
+                                'convert...')
                     try:
                         h = float(image.get('height').replace('%', ''))/100.
                         image.set('height', str(h*sizes[1]))
                     except:
-                        logger.exception('Failed to convert percentage height:',
-                                image.get('height'))
+                        logger.exception('Failed to convert percentage '
+                                         'height: %s', image.get('height'))
 
         data = QByteArray(xml2str(elem, with_tail=False))
         svg = QSvgRenderer(data)
@@ -85,8 +87,8 @@ class SVGRasterizer(object):
             size.setHeight(sizes[1])
         if width or height:
             size.scale(width, height, Qt.KeepAspectRatio)
-        logger.info('Rasterizing %r to %dx%d'
-                    % (elem, size.width(), size.height()))
+        logger.info('Rasterizing %r to %dx%d', elem, size.width(),
+                    size.height())
         image = QImage(size, QImage.Format_ARGB32_Premultiplied)
         image.fill(QColor("white").rgb())
         painter = QPainter(image)
@@ -186,8 +188,8 @@ class SVGRasterizer(object):
             href = self.images[key]
         else:
             logger = self.oeb.logger
-            logger.info('Rasterizing %r to %dx%d'
-                        % (svgitem.href, size.width(), size.height()))
+            logger.info('Rasterizing %r to %dx%d', svgitem.href, size.width(),
+                        size.height())
             image = QImage(size, QImage.Format_ARGB32_Premultiplied)
             image.fill(QColor("white").rgb())
             painter = QPainter(image)
@@ -219,7 +221,7 @@ class SVGRasterizer(object):
         if not covers:
             return
         if str(covers[0]) not in self.oeb.manifest.ids:
-            self.oeb.logger.warn('Cover not in manifest, skipping.')
+            self.oeb.logger.warning('Cover not in manifest, skipping.')
             self.oeb.metadata.clear('cover')
             return
         cover = self.oeb.manifest.ids[str(covers[0])]

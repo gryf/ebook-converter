@@ -7,10 +7,6 @@ from ebook_converter.ebooks.oeb.base import CSS_MIME, OEB_DOCS
 from ebook_converter.ebooks.oeb.base import urlnormalize, iterlinks
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
-
-
 class ManifestTrimmer(object):
 
     @classmethod
@@ -69,5 +65,5 @@ class ManifestTrimmer(object):
             unchecked = new
         for item in oeb.manifest.values():
             if item not in used:
-                oeb.logger.info('Trimming %r from manifest' % item.href)
+                oeb.logger.info('Trimming %r from manifest', item.href)
                 oeb.manifest.remove(item)
