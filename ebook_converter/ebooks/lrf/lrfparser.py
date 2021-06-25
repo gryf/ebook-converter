@@ -1,6 +1,7 @@
 import array
 import itertools
 import re
+import sys
 
 from ebook_converter.utils.config import OptionParser
 from ebook_converter.utils.filenames import ascii_filename
@@ -41,11 +42,11 @@ class LRFDocument(LRFMetaFile):
     def _parse_objects(self):
         self.objects = {}
         self._file.seek(self.object_index_offset)
-        obj_array = array.array("I",
-                                self._file.read(4 * 4 *
-                                                self.number_of_objects))
-        if ord(array.array("i", [1]).tostring()[0:1]) == 0:  # big-endian
+        obj_array = array.array("I", self._file.read(4 * 4 *
+                                                     self.number_of_objects))
+        if sys.byteorder == 'big':
             obj_array.byteswap()
+
         for i in range(self.number_of_objects):
             if not self.keep_parsing:
                 break
