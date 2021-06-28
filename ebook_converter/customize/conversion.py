@@ -185,7 +185,7 @@ class InputFormatPlugin(Plugin):
         :param file_ext: The extension (without the .) of the input file. It
                          is guaranteed to be one of the `file_types` supported
                          by this plugin.
-        :param log: A :class:`calibre.utils.logging.Log` object. All output
+        :param log: A :class:`calibre.logging.Logger` object. All output
                     should use this object.
         :param accelarators: A dictionary of various information that the input
                              plugin can get easily that would speed up the

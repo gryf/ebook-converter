@@ -4,7 +4,7 @@ import os
 from ebook_converter.ebooks.mobi import MobiError
 from ebook_converter.ebooks.mobi.reader.mobi6 import MobiReader
 from ebook_converter.ebooks.mobi.reader.headers import MetadataHeader
-from ebook_converter.utils.logging import default_log
+from ebook_converter import logging
 from ebook_converter.ebooks import DRMError
 from ebook_converter.ebooks.mobi.reader.mobi8 import Mobi8Reader
 from ebook_converter.ebooks.conversion.plumber import Plumber, create_oebbook
@@ -14,9 +14,7 @@ from ebook_converter.utils import directory
 from ebook_converter.utils.ipc.simple_worker import fork_job
 
 
-__license__ = 'GPL v3'
-__copyright__ = '2012, Kovid Goyal <kovid@kovidgoyal.net>'
-__docformat__ = 'restructuredtext en'
+LOG = logging.default_log
 
 
 class BadFormat(ValueError):
@@ -25,10 +23,10 @@ class BadFormat(ValueError):
 
 def do_explode(path, dest):
     with open(path, 'rb') as stream:
-        mr = MobiReader(stream, default_log, None, None)
+        mr = MobiReader(stream, LOG, None, None)
 
         with directory.CurrentDir(dest):
-            mr = Mobi8Reader(mr, default_log)
+            mr = Mobi8Reader(mr, LOG)
             opf = os.path.abspath(mr())
             try:
                 os.remove('debug-raw.html')
@@ -46,7 +44,7 @@ def explode(path, dest, question=lambda x: True):
             raise BadFormat('This is not a MOBI file. It is a Topaz file.')
 
         try:
-            header = MetadataHeader(stream, default_log)
+            header = MetadataHeader(stream, LOG)
         except MobiError:
             raise BadFormat('This is not a MOBI file.')
 
@@ -85,15 +83,15 @@ def set_cover(oeb):
 
 
 def do_rebuild(opf, dest_path):
-    plumber = Plumber(opf, dest_path, default_log)
+    plumber = Plumber(opf, dest_path, LOG)
     plumber.setup_options()
     inp = plugin_for_input_format('azw3')
     outp = plugin_for_output_format('azw3')
 
     plumber.opts.mobi_passthrough = True
-    oeb = create_oebbook(default_log, opf, plumber.opts)
+    oeb = create_oebbook(LOG, opf, plumber.opts)
     set_cover(oeb)
-    outp.convert(oeb, dest_path, inp, plumber.opts, default_log)
+    outp.convert(oeb, dest_path, inp, plumber.opts, LOG)
 
 
 def rebuild(src_dir, dest_path):

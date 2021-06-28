@@ -13,12 +13,13 @@ from ebook_converter.ebooks.oeb import base
 from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.ebooks.oeb.stylizer import Stylizer
 from ebook_converter.utils import entities
-from ebook_converter.utils.logging import default_log
+from ebook_converter import logging
 from ebook_converter import polyglot
 
 
 SELF_CLOSING_TAGS = {'area', 'base', 'basefont', 'br', 'hr', 'input', 'img',
                      'link', 'meta'}
+LOG = logging.default_log
 
 
 class OEB2HTML(object):
@@ -34,7 +35,7 @@ class OEB2HTML(object):
     """
 
     def __init__(self, log=None):
-        self.log = default_log if log is None else log
+        self.log = LOG if log is None else log
         self.links = {}
         self.images = {}
 

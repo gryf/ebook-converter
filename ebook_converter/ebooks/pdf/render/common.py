@@ -4,8 +4,11 @@ import io
 import numbers
 import zlib
 
-from ebook_converter.utils.logging import default_log
+from ebook_converter import logging
 from ebook_converter import polyglot
+
+
+LOG = logging.default_log
 
 
 pdf_float = lambda x: f"{x:.1f}"
@@ -234,7 +237,7 @@ class Reference(object):
 def current_log(newlog=None):
     if newlog:
         current_log.ans = newlog
-    return current_log.ans or default_log
+    return current_log.ans or LOG
 
 
 current_log.ans = None

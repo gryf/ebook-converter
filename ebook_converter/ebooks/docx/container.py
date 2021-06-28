@@ -12,8 +12,11 @@ from ebook_converter.ebooks.docx import InvalidDOCX
 from ebook_converter.ebooks.docx.names import DOCXNamespace
 from ebook_converter.ptempfile import PersistentTemporaryDirectory
 from ebook_converter.utils.localization import canonicalize_lang
-from ebook_converter.utils.logging import default_log
+from ebook_converter import logging
 from ebook_converter.utils.zipfile import ZipFile
+
+
+LOG = logging.default_log
 
 
 # Read metadata {{{
@@ -86,7 +89,7 @@ class DOCX(object):
         if not hasattr(path_or_stream, 'read'):
             stream = open(path_or_stream, 'rb')
         self.name = getattr(stream, 'name', None) or '<stream>'
-        self.log = log or default_log
+        self.log = log or LOG
         if extract:
             self.extract(stream)
         else:

@@ -881,10 +881,11 @@ class Convert(object):
 
 if __name__ == '__main__':
     import shutil
-    from ebook_converter.utils.logging import default_log
-    default_log.filter_level = default_log.DEBUG
+    from ebook_converter import logging
+    logging.default_log.filter_level = logging.default_log.DEBUG
     dest_dir = os.path.join(os.getcwd(), 'docx_input')
     if os.path.exists(dest_dir):
         shutil.rmtree(dest_dir)
     os.mkdir(dest_dir)
-    Convert(sys.argv[-1], dest_dir=dest_dir, log=default_log)()
+    Convert(sys.argv[-1], dest_dir=dest_dir,
+            log=logging.default_log)()

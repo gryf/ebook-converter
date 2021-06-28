@@ -260,8 +260,9 @@ if __name__ == '__main__':
     opts.output_profile = HanlinV3Output(None)
 
     html_preprocessor = HTMLPreProcessor(None, None, opts)
-    from ebook_converter.utils.logging import default_log
-    oeb = OEBBook(default_log, html_preprocessor)
+    from ebook_converter import logging
+    oeb = OEBBook(logging.default_log, html_preprocessor)
     reader = OEBReader
     reader()(oeb, '/tmp/bbb/processed/')
-    SNBOutput(None).convert(oeb, '/tmp/test.snb', None, None, default_log)
+    SNBOutput(None).convert(oeb, '/tmp/test.snb', None, None,
+                            logging.default_log)

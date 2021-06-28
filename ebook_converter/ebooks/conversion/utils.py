@@ -1,14 +1,17 @@
 import re
 from math import ceil
 from ebook_converter.ebooks.conversion.preprocess import DocAnalysis, Dehyphenator
-from ebook_converter.utils.logging import default_log
+from ebook_converter import logging
 from ebook_converter.utils.wordcount import get_wordcount_obj
+
+
+LOG = logging.default_log
 
 
 class HeuristicProcessor(object):
 
     def __init__(self, extra_opts=None, log=None):
-        self.log = default_log if log is None else log
+        self.log = LOG if log is None else log
         self.html_preprocess_sections = 0
         self.found_indents = 0
         self.extra_opts = extra_opts

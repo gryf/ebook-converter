@@ -43,13 +43,14 @@ from ebook_converter.ptempfile import PersistentTemporaryDirectory, PersistentTe
 from ebook_converter.utils import directory
 from ebook_converter.utils.filenames import hardlink_file, nlinks_file
 from ebook_converter.utils.ipc.simple_worker import WorkerError, fork_job
-from ebook_converter.utils.logging import default_log
+from ebook_converter import logging
 from ebook_converter.utils.zipfile import ZipFile
 
 exists, join, relpath = os.path.exists, os.path.join, os.path.relpath
 
 OEB_FONTS = {guess_type('a.ttf'), guess_type('b.otf'), guess_type('a.woff'), 'application/x-font-ttf', 'application/x-font-otf', 'application/font-sfnt'}
 null = object()
+LOG = logging.default_log
 
 
 class CSSPreProcessor(cssp):
@@ -1391,10 +1392,10 @@ def do_explode(path, dest):
     from ebook_converter.ebooks.mobi.reader.mobi6 import MobiReader
     from ebook_converter.ebooks.mobi.reader.mobi8 import Mobi8Reader
     with open(path, 'rb') as stream:
-        mr = MobiReader(stream, default_log, None, None)
+        mr = MobiReader(stream, LOG, None, None)
 
         with directory.CurrentDir(dest):
-            mr = Mobi8Reader(mr, default_log, for_tweak=True)
+            mr = Mobi8Reader(mr, LOG, for_tweak=True)
             opf = os.path.abspath(mr())
             obfuscated_fonts = mr.encrypted_fonts
 
@@ -1455,7 +1456,7 @@ class AZW3Container(Container):
                                   'file.')
 
             try:
-                header = MetadataHeader(stream, default_log)
+                header = MetadataHeader(stream, LOG)
             except MobiError:
                 raise InvalidMobi('This is not a MOBI file.')
 
@@ -1514,7 +1515,7 @@ class AZW3Container(Container):
 
 def get_container(path, log=None, tdir=None, tweak_mode=False):
     if log is None:
-        log = default_log
+        log = LOG
     try:
         isdir = os.path.isdir(path)
     except Exception:
