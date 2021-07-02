@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 import argparse
-import mimetypes
 import os
-import pkg_resources
 import sys
 
 from ebook_converter import logging
 from ebook_converter.customize.conversion import OptionRecommendation
+from ebook_converter.ebooks.conversion.plumber import Plumber
 
 
 LOG = logging.default_log
@@ -37,7 +36,6 @@ def create_option_parser(args):
 
     # TODO(gryf): Plumber has to be imported late, because first mimetypes
     # needs to be updated.
-    from ebook_converter.ebooks.conversion.plumber import Plumber
     plumber = Plumber(input_file, output_file, LOG, progress_bar)
     # add_input_output_options(parser, plumber)
     # add_pipeline_options(parser, plumber)
@@ -46,8 +44,7 @@ def create_option_parser(args):
 
 
 def run(args):
-    mimetypes.init([pkg_resources.
-                    resource_filename('ebook_converter', 'data/mime.types')])
+
     plumber = create_option_parser(args)
 
     # TODO(gryf): perhaps there is a need to recreate commandline options for
@@ -88,7 +85,3 @@ def main():
 
     print(args)
     sys.exit(run(args))
-
-
-if __name__ == '__main__':
-    main()
