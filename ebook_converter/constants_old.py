@@ -32,7 +32,7 @@ def debug():
 # plugins {{{
 
 
-class Plugins(collections.Mapping):
+class Plugins(collections.abc.Mapping):
 
     def __init__(self):
         self._plugins = {}
