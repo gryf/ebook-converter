@@ -31,6 +31,8 @@ class Extract(ODF2XHTML):
                     f.write(data)
 
     def apply_list_starts(self, root, log):
+        if not hasattr(self, "list_starts"):
+            return
         if not self.list_starts:
             return
         list_starts = frozenset(self.list_starts)
@@ -84,7 +86,7 @@ class Extract(ODF2XHTML):
                     return rule
 
     def epubify_markup(self, root, log):
-        from ebook_converter.ebooks.oeb.base import XPath, XHTML
+        from ebook_converter.ebooks.oeb.parse_utils import XPath, XHTML
         # Fix empty title tags
         for t in XPath('//h:title')(root):
             if not t.text:
