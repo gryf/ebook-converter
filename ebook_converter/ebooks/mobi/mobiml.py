@@ -452,7 +452,7 @@ class MobiMLizer(object):
                 try:
                     item = self.oeb.manifest.hrefs[base.urlnormalize(href)]
                 except:
-                    self.oeb.logger.warning('Failed to find image:', href)
+                    self.oeb.logger.warning('Failed to find image: %s', href)
                 else:
                     try:
                         width, height = identify(item.data)[1:]

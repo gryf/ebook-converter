@@ -444,8 +444,8 @@ class Indexer(object):  # {{{
         if self.is_periodical and self.masthead_offset is None:
             raise ValueError('Periodicals must have a masthead')
 
-        self.log('Generating MOBI index for a %s', 'periodical' if
-                 self.is_periodical else 'book')
+        self.log.info('Generating MOBI index for a %s', 'periodical' if
+                      self.is_periodical else 'book')
         self.is_flat_periodical = False
         if self.is_periodical:
             periodical_node = next(iter(oeb.toc))

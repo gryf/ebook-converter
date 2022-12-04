@@ -237,7 +237,7 @@ class HTMLInput(InputFormatPlugin):
         if not os.access(link, os.R_OK):
             return link_
         if os.path.isdir(link):
-            self.log.warning(link_, 'is a link to a directory. Ignoring.')
+            self.log.warning('%s is a link to a directory. Ignoring.', link_)
             return link_
         if link not in self.added_resources:
             bhref = os.path.basename(link)
