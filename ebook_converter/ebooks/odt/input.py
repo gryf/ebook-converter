@@ -14,6 +14,7 @@ from odf.draw import Frame as odFrame, Image as odImage
 from odf.namespaces import TEXTNS as odTEXTNS
 
 from ebook_converter.utils import directory
+from ebook_converter.ebooks.oeb import parse_utils
 from ebook_converter.ebooks.oeb.base import _css_logger
 from ebook_converter import polyglot
 
@@ -21,7 +22,7 @@ from ebook_converter import polyglot
 
 class Extract(ODF2XHTML):
 
-    def extract_pictures(self, zf):
+    def _extract_pictures(self, zf):
         if not os.path.exists('Pictures'):
             os.makedirs('Pictures')
         for name in zf.namelist():
@@ -31,8 +32,8 @@ class Extract(ODF2XHTML):
                 with open(name, 'wb') as f:
                     f.write(data)
 
-    def apply_list_starts(self, root, log):
-        if not self.list_starts:
+    def _apply_list_starts(self, root, log):
+        if not hasattr(self, "list_starts") or not self.list_starts:
             return
         list_starts = frozenset(self.list_starts)
         for ol in root.xpath('//*[local-name() = "ol" and @class]'):
@@ -47,7 +48,7 @@ class Extract(ODF2XHTML):
         self.filter_css(root, log)
         self.extract_css(root, log)
         self.epubify_markup(root, log)
-        self.apply_list_starts(root, log)
+        self._apply_list_starts(root, log)
         html = etree.tostring(root, encoding='utf-8', xml_declaration=True)
         return html
 
@@ -85,22 +86,21 @@ class Extract(ODF2XHTML):
                     return rule
 
     def epubify_markup(self, root, log):
-        from ebook_converter.ebooks.oeb.base import XPath, XHTML
         # Fix empty title tags
-        for t in XPath('//h:title')(root):
+        for t in parse_utils.XPath('//h:title')(root):
             if not t.text:
                 t.text = u' '
         # Fix <p><div> constructs as the asinine epubchecker complains
         # about them
-        pdiv = XPath('//h:p/h:div')
+        pdiv = parse_utils.XPath('//h:p/h:div')
         for div in pdiv(root):
-            div.getparent().tag = XHTML('div')
+            div.getparent().tag = parse_utils.XHTML('div')
 
         # Remove the position:relative as it causes problems with some epub
         # renderers. Remove display: block on an image inside a div as it is
         # redundant and prevents text-align:center from working in ADE
         # Also ensure that the img is contained in its containing div
-        imgpath = XPath('//h:div/h:img[@style]')
+        imgpath = parse_utils.XPath('//h:div/h:img[@style]')
         for img in imgpath(root):
             div = img.getparent()
             if len(div) == 1:
@@ -120,7 +120,7 @@ class Extract(ODF2XHTML):
         # works in both WebKit and ADE.
         # https://bugs.launchpad.net/bugs/1063207
         # https://bugs.launchpad.net/calibre/+bug/859343
-        imgpath = XPath('descendant::h:div/h:div/h:img')
+        imgpath = parse_utils.XPath('descendant::h:div/h:div/h:img')
         for img in imgpath(root):
             div2 = img.getparent()
             div1 = div2.getparent()
@@ -298,7 +298,7 @@ class Extract(ODF2XHTML):
             with open('index.xhtml', 'wb') as f:
                 f.write(polyglot.as_bytes(html))
             zf = ZipFile(stream, 'r')
-            self.extract_pictures(zf)
+            self._extract_pictures(zf)
             opf = OPFCreator(os.path.abspath(os.getcwd()), mi)
             opf.create_manifest([(os.path.abspath(os.path.join(r, f2)), None)
                                  for r, _, fnames in os.walk(os.getcwd())
