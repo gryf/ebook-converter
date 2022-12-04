@@ -4,7 +4,6 @@ import os
 import sys
 
 from ebook_converter import logging
-from ebook_converter.customize.conversion import OptionRecommendation
 from ebook_converter.ebooks.conversion.plumber import Plumber
 
 
@@ -68,6 +67,7 @@ def run(args):
 
     return 0
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('from_file', help="Input file to be converted")
@@ -83,5 +83,4 @@ def main():
 
     LOG.set_verbose(args.verbose, args.quiet)
 
-    print(args)
     sys.exit(run(args))
