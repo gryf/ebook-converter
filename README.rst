@@ -20,6 +20,8 @@ To build and run ebook converter, you'll need:
 - setuptools
 - ``pdftohtml``, ``pdfinfo`` and ``pdftoppm`` from `poppler`_ project for
   conversion from PDF available in ``$PATH``
+- ``libxml2-dev`` and ``libxslt-dev`` as dependencies for format manipulation
+  from some of the Calibre code
 
 No Python2 support. Even if Calibre probably still is able to run on Python2, I
 do not have an intention to support it.

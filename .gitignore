@@ -3,3 +3,4 @@ build/
 dist/
 sdist/
 *.egg-info/
+venv/
