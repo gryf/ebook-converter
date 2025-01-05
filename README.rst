@@ -2,13 +2,12 @@
 Ebook converter
 ===============
 
-This is impudent ripoff of the bits from `Calibre project`_, and is aimed only
+This is an impudent ripoff of the bits from `Calibre project`_, and is aimed only
 for converter thing.
 
-My motivation is to have only converter for ebooks run from commandline,
+My motivation is to have only the converter for ebooks run from the commandline,
 without all of those bells and whistles Calibre has, and with cleanest more
 *pythonic* approach.
-
 
 Requirements
 ------------
@@ -30,7 +29,7 @@ do not have an intention to support it.
 What's supported
 ----------------
 
-To be able to perform some optimization and make converter more reliable and
+To be able to perform some optimization and make the converter more reliable and
 easy to use, first I need to remove some of the features, which are totally not
 crucial in my opinion, although they might be re-added later, like, for
 instance there is no automatic language translations depending on the locale
@@ -54,7 +53,7 @@ example), it would be treated as common book.
 Input formats
 ~~~~~~~~~~~~~
 
-Currently, I've tested following input formats:
+Currently, I've tested the following input formats:
 
 - Microsoft Word 2007 and up (``docx``)
 - EPUB, both v2 and v3 (``epub``)
