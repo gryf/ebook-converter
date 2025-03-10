@@ -62,7 +62,7 @@ class PMLOutput(OutputFormatPlugin):
                     im = Image.open(io.BytesIO(item.data))
                 else:
                     im = Image.open(io.BytesIO(item.data)).convert('P')
-                    im.thumbnail((300,300), Image.ANTIALIAS)
+                    im.thumbnail((300,300), Image.LANCZOS)
 
                 data = io.BytesIO()
                 im.save(data, 'PNG')
