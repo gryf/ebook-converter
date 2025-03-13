@@ -8,17 +8,17 @@ version = "4.12.0"
 requires-python = ">= 3.10"
 description = "Convert ebook between different formats"
 dependencies = [
-    "filelock",
-    "python-dateutil",
-    "lxml",
-    "css-parser",
-    "beautifulsoup4",
-    "tinycss",
-    "pillow",
-    "msgpack",
-    "html5-parser",
-    "odfpy",
-    "html2text"
+    "beautifulsoup4>=4.9.3",
+    "css-parser>=1.0.6",
+    "filelock>=3.0.12",
+    "html2text>=2020.1.16",
+    "html5-parser==0.4.12",
+    "msgpack>=1.0.0",
+    "odfpy>=1.4.1",
+    "pillow>=8.0.1",
+    "python-dateutil>=2.8.1",
+    "setuptools>=61.0",
+    "tinycss>=0.4"
 ]
 readme = "README.rst"
 authors = [

@@ -2,25 +2,39 @@
 Ebook converter
 ===============
 
-This is an impudent ripoff of the bits from `Calibre project`_, and is aimed only
-for converter thing.
+This is an impudent ripoff of the bits from `Calibre project`_, and is aimed
+only for converter thing.
 
-My motivation is to have only the converter for ebooks run from the commandline,
-without all of those bells and whistles Calibre has, and with cleanest more
-*pythonic* approach.
+My motivation is to have only the converter for ebooks run from the
+commandline, without all of those bells and whistles Calibre has, and with
+cleanest more *pythonic* approach.
 
 Requirements
 ------------
 
 To build and run ebook converter, you'll need:
 
-- Python 3.6 or newer
+- Python 3.10 or newer
 - `Liberation fonts`_
 - setuptools
 - ``pdftohtml``, ``pdfinfo`` and ``pdftoppm`` from `poppler`_ project for
   conversion from PDF available in ``$PATH``
 - ``libxml2-dev`` and ``libxslt-dev`` as dependencies for format manipulation
   from some of the Calibre code
+
+and several Python packages:
+
+- `beautifulsoup4`_
+- `css-parser`_
+- `filelock`_
+- `html2text`_
+- `html5-parser`_
+- `msgpack`_
+- `odfpy`_
+- `pillow`_
+- `python-dateutil`_
+- `setuptools`_
+- `tinycss`_
 
 No Python2 support. Even if Calibre probably still is able to run on Python2, I
 do not have an intention to support it.
@@ -29,9 +43,9 @@ do not have an intention to support it.
 What's supported
 ----------------
 
-To be able to perform some optimization and make the converter more reliable and
-easy to use, first I need to remove some of the features, which are totally not
-crucial in my opinion, although they might be re-added later, like, for
+To be able to perform some optimization and make the converter more reliable
+and easy to use, first I need to remove some of the features, which are totally
+not crucial in my opinion, although they might be re-added later, like, for
 instance there is no automatic language translations depending on the locale
 settings.
 
@@ -45,9 +59,10 @@ Windows is not currently supported, because of the original spaghetti code.
 This may change in the future, after cleanup of mentioned pasta would be
 completed.
 
-So called `Kindle periodical` format is not supported, since all we do care are
-local files. If there would be downloaded periodical thing (using Calibre for
-example), it would be treated as common book.
+So called *Kindle periodical* format (which `Amazon has`_ `killed`_ anyway back
+in September 2023) is not supported, since all we do care are local files. If
+there would be downloaded periodical thing (using Calibre for example), it
+would be treated as common book.
 
 
 Input formats
@@ -123,9 +138,20 @@ License
 This work is licensed on GPL3 license, like the original work. See LICENSE file
 for details.
 
-
 .. _Calibre project: https://calibre-ebook.com/
 .. _pypi: https://pypi.python.org
 .. _Liberation fonts: https://github.com/liberationfonts/liberation-fonts
-.. _Kindle periodical: https://sellercentral.amazon.com/gp/help/external/help.html?itemID=202047960&language=en-US
+.. _Amazon has: https://goodereader.com/blog/kindle/amazon-will-discontinue-newspaper-and-magazine-subscriptions-in-september
+.. _killed: https://www.theverge.com/23861370/amazon-kindle-periodicals-unlimited-ended
 .. _poppler: https://poppler.freedesktop.org/
+.. _beautifulsoup4: https://www.crummy.com/software/BeautifulSoup
+.. _css-parser: https://github.com/ebook-utils/css-parser
+.. _filelock: https://github.com/tox-dev/py-filelock
+.. _html2text: https://github.com/Alir3z4/html2text
+.. _html5-parser: https://html5-parser.readthedocs.io
+.. _msgpack: https://msgpack.org
+.. _odfpy: https://github.com/eea/odfpy
+.. _pillow: https://python-pillow.github.io
+.. _python-dateutil: https://github.com/dateutil/dateutil
+.. _setuptools: https://setuptools.pypa.io
+.. _tinycss: http://tinycss.readthedocs.io
