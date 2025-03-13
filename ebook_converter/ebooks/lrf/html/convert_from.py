@@ -1012,7 +1012,7 @@ class HTMLConverter(object):
             self.image_memory.append(pt)  # Neccessary, trust me ;-)
             try:
                 im.resize((int(width), int(height)),
-                          PILImage.ANTIALIAS).save(pt, encoding)
+                          PILImage.LANCZOS).save(pt, encoding)
                 pt.close()
                 self.scaled_images[path] = pt
                 return pt.name
@@ -1970,7 +1970,7 @@ def process_file(path, options, logger):
                 options.cover = cf.name
 
                 tim = im.resize((int(0.75 * th), th),
-                                PILImage.ANTIALIAS).convert('RGB')
+                                PILImage.LANCZOS).convert('RGB')
                 tf = PersistentTemporaryFile(prefix=__appname__ + '_',
                                              suffix=".jpg")
                 tf.close()
