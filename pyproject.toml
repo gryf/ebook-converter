@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ebook-converter"
+version = "4.12.0"
+requires-python = ">= 3.10"
+description = "Convert ebook between different formats"
+dependencies = [
+    "filelock",
+    "python-dateutil",
+    "lxml",
+    "css-parser",
+    "beautifulsoup4",
+    "tinycss",
+    "pillow",
+    "msgpack",
+    "html5-parser",
+    "odfpy",
+    "html2text"
+]
+readme = "README.rst"
+authors = [
+    {name = "gryf", email = "gryf73@gmail.com"}
+]
+license = {text = "GPLv3"}
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Other Audience",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: POSIX :: Linux",
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
+]
+
+[project.urls]
+Repository = "https://github.com/gryf/ebook-converter"
+
+[project.scripts]
+ebook-converter = "ebook_converter.main:main"
+
+[tool.setuptools.packages.find]
+exclude = ["snap"]
+
+[tool.setuptools.package-data]
+"*" = ["*.types", "*.css", "*.html", "*.xhtml", "*.xsl", "*.json"]
