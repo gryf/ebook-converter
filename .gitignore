@@ -4,3 +4,4 @@ dist/
 sdist/
 *.egg-info/
 venv/
+makefile
