@@ -123,7 +123,7 @@ managers), i.e:
    $ . venv/bin/activate
    (venv) $ git clone https://github.com/gryf/ebook-converter
    (venv) $ cd ebook-converter
-   (venv) $ pip install -r requirements.txt .
+   (venv) $ pip install .
 
 Simple as that. And from now on, you can issue converter:
 
