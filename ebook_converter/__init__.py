@@ -1,6 +1,5 @@
 import mimetypes
-import pkg_resources
+from importlib.resources import files
 
 
-mimetypes.init([pkg_resources.
-                resource_filename('ebook_converter', 'data/mime.types')])
+mimetypes.init([str(files('ebook_converter').joinpath('data/mime.types'))])
