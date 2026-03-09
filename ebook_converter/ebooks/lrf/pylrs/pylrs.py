@@ -670,7 +670,7 @@ class Info(Delegator):
         f = io.BytesIO()
         tree.write(f, encoding='utf-8', xml_declaration=True)
         xmlInfo = f.getvalue().decode('utf-8')
-        xmlInfo = re.sub(r"<CThumbnail.*?>\n", "", xmlInfo)
+        xmlInfo = re.sub(r"<CThumbnail[^>]*/>\s*", "", xmlInfo)
         xmlInfo = xmlInfo.replace("SumPage>", "Page>")
         lrfWriter.docInfoXml = xmlInfo
 
