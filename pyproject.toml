@@ -13,6 +13,7 @@ dependencies = [
     "filelock>=3.0.12",
     "html2text>=2020.1.16",
     "html5-parser==0.4.12",
+    "lxml",
     "msgpack>=1.0.0",
     "odfpy>=1.4.1",
     "pillow>=8.0.1",
@@ -20,6 +21,7 @@ dependencies = [
     "setuptools>=61.0",
     "tinycss>=0.4"
 ]
+
 readme = "README.rst"
 authors = [
     {name = "gryf", email = "gryf73@gmail.com"}

@@ -1,6 +1,7 @@
 from collections import namedtuple
 import json
-import pkg_resources
+#import pkg_resources
+from importlib.resources import files
 
 from ebook_converter.utils.localization import canonicalize_lang
 
@@ -16,8 +17,9 @@ ccodes, ccodemap, country_names = None, None, None
 def get_codes():
     global ccodes, ccodemap, country_names
     if ccodes is None:
-        src = pkg_resources.resource_filename('ebook_converter',
-                                              'data/iso_3166-1.json')
+        src = str(files('ebook_converter').joinpath('data/iso_3166-1.json'))
+        #src = pkg_resources.resource_filename('ebook_converter',
+        #                                      'data/iso_3166-1.json')
         with open(src, 'rb') as f:
             db = json.load(f)
         codes = set()

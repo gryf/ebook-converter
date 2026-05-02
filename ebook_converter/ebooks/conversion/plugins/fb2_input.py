@@ -3,7 +3,8 @@ Convert .fb2 files to .lrf
 """
 import mimetypes
 import os
-import pkg_resources
+#import pkg_resources
+from importlib.resources import files
 import re
 
 from lxml import etree
@@ -85,8 +86,9 @@ class FB2Input(InputFormatPlugin):
             css = re.sub(r'name\s*=\s*', 'class=', css)
         self.extract_embedded_content(doc)
         log.debug('Converting XML to HTML...')
-        with open(pkg_resources.resource_filename('ebook_converter',
-                                                  'data/fb2.xsl')) as f:
+        #with open(pkg_resources.resource_filename('ebook_converter',
+         #                                         'data/fb2.xsl')) as f:
+        with open(str(files('ebook_converter').joinpath('data/fb2.xsl'))) as f:
             ss = f.read()
         ss = ss.replace("__FB_NS__", fb_ns)
         if options.no_inline_fb2_toc:

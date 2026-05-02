@@ -1,7 +1,8 @@
 import collections
 import functools
 import operator
-import pkg_resources
+#import pkg_resources
+from importlib.resources import files
 import re
 import urllib.parse
 
@@ -719,9 +720,10 @@ def commit_nav_toc(container, toc, lang=None, landmarks=None,
         if previous_nav is not None:
             root = previous_nav[1]
         else:
-            with open(pkg_resources.
-                      resource_filename('ebook_converter',
-                                        'data/new_nav.html')) as fobj:
+            #with open(pkg_resources.
+            #          resource_filename('ebook_converter',
+            #                            'data/new_nav.html')) as fobj:
+            with open(str(files('ebook_converter').joinpath('data/new_nav.html'))) as fobj:
                 root = container.parse_xhtml(fobj.read())
         container.replace(tocname, root)
     else:

@@ -544,7 +544,10 @@ class OPF(object):  # {{{
     xpn = NAMESPACES.copy()
     xpn.pop(None)
     xpn['re'] = 'http://exslt.org/regular-expressions'
-    XPath = functools.partial(etree.XPath, namespaces=xpn)
+
+    # Had to change because how lxml 6 deals with etree.XPath
+    #XPath = functools.partial(etree.XPath, namespaces=xpn)
+    XPath = staticmethod(lambda expr, xpn=xpn: etree.XPath(expr, namespaces=xpn))
     CONTENT = XPath('self::*[re:match(name(), "meta$", "i")]/@content')
     TEXT = XPath('string()')
 

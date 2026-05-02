@@ -7,7 +7,8 @@ import mimetypes
 import numbers
 import optparse
 import os
-import pkg_resources
+#import pkg_resources
+from importlib.resources import files
 import re
 import sys
 
@@ -351,8 +352,9 @@ def read_sr_patterns(path, log=None):
 
 def main(args=sys.argv):
     log = logging.default_log
-    mimetypes.init([pkg_resources.resource_filename('ebook_converter',
-                                                    'data/mime.types')])
+    ##mimetypes.init([pkg_resources.resource_filename('ebook_converter',
+    #                                                'data/mime.types')])
+    mimetypes.init([str(files('ebook_converter').joinpath('data/mime.types'))])
     parser, plumber = create_option_parser(args, log)
     opts, leftover_args = parser.parse_args(args)
     if len(leftover_args) > 3:

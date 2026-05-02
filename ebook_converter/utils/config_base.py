@@ -10,7 +10,8 @@ import pickle
 import re
 import traceback
 
-import pkg_resources
+#import pkg_resources
+from importlib.resources import files
 
 from ebook_converter.constants_old import config_dir
 from ebook_converter.constants_old import filesystem_encoding
@@ -591,8 +592,8 @@ def exec_tweaks(path):
 
 
 def default_tweaks_raw():
-    return pkg_resources.resource_filename('ebook_converter',
-                                           'data/default_tweaks.py')
+    return str(files('ebook_converter').joinpath('data/default_tweaks.py'))
+    #return pkg_resources.resource_filename('ebook_converter','data/default_tweaks.py')
 
 
 def read_tweaks():
