@@ -1,7 +1,8 @@
 """
 Read content from txt file.
 """
-import os, re
+import re
+import os
 
 from ebook_converter.ebooks.metadata.opf2 import OPFCreator
 
@@ -101,7 +102,6 @@ DEFAULT_MD_EXTENSIONS = ('footnotes', 'tables', 'toc')
 
 
 def create_markdown_object(extensions):
-    # Need to load markdown extensions without relying on pkg_resources
     import importlib
     from ebook_converter.ebooks.markdown import Markdown
     from markdown import Extension

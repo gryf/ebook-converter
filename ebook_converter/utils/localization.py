@@ -1,5 +1,5 @@
+import importlib.resources
 import json
-from importlib.resources import files
 
 
 def get_lang():
@@ -39,9 +39,8 @@ def _load_iso639():
     # excerpt form Calibre transform code which is executed during Calibre
     # build).
     if _iso639 is None:
-        src = str(files('ebook_converter').joinpath('data/iso_639-3.json'))
-
-        with open(src, 'rb') as f:
+        with open(importlib.resources.files('ebook_converter') /
+                  'data/iso_639-3.json', 'rb') as f:
             root = json.load(f)
 
         entries = root['639-3']

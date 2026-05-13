@@ -1,8 +1,14 @@
 """
 CSS property propagation class.
 """
-import os, re, logging, copy, unicodedata, numbers
-from importlib.resources import files
+import copy
+import importlib.resources
+import logging
+import numbers
+import os
+import re
+import unicodedata
+
 from operator import itemgetter
 from weakref import WeakKeyDictionary
 from xml.dom import SyntaxErr as CSSSyntaxError
@@ -28,7 +34,8 @@ _html_css_stylesheet = None
 def html_css_stylesheet():
     global _html_css_stylesheet
     if _html_css_stylesheet is None:
-        with open(str(files('ebook_converter').joinpath('data/html.css')), 'rb') as f:
+        with open(importlib.resources.files('ebook_converter') /
+                  'data/html.css', 'rb') as f:
             html_css = f.read().decode('utf-8')
         _html_css_stylesheet = parseString(html_css, validate=False)
     return _html_css_stylesheet

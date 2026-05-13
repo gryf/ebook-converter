@@ -1,6 +1,6 @@
+import importlib.resources
 import glob
 import os
-from importlib.resources import files
 import re
 import textwrap
 
@@ -288,8 +288,8 @@ class RTFInput(InputFormatPlugin):
 
         self.log.info('Converting XML to HTML...')
         inline_class = InlineClass(self.log)
-        with open(str(files('ebook_converter')
-                      .joinpath('data/rtf.xsl'))) as fobj:
+        with open(importlib.resources.files('ebook_converter') /
+                  'data/rtf.xsl') as fobj:
             styledoc = etree.fromstring(fobj.read())
         extensions = {('calibre', 'inline-class'): inline_class}
         transform = etree.XSLT(styledoc, extensions=extensions)

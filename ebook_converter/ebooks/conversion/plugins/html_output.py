@@ -1,5 +1,5 @@
+import importlib.resources
 import os
-from importlib.resources import files
 import re
 import shutil
 
@@ -92,27 +92,24 @@ class HTMLOutput(OutputFormatPlugin):
             with open(opts.template_html_index, 'rb') as f:
                 template_html_index_data = f.read()
         else:
-            with open(str(files('ebook_converter')
-                          .joinpath('data/html_export_default_index.tmpl'))
-                     ) as fobj:
+            with open(importlib.resources.files('ebook_converter') /
+                      'data/html_export_default_index.tmpl') as fobj:
                 template_html_index_data = fobj.read().decode()
 
         if opts.template_html is not None:
             with open(opts.template_html, 'rb') as f:
                 template_html_data = f.read()
         else:
-            with open(str(files('ebook_converter')
-                          .joinpath('data/html_export_default.tmpl'))
-                     ) as fobj:
+            with open(importlib.resources.files('ebook_converter') /
+                      'data/html_export_default.tmpl') as fobj:
                 template_html_data = fobj.read().decode()
 
         if opts.template_css is not None:
             with open(opts.template_css, 'rb') as f:
                 template_css_data = f.read()
         else:
-            with open(str(files('ebook_converter')
-                          .joinpath('data/html_export_default.css'))
-                     ) as fobj:
+            with open(importlib.resources.files('ebook_converter') /
+                      'data/html_export_default.css') as fobj:
                 template_css_data = fobj.read().decode()
 
         template_html_index_data = template_html_index_data.decode('utf-8')

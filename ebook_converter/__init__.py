@@ -1,5 +1,6 @@
+import importlib.resources
 import mimetypes
-from importlib.resources import files
 
 
-mimetypes.init([str(files('ebook_converter').joinpath('data/mime.types'))])
+mimetypes.init([str(importlib.resources.
+                files('ebook_converter') / 'data/mime.types')])

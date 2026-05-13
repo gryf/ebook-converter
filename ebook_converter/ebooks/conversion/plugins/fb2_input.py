@@ -1,9 +1,9 @@
 """
 Convert .fb2 files to .lrf
 """
+import importlib.resources
 import mimetypes
 import os
-from importlib.resources import files
 import re
 
 from lxml import etree
@@ -85,8 +85,8 @@ class FB2Input(InputFormatPlugin):
             css = re.sub(r'name\s*=\s*', 'class=', css)
         self.extract_embedded_content(doc)
         log.debug('Converting XML to HTML...')
-        with open(str(files('ebook_converter')
-                      .joinpath('data/fb2.xsl'))) as f:
+        with open(importlib.resources.files('ebook_converter') /
+                  'data/fb2.xsl') as f:
             ss = f.read()
         ss = ss.replace("__FB_NS__", fb_ns)
         if options.no_inline_fb2_toc:

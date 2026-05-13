@@ -3,14 +3,13 @@ import collections
 import copy
 import datetime
 import functools
+import importlib.resources
 import json
 import numbers
 import os
 import pickle
 import re
 import traceback
-
-from importlib.resources import files as _resource_files
 
 from ebook_converter.constants_old import config_dir
 from ebook_converter.constants_old import filesystem_encoding
@@ -591,7 +590,8 @@ def exec_tweaks(path):
 
 
 def default_tweaks_raw():
-    return str(_resource_files('ebook_converter').joinpath('data/default_tweaks.py'))
+    return str(importlib.resources.files('ebook_converter') /
+               'data/default_tweaks.py')
 
 
 def read_tweaks():

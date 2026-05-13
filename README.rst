@@ -125,16 +125,16 @@ managers), i.e:
    (venv) $ cd ebook-converter
    (venv) $ pip install --no-binary lxml .
 
-Note: the ``--no-binary lxml`` flag is required to ensure ``lxml`` is compiled
-against the same system ``libxml2`` as ``html5-parser``. Without it, pip may
-install a pre-built ``lxml`` wheel bundling a different ``libxml2`` version,
-which causes a ``RuntimeError``.
-
 Simple as that. And from now on, you can issue converter:
 
 .. code:: shell-session
 
    (venv) $ ebook-converter book.docx book.lrf
+
+.. note:: The ``--no-binary lxml`` flag is required to ensure ``lxml`` is
+   compiled against the same system ``libxml2`` as ``html5-parser``. Without
+   it, pip may install a pre-built ``lxml`` wheel bundling a different
+   ``libxml2`` version, which causes a ``RuntimeError``.
 
 
 License
