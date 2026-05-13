@@ -697,7 +697,7 @@ class OPF(object):  # {{{
     def find_toc(self):
         self.toc = None
         try:
-            spine = self.XPath('descendant::*[re:match(name(), "spine", '
+            spine = OPF.XPath('descendant::*[re:match(name(), "spine", '
                                '"i")]')(self.root)
             toc = None
             if spine:
@@ -801,7 +801,7 @@ class OPF(object):  # {{{
 
     def replace_spine_items_by_idref(self, idref, new_idrefs):
         items = list(map(self.create_spine_item, new_idrefs))
-        spine = self.XPath('/opf:package/*[re:match(name(), "spine", '
+        spine = OPF.XPath('/opf:package/*[re:match(name(), "spine", '
                            '"i")]')(self.root)[0]
         old = [i for i in self.iterspine() if i.get('idref', None) == idref]
         for x in old:
@@ -1005,7 +1005,7 @@ class OPF(object):  # {{{
 
     def get_identifiers(self):
         identifiers = {}
-        for x in self.XPath(
+        for x in OPF.XPath(
             'descendant::*[local-name() = "identifier" and text()]')(
                     self.metadata):
             found_scheme = False
@@ -1039,7 +1039,7 @@ class OPF(object):  # {{{
                 uuid_id = self.root.attrib[attr]
                 break
 
-        for x in self.XPath(
+        for x in OPF.XPath(
             'descendant::*[local-name() = "identifier"]')(
                     self.metadata):
             xid = x.get('id', None)
@@ -1175,7 +1175,7 @@ class OPF(object):  # {{{
 
     @property
     def page_progression_direction(self):
-        spine = self.XPath('descendant::*[re:match(name(), "spine", '
+        spine = OPF.XPath('descendant::*[re:match(name(), "spine", '
                            '"i")][1]')(self.root)
         if spine:
             for k, v in spine[0].attrib.items():
@@ -1185,7 +1185,7 @@ class OPF(object):  # {{{
 
     @property
     def primary_writing_mode(self):
-        for m in self.XPath('//*[local-name()="meta" and @name="primary-'
+        for m in OPF.XPath('//*[local-name()="meta" and @name="primary-'
                             'writing-mode" and @content]')(self.root):
             return m.get('content')
 

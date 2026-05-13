@@ -1,6 +1,6 @@
 import os
 import sys
-import pkg_resources
+from importlib.resources import files
 
 from lxml import etree
 
@@ -52,9 +52,8 @@ class LRFInput(InputFormatPlugin):
 
         self.log.info('Converting XML to HTML...')
 
-        with open(pkg_resources.
-                  resource_filename('ebook_converter',
-                                    'data/lrf.xsl')) as fobj:
+        with open(str(files('ebook_converter')
+                      .joinpath('data/lrf.xsl'))) as fobj:
             # TODO(gryf): change this nonsense to etree.parse() instead.
             styledoc = etree.fromstring(fobj.read())
         media_type = MediaType()

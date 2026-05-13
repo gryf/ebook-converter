@@ -123,7 +123,12 @@ managers), i.e:
    $ . venv/bin/activate
    (venv) $ git clone https://github.com/gryf/ebook-converter
    (venv) $ cd ebook-converter
-   (venv) $ pip install .
+   (venv) $ pip install --no-binary lxml .
+
+Note: the ``--no-binary lxml`` flag is required to ensure ``lxml`` is compiled
+against the same system ``libxml2`` as ``html5-parser``. Without it, pip may
+install a pre-built ``lxml`` wheel bundling a different ``libxml2`` version,
+which causes a ``RuntimeError``.
 
 Simple as that. And from now on, you can issue converter:
 
